@@ -1,18 +1,89 @@
+*, *::before, *::after {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+:root {
+  --bg: #04060f;
+  --accent: #4a7fc1;
+  --text: #e8eaf0;
+  --text-dim: #6b7499;
+}
+
+html, body {
+  width: 100%;
+  height: 100%;
+  background: var(--bg);
+  overflow: hidden;
+  font-family: 'Cormorant Garamond', serif;
+  color: var(--text);
+}
+
+/* ── CANVAS ── */
+#starfield {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+}
+
+/* ── NEBULA GLOW ── */
+.nebula {
+  position: fixed;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
+  background:
+    radial-gradient(ellipse 60% 40% at 20% 60%, rgba(30, 50, 120, 0.18) 0%, transparent 70%),
+    radial-gradient(ellipse 40% 55% at 80% 30%, rgba(10, 25, 80, 0.22) 0%, transparent 70%),
+    radial-gradient(ellipse 50% 35% at 55% 80%, rgba(20, 40, 100, 0.12) 0%, transparent 60%);
+}
+
+/* ── HERO ── */
+.hero {
+  position: relative;
+  z-index: 10;
+  width: 100vw;
+  height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* ── NAME ── */
+.name {
+  font-family: 'Cormorant Garamond', serif;
+  font-weight: 300;
+  font-size: clamp(3.5rem, 12vw, 11rem);
+  letter-spacing: 0.12em;
+  color: var(--text);
+  text-transform: uppercase;
+  opacity: 0;
+  transform: translateY(18px);
+  animation: fadeUp 1.8s cubic-bezier(0.16, 1, 0.3, 1) 0.4s forwards;
+  user-select: none;
+  position: relative;
+}
+
+/* subtle glow behind name */
+.name::after {
+  content: '';
+  position: absolute;
+  inset: -40% -20%;
+  background: radial-gradient(ellipse, rgba(74, 127, 193, 0.07) 0%, transparent 70%);
+  pointer-events: none;
+  z-index: -1;
+}
+
+@keyframes fadeUp {
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* ── CURSOR ── */
 body {
-  background-color: #111;
-  color: white;
-  font-family: Arial, sans-serif;
-  text-align: center;
-  margin-top: 150px;
-}
-
-h1 {
-  font-size: 50px;
-}
-
-button {
-  padding: 10px 20px;
-  font-size: 18px;
-  margin-top: 20px;
-  cursor: pointer;
+  cursor: crosshair;
 }
