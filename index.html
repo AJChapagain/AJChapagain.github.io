@@ -5,18 +5,126 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>AJChapa</title>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
-  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300&family=Space+Mono:wght@400&display=swap" rel="stylesheet" />
-  <link rel="stylesheet" href="style.css" />
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;400&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+    html, body {
+      width: 100%; height: 100%;
+      background: #04060f;
+      overflow: hidden;
+      font-family: 'Cormorant Garamond', serif;
+      cursor: crosshair;
+    }
+
+    #starfield {
+      position: fixed;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      z-index: 0;
+    }
+
+    .nebula {
+      position: fixed;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      z-index: 1;
+      pointer-events: none;
+      background:
+        radial-gradient(ellipse 60% 40% at 20% 60%, rgba(30,50,120,0.18) 0%, transparent 70%),
+        radial-gradient(ellipse 40% 55% at 80% 30%, rgba(10,25,80,0.22) 0%, transparent 70%),
+        radial-gradient(ellipse 50% 35% at 55% 80%, rgba(20,40,100,0.12) 0%, transparent 60%);
+    }
+
+    .hero {
+      position: relative;
+      z-index: 10;
+      width: 100vw; height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .name {
+      font-weight: 300;
+      font-size: clamp(3.5rem, 12vw, 11rem);
+      letter-spacing: 0.12em;
+      color: #e8eaf0;
+      text-transform: uppercase;
+      opacity: 0;
+      transform: translateY(18px);
+      animation: fadeUp 1.8s cubic-bezier(0.16,1,0.3,1) 0.4s forwards;
+      user-select: none;
+    }
+
+    @keyframes fadeUp {
+      to { opacity: 1; transform: translateY(0); }
+    }
+  </style>
 </head>
 <body>
-
   <canvas id="starfield"></canvas>
   <div class="nebula"></div>
-
   <main class="hero">
-    <h1 class="name" id="name">AJChapa</h1>
+    <h1 class="name">AJChapa</h1>
   </main>
+  <script>
+    const canvas = document.getElementById('starfield');
+    const ctx = canvas.getContext('2d');
+    let W, H, stars = [];
 
-  <script src="stars.js"></script>
+    function resize() {
+      W = canvas.width = window.innerWidth;
+      H = canvas.height = window.innerHeight;
+    }
+
+    function rand(a, b) { return a + Math.random() * (b - a); }
+
+    function createStar() {
+      return {
+        x: rand(0, W), y: rand(0, H),
+        radius: rand(0.2, 1.4),
+        opacity: rand(0.1, 0.9),
+        twinkleSpeed: rand(0.003, 0.012),
+        twinkleOffset: rand(0, Math.PI * 2),
+        vx: rand(-0.04, 0.04),
+        vy: rand(-0.015, 0.015),
+        hue: Math.random() > 0.85 ? rand(30, 50) : rand(200, 230),
+      };
+    }
+
+    function initStars() {
+      stars = Array.from({ length: 280 }, createStar);
+    }
+
+    let frame = 0;
+    function draw() {
+      ctx.clearRect(0, 0, W, H);
+      frame++;
+      for (let s of stars) {
+        const twinkle = Math.sin(frame * s.twinkleSpeed + s.twinkleOffset);
+        const alpha = Math.max(0.05, s.opacity + twinkle * 0.35);
+        s.x += s.vx; s.y += s.vy;
+        if (s.x < -2) s.x = W + 2;
+        if (s.x > W + 2) s.x = -2;
+        if (s.y < -2) s.y = H + 2;
+        if (s.y > H + 2) s.y = -2;
+        ctx.beginPath();
+        ctx.arc(s.x, s.y, s.radius, 0, Math.PI * 2);
+        ctx.fillStyle = `hsla(${s.hue},60%,90%,${alpha})`;
+        ctx.fill();
+        if (s.radius > 0.9 && alpha > 0.5) {
+          ctx.beginPath();
+          ctx.arc(s.x, s.y, s.radius * 3, 0, Math.PI * 2);
+          ctx.fillStyle = `hsla(${s.hue},70%,85%,${alpha * 0.08})`;
+          ctx.fill();
+        }
+      }
+      requestAnimationFrame(draw);
+    }
+
+    window.addEventListener('resize', () => { resize(); initStars(); });
+    resize(); initStars(); draw();
+  </script>
 </body>
 </html>
