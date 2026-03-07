@@ -9,10 +9,7 @@
   <style>
     *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
 
-    html, body {
-      width: 100%;
-      height: 100%;
-    }
+    html, body { width: 100%; height: 100%; }
 
     body {
       background: #04060f;
@@ -43,7 +40,6 @@
         radial-gradient(ellipse 40% 40% at 50% 90%, rgba(15,35,95,0.15) 0%, transparent 60%);
     }
 
-    /* ── LAYOUT ── */
     .page {
       position: relative;
       z-index: 10;
@@ -52,15 +48,14 @@
       flex-direction: column;
       align-items: center;
       justify-content: space-between;
-      padding: 3.5rem 2rem;
+      padding: 3rem 2rem;
     }
 
-    /* ── NAME ── */
     .name {
       font-family: 'Cormorant Garamond', serif;
       font-weight: 300;
-      font-size: clamp(2.8rem, 10vw, 9rem);
-      letter-spacing: 0.1em;
+      font-size: clamp(1.8rem, 5vw, 4rem);
+      letter-spacing: 0.18em;
       text-transform: uppercase;
       color: #f0f2f8;
       line-height: 1;
@@ -72,13 +67,12 @@
     .name::after {
       content: '';
       display: block;
-      width: 60%;
+      width: 50%;
       height: 1px;
       background: linear-gradient(90deg, transparent, rgba(74,127,193,0.5), transparent);
-      margin: 0.5rem auto 0;
+      margin: 0.4rem auto 0;
     }
 
-    /* ── FOOTER LINKS ── */
     .links {
       display: flex;
       flex-wrap: wrap;
@@ -95,47 +89,37 @@
       gap: 0.5rem;
       text-decoration: none;
       color: #6b7499;
-      font-size: 0.68rem;
+      font-size: 0.65rem;
       letter-spacing: 0.18em;
       text-transform: uppercase;
       transition: color 0.3s ease;
       position: relative;
     }
 
-    .link-item:hover {
-      color: #c8ccdd;
-    }
+    .link-item:hover { color: #c8ccdd; }
 
     .link-item svg {
-      width: 14px;
-      height: 14px;
+      width: 13px; height: 13px;
       flex-shrink: 0;
       opacity: 0.5;
       transition: opacity 0.3s ease;
     }
 
-    .link-item:hover svg {
-      opacity: 1;
-    }
+    .link-item:hover svg { opacity: 1; }
 
     .link-item::after {
       content: '';
       position: absolute;
-      bottom: -3px;
-      left: 0;
-      width: 0;
-      height: 1px;
+      bottom: -3px; left: 0;
+      width: 0; height: 1px;
       background: rgba(74,127,193,0.6);
       transition: width 0.3s ease;
     }
 
-    .link-item:hover::after {
-      width: 100%;
-    }
+    .link-item:hover::after { width: 100%; }
 
     .link-divider {
-      width: 1px;
-      height: 10px;
+      width: 1px; height: 10px;
       background: #1e2240;
     }
 
@@ -161,45 +145,30 @@
   <div class="nebula"></div>
 
   <div class="page">
-
     <h1 class="name">AJChapa</h1>
 
     <nav class="links">
-      <!-- LinkedIn -->
       <a class="link-item" href="https://www.linkedin.com/in/aj-chapagain" target="_blank" rel="noopener">
-        <svg viewBox="0 0 24 24" fill="currentColor">
-          <path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 01-2.063-2.065 2.064 2.064 0 112.063 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/>
-        </svg>
+        <svg viewBox="0 0 24 24" fill="currentColor"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 01-2.063-2.065 2.064 2.064 0 112.063 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/></svg>
         LinkedIn
       </a>
-
       <div class="link-divider"></div>
-
-      <!-- Instagram -->
       <a class="link-item" href="https://www.instagram.com/aapplejuce/" target="_blank" rel="noopener">
-        <svg viewBox="0 0 24 24" fill="currentColor">
-          <path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zM12 0C8.741 0 8.333.014 7.053.072 2.695.272.273 2.69.073 7.052.014 8.333 0 8.741 0 12c0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98C8.333 23.986 8.741 24 12 24c3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98C15.668.014 15.259 0 12 0zm0 5.838a6.162 6.162 0 100 12.324 6.162 6.162 0 000-12.324zM12 16a4 4 0 110-8 4 4 0 010 8zm6.406-11.845a1.44 1.44 0 100 2.881 1.44 1.44 0 000-2.881z"/>
-        </svg>
+        <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zM12 0C8.741 0 8.333.014 7.053.072 2.695.272.273 2.69.073 7.052.014 8.333 0 8.741 0 12c0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98C8.333 23.986 8.741 24 12 24c3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98C15.668.014 15.259 0 12 0zm0 5.838a6.162 6.162 0 100 12.324 6.162 6.162 0 000-12.324zM12 16a4 4 0 110-8 4 4 0 010 8zm6.406-11.845a1.44 1.44 0 100 2.881 1.44 1.44 0 000-2.881z"/></svg>
         Instagram
       </a>
-
       <div class="link-divider"></div>
-
-      <!-- Steam -->
       <a class="link-item" href="https://steamcommunity.com/profiles/76561198343184351/" target="_blank" rel="noopener">
-        <svg viewBox="0 0 24 24" fill="currentColor">
-          <path d="M11.979 0C5.678 0 .511 4.86.022 11.037l6.432 2.658c.545-.371 1.203-.59 1.912-.59.063 0 .125.004.188.006l2.861-4.142V8.91c0-2.495 2.028-4.524 4.524-4.524 2.494 0 4.524 2.031 4.524 4.527s-2.03 4.525-4.524 4.525h-.105l-4.076 2.911c0 .052.004.105.004.159 0 1.875-1.515 3.396-3.39 3.396-1.635 0-3.016-1.173-3.331-2.727L.436 15.27C1.862 20.307 6.486 24 11.979 24c6.627 0 11.999-5.373 11.999-12S18.605 0 11.979 0zM7.54 18.21l-1.473-.61c.262.543.714.999 1.314 1.25 1.297.539 2.793-.076 3.332-1.375.263-.63.264-1.319.005-1.949s-.75-1.121-1.377-1.383c-.624-.26-1.29-.249-1.878-.03l1.523.63c.956.4 1.409 1.5 1.009 2.455-.397.957-1.497 1.41-2.454 1.012H7.54zm11.415-9.303c0-1.662-1.353-3.015-3.015-3.015-1.665 0-3.015 1.353-3.015 3.015 0 1.665 1.35 3.015 3.015 3.015 1.663 0 3.015-1.35 3.015-3.015zm-5.273.012c0-1.252 1.013-2.266 2.265-2.266 1.249 0 2.266 1.014 2.266 2.266 0 1.251-1.017 2.265-2.266 2.265-1.253 0-2.265-1.014-2.265-2.265z"/>
-        </svg>
+        <svg viewBox="0 0 24 24" fill="currentColor"><path d="M11.979 0C5.678 0 .511 4.86.022 11.037l6.432 2.658c.545-.371 1.203-.59 1.912-.59.063 0 .125.004.188.006l2.861-4.142V8.91c0-2.495 2.028-4.524 4.524-4.524 2.494 0 4.524 2.031 4.524 4.527s-2.03 4.525-4.524 4.525h-.105l-4.076 2.911c0 .052.004.105.004.159 0 1.875-1.515 3.396-3.39 3.396-1.635 0-3.016-1.173-3.331-2.727L.436 15.27C1.862 20.307 6.486 24 11.979 24c6.627 0 11.999-5.373 11.999-12S18.605 0 11.979 0zM7.54 18.21l-1.473-.61c.262.543.714.999 1.314 1.25 1.297.539 2.793-.076 3.332-1.375.263-.63.264-1.319.005-1.949s-.75-1.121-1.377-1.383c-.624-.26-1.29-.249-1.878-.03l1.523.63c.956.4 1.409 1.5 1.009 2.455-.397.957-1.497 1.41-2.454 1.012H7.54zm11.415-9.303c0-1.662-1.353-3.015-3.015-3.015-1.665 0-3.015 1.353-3.015 3.015 0 1.665 1.35 3.015 3.015 3.015 1.663 0 3.015-1.35 3.015-3.015zm-5.273.012c0-1.252 1.013-2.266 2.265-2.266 1.249 0 2.266 1.014 2.266 2.266 0 1.251-1.017 2.265-2.266 2.265-1.253 0-2.265-1.014-2.265-2.265z"/></svg>
         Steam
       </a>
     </nav>
-
   </div>
 
   <script>
     const canvas = document.getElementById('starfield');
     const ctx = canvas.getContext('2d');
-    let W, H, stars = [];
+    let W, H, stars = [], shootingStars = [];
 
     function resize() {
       W = canvas.width = window.innerWidth;
@@ -208,27 +177,115 @@
 
     function rand(a, b) { return a + Math.random() * (b - a); }
 
+    // ── REGULAR STARS ──
     function createStar() {
       return {
         x: rand(0, W), y: rand(0, H),
-        radius: rand(0.15, 1.5),
-        opacity: rand(0.1, 0.85),
-        twinkleSpeed: rand(0.002, 0.01),
+        radius: rand(0.2, 1.6),
+        opacity: rand(0.1, 0.9),
+        twinkleSpeed: rand(0.008, 0.025),
         twinkleOffset: rand(0, Math.PI * 2),
-        vx: rand(-0.05, 0.05),
-        vy: rand(-0.02, 0.02),
+        vx: rand(-0.18, 0.18),
+        vy: rand(-0.1, 0.1),
         hue: Math.random() > 0.8 ? rand(30, 55) : rand(195, 235),
       };
     }
 
     function initStars() {
-      stars = Array.from({ length: 320 }, createStar);
+      stars = Array.from({ length: 340 }, createStar);
+    }
+
+    // ── SHOOTING STARS ──
+    function createShootingStar() {
+      const angle = rand(15, 45) * Math.PI / 180;
+      const speed = rand(12, 22);
+      return {
+        x: rand(0, W * 0.7),
+        y: rand(0, H * 0.5),
+        vx: Math.cos(angle) * speed,
+        vy: Math.sin(angle) * speed,
+        len: rand(80, 200),
+        alpha: 1,
+        fade: rand(0.012, 0.022),
+        width: rand(1, 2.2),
+        hue: rand(195, 230),
+        active: true,
+      };
+    }
+
+    // ── COLLISION FLASH ──
+    let collisionFlashes = [];
+
+    function checkCollisions() {
+      for (let i = 0; i < stars.length; i++) {
+        for (let j = i + 1; j < stars.length; j++) {
+          const dx = stars[i].x - stars[j].x;
+          const dy = stars[i].y - stars[j].y;
+          const dist = Math.sqrt(dx * dx + dy * dy);
+          if (dist < 2.5) {
+            // bounce
+            const tmp = { vx: stars[i].vx, vy: stars[i].vy };
+            stars[i].vx = stars[j].vx;
+            stars[i].vy = stars[j].vy;
+            stars[j].vx = tmp.vx;
+            stars[j].vy = tmp.vy;
+            // flash
+            collisionFlashes.push({
+              x: (stars[i].x + stars[j].x) / 2,
+              y: (stars[i].y + stars[j].y) / 2,
+              alpha: 0.9,
+              radius: rand(2, 5),
+            });
+          }
+        }
+      }
     }
 
     let frame = 0;
+    let nextShoot = rand(60, 180);
+
     function draw() {
       ctx.clearRect(0, 0, W, H);
       frame++;
+
+      // spawn shooting stars
+      if (frame >= nextShoot) {
+        shootingStars.push(createShootingStar());
+        nextShoot = frame + rand(80, 220);
+      }
+
+      // draw shooting stars
+      shootingStars = shootingStars.filter(s => s.alpha > 0);
+      for (let s of shootingStars) {
+        ctx.save();
+        const grad = ctx.createLinearGradient(s.x, s.y, s.x - s.vx * (s.len / 15), s.y - s.vy * (s.len / 15));
+        grad.addColorStop(0, `hsla(${s.hue},80%,95%,${s.alpha})`);
+        grad.addColorStop(1, `hsla(${s.hue},80%,95%,0)`);
+        ctx.beginPath();
+        ctx.moveTo(s.x, s.y);
+        ctx.lineTo(s.x - s.vx * (s.len / 15), s.y - s.vy * (s.len / 15));
+        ctx.strokeStyle = grad;
+        ctx.lineWidth = s.width;
+        ctx.lineCap = 'round';
+        ctx.stroke();
+        ctx.restore();
+        s.x += s.vx;
+        s.y += s.vy;
+        s.alpha -= s.fade;
+      }
+
+      // collision flashes
+      collisionFlashes = collisionFlashes.filter(f => f.alpha > 0);
+      for (let f of collisionFlashes) {
+        ctx.beginPath();
+        ctx.arc(f.x, f.y, f.radius, 0, Math.PI * 2);
+        ctx.fillStyle = `rgba(180,210,255,${f.alpha})`;
+        ctx.fill();
+        f.alpha -= 0.07;
+        f.radius += 0.3;
+      }
+
+      // draw regular stars
       for (let s of stars) {
         const twinkle = Math.sin(frame * s.twinkleSpeed + s.twinkleOffset);
         const alpha = Math.max(0.04, s.opacity + twinkle * 0.38);
@@ -237,17 +294,23 @@
         if (s.x > W + 2) s.x = -2;
         if (s.y < -2) s.y = H + 2;
         if (s.y > H + 2) s.y = -2;
+
         ctx.beginPath();
         ctx.arc(s.x, s.y, s.radius, 0, Math.PI * 2);
         ctx.fillStyle = `hsla(${s.hue},55%,92%,${alpha})`;
         ctx.fill();
-        if (s.radius > 1.0 && alpha > 0.55) {
+
+        if (s.radius > 1.0 && alpha > 0.5) {
           ctx.beginPath();
           ctx.arc(s.x, s.y, s.radius * 3.5, 0, Math.PI * 2);
-          ctx.fillStyle = `hsla(${s.hue},70%,85%,${alpha * 0.07})`;
+          ctx.fillStyle = `hsla(${s.hue},70%,85%,${alpha * 0.08})`;
           ctx.fill();
         }
       }
+
+      // check collisions every 3 frames for perf
+      if (frame % 3 === 0) checkCollisions();
+
       requestAnimationFrame(draw);
     }
 
