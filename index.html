@@ -16,142 +16,135 @@
       cursor: crosshair;
       overflow: hidden;
     }
-
-    #starfield {
-      position: fixed;
-      top: 0; left: 0;
-      width: 100%; height: 100%;
-      z-index: 0;
-      pointer-events: none;
-    }
-
+    #starfield { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: 0; pointer-events: none; transition: opacity 1s ease-in-out; }
     .nebula {
-      position: fixed;
-      top: 0; left: 0;
-      width: 100%; height: 100%;
-      z-index: 1;
-      pointer-events: none;
-      background:
-        radial-gradient(ellipse 60% 40% at 25% 70%, rgba(15, 25, 60, 0.12) 0%, transparent 65%),
-        radial-gradient(ellipse 50% 50% at 80% 30%, rgba(10, 15, 45, 0.15) 0%, transparent 65%),
-        radial-gradient(ellipse 40% 40% at 50% 50%, rgba(20, 25, 40, 0.08) 0%, transparent 70%);
+      position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: 1; pointer-events: none;
+      background: radial-gradient(ellipse 60% 40% at 25% 70%, rgba(15,25,60,0.12) 0%, transparent 65%),
+                  radial-gradient(ellipse 50% 50% at 80% 30%, rgba(10,15,45,0.15) 0%, transparent 65%),
+                  radial-gradient(ellipse 40% 40% at 50% 50%, rgba(20,25,40,0.08) 0%, transparent 70%);
       animation: pulseNebula 20s infinite alternate ease-in-out;
+      transition: opacity 1s ease-in-out;
     }
+    .fade-out { opacity: 0 !important; pointer-events: none !important; }
+    @keyframes pulseNebula { 0%{opacity:0.8;transform:scale(1)} 100%{opacity:1;transform:scale(1.05)} }
 
-    @keyframes pulseNebula {
-      0% { opacity: 0.8; transform: scale(1); }
-      100% { opacity: 1; transform: scale(1.05); }
-    }
-
-    /* ── U OF UTAH — top right ── */
     .uu-badge {
-      position: fixed;
-      top: 1.5rem;
-      right: 2rem;
-      z-index: 20;
-      opacity: 0;
+      position: fixed; top: 1.5rem; right: 2rem; z-index: 20; opacity: 0;
       animation: fadeDown 1.4s cubic-bezier(0.16,1,0.3,1) 0.9s forwards;
-      text-decoration: none;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 0.25rem;
+      text-decoration: none; display: flex; flex-direction: column; align-items: center; gap: 0.25rem;
+      transition: opacity 1s ease-in-out;
     }
-    .uu-badge svg {
-      width: 26px; height: 26px;
-      filter: drop-shadow(0 0 5px rgba(190,20,20,0.35));
-      transition: filter 0.3s;
-    }
+    .uu-badge svg { width: 26px; height: 26px; filter: drop-shadow(0 0 5px rgba(190,20,20,0.35)); transition: filter 0.3s; }
     .uu-badge:hover svg { filter: drop-shadow(0 0 11px rgba(220,40,40,0.7)); }
-    .uu-text {
-      font-size: 0.37rem;
-      letter-spacing: 0.26em;
-      text-transform: uppercase;
-      color: #321010;
-      transition: color 0.3s;
-    }
+    .uu-text { font-size: 0.37rem; letter-spacing: 0.26em; text-transform: uppercase; color: #321010; transition: color 0.3s; }
     .uu-badge:hover .uu-text { color: #7a2828; }
 
-    /* ── NAME — top center ── */
+    .life-badge {
+      position: fixed; top: 1.5rem; left: 2rem; z-index: 20; opacity: 0;
+      animation: fadeDown 1.4s cubic-bezier(0.16,1,0.3,1) 0.9s forwards;
+      text-decoration: none; display: flex; flex-direction: column; align-items: center; justify-content: center;
+      background: transparent; border: 1px solid rgba(74,127,193,0.3); padding: 0.5rem 1rem;
+      color: #eef0f8; font-family: 'DM Mono', monospace; font-size: 0.65rem; letter-spacing: 0.2em; text-transform: uppercase;
+      cursor: pointer; transition: all 0.3s ease, opacity 1s ease-in-out;
+    }
+    .life-badge:hover { background: rgba(74,127,193,0.1); border-color: rgba(74,127,193,0.8); box-shadow: 0 0 15px rgba(74,127,193,0.2); }
+
     .top-header {
-      position: fixed;
-      top: 3rem;
-      left: 50%;
-      transform: translateX(-50%);
-      z-index: 10;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      pointer-events: none;
+      position: fixed; top: 3rem; left: 50%; transform: translateX(-50%); z-index: 10;
+      display: flex; flex-direction: column; align-items: center; pointer-events: none;
+      transition: opacity 1s ease-in-out;
     }
     .top-header > * { pointer-events: auto; }
-
     .name {
-      font-family: 'Cormorant Garamond', serif;
-      font-weight: 300;
-      font-size: clamp(1.5rem, 4vw, 2.5rem);
-      letter-spacing: 0.24em;
-      text-transform: uppercase;
-      color: #eef0f8;
-      text-align: center;
-      opacity: 0;
-      animation: fadeDown 1.4s cubic-bezier(0.16,1,0.3,1) 0.2s forwards;
-      text-shadow: 0 0 30px rgba(180,200,255,0.2);
-      white-space: nowrap;
+      font-family: 'Cormorant Garamond', serif; font-weight: 300; font-size: clamp(1.5rem, 4vw, 2.5rem);
+      letter-spacing: 0.24em; text-transform: uppercase; color: #eef0f8; text-align: center;
+      opacity: 0; animation: fadeDown 1.4s cubic-bezier(0.16,1,0.3,1) 0.2s forwards;
+      text-shadow: 0 0 30px rgba(180,200,255,0.2); white-space: nowrap;
     }
-    .name::after {
-      content: '';
-      display: block;
-      width: 60%;
-      height: 1px;
-      background: linear-gradient(90deg, transparent, rgba(74,127,193,0.38), transparent);
-      margin: 0.4rem auto 0;
-    }
+    .name::after { content:''; display:block; width:60%; height:1px; background:linear-gradient(90deg,transparent,rgba(74,127,193,0.38),transparent); margin:0.4rem auto 0; }
 
-    /* ── LINKS — PERFECTLY CENTERED at bottom ── */
     .bottom-nav {
-      position: fixed;
-      bottom: 3.5rem;
-      left: 0;
-      width: 100%; /* Force full width for perfect flex centering */
-      z-index: 10;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 0 2rem;
-      opacity: 0;
-      animation: fadeUp 1.4s cubic-bezier(0.16,1,0.3,1) 0.5s forwards;
+      position: fixed; bottom: 3.5rem; left: 0; width: 100%; z-index: 10;
+      display: flex; align-items: center; justify-content: center; gap: 0 2rem;
+      opacity: 0; animation: fadeUp 1.4s cubic-bezier(0.16,1,0.3,1) 0.5s forwards;
+      transition: opacity 1s ease-in-out;
     }
-    
     .link-item {
-      display: flex;
-      align-items: center;
-      gap: 0.36rem;
-      text-decoration: none;
-      color: #5a6285;
-      font-size: 0.65rem;
-      letter-spacing: 0.2em;
-      text-transform: uppercase;
-      transition: color 0.3s;
-      position: relative;
-      white-space: nowrap;
+      display: flex; align-items: center; gap: 0.36rem; text-decoration: none; color: #5a6285;
+      font-size: 0.65rem; letter-spacing: 0.2em; text-transform: uppercase; transition: color 0.3s; position: relative; white-space: nowrap;
     }
     .link-item:hover { color: #aeb6d4; }
     .link-item svg { width: 12px; height: 12px; flex-shrink: 0; opacity: 0.45; transition: opacity 0.3s; }
     .link-item:hover svg { opacity: 0.9; }
-    .link-item::after {
-      content: ''; position: absolute; bottom: -4px; left: 0;
-      width: 0; height: 1px;
-      background: rgba(74,127,193,0.5); transition: width 0.3s;
-    }
+    .link-item::after { content:''; position:absolute; bottom:-4px; left:0; width:0; height:1px; background:rgba(74,127,193,0.5); transition:width 0.3s; }
     .link-item:hover::after { width: 100%; }
     .link-divider { width: 1px; height: 10px; background: #161a2b; flex-shrink: 0; }
 
-    @media (max-width:600px){
-      .link-divider { display:none; }
-      .bottom-nav { gap: 0 1rem; flex-wrap: wrap; row-gap: 0.8rem; bottom: 2rem; }
-      .top-header { top: 2rem; }
-      .uu-badge { top: 1rem; right: 1rem; }
+    /* ══ LIFE DIMENSION ══ */
+    #life-dimension {
+      position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: 30;
+      opacity: 0; pointer-events: none; transition: opacity 1.5s ease-in-out;
+      background: #020308; overflow: hidden;
+    }
+    #life-dimension.active { opacity: 1; pointer-events: auto; }
+
+    .way-back-btn {
+      position: fixed; top: 1.5rem; left: 2rem; z-index: 50;
+      background: transparent; border: 1px solid rgba(180,200,255,0.25); padding: 0.5rem 1rem;
+      color: rgba(238,240,248,0.5); font-family: 'DM Mono', monospace; font-size: 0.65rem; letter-spacing: 0.2em; text-transform: uppercase;
+      cursor: pointer; transition: all 0.3s ease;
+    }
+    .way-back-btn:hover { background: rgba(180,200,255,0.07); border-color: rgba(180,200,255,0.6); color: #eef0f8; }
+
+    #sim-grid {
+      position: absolute; top: 3.5rem; left: 0; right: 0; bottom: 0;
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      grid-template-rows: repeat(2, 1fr);
+      gap: 1px;
+      background: rgba(255,255,255,0.025);
+    }
+    .sim-cell {
+      position: relative; overflow: hidden; background: #020308; cursor: pointer;
+    }
+    .sim-cell:last-child { grid-column: span 2; }
+    .sim-canvas { position: absolute; top: 0; left: 0; width: 100%; height: 100%; display: block; }
+    .sim-label {
+      position: absolute; bottom: 0.8rem; left: 1rem;
+      font-size: 0.5rem; letter-spacing: 0.3em; text-transform: uppercase;
+      color: rgba(255,255,255,0.2); pointer-events: none; transition: color 0.3s;
+    }
+    .sim-cell:hover .sim-label { color: rgba(255,255,255,0.5); }
+    .sim-cell::after {
+      content: ''; position: absolute; inset: 0; border: 1px solid rgba(255,255,255,0);
+      transition: border-color 0.3s; pointer-events: none;
+    }
+    .sim-cell:hover::after { border-color: rgba(255,255,255,0.06); }
+
+    /* Expanded overlay */
+    #sim-overlay {
+      position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: 60;
+      background: #020308; opacity: 0; pointer-events: none; transition: opacity 0.6s ease;
+    }
+    #sim-overlay.open { opacity: 1; pointer-events: auto; }
+    #sim-overlay-canvas { position: absolute; top: 0; left: 0; width: 100%; height: 100%; }
+    #overlay-ui {
+      position: absolute; top: 1.4rem; left: 0; right: 0;
+      display: flex; align-items: center; justify-content: space-between; padding: 0 2rem;
+    }
+    #sim-overlay-label {
+      font-size: 0.55rem; letter-spacing: 0.4em; text-transform: uppercase; color: rgba(255,255,255,0.25);
+    }
+    #sim-overlay-close {
+      background: none; border: none; color: rgba(255,255,255,0.2);
+      font-family: 'DM Mono', monospace; font-size: 0.6rem; letter-spacing: 0.15em;
+      cursor: pointer; text-transform: uppercase; transition: color 0.2s;
+    }
+    #sim-overlay-close:hover { color: rgba(255,255,255,0.65); }
+
+    @media (max-width: 700px) {
+      #sim-grid { grid-template-columns: repeat(2, 1fr); grid-template-rows: repeat(4, 1fr); }
+      .sim-cell:last-child { grid-column: span 2; }
     }
 
     @keyframes fadeDown { from{opacity:0;transform:translateY(-15px)} to{opacity:1;transform:translateY(0)} }
@@ -161,22 +154,14 @@
 <body>
 
 <canvas id="starfield"></canvas>
-<div class="nebula"></div>
-
-<a class="uu-badge" href="https://www.utah.edu" target="_blank" rel="noopener" title="University of Utah">
-  <svg viewBox="0 0 100 105" fill="none" xmlns="http://www.w3.org/2000/svg">
-    <rect x="6"  y="5" width="30" height="58" rx="2" fill="#cc1e1e"/>
-    <rect x="64" y="5" width="30" height="58" rx="2" fill="#cc1e1e"/>
-    <path d="M6 55 L6 68 Q6 100 50 100 Q94 100 94 68 L94 55 L64 55 L64 68 Q64 78 50 78 Q36 78 36 68 L36 55 Z" fill="#cc1e1e"/>
-  </svg>
+<div class="nebula" id="void-nebula"></div>
+<button class="life-badge" id="btn-life">Life</button>
+<a class="uu-badge" id="void-uu" href="https://www.utah.edu" target="_blank" rel="noopener">
+  <svg viewBox="0 0 100 105" fill="none"><rect x="6" y="5" width="30" height="58" rx="2" fill="#cc1e1e"/><rect x="64" y="5" width="30" height="58" rx="2" fill="#cc1e1e"/><path d="M6 55 L6 68 Q6 100 50 100 Q94 100 94 68 L94 55 L64 55 L64 68 Q64 78 50 78 Q36 78 36 68 L36 55 Z" fill="#cc1e1e"/></svg>
   <span class="uu-text">Utah</span>
 </a>
-
-<header class="top-header">
-  <h1 class="name">AJChapa</h1>
-</header>
-
-<nav class="bottom-nav">
+<header class="top-header" id="void-header"><h1 class="name">AJChapa</h1></header>
+<nav class="bottom-nav" id="void-nav">
   <a class="link-item" href="https://www.linkedin.com/in/aj-chapagain" target="_blank" rel="noopener">
     <svg viewBox="0 0 24 24" fill="currentColor"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 01-2.063-2.065 2.064 2.064 0 112.063 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/></svg>
     LinkedIn
@@ -193,252 +178,370 @@
   </a>
 </nav>
 
+<!-- ══ LIFE DIMENSION ══ -->
+<div id="life-dimension">
+  <button class="way-back-btn" id="btn-return">A Way Back</button>
+  <div id="sim-grid">
+    <div class="sim-cell" data-sim="mathematics"><canvas class="sim-canvas"></canvas><div class="sim-label">Mathematics</div></div>
+    <div class="sim-cell" data-sim="biology"><canvas class="sim-canvas"></canvas><div class="sim-label">Biology</div></div>
+    <div class="sim-cell" data-sim="energy"><canvas class="sim-canvas"></canvas><div class="sim-label">Energy</div></div>
+    <div class="sim-cell" data-sim="humans"><canvas class="sim-canvas"></canvas><div class="sim-label">Humans</div></div>
+    <div class="sim-cell" data-sim="markets"><canvas class="sim-canvas"></canvas><div class="sim-label">Markets</div></div>
+    <div class="sim-cell" data-sim="war"><canvas class="sim-canvas"></canvas><div class="sim-label">War</div></div>
+    <div class="sim-cell" data-sim="love"><canvas class="sim-canvas"></canvas><div class="sim-label">Love</div></div>
+  </div>
+  <div id="sim-overlay">
+    <canvas id="sim-overlay-canvas"></canvas>
+    <div id="overlay-ui">
+      <div id="sim-overlay-label"></div>
+      <button id="sim-overlay-close">close ×</button>
+    </div>
+  </div>
+</div>
+
 <script>
-  const canvas = document.getElementById('starfield');
-  const ctx = canvas.getContext('2d');
-  let W, H, stars = [], shootingStars = [], starDust = [];
+// ═══════════════════════════════════════════════════════
+// UTILITY
+// ═══════════════════════════════════════════════════════
+function rand(a,b){return a+Math.random()*(b-a);}
 
-  const BH = { rx: 0.50, ry: 0.50 };
-  let bhX, bhY;
-  
-  const BH_RADIUS = 24;
+// ═══════════════════════════════════════════════════════
+// VOID PAGE — COMPLETELY ORIGINAL
+// ═══════════════════════════════════════════════════════
+const vCanvas=document.getElementById('starfield');
+const vCtx=vCanvas.getContext('2d');
+let vW,vH,stars=[],shootingStars=[],starDust=[];
+const BH={rx:0.5,ry:0.5}; let bhX,bhY; const BH_RADIUS=24;
+let isWarping=false;
+function vResize(){vW=vCanvas.width=window.innerWidth;vH=vCanvas.height=window.innerHeight;bhX=vW*BH.rx;bhY=vH*BH.ry;}
+const STELLAR_COLORS=[{h:220,s:80,l:85},{h:200,s:40,l:95},{h:60,s:20,l:95},{h:35,s:70,l:80},{h:15,s:80,l:75}];
+function spawnStarAtEdge(){const e=Math.floor(rand(0,4));let x,y;if(e===0){x=rand(0,vW);y=-20;}else if(e===1){x=vW+20;y=rand(0,vH);}else if(e===2){x=rand(0,vW);y=vH+20;}else{x=-20;y=rand(0,vH);}const c=STELLAR_COLORS[Math.floor(Math.random()*STELLAR_COLORS.length)];const ib=Math.random()>0.85;return{x,y,vx:0,vy:0,r:ib?rand(0.8,1.4):rand(0.3,0.7),baseOpacity:ib?rand(0.5,0.9):rand(0.1,0.4),twinkleSpeed:rand(0.002,0.01),twinkleOffset:rand(0,Math.PI*2),h:c.h,s:c.s,l:c.l,trail:[],isBright:ib};}
+function initStars(){stars=[];shootingStars=[];starDust=[];for(let i=0;i<450;i++){const s=spawnStarAtEdge();s.x=rand(0,vW);s.y=rand(0,vH);stars.push(s);}}
+function drawVoidStar(s,a){vCtx.beginPath();vCtx.arc(s.x,s.y,s.r,0,Math.PI*2);vCtx.fillStyle=`hsla(${s.h},${s.s}%,${s.l}%,${a})`;vCtx.fill();if(s.isBright&&a>0.4){const g=vCtx.createRadialGradient(s.x,s.y,0,s.x,s.y,s.r*4);g.addColorStop(0,`hsla(${s.h},${s.s}%,${s.l}%,${a*0.4})`);g.addColorStop(1,`hsla(${s.h},${s.s}%,${s.l}%,0)`);vCtx.beginPath();vCtx.arc(s.x,s.y,s.r*4,0,Math.PI*2);vCtx.fillStyle=g;vCtx.fill();}}
+function drawTrail(s){if(s.trail.length<2)return;vCtx.save();for(let i=1;i<s.trail.length;i++){const a=(i/s.trail.length)*0.3;vCtx.beginPath();vCtx.moveTo(s.trail[i-1].x,s.trail[i-1].y);vCtx.lineTo(s.trail[i].x,s.trail[i].y);vCtx.strokeStyle=`hsla(${s.h},${s.s}%,${s.l}%,${a})`;vCtx.lineWidth=s.r*0.5;vCtx.lineCap='round';vCtx.stroke();}vCtx.restore();}
+function drawBlackHole(){const l=vCtx.createRadialGradient(bhX,bhY,BH_RADIUS,bhX,bhY,BH_RADIUS*7);l.addColorStop(0,'rgba(0,0,0,0.95)');l.addColorStop(0.3,'rgba(3,5,12,0.4)');l.addColorStop(1,'rgba(0,0,0,0)');vCtx.beginPath();vCtx.arc(bhX,bhY,BH_RADIUS*7,0,Math.PI*2);vCtx.fillStyle=l;vCtx.fill();vCtx.beginPath();vCtx.arc(bhX,bhY,BH_RADIUS,0,Math.PI*2);vCtx.fillStyle='#000';vCtx.fill();const pr=vCtx.createLinearGradient(bhX-BH_RADIUS,bhY-BH_RADIUS,bhX+BH_RADIUS,bhY+BH_RADIUS);pr.addColorStop(0,'rgba(255,230,200,0.6)');pr.addColorStop(0.5,'rgba(200,150,100,0.15)');pr.addColorStop(1,'rgba(255,230,200,0.05)');vCtx.beginPath();vCtx.arc(bhX,bhY,BH_RADIUS+0.5,0,Math.PI*2);vCtx.strokeStyle=pr;vCtx.lineWidth=1.2;vCtx.stroke();}
+const MT=[{h:15,s:90,l:70,w:[1.2,2.0],len:[100,220]},{h:195,s:80,l:85,w:[1.0,1.8],len:[120,250]},{h:210,s:20,l:95,w:[0.8,1.5],len:[80,150]}];
+function createShootingStar(){const t=MT[Math.floor(Math.random()*MT.length)];const ss=Math.floor(rand(0,4));let sx,sy,tx,ty;if(ss===0){sx=rand(0,vW);sy=-20;tx=rand(0,vW);ty=vH+20;}else if(ss===1){sx=vW+20;sy=rand(0,vH);tx=-20;ty=rand(0,vH);}else if(ss===2){sx=rand(0,vW);sy=vH+20;tx=rand(0,vW);ty=-20;}else{sx=-20;sy=rand(0,vH);tx=vW+20;ty=rand(0,vH);}const ang=Math.atan2(ty-sy,tx-sx);const spd=rand(28,50);return{x:sx,y:sy,vx:Math.cos(ang)*spd,vy:Math.sin(ang)*spd,len:rand(t.len[0],t.len[1]),alpha:1.0,fade:rand(0.015,0.03),width:rand(t.w[0],t.w[1]),h:t.h,s:t.s,l:t.l};}
+let vFrame=0,nextShoot=rand(20,80),voidRAF;
+function vLoop(){vCtx.clearRect(0,0,vW,vH);vFrame++;drawBlackHole();if(vFrame>=nextShoot&&!isWarping){shootingStars.push(createShootingStar());if(Math.random()<0.4)shootingStars.push(createShootingStar());nextShoot=vFrame+rand(30,100);}shootingStars=shootingStars.filter(s=>s.alpha>0&&s.x>-500&&s.x<vW+500&&s.y>-500&&s.y<vH+500);for(const s of shootingStars){vCtx.save();const tx2=s.x-s.vx*(s.len/20),ty2=s.y-s.vy*(s.len/20);const g=vCtx.createLinearGradient(s.x,s.y,tx2,ty2);g.addColorStop(0,`hsla(0,0%,100%,${s.alpha})`);g.addColorStop(0.1,`hsla(${s.h},${s.s}%,${s.l}%,${s.alpha*0.9})`);g.addColorStop(1,`hsla(${s.h},${s.s}%,${s.l}%,0)`);vCtx.beginPath();vCtx.moveTo(s.x,s.y);vCtx.lineTo(tx2,ty2);vCtx.strokeStyle=g;vCtx.lineWidth=s.width;vCtx.lineCap='round';vCtx.stroke();if(Math.random()>0.3)starDust.push({x:s.x,y:s.y,vx:s.vx*0.05+rand(-1,1),vy:s.vy*0.05+rand(-1,1),alpha:s.alpha*0.8,decay:rand(0.02,0.06),size:rand(0.5,2),h:s.h,s:s.s,l:s.l});vCtx.restore();const dx=bhX-s.x,dy=bhY-s.y,dist=Math.sqrt(dx*dx+dy*dy);if(isWarping){s.vx-=(dx/dist)*8;s.vy-=(dy/dist)*8;}else{s.vx+=(dx/dist)*0.5;s.vy+=(dy/dist)*0.5;}s.x+=s.vx;s.y+=s.vy;s.alpha-=s.fade;}starDust=starDust.filter(p=>p.alpha>0&&p.x>-200&&p.x<vW+200&&p.y>-200&&p.y<vH+200);for(const p of starDust){vCtx.beginPath();vCtx.arc(p.x,p.y,p.size,0,Math.PI*2);vCtx.fillStyle=`hsla(${p.h},${p.s}%,${p.l}%,${p.alpha})`;vCtx.fill();if(isWarping){const dx=bhX-p.x,dy=bhY-p.y,dist=Math.sqrt(dx*dx+dy*dy);p.vx-=(dx/dist)*2;p.vy-=(dy/dist)*2;}p.x+=p.vx;p.y+=p.vy;p.alpha-=p.decay;}for(let i=stars.length-1;i>=0;i--){const s=stars[i];const dx=bhX-s.x,dy=bhY-s.y,dist=Math.sqrt(dx*dx+dy*dy);if(dist<BH_RADIUS&&!isWarping){stars[i]=spawnStarAtEdge();continue;}if(isWarping){s.vx-=(dx/dist)*3.5;s.vy-=(dy/dist)*3.5;s.trail.push({x:s.x,y:s.y});if(s.trail.length>50)s.trail.shift();}else{const gp=0.001+(150/(dist+50))*0.015;s.vx+=(dx/dist)*gp;s.vy+=(dy/dist)*gp;const spd2=Math.sqrt(s.vx*s.vx+s.vy*s.vy);const ms=0.2+(800/(dist+10))*2;if(spd2>ms){s.vx=(s.vx/spd2)*ms;s.vy=(s.vy/spd2)*ms;}if(dist<300){s.trail.push({x:s.x,y:s.y});if(s.trail.length>20)s.trail.shift();}else{if(s.trail.length>0)s.trail.shift();}}const tw=Math.sin(vFrame*s.twinkleSpeed+s.twinkleOffset);let a=Math.max(0.01,s.baseOpacity+tw*s.baseOpacity*0.4);s.x+=s.vx;s.y+=s.vy;drawTrail(s);drawVoidStar(s,a);}voidRAF=requestAnimationFrame(vLoop);}
 
-  function resize() {
-    W = canvas.width  = window.innerWidth;
-    H = canvas.height = window.innerHeight;
-    bhX = W * BH.rx;
-    bhY = H * BH.ry;
-  }
+// ═══════════════════════════════════════════════════════
+// SIMULATION CLASSES — EACH A UNIQUE VISUAL SYSTEM
+// ═══════════════════════════════════════════════════════
 
-  function rand(a, b) { return a + Math.random() * (b - a); }
-
-  // ── REALISTIC STARS ──
-  const STELLAR_COLORS = [
-    {h: 220, s: 80, l: 85}, // Hot blue-white
-    {h: 200, s: 40, l: 95}, // White
-    {h: 60,  s: 20, l: 95}, // Yellow-white
-    {h: 35,  s: 70, l: 80}, // Light Orange
-    {h: 15,  s: 80, l: 75}  // Red Dwarf
-  ];
-
-  function spawnStarAtEdge() {
-    const edge = Math.floor(rand(0,4));
-    let x, y;
-    if      (edge===0){x=rand(0,W);y=-20;}
-    else if (edge===1){x=W+20;y=rand(0,H);}
-    else if (edge===2){x=rand(0,W);y=H+20;}
-    else              {x=-20;y=rand(0,H);}
-    
-    const colorType = STELLAR_COLORS[Math.floor(Math.random() * STELLAR_COLORS.length)];
-    const isBright = Math.random() > 0.85;
-
-    return {
-      x, y,
-      vx: 0, vy: 0, // Velocity is now entirely dictated by gravity
-      r: isBright ? rand(0.8, 1.4) : rand(0.3, 0.7),
-      baseOpacity: isBright ? rand(0.5, 0.9) : rand(0.1, 0.4),
-      twinkleSpeed: rand(0.002, 0.01),
-      twinkleOffset: rand(0, Math.PI*2),
-      h: colorType.h, s: colorType.s, l: colorType.l,
-      trail: [],
-      isBright
-    };
-  }
-
-  function initStars() {
-    stars=[];
-    for(let i=0;i<450;i++){const s=spawnStarAtEdge();s.x=rand(0,W);s.y=rand(0,H);stars.push(s);}
-  }
-
-  function drawStar(s, alpha) {
-    ctx.beginPath();
-    ctx.arc(s.x, s.y, s.r, 0, Math.PI*2);
-    ctx.fillStyle = `hsla(${s.h}, ${s.s}%, ${s.l}%, ${alpha})`;
-    ctx.fill();
-
-    if (s.isBright && alpha > 0.4) {
-      const g = ctx.createRadialGradient(s.x, s.y, 0, s.x, s.y, s.r * 4);
-      g.addColorStop(0, `hsla(${s.h}, ${s.s}%, ${s.l}%, ${alpha * 0.4})`);
-      g.addColorStop(1, `hsla(${s.h}, ${s.s}%, ${s.l}%, 0)`);
-      ctx.beginPath(); ctx.arc(s.x, s.y, s.r * 4, 0, Math.PI*2);
-      ctx.fillStyle = g; ctx.fill();
+class SimMathematics {
+  constructor(){this.t=0;this.zoom=0.0032;this.panX=-0.7;this.panY=0.0;this.MAXITER=60;}
+  init(canvas){this.c=canvas;this.x=canvas.getContext('2d');this.W=canvas.width;this.H=canvas.height;}
+  draw(){
+    this.t++;
+    const W=this.W,H=this.H,ctx=this.x;
+    const z=this.zoom*(1+0.04*Math.sin(this.t*0.007));
+    const id=ctx.createImageData(W,H);const d=id.data;
+    for(let px=0;px<W;px+=2){for(let py=0;py<H;py+=2){
+      const x0=(px-W/2)*z+this.panX,y0=(py-H/2)*z+this.panY;
+      let rx=0,ry=0,iter=0;
+      while(rx*rx+ry*ry<=4&&iter<this.MAXITER){const xn=rx*rx-ry*ry+x0;ry=2*rx*ry+y0;rx=xn;iter++;}
+      let r=0,g=0,b=0;
+      if(iter<this.MAXITER){
+        const smooth=iter+1-Math.log2(Math.log2(rx*rx+ry*ry+0.001));
+        const n=smooth/this.MAXITER;
+        const h=(n*400+this.t*0.4)%360;
+        const bright=Math.pow(n,0.5);
+        r=Math.floor(bright*80*(0.5+0.5*Math.sin(h*Math.PI/180)));
+        g=Math.floor(bright*140*(0.5+0.5*Math.sin((h+100)*Math.PI/180)));
+        b=Math.floor(bright*255*(0.5+0.5*Math.sin((h+230)*Math.PI/180)));
+      }
+      for(let ox=0;ox<2&&px+ox<W;ox++)for(let oy=0;oy<2&&py+oy<H;oy++){const idx=((py+oy)*W+(px+ox))*4;d[idx]=r;d[idx+1]=g;d[idx+2]=b;d[idx+3]=255;}
+    }}
+    ctx.putImageData(id,0,0);
+    // Rotating polygons overlay
+    const cx=W/2,cy=H/2;
+    for(let k=3;k<=8;k++){
+      ctx.beginPath();
+      for(let i=0;i<=k;i++){const a=(i/k)*Math.PI*2+this.t*0.003*(k%2===0?1:-1);const rr=Math.min(W,H)*0.055*k;ctx.lineTo(cx+rr*Math.cos(a),cy+rr*Math.sin(a));}
+      ctx.closePath();ctx.strokeStyle=`hsla(${k*45+this.t*0.5},70%,70%,0.06)`;ctx.lineWidth=0.5;ctx.stroke();
     }
+    // Slowly spiral into interesting region
+    this.zoom*=0.9998;this.panX+=0.000008*Math.sin(this.t*0.0015);this.panY+=0.000005*Math.cos(this.t*0.002);
+    if(this.zoom<0.000005){this.zoom=0.0032;this.panX=-0.5+rand(-0.4,0.4);this.panY=rand(-0.25,0.25);}
   }
+}
 
-  function drawTrail(s) {
-    if(s.trail.length<2)return;
+class SimBiology {
+  constructor(){this.t=0;this.pulses=[];}
+  init(canvas){
+    this.c=canvas;this.x=canvas.getContext('2d');this.W=canvas.width;this.H=canvas.height;
+    this.neurons=Array.from({length:30},()=>({x:rand(this.W*0.05,this.W*0.95),y:rand(this.H*0.05,this.H*0.95),vx:rand(-0.2,0.2),vy:rand(-0.2,0.2),r:rand(2,5),pt:rand(0,Math.PI*2)}));
+  }
+  drawHelix(ctx,cx,t,W,H,c1,c2){
+    const stride=16,amp=Math.min(W,H)*0.08;
     ctx.save();
-    for(let i=1;i<s.trail.length;i++){
-      const a=(i/s.trail.length)*0.3;
-      ctx.beginPath();ctx.moveTo(s.trail[i-1].x,s.trail[i-1].y);ctx.lineTo(s.trail[i].x,s.trail[i].y);
-      ctx.strokeStyle=`hsla(${s.h}, ${s.s}%, ${s.l}%, ${a})`;
-      ctx.lineWidth=s.r*0.5;ctx.lineCap='round';ctx.stroke();
+    // strand A
+    ctx.beginPath();
+    for(let y=0;y<=H;y+=3){const ph=(y/stride)*Math.PI*2+t*0.035;const x=cx+Math.sin(ph)*amp;y===0?ctx.moveTo(x,y):ctx.lineTo(x,y);}
+    const ga=ctx.createLinearGradient(0,0,0,H);ga.addColorStop(0,c1+'0)');ga.addColorStop(0.2,c1+'0.8)');ga.addColorStop(0.8,c1+'0.8)');ga.addColorStop(1,c1+'0)');
+    ctx.strokeStyle=ga;ctx.lineWidth=1.5;ctx.stroke();
+    // strand B
+    ctx.beginPath();
+    for(let y=0;y<=H;y+=3){const ph=(y/stride)*Math.PI*2+t*0.035+Math.PI;const x=cx+Math.sin(ph)*amp;y===0?ctx.moveTo(x,y):ctx.lineTo(x,y);}
+    const gb=ctx.createLinearGradient(0,0,0,H);gb.addColorStop(0,c2+'0)');gb.addColorStop(0.2,c2+'0.8)');gb.addColorStop(0.8,c2+'0.8)');gb.addColorStop(1,c2+'0)');
+    ctx.strokeStyle=gb;ctx.lineWidth=1.5;ctx.stroke();
+    // rungs
+    for(let y=stride*0.5;y<H;y+=stride){
+      const ph=(y/stride)*Math.PI*2+t*0.035;
+      const x1=cx+Math.sin(ph)*amp,x2=cx+Math.sin(ph+Math.PI)*amp;
+      const depth=Math.sin(ph)*0.5+0.5;
+      ctx.beginPath();ctx.moveTo(x1,y);ctx.lineTo(x2,y);
+      ctx.strokeStyle=`rgba(200,255,210,${0.08+0.22*depth})`;ctx.lineWidth=1;ctx.stroke();
+      ctx.beginPath();ctx.arc(x1,y,2,0,Math.PI*2);ctx.fillStyle=c1+(0.5+0.4*depth)+')';ctx.fill();
+      ctx.beginPath();ctx.arc(x2,y,2,0,Math.PI*2);ctx.fillStyle=c2+(0.5+0.4*depth)+')';ctx.fill();
     }
     ctx.restore();
   }
-
-  // ── REALISTIC EVENT HORIZON ──
-  function drawBlackHole() {
-    const lens = ctx.createRadialGradient(bhX, bhY, BH_RADIUS, bhX, bhY, BH_RADIUS * 7);
-    lens.addColorStop(0, 'rgba(0, 0, 0, 0.95)');
-    lens.addColorStop(0.3, 'rgba(3, 5, 12, 0.4)');
-    lens.addColorStop(1, 'rgba(0, 0, 0, 0)');
-    ctx.beginPath(); ctx.arc(bhX, bhY, BH_RADIUS * 7, 0, Math.PI * 2);
-    ctx.fillStyle = lens; ctx.fill();
-
-    ctx.beginPath(); 
-    ctx.arc(bhX, bhY, BH_RADIUS, 0, Math.PI * 2);
-    ctx.fillStyle = '#000000'; 
-    ctx.fill();
-
-    const photonRing = ctx.createLinearGradient(bhX - BH_RADIUS, bhY - BH_RADIUS, bhX + BH_RADIUS, bhY + BH_RADIUS);
-    photonRing.addColorStop(0, 'rgba(255, 230, 200, 0.6)');
-    photonRing.addColorStop(0.5, 'rgba(200, 150, 100, 0.15)');
-    photonRing.addColorStop(1, 'rgba(255, 230, 200, 0.05)');
-    
-    ctx.beginPath(); 
-    ctx.arc(bhX, bhY, BH_RADIUS + 0.5, 0, Math.PI * 2);
-    ctx.strokeStyle = photonRing; 
-    ctx.lineWidth = 1.2; 
-    ctx.stroke();
+  draw(){
+    this.t++;const ctx=this.x;const W=this.W,H=this.H;
+    ctx.fillStyle='rgba(2,3,8,0.3)';ctx.fillRect(0,0,W,H);
+    this.drawHelix(ctx,W*0.28,this.t,W,H,'rgba(60,220,140,','rgba(120,60,200,');
+    this.drawHelix(ctx,W*0.72,this.t+60,W,H,'rgba(60,160,255,','rgba(255,100,160,');
+    // Synapse pulses
+    if(this.t%35===0){const a=this.neurons[Math.floor(rand(0,this.neurons.length))],b=this.neurons[Math.floor(rand(0,this.neurons.length))];this.pulses.push({x:a.x,y:a.y,tx:b.x,ty:b.y,t:0,s:rand(0.018,0.045)});}
+    this.pulses=this.pulses.filter(p=>p.t<=1);
+    for(const p of this.pulses){const px=p.x+(p.tx-p.x)*p.t,py=p.y+(p.ty-p.y)*p.t;const g=ctx.createRadialGradient(px,py,0,px,py,7);g.addColorStop(0,'rgba(100,255,180,0.9)');g.addColorStop(1,'rgba(100,255,180,0)');ctx.beginPath();ctx.arc(px,py,7,0,Math.PI*2);ctx.fillStyle=g;ctx.fill();p.t+=p.s;}
+    for(const n of this.neurons){n.x+=n.vx;n.y+=n.vy;if(n.x<W*0.05||n.x>W*0.95)n.vx*=-1;if(n.y<H*0.05||n.y>H*0.95)n.vy*=-1;n.pt+=0.04;const a=0.2+0.2*Math.sin(n.pt);ctx.beginPath();ctx.arc(n.x,n.y,n.r,0,Math.PI*2);ctx.fillStyle=`rgba(80,220,140,${a})`;ctx.fill();}
   }
+}
 
-  // ── MORE PROMINENT & COMPLEX SHOOTING STARS ──
-  const METEOR_TYPES=[
-    {h:15,  s:90, l:70, w:[1.2, 2.0], len:[100, 220]}, // Fiery Orange
-    {h:195, s:80, l:85, w:[1.0, 1.8], len:[120, 250]}, // Icy Cyan/Blue
-    {h:210, s:20, l:95, w:[0.8, 1.5], len:[80,  150]}  // Fast White
-  ];
-
-  function createShootingStar(){
-    const t = METEOR_TYPES[Math.floor(Math.random()*METEOR_TYPES.length)];
-    const startSide = Math.floor(rand(0,4));
-    let sx, sy, tx, ty;
-    
-    if (startSide === 0) { sx = rand(0, W); sy = -20; tx = rand(0, W); ty = H + 20; } 
-    else if (startSide === 1) { sx = W + 20; sy = rand(0, H); tx = -20; ty = rand(0, H); } 
-    else if (startSide === 2) { sx = rand(0, W); sy = H + 20; tx = rand(0, W); ty = -20; } 
-    else { sx = -20; sy = rand(0, H); tx = W + 20; ty = rand(0, H); } 
-
-    // Add slight curve towards the black hole for realism
-    const angle = Math.atan2(ty - sy, tx - sx);
-    const speed = rand(28, 50); 
-    
-    return {
-      x:sx, y:sy, vx:Math.cos(angle)*speed, vy:Math.sin(angle)*speed,
-      len:rand(t.len[0],t.len[1]), alpha: 1.0, fade:rand(0.015, 0.03), 
-      width:rand(t.w[0],t.w[1]), h:t.h, s:t.s, l:t.l
-    };
+class SimEnergy {
+  init(canvas){
+    this.c=canvas;this.x=canvas.getContext('2d');this.W=canvas.width;this.H=canvas.height;this.t=0;
+    this.particles=Array.from({length:160},()=>({x:rand(0,this.W),y:rand(0,this.H),vx:rand(-1.5,1.5),vy:rand(-1.5,1.5),charge:Math.random()>0.5?1:-1,trail:[],mass:rand(0.6,1.8)}));
   }
-
-  let frame=0, nextShoot=rand(20, 80); // Made them much more frequent
-
-  function loop(){
-    ctx.clearRect(0,0,W,H);
-    frame++;
-
-    drawBlackHole();
-
-    // ── SHOOTING STARS & PARTICLE DUST LOOP ──
-    if(frame>=nextShoot){
-      shootingStars.push(createShootingStar());
-      if(Math.random()<0.4) shootingStars.push(createShootingStar()); // High chance of double meteors
-      nextShoot=frame+rand(30, 100); 
-    }
-    
-    shootingStars=shootingStars.filter(s=>s.alpha>0);
-    for(const s of shootingStars){
-      ctx.save();
-      const tailX = s.x - s.vx * (s.len/20);
-      const tailY = s.y - s.vy * (s.len/20);
-      
-      const g = ctx.createLinearGradient(s.x, s.y, tailX, tailY);
-      g.addColorStop(0, `hsla(0, 0%, 100%, ${s.alpha})`); // Bright white-hot head
-      g.addColorStop(0.1, `hsla(${s.h}, ${s.s}%, ${s.l}%, ${s.alpha * 0.9})`); 
-      g.addColorStop(1, `hsla(${s.h}, ${s.s}%, ${s.l}%, 0)`); 
-      
-      ctx.beginPath();
-      ctx.moveTo(s.x, s.y);
-      ctx.lineTo(tailX, tailY);
-      ctx.strokeStyle = g;
-      ctx.lineWidth = s.width;
-      ctx.lineCap = 'round';
-      ctx.stroke();
-
-      // Emit glowing dust particles
-      if (Math.random() > 0.3) {
-        starDust.push({
-          x: s.x, y: s.y,
-          vx: s.vx * 0.05 + rand(-1, 1),
-          vy: s.vy * 0.05 + rand(-1, 1),
-          alpha: s.alpha * 0.8,
-          decay: rand(0.02, 0.06),
-          size: rand(0.5, 2),
-          h: s.h, s: s.s, l: s.l
-        });
+  draw(){
+    this.t++;const ctx=this.x;const W=this.W,H=this.H;
+    ctx.fillStyle='rgba(2,3,8,0.22)';ctx.fillRect(0,0,W,H);
+    // Wave interference grid
+    for(let px=0;px<W;px+=9){for(let py=0;py<H;py+=9){
+      const w1=Math.sin(px*0.014+this.t*0.022),w2=Math.sin(py*0.011-this.t*0.017),w3=Math.sin((px+py)*0.009+this.t*0.019);
+      const v=(w1+w2+w3)/3;const a=(v*0.5+0.5)*0.045;
+      ctx.fillStyle=v>0?`rgba(255,170,50,${a})`:`rgba(50,140,255,${a})`;
+      ctx.fillRect(px,py,8,8);
+    }}
+    // Particle EM simulation
+    for(let i=0;i<this.particles.length;i++){
+      const p=this.particles[i];
+      for(let j=i+1;j<this.particles.length;j++){
+        const q=this.particles[j];const dx=q.x-p.x,dy=q.y-p.y,d=Math.sqrt(dx*dx+dy*dy);
+        if(d<90&&d>4){const f=(p.charge*q.charge*0.3)/(d*d+8);p.vx+=(dx/d)*f;p.vy+=(dy/d)*f;q.vx-=(dx/d)*f;q.vy-=(dy/d)*f;}
       }
-      
-      ctx.restore();
-      
-      // Meteors slightly curve toward the black hole
-      const dx = bhX - s.x, dy = bhY - s.y, dist = Math.sqrt(dx*dx+dy*dy);
-      s.vx += (dx/dist) * 0.5;
-      s.vy += (dy/dist) * 0.5;
-
-      s.x += s.vx; s.y += s.vy; s.alpha -= s.fade;
+      const spd=Math.sqrt(p.vx*p.vx+p.vy*p.vy);if(spd>2.5){p.vx=(p.vx/spd)*2.5;p.vy=(p.vy/spd)*2.5;}
+      p.trail.push({x:p.x,y:p.y});if(p.trail.length>14)p.trail.shift();
+      p.x+=p.vx;p.y+=p.vy;if(p.x<0)p.x=W;if(p.x>W)p.x=0;if(p.y<0)p.y=H;if(p.y>H)p.y=0;
+      if(p.trail.length>1){ctx.beginPath();ctx.moveTo(p.trail[0].x,p.trail[0].y);for(const pt of p.trail)ctx.lineTo(pt.x,pt.y);const col=p.charge>0?'255,150,40':'60,160,255';ctx.strokeStyle=`rgba(${col},0.3)`;ctx.lineWidth=0.8;ctx.stroke();}
+      ctx.beginPath();ctx.arc(p.x,p.y,p.mass*2,0,Math.PI*2);ctx.fillStyle=p.charge>0?'rgba(255,170,70,0.8)':'rgba(70,180,255,0.8)';ctx.fill();
     }
-
-    // Render Dust Particles
-    starDust = starDust.filter(p => p.alpha > 0);
-    for (const p of starDust) {
-      ctx.beginPath();
-      ctx.arc(p.x, p.y, p.size, 0, Math.PI*2);
-      ctx.fillStyle = `hsla(${p.h}, ${p.s}%, ${p.l}%, ${p.alpha})`;
-      ctx.fill();
-      p.x += p.vx; p.y += p.vy; p.alpha -= p.decay;
-    }
-
-    // ── GLOBAL GRAVITY FOR ALL STARS ──
-    for(let i=stars.length-1;i>=0;i--){
-      const s=stars[i];
-      const dx=bhX-s.x, dy=bhY-s.y, dist=Math.sqrt(dx*dx+dy*dy);
-      
-      if(dist < BH_RADIUS){stars[i]=spawnStarAtEdge();continue;}
-      
-      // GLOBAL PULL: Everything moves toward the center, accelerating as it gets closer
-      const globalPull = 0.001 + (150 / (dist + 50)) * 0.015; 
-      s.vx += (dx/dist) * globalPull; 
-      s.vy += (dy/dist) * globalPull;
-      
-      const spd = Math.sqrt(s.vx*s.vx+s.vy*s.vy);
-      
-      // Dynamic max speed based on distance to black hole
-      const maxSpeed = 0.2 + (800 / (dist + 10)) * 2;
-      if(spd > maxSpeed){s.vx=(s.vx/spd)*maxSpeed; s.vy=(s.vy/spd)*maxSpeed;}
-      
-      if(dist < 300){
-        s.trail.push({x:s.x,y:s.y});
-        if(s.trail.length > 20) s.trail.shift();
-      } else { 
-        if (s.trail.length > 0) s.trail.shift(); 
-      }
-
-      const twinkle = Math.sin(frame*s.twinkleSpeed + s.twinkleOffset);
-      let alpha = Math.max(0.01, (s.baseOpacity + twinkle * s.baseOpacity * 0.4));
-
-      s.x += s.vx; s.y += s.vy;
-      
-      drawTrail(s);
-      drawStar(s, alpha);
-    }
-
-    requestAnimationFrame(loop);
   }
+}
 
-  window.addEventListener('resize', () => { resize(); initStars(); });
-  resize();
-  initStars();
-  loop();
+class SimHumans {
+  init(canvas){
+    this.c=canvas;this.x=canvas.getContext('2d');this.W=canvas.width;this.H=canvas.height;this.t=0;
+    this.nodes=Array.from({length:60},()=>({x:rand(this.W*0.06,this.W*0.94),y:rand(this.H*0.06,this.H*0.94),vx:rand(-0.1,0.1),vy:rand(-0.1,0.1),r:rand(1.5,4),pt:rand(0,Math.PI*2),layer:Math.floor(rand(0,4))}));
+    this.sigs=[];
+  }
+  draw(){
+    this.t++;const ctx=this.x;const W=this.W,H=this.H;
+    ctx.fillStyle='rgba(2,3,8,0.28)';ctx.fillRect(0,0,W,H);
+    // Brain aura
+    const cx=W/2,cy=H/2;
+    const bg=ctx.createRadialGradient(cx,cy,H*0.05,cx,cy,H*0.48);
+    bg.addColorStop(0,'rgba(50,30,100,0.06)');bg.addColorStop(1,'rgba(50,30,100,0)');
+    ctx.beginPath();ctx.ellipse(cx,cy,W*0.44,H*0.44,0,0,Math.PI*2);ctx.fillStyle=bg;ctx.fill();
+    for(const n of this.nodes){n.x+=n.vx;n.y+=n.vy;if(n.x<W*0.04||n.x>W*0.96)n.vx*=-1;if(n.y<H*0.04||n.y>H*0.96)n.vy*=-1;n.pt+=0.025;}
+    // Connections
+    for(let i=0;i<this.nodes.length;i++){for(let j=i+1;j<this.nodes.length;j++){const a=this.nodes[i],b=this.nodes[j];const dx=b.x-a.x,dy=b.y-a.y,d=Math.sqrt(dx*dx+dy*dy);if(d<95){ctx.beginPath();ctx.moveTo(a.x,a.y);ctx.lineTo(b.x,b.y);ctx.strokeStyle=`rgba(160,100,255,${(1-d/95)*0.1})`;ctx.lineWidth=0.5;ctx.stroke();}}}
+    if(this.t%28===0){const a=this.nodes[Math.floor(rand(0,this.nodes.length))],b=this.nodes[Math.floor(rand(0,this.nodes.length))];const dx=b.x-a.x,dy=b.y-a.y,d=Math.sqrt(dx*dx+dy*dy);if(d<95)this.sigs.push({x:a.x,y:a.y,tx:b.x,ty:b.y,t:0,s:rand(0.025,0.07)});}
+    this.sigs=this.sigs.filter(s=>s.t<=1);
+    for(const s of this.sigs){const sx=s.x+(s.tx-s.x)*s.t,sy=s.y+(s.ty-s.y)*s.t;const g=ctx.createRadialGradient(sx,sy,0,sx,sy,5);g.addColorStop(0,'rgba(220,180,255,1)');g.addColorStop(1,'rgba(180,100,255,0)');ctx.beginPath();ctx.arc(sx,sy,5,0,Math.PI*2);ctx.fillStyle=g;ctx.fill();s.t+=s.s;}
+    const COLS=['180,130,255','150,100,230','200,160,255','130,90,200'];
+    for(const n of this.nodes){const p=0.4+0.4*Math.sin(n.pt);ctx.beginPath();ctx.arc(n.x,n.y,n.r*(0.7+0.5*p),0,Math.PI*2);ctx.fillStyle=`rgba(${COLS[n.layer]},${0.35+0.5*p})`;ctx.fill();}
+  }
+}
+
+class SimMarkets {
+  init(canvas){
+    this.c=canvas;this.x=canvas.getContext('2d');this.W=canvas.width;this.H=canvas.height;this.t=0;
+    this.price=canvas.height/2;this.prices=[];this.vol=1.2;
+    this.agents=Array.from({length:80},()=>({x:rand(0,canvas.width),y:rand(0,canvas.height),vx:rand(-0.8,0.8),vy:rand(-0.8,0.8),sentiment:rand(-1,1),wealth:rand(0.5,2.2)}));
+  }
+  draw(){
+    this.t++;const ctx=this.x;const W=this.W,H=this.H;
+    ctx.fillStyle='rgba(2,3,8,0.38)';ctx.fillRect(0,0,W,H);
+    // Grid
+    ctx.strokeStyle='rgba(255,255,255,0.025)';ctx.lineWidth=0.5;
+    for(let y=H*0.2;y<H;y+=H*0.2){ctx.beginPath();ctx.moveTo(0,y);ctx.lineTo(W,y);ctx.stroke();}
+    for(let x=W*0.25;x<W;x+=W*0.25){ctx.beginPath();ctx.moveTo(x,0);ctx.lineTo(x,H);ctx.stroke();}
+    // Agent sentiment drives price
+    const sentAvg=this.agents.reduce((s,a)=>s+a.sentiment,0)/this.agents.length;
+    this.vol=this.vol*0.98+0.02*(1+Math.abs(sentAvg));
+    const drift=sentAvg*1.0+rand(-1,1)*this.vol*2.2;
+    this.price=Math.max(H*0.05,Math.min(H*0.92,this.price+drift));
+    this.prices.push(this.price);if(this.prices.length>W)this.prices.shift();
+    // Chart
+    if(this.prices.length>1){
+      ctx.beginPath();
+      for(let i=0;i<this.prices.length;i++){const x=i*(W/Math.max(this.prices.length,1));i===0?ctx.moveTo(x,this.prices[i]):ctx.lineTo(x,this.prices[i]);}
+      ctx.strokeStyle='rgba(255,175,55,0.9)';ctx.lineWidth=1.8;ctx.stroke();
+      ctx.lineTo(W,H);ctx.lineTo(0,H);ctx.closePath();
+      const grd=ctx.createLinearGradient(0,0,0,H);grd.addColorStop(0,'rgba(255,140,35,0.1)');grd.addColorStop(1,'rgba(255,140,35,0)');
+      ctx.fillStyle=grd;ctx.fill();
+    }
+    // Agents
+    for(const a of this.agents){
+      const pi=Math.floor(a.x*(this.prices.length/W));const py=this.prices[Math.min(pi,this.prices.length-1)]||H/2;
+      a.vy+=(py-a.y)*0.0012*Math.abs(a.sentiment);a.vx+=rand(-0.3,0.3)*0.15;a.vy+=rand(-0.3,0.3)*0.08;
+      const spd=Math.sqrt(a.vx*a.vx+a.vy*a.vy);if(spd>1.8){a.vx=(a.vx/spd)*1.8;a.vy=(a.vy/spd)*1.8;}
+      a.x+=a.vx;a.y+=a.vy;if(a.x<0)a.x=W;if(a.x>W)a.x=0;if(a.y<0)a.y=H;if(a.y>H)a.y=0;
+      a.sentiment+=rand(-0.04,0.04);a.sentiment=Math.max(-1,Math.min(1,a.sentiment));
+      ctx.beginPath();ctx.arc(a.x,a.y,a.wealth*1.6,0,Math.PI*2);
+      ctx.fillStyle=a.sentiment>0?'rgba(80,220,100,0.45)':'rgba(220,80,80,0.45)';ctx.fill();
+    }
+  }
+}
+
+class SimWar {
+  init(canvas){
+    this.c=canvas;this.x=canvas.getContext('2d');this.W=canvas.width;this.H=canvas.height;this.t=0;
+    this.factions=[{col:'255,70,70',agents:[]},{col:'70,130,255',agents:[]}];
+    for(const f of this.factions)for(let i=0;i<38;i++)f.agents.push({x:rand(0,this.W),y:rand(0,this.H),vx:rand(-1,1),vy:rand(-1,1),hp:1,f});
+    this.blasts=[];
+  }
+  draw(){
+    this.t++;const ctx=this.x;const W=this.W,H=this.H;
+    ctx.fillStyle='rgba(2,3,8,0.32)';ctx.fillRect(0,0,W,H);
+    this.blasts=this.blasts.filter(e=>e.r<e.max);
+    for(const e of this.blasts){const a=1-e.r/e.max;const g=ctx.createRadialGradient(e.x,e.y,0,e.x,e.y,e.r);g.addColorStop(0,`rgba(255,200,80,${a*0.8})`);g.addColorStop(0.5,`rgba(255,80,20,${a*0.3})`);g.addColorStop(1,'rgba(255,20,0,0)');ctx.beginPath();ctx.arc(e.x,e.y,e.r,0,Math.PI*2);ctx.fillStyle=g;ctx.fill();e.r+=2.8;}
+    const all=this.factions.flatMap(f=>f.agents.filter(a=>a.hp>0));
+    for(const a of all){
+      let ne=null,nd=Infinity;
+      for(const b of all){if(b.f===a.f)continue;const dx=b.x-a.x,dy=b.y-a.y,d=Math.sqrt(dx*dx+dy*dy);if(d<nd){nd=d;ne=b;}}
+      if(ne){const dx=ne.x-a.x,dy=ne.y-a.y,d=nd;if(d>28){a.vx+=(dx/d)*0.09;a.vy+=(dy/d)*0.09;}else{ne.hp-=0.009;if(ne.hp<=0)this.blasts.push({x:ne.x,y:ne.y,r:2,max:rand(12,32)});}}
+      a.vx+=rand(-0.08,0.08);a.vy+=rand(-0.08,0.08);const spd=Math.sqrt(a.vx*a.vx+a.vy*a.vy);if(spd>2){a.vx=(a.vx/spd)*2;a.vy=(a.vy/spd)*2;}
+      a.x+=a.vx;a.y+=a.vy;if(a.x<0)a.x=W;if(a.x>W)a.x=0;if(a.y<0)a.y=H;if(a.y>H)a.y=0;
+      ctx.beginPath();ctx.arc(a.x,a.y,2.5,0,Math.PI*2);ctx.fillStyle=`rgba(${a.f.col},${0.4+a.hp*0.5})`;ctx.fill();
+    }
+    for(const f of this.factions){const alive=f.agents.filter(a=>a.hp>0).length;if(alive<6)for(let i=0;i<18;i++)f.agents.push({x:rand(0,W),y:rand(0,H),vx:rand(-1,1),vy:rand(-1,1),hp:1,f});}
+    // Strategy lines
+    for(let i=0;i<4;i++){const f=this.factions[i%2];const av=f.agents.filter(a=>a.hp>0);if(av.length<2)continue;const s=av[Math.floor(rand(0,av.length))],e=av[Math.floor(rand(0,av.length))];ctx.beginPath();ctx.moveTo(s.x,s.y);ctx.lineTo(e.x,e.y);ctx.strokeStyle=`rgba(${f.col},0.035)`;ctx.lineWidth=0.5;ctx.stroke();}
+  }
+}
+
+class SimLove {
+  init(canvas){
+    this.c=canvas;this.x=canvas.getContext('2d');this.W=canvas.width;this.H=canvas.height;this.t=0;
+    const cx=this.W/2,cy=this.H/2;
+    this.bodies=[
+      {x:cx-this.W*0.16,y:cy,vx:0,vy:-0.5,mass:7,hue:340,trail:[],moons:[]},
+      {x:cx+this.W*0.16,y:cy,vx:0,vy:0.5, mass:7,hue:200,trail:[],moons:[]}
+    ];
+    for(const b of this.bodies)for(let i=0;i<6;i++){const ang=rand(0,Math.PI*2),r=rand(22,52);b.moons.push({a:ang,r,spd:rand(0.025,0.055)*(Math.random()>0.5?1:-1),sz:rand(1.5,3)});}
+    this.resonance=Array.from({length:70},()=>({x:rand(0,this.W),y:rand(0,this.H),vx:rand(-0.35,0.35),vy:rand(-0.35,0.35),hue:rand(320,380),alpha:rand(0.1,0.5)}));
+  }
+  draw(){
+    this.t++;const ctx=this.x;const W=this.W,H=this.H;
+    ctx.fillStyle='rgba(2,3,8,0.22)';ctx.fillRect(0,0,W,H);
+    const [A,B]=this.bodies;
+    const dx=B.x-A.x,dy=B.y-A.y,dist=Math.sqrt(dx*dx+dy*dy);
+    const gf=0.9/(dist+1);
+    A.vx+=(dx/dist)*gf;A.vy+=(dy/dist)*gf;B.vx-=(dx/dist)*gf;B.vy-=(dy/dist)*gf;
+    for(const b of this.bodies){const spd=Math.sqrt(b.vx*b.vx+b.vy*b.vy);if(spd>1.6){b.vx=(b.vx/spd)*1.6;b.vy=(b.vy/spd)*1.6;}b.x+=b.vx;b.y+=b.vy;b.x=Math.max(55,Math.min(W-55,b.x));b.y=Math.max(55,Math.min(H-55,b.y));b.trail.push({x:b.x,y:b.y});if(b.trail.length>90)b.trail.shift();}
+    // Trails
+    for(const b of this.bodies){if(b.trail.length<2)continue;ctx.beginPath();for(let i=0;i<b.trail.length;i++){i===0?ctx.moveTo(b.trail[i].x,b.trail[i].y):ctx.lineTo(b.trail[i].x,b.trail[i].y);}ctx.strokeStyle=`hsla(${b.hue},75%,65%,0.12)`;ctx.lineWidth=1.5;ctx.stroke();}
+    // Love thread
+    const mx=(A.x+B.x)/2,my=(A.y+B.y)/2;
+    const th=ctx.createLinearGradient(A.x,A.y,B.x,B.y);
+    th.addColorStop(0,`hsla(${A.hue},80%,70%,0.4)`);th.addColorStop(0.5,'rgba(255,230,240,0.55)');th.addColorStop(1,`hsla(${B.hue},80%,70%,0.4)`);
+    ctx.beginPath();ctx.moveTo(A.x,A.y);ctx.quadraticCurveTo(mx,my-dist*0.15,B.x,B.y);ctx.strokeStyle=th;ctx.lineWidth=1;ctx.stroke();
+    // Resonance ring when close
+    if(dist<120){const ra=(1-dist/120)*0.45;ctx.beginPath();ctx.arc(mx,my,dist*0.5,0,Math.PI*2);ctx.strokeStyle=`rgba(255,200,220,${ra})`;ctx.lineWidth=1;ctx.stroke();}
+    // Resonance particles drawn to midpoint
+    for(const p of this.resonance){const pmx=mx-p.x,pmy=my-p.y,pd=Math.sqrt(pmx*pmx+pmy*pmy);p.vx+=(pmx/pd)*0.018;p.vy+=(pmy/pd)*0.018;const s2=Math.sqrt(p.vx*p.vx+p.vy*p.vy);if(s2>0.7){p.vx=(p.vx/s2)*0.7;p.vy=(p.vy/s2)*0.7;}p.x+=p.vx;p.y+=p.vy;ctx.beginPath();ctx.arc(p.x,p.y,1.2,0,Math.PI*2);ctx.fillStyle=`hsla(${p.hue},80%,75%,${p.alpha*0.45})`;ctx.fill();}
+    // Moons
+    for(const b of this.bodies){for(const m of b.moons){m.a+=m.spd;const mx2=b.x+Math.cos(m.a)*m.r,my2=b.y+Math.sin(m.a)*m.r;ctx.beginPath();ctx.arc(mx2,my2,m.sz,0,Math.PI*2);ctx.fillStyle=`hsla(${b.hue},60%,75%,0.7)`;ctx.fill();}}
+    // Bodies
+    for(const b of this.bodies){const g=ctx.createRadialGradient(b.x,b.y,0,b.x,b.y,b.mass*4.5);g.addColorStop(0,`hsla(${b.hue},90%,92%,1)`);g.addColorStop(0.4,`hsla(${b.hue},80%,65%,0.8)`);g.addColorStop(1,`hsla(${b.hue},70%,50%,0)`);ctx.beginPath();ctx.arc(b.x,b.y,b.mass*4,0,Math.PI*2);ctx.fillStyle=g;ctx.fill();}
+  }
+}
+
+// ═══════════════════════════════════════════════════════
+// SIMULATION MANAGER
+// ═══════════════════════════════════════════════════════
+const SIM_MAP={mathematics:SimMathematics,biology:SimBiology,energy:SimEnergy,humans:SimHumans,markets:SimMarkets,war:SimWar,love:SimLove};
+const LABELS={mathematics:'Mathematics',biology:'Biology',energy:'Energy',humans:'Humans',markets:'Markets',war:'War',love:'Love'};
+const activeSims={},simRAFs={};
+
+function startSim(key,canvas){
+  if(activeSims[key])stopSim(key);
+  canvas.width=canvas.offsetWidth||canvas.parentElement.offsetWidth||200;
+  canvas.height=canvas.offsetHeight||canvas.parentElement.offsetHeight||150;
+  if(canvas.width<2||canvas.height<2)return;
+  const sim=new SIM_MAP[key]();sim.init(canvas);activeSims[key]=sim;
+  function tick(){sim.draw();simRAFs[key]=requestAnimationFrame(tick);}
+  tick();
+}
+function stopSim(key){cancelAnimationFrame(simRAFs[key]);delete activeSims[key];delete simRAFs[key];}
+function stopAllSims(){for(const k of Object.keys(activeSims))stopSim(k);}
+
+// Overlay
+const overlay=document.getElementById('sim-overlay');
+const oc=document.getElementById('sim-overlay-canvas');
+const olabel=document.getElementById('sim-overlay-label');
+
+document.querySelectorAll('.sim-cell').forEach(cell=>{
+  cell.addEventListener('click',()=>{
+    const key=cell.dataset.sim;
+    olabel.textContent=LABELS[key];
+    oc.width=window.innerWidth;oc.height=window.innerHeight;
+    overlay.classList.add('open');
+    stopSim('__ov__');
+    const sim=new SIM_MAP[key]();sim.init(oc);activeSims['__ov__']=sim;
+    function tick(){sim.draw();simRAFs['__ov__']=requestAnimationFrame(tick);}
+    tick();
+  });
+});
+document.getElementById('sim-overlay-close').addEventListener('click',()=>{overlay.classList.remove('open');stopSim('__ov__');});
+
+function startAllGridSims(){
+  document.querySelectorAll('.sim-cell').forEach(cell=>{
+    const key=cell.dataset.sim;const canvas=cell.querySelector('.sim-canvas');
+    setTimeout(()=>startSim(key,canvas),80);
+  });
+}
+
+// ═══════════════════════════════════════════════════════
+// PAGE TRANSITIONS
+// ═══════════════════════════════════════════════════════
+const UI=['starfield','void-nebula','void-uu','void-header','void-nav','btn-life'];
+const LD=document.getElementById('life-dimension');
+
+document.getElementById('btn-life').addEventListener('click',()=>{
+  isWarping=true;
+  setTimeout(()=>{UI.forEach(id=>document.getElementById(id).classList.add('fade-out'));LD.classList.add('active');startAllGridSims();},1200);
+});
+document.getElementById('btn-return').addEventListener('click',()=>{
+  stopSim('__ov__');overlay.classList.remove('open');LD.classList.remove('active');
+  setTimeout(()=>{stopAllSims();isWarping=false;initStars();UI.forEach(id=>document.getElementById(id).classList.remove('fade-out'));},1000);
+});
+window.addEventListener('resize',()=>{
+  vResize();
+  if(LD.classList.contains('active')){
+    document.querySelectorAll('.sim-cell').forEach(cell=>{
+      const key=cell.dataset.sim;const canvas=cell.querySelector('.sim-canvas');
+      if(activeSims[key]){stopSim(key);setTimeout(()=>startSim(key,canvas),50);}
+    });
+  }
+});
+
+vResize();initStars();vLoop();
 </script>
 </body>
 </html>
