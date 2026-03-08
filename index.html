@@ -5,48 +5,56 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>AJChapa | The Epic Journey</title>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
-  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;400;600&family=DM+Mono:wght@300;400&display=swap" rel="stylesheet" />
-  
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=DM+Mono:wght@300;400&family=Playfair+Display:ital@1&display=swap" rel="stylesheet" />
   <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
-
   <style>
-    /* ==========================================================================
-       PART 1: ORIGINAL VOID / STARFIELD CSS
-       ========================================================================== */
     *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
     html, body { height: 100%; }
+
+    :root {
+      --void: #020308;
+      --cosmic-blue: #4a7fc1;
+      --warm-gold: #c8a96e;
+      --life-green: #00ffaa;
+      --flame: #ff6b35;
+    }
+
     body {
-      background: #020308;
+      background: var(--void);
       font-family: 'DM Mono', monospace;
       color: #e8eaf0;
       cursor: crosshair;
       overflow: hidden;
       user-select: none;
     }
+
+    /* ===================== VOID / STARFIELD ===================== */
     #starfield { 
       position: fixed; top: 0; left: 0; width: 100%; height: 100%; 
-      z-index: 0; pointer-events: none; transition: opacity 0.8s ease-in-out; 
+      z-index: 0; pointer-events: none; transition: opacity 1s ease-in-out; 
     }
     .nebula {
       position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: 1; pointer-events: none;
-      background: radial-gradient(ellipse 60% 40% at 25% 70%, rgba(15,25,60,0.12) 0%, transparent 65%),
-                  radial-gradient(ellipse 50% 50% at 80% 30%, rgba(10,15,45,0.15) 0%, transparent 65%),
-                  radial-gradient(ellipse 40% 40% at 50% 50%, rgba(20,25,40,0.08) 0%, transparent 70%);
+      background: 
+        radial-gradient(ellipse 60% 40% at 25% 70%, rgba(15,25,60,0.14) 0%, transparent 65%),
+        radial-gradient(ellipse 50% 50% at 80% 30%, rgba(10,15,45,0.18) 0%, transparent 65%),
+        radial-gradient(ellipse 40% 40% at 50% 50%, rgba(20,25,40,0.1) 0%, transparent 70%);
       animation: pulseNebula 20s infinite alternate ease-in-out;
-      transition: opacity 0.8s ease-in-out;
+      transition: opacity 1s ease-in-out;
     }
     .fade-out { opacity: 0 !important; pointer-events: none !important; }
     @keyframes pulseNebula { 
-      0% {opacity:0.8; transform:scale(1)} 
-      100% {opacity:1; transform:scale(1.05)} 
+      0% { opacity: 0.8; transform: scale(1); } 
+      100% { opacity: 1; transform: scale(1.05); } 
     }
 
+    /* ===================== VOID UI ===================== */
     .uu-badge {
       position: fixed; top: 1.5rem; right: 2rem; z-index: 20; opacity: 0;
       animation: fadeDown 1.4s cubic-bezier(0.16,1,0.3,1) 0.9s forwards;
       text-decoration: none; display: flex; flex-direction: column; align-items: center; gap: 0.25rem;
-      transition: opacity 0.8s ease-in-out;
+      transition: opacity 1s ease-in-out;
     }
     .uu-badge svg { width: 26px; height: 26px; filter: drop-shadow(0 0 5px rgba(190,20,20,0.35)); transition: filter 0.3s; }
     .uu-badge:hover svg { filter: drop-shadow(0 0 11px rgba(220,40,40,0.7)); }
@@ -56,126 +64,255 @@
     .life-badge {
       position: fixed; top: 1.5rem; left: 2rem; z-index: 20; opacity: 0;
       animation: fadeDown 1.4s cubic-bezier(0.16,1,0.3,1) 0.9s forwards;
-      text-decoration: none; display: flex; flex-direction: column; align-items: center; justify-content: center;
-      background: transparent; border: 1px solid rgba(74,127,193,0.3); padding: 0.5rem 1rem;
-      color: #eef0f8; font-family: 'DM Mono', monospace; font-size: 0.65rem; letter-spacing: 0.2em; text-transform: uppercase;
-      cursor: pointer; transition: all 0.3s ease, opacity 0.8s ease-in-out;
+      text-decoration: none; display: flex; align-items: center; justify-content: center; gap: 0.5rem;
+      background: transparent; border: 1px solid rgba(74,127,193,0.35); padding: 0.55rem 1.2rem;
+      color: #eef0f8; font-family: 'DM Mono', monospace; font-size: 0.62rem; letter-spacing: 0.25em; text-transform: uppercase;
+      cursor: pointer; transition: all 0.4s ease, opacity 1s ease-in-out;
+      overflow: hidden; position: relative;
     }
+    .life-badge::before {
+      content: ''; position: absolute; inset: 0;
+      background: linear-gradient(90deg, transparent, rgba(74,127,193,0.08), transparent);
+      transform: translateX(-100%); transition: transform 0.6s ease;
+    }
+    .life-badge:hover::before { transform: translateX(100%); }
     .life-badge:hover { 
-      background: rgba(74,127,193,0.1); border-color: rgba(74,127,193,0.8); box-shadow: 0 0 15px rgba(74,127,193,0.2); 
+      background: rgba(74,127,193,0.08); border-color: rgba(74,127,193,0.9); 
+      box-shadow: 0 0 20px rgba(74,127,193,0.2), inset 0 0 20px rgba(74,127,193,0.05); 
+      color: #fff;
+    }
+    .life-badge .pulse-dot {
+      width: 5px; height: 5px; border-radius: 50%; background: var(--cosmic-blue);
+      animation: pulseDot 2s ease-in-out infinite;
+    }
+    @keyframes pulseDot {
+      0%, 100% { opacity: 0.4; transform: scale(1); }
+      50% { opacity: 1; transform: scale(1.5); box-shadow: 0 0 6px var(--cosmic-blue); }
     }
 
     .top-header {
       position: fixed; top: 3rem; left: 50%; transform: translateX(-50%); z-index: 10;
       display: flex; flex-direction: column; align-items: center; pointer-events: none;
-      transition: opacity 0.8s ease-in-out;
+      transition: opacity 1s ease-in-out;
     }
     .top-header > * { pointer-events: auto; }
     .name {
       font-family: 'Cormorant Garamond', serif; font-weight: 300; font-size: clamp(1.5rem, 4vw, 2.5rem);
-      letter-spacing: 0.24em; text-transform: uppercase; color: #eef0f8; text-align: center;
+      letter-spacing: 0.28em; text-transform: uppercase; color: #eef0f8; text-align: center;
       opacity: 0; animation: fadeDown 1.4s cubic-bezier(0.16,1,0.3,1) 0.2s forwards;
-      text-shadow: 0 0 30px rgba(180,200,255,0.2); white-space: nowrap;
+      text-shadow: 0 0 40px rgba(180,200,255,0.15); white-space: nowrap;
     }
     .name::after { 
       content:''; display:block; width:60%; height:1px; 
-      background:linear-gradient(90deg,transparent,rgba(74,127,193,0.38),transparent); margin:0.4rem auto 0; 
+      background: linear-gradient(90deg, transparent, rgba(74,127,193,0.4), transparent); 
+      margin: 0.5rem auto 0; 
     }
 
     .bottom-nav {
       position: fixed; bottom: 3.5rem; left: 0; width: 100%; z-index: 10;
       display: flex; align-items: center; justify-content: center; gap: 0 2rem;
       opacity: 0; animation: fadeUp 1.4s cubic-bezier(0.16,1,0.3,1) 0.5s forwards;
-      transition: opacity 0.8s ease-in-out;
+      transition: opacity 1s ease-in-out;
     }
     .link-item {
       display: flex; align-items: center; gap: 0.36rem; text-decoration: none; color: #5a6285;
-      font-size: 0.65rem; letter-spacing: 0.2em; text-transform: uppercase; transition: color 0.3s; position: relative; white-space: nowrap;
+      font-size: 0.65rem; letter-spacing: 0.2em; text-transform: uppercase; transition: color 0.3s; 
+      position: relative; white-space: nowrap;
     }
     .link-item:hover { color: #aeb6d4; }
     .link-item svg { width: 12px; height: 12px; flex-shrink: 0; opacity: 0.45; transition: opacity 0.3s; }
     .link-item:hover svg { opacity: 0.9; }
     .link-item::after { 
       content:''; position:absolute; bottom:-4px; left:0; width:0; height:1px; 
-      background:rgba(74,127,193,0.5); transition:width 0.3s; 
+      background: rgba(74,127,193,0.5); transition: width 0.3s; 
     }
     .link-item:hover::after { width: 100%; }
     .link-divider { width: 1px; height: 10px; background: #161a2b; flex-shrink: 0; }
 
-    /* ==========================================================================
-       PART 2: EPIC CINEMATIC DIMENSION CSS
-       ========================================================================== */
+    /* ===================== CINEMATIC DIMENSION ===================== */
     #epic-dimension {
       position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: 30;
-      opacity: 0; pointer-events: none; transition: opacity 1.2s ease-in-out;
-      background: #000000; overflow: hidden;
+      opacity: 0; pointer-events: none; background: #000000; overflow: hidden;
     }
     #epic-dimension.active { opacity: 1; pointer-events: auto; }
-
     #canvas-container { position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 1; }
 
+    /* Post-processing overlays */
     .scanlines {
       position: absolute; top: 0; left: 0; width: 100%; height: 100%;
-      background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.25) 50%);
-      background-size: 100% 4px; z-index: 10; pointer-events: none; opacity: 0.4;
+      background: linear-gradient(rgba(18,16,16,0) 50%, rgba(0,0,0,0.18) 50%);
+      background-size: 100% 4px; z-index: 10; pointer-events: none; opacity: 0.25;
     }
     .vignette {
       position: absolute; top: 0; left: 0; width: 100%; height: 100%;
-      background: radial-gradient(circle, rgba(0,0,0,0) 20%, rgba(0,0,0,0.95) 100%);
+      background: radial-gradient(circle, rgba(0,0,0,0) 30%, rgba(0,0,0,0.97) 100%);
       z-index: 9; pointer-events: none;
     }
+    .film-grain {
+      position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+      z-index: 11; pointer-events: none; opacity: 0.04;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='1'/%3E%3C/svg%3E");
+      background-size: 200px 200px;
+      animation: grainShift 0.4s steps(1) infinite;
+    }
+    @keyframes grainShift {
+      0% { background-position: 0 0; }
+      25% { background-position: -50px -50px; }
+      50% { background-position: 30px -20px; }
+      75% { background-position: -20px 40px; }
+    }
 
+    /* Chromatic aberration overlay */
+    .chromatic {
+      position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+      z-index: 12; pointer-events: none; opacity: 0;
+      mix-blend-mode: screen;
+      background: 
+        radial-gradient(ellipse at 50% 50%, rgba(255,0,0,0.03) 0%, transparent 60%),
+        radial-gradient(ellipse at 48% 52%, rgba(0,0,255,0.03) 0%, transparent 60%);
+    }
+
+    /* Shockwave ring */
+    .shockwave {
+      position: absolute; top: 50%; left: 50%; 
+      width: 0; height: 0;
+      border-radius: 50%; border: 2px solid rgba(255,255,255,0.8);
+      transform: translate(-50%, -50%);
+      z-index: 15; pointer-events: none;
+      opacity: 0;
+    }
+
+    /* ===================== NARRATIVE UI ===================== */
     #narrative-container {
       position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
       z-index: 20; text-align: center; pointer-events: none;
       display: flex; flex-direction: column; align-items: center; justify-content: center;
-      width: 90%; max-width: 1200px;
+      width: 90%; max-width: 1000px; gap: 0.8rem;
     }
-    
+
+    .chapter-number {
+      font-family: 'DM Mono', monospace;
+      font-size: 0.65rem;
+      letter-spacing: 0.5em;
+      color: rgba(180, 200, 255, 0.5);
+      text-transform: uppercase;
+      opacity: 0;
+      margin-bottom: 0.4rem;
+    }
+
     .story-title {
       font-family: 'Cormorant Garamond', serif;
-      font-size: clamp(2rem, 7vw, 5rem);
-      font-weight: 600;
-      letter-spacing: 0.3em;
+      font-size: clamp(2.2rem, 8vw, 5.5rem);
+      font-weight: 300;
+      letter-spacing: 0.2em;
       color: #ffffff;
       text-transform: uppercase;
-      text-shadow: 0 0 30px rgba(255, 255, 255, 0.6), 0 0 60px rgba(100, 200, 255, 0.4);
-      margin-bottom: 10px;
-      opacity: 0; 
-      transform: translateY(20px);
+      text-shadow: 0 0 60px rgba(255,255,255,0.4), 0 0 120px rgba(100,200,255,0.2);
+      line-height: 1;
+      opacity: 0;
+    }
+
+    .story-divider {
+      width: 0; height: 1px;
+      background: linear-gradient(90deg, transparent, rgba(255,255,255,0.4), transparent);
+      opacity: 0;
     }
 
     .story-subtitle {
       font-family: 'DM Mono', monospace;
-      font-size: clamp(0.7rem, 2vw, 1.2rem);
+      font-size: clamp(0.6rem, 1.8vw, 0.9rem);
       font-weight: 300;
       letter-spacing: 0.4em;
-      color: rgba(200, 220, 255, 0.8);
+      color: rgba(180, 210, 255, 0.65);
       text-transform: uppercase;
-      opacity: 0; 
-      transform: translateY(-10px);
+      opacity: 0;
+      max-width: 600px;
+      line-height: 1.7;
+    }
+
+    .story-year {
+      font-family: 'Cormorant Garamond', serif;
+      font-style: italic;
+      font-size: clamp(0.9rem, 2.5vw, 1.5rem);
+      color: rgba(200, 170, 110, 0.7);
+      opacity: 0;
+      letter-spacing: 0.1em;
+    }
+
+    /* Progress bar */
+    #progress-bar {
+      position: absolute; bottom: 2rem; left: 50%; transform: translateX(-50%);
+      z-index: 20; width: 200px; display: flex; flex-direction: column; 
+      align-items: center; gap: 0.5rem; opacity: 0;
+    }
+    #progress-track {
+      width: 100%; height: 1px; background: rgba(255,255,255,0.1);
+      position: relative; overflow: visible;
+    }
+    #progress-fill {
+      height: 100%; background: linear-gradient(90deg, rgba(74,127,193,0.8), rgba(255,255,255,0.9));
+      width: 0%; transition: none; box-shadow: 0 0 8px rgba(74,127,193,0.6);
+    }
+    #progress-label {
+      font-family: 'DM Mono', monospace; font-size: 0.5rem; letter-spacing: 0.3em;
+      color: rgba(255,255,255,0.25); text-transform: uppercase;
+    }
+
+    /* Skip button */
+    #skip-btn {
+      position: absolute; bottom: 2rem; right: 2rem; z-index: 25;
+      font-family: 'DM Mono', monospace; font-size: 0.55rem; letter-spacing: 0.3em;
+      text-transform: uppercase; color: rgba(255,255,255,0.2); cursor: pointer;
+      border: 1px solid rgba(255,255,255,0.1); padding: 0.5rem 1rem;
+      background: transparent; transition: all 0.3s ease; opacity: 0;
+    }
+    #skip-btn:hover { color: rgba(255,255,255,0.6); border-color: rgba(255,255,255,0.3); }
+
+    /* ===================== INTRO CINEMATIC ===================== */
+    #intro-screen {
+      position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+      z-index: 50; background: #000; display: flex; align-items: center; justify-content: center;
+      flex-direction: column; gap: 1.5rem; opacity: 0; pointer-events: none;
+    }
+    #intro-screen.active { pointer-events: auto; }
+    .intro-line {
+      font-family: 'Cormorant Garamond', serif; font-weight: 300;
+      font-size: clamp(1rem, 3vw, 1.8rem); letter-spacing: 0.3em;
+      text-transform: uppercase; color: rgba(255,255,255,0.9);
+      opacity: 0; text-align: center;
+    }
+    .intro-subline {
+      font-family: 'DM Mono', monospace; font-size: 0.65rem;
+      letter-spacing: 0.4em; color: rgba(255,255,255,0.3);
+      text-transform: uppercase; opacity: 0; text-align: center;
     }
 
     @media (max-width: 768px) {
       .uu-badge { top: 1rem; right: 1rem; transform: scale(0.8); }
-      .life-badge { top: 1rem; left: 1rem; padding: 0.4rem 0.7rem; font-size: 0.55rem; }
+      .life-badge { top: 1rem; left: 1rem; padding: 0.4rem 0.7rem; font-size: 0.5rem; }
       .top-header { top: 4.5rem; }
       .name { font-size: 1.6rem; letter-spacing: 0.15em; }
       .bottom-nav { gap: 0 1rem; bottom: 2rem; }
       .link-item { font-size: 0.55rem; }
-      .story-title { letter-spacing: 0.15em; }
-      .story-subtitle { letter-spacing: 0.2em; line-height: 1.5; }
+      .story-title { letter-spacing: 0.12em; }
+      #progress-bar { width: 140px; }
+      #skip-btn { display: none; }
     }
 
-    @keyframes fadeDown { from{opacity:0;transform:translateY(-15px)} to{opacity:1;transform:translateY(0)} }
-    @keyframes fadeUp   { from{opacity:0;transform:translateY(15px)}  to{opacity:1;transform:translateY(0)} }
+    @keyframes fadeDown { from{ opacity:0; transform:translateY(-15px); } to{ opacity:1; transform:translateY(0); } }
+    @keyframes fadeUp   { from{ opacity:0; transform:translateY(15px); }  to{ opacity:1; transform:translateY(0); } }
   </style>
 </head>
 <body>
 
+<!-- VOID -->
 <canvas id="starfield"></canvas>
 <div class="nebula" id="void-nebula"></div>
-<button class="life-badge" id="btn-life">Life</button>
+
+<button class="life-badge" id="btn-life">
+  <span class="pulse-dot"></span>
+  Life
+</button>
 
 <a class="uu-badge" id="void-uu" href="https://www.utah.edu" target="_blank" rel="noopener">
   <svg viewBox="0 0 100 105" fill="none">
@@ -187,7 +324,7 @@
 </a>
 
 <header class="top-header" id="void-header">
-    <h1 class="name">AJChapa</h1>
+  <h1 class="name">AJChapa</h1>
 </header>
 
 <nav class="bottom-nav" id="void-nav">
@@ -207,797 +344,890 @@
   </a>
 </nav>
 
+<!-- CINEMATIC DIMENSION -->
 <div id="epic-dimension">
   <div id="canvas-container"></div>
   <div class="scanlines"></div>
   <div class="vignette"></div>
-  
+  <div class="film-grain"></div>
+  <div class="chromatic" id="chromatic-overlay"></div>
+  <div class="shockwave" id="shockwave"></div>
+
   <div id="narrative-container">
-      <div id="story-title" class="story-title">INIT</div>
-      <div id="story-subtitle" class="story-subtitle">STANDBY</div>
+    <div id="chapter-number" class="chapter-number">Chapter I</div>
+    <div id="story-title" class="story-title">—</div>
+    <div id="story-divider" class="story-divider"></div>
+    <div id="story-subtitle" class="story-subtitle">—</div>
+    <div id="story-year" class="story-year">—</div>
   </div>
+
+  <div id="progress-bar">
+    <div id="progress-track"><div id="progress-fill"></div></div>
+    <span id="progress-label">The Journey</span>
+  </div>
+
+  <button id="skip-btn">Skip →</button>
+</div>
+
+<!-- INTRO SCREEN -->
+<div id="intro-screen">
+  <div class="intro-line" id="intro-l1">13.8 Billion Years</div>
+  <div class="intro-subline" id="intro-s1">in the next 80 seconds</div>
+  <div class="intro-line" id="intro-l2" style="font-size: clamp(0.9rem, 2.5vw, 1.4rem); color: rgba(255,255,255,0.4);">You are here</div>
 </div>
 
 <script>
 // ==========================================================================
-// UTILITY FUNCTIONS & GLOBALS
+// GLOBALS
 // ==========================================================================
 function rand(a, b) { return a + Math.random() * (b - a); }
 const isMobile = window.innerWidth < 768;
-
-// This variable tells the 2D background to stop drawing while 3D is active
-let voidActive = true; 
+let voidActive = true;
 
 // ==========================================================================
-// PART 1: VOID JAVASCRIPT (ORIGINAL LOGIC)
+// VOID / STARFIELD (2D Canvas)
 // ==========================================================================
 const vCanvas = document.getElementById('starfield');
 const vCtx = vCanvas.getContext('2d');
 let vW, vH, stars = [], shootingStars = [], starDust = [];
-const BH = { rx: 0.5, ry: 0.5 }; 
-let bhX, bhY; 
-const BH_RADIUS = 24;
+const BH = { rx: 0.5, ry: 0.5 };
+let bhX, bhY;
+const BH_RADIUS = 22;
 let isWarping = false;
 let voidRAF;
 
 function vResize() {
-    vW = vCanvas.width = window.innerWidth;
-    vH = vCanvas.height = window.innerHeight;
-    bhX = vW * BH.rx;
-    bhY = vH * BH.ry;
+  vW = vCanvas.width = window.innerWidth;
+  vH = vCanvas.height = window.innerHeight;
+  bhX = vW * BH.rx; bhY = vH * BH.ry;
 }
 
 const STELLAR_COLORS = [
-    {h:220, s:80, l:85}, {h:200, s:40, l:95}, {h:60, s:20, l:95}, 
-    {h:35, s:70, l:80}, {h:15, s:80, l:75}
+  {h:220,s:80,l:88},{h:200,s:40,l:96},{h:55,s:20,l:95},{h:30,s:65,l:82},{h:10,s:75,l:77}
 ];
 
 function spawnStarAtEdge() {
-  const e = Math.floor(rand(0, 4)); let x, y;
-  if(e === 0) { x = rand(0, vW); y = -20; } 
-  else if(e === 1) { x = vW + 20; y = rand(0, vH); }
-  else if(e === 2) { x = rand(0, vW); y = vH + 20; } 
-  else { x = -20; y = rand(0, vH); }
-  
-  const c = STELLAR_COLORS[Math.floor(Math.random() * STELLAR_COLORS.length)];
-  const ib = Math.random() > 0.85;
+  const e = Math.floor(rand(0,4)); let x, y;
+  if(e===0){x=rand(0,vW);y=-20;}else if(e===1){x=vW+20;y=rand(0,vH);}
+  else if(e===2){x=rand(0,vW);y=vH+20;}else{x=-20;y=rand(0,vH);}
+  const c = STELLAR_COLORS[Math.floor(Math.random()*STELLAR_COLORS.length)];
+  const ib = Math.random()>0.84;
   return {
-      x, y, vx: 0, vy: 0, 
-      r: ib ? rand(0.8, 1.4) : rand(0.3, 0.7), 
-      baseOpacity: ib ? rand(0.5, 0.9) : rand(0.1, 0.4), 
-      twinkleSpeed: rand(0.002, 0.01), 
-      twinkleOffset: rand(0, Math.PI * 2), 
-      h: c.h, s: c.s, l: c.l, trail: [], isBright: ib
+    x,y,vx:0,vy:0,r:ib?rand(0.8,1.4):rand(0.3,0.7),
+    baseOpacity:ib?rand(0.5,0.9):rand(0.1,0.4),
+    twinkleSpeed:rand(0.002,0.01),twinkleOffset:rand(0,Math.PI*2),
+    h:c.h,s:c.s,l:c.l,trail:[],isBright:ib
   };
 }
 
 function initStars() {
-    stars = []; shootingStars = []; starDust = [];
-    for(let i = 0; i < 450; i++) {
-        const s = spawnStarAtEdge();
-        s.x = rand(0, vW); s.y = rand(0, vH);
-        stars.push(s);
-    }
+  stars=[]; shootingStars=[]; starDust=[];
+  for(let i=0;i<500;i++){const s=spawnStarAtEdge();s.x=rand(0,vW);s.y=rand(0,vH);stars.push(s);}
 }
 
-function drawVoidStar(s, a) {
-  vCtx.beginPath(); vCtx.arc(s.x, s.y, s.r, 0, Math.PI * 2);
-  vCtx.fillStyle = `hsla(${s.h},${s.s}%,${s.l}%,${a})`; vCtx.fill();
-  if(s.isBright && a > 0.4) {
-    const g = vCtx.createRadialGradient(s.x, s.y, 0, s.x, s.y, s.r * 4);
-    g.addColorStop(0, `hsla(${s.h},${s.s}%,${s.l}%,${a*0.4})`);
-    g.addColorStop(1, `hsla(${s.h},${s.s}%,${s.l}%,0)`);
-    vCtx.beginPath(); vCtx.arc(s.x, s.y, s.r * 4, 0, Math.PI * 2);
-    vCtx.fillStyle = g; vCtx.fill();
+function drawVoidStar(s,a) {
+  vCtx.beginPath();vCtx.arc(s.x,s.y,s.r,0,Math.PI*2);
+  vCtx.fillStyle=`hsla(${s.h},${s.s}%,${s.l}%,${a})`;vCtx.fill();
+  if(s.isBright&&a>0.4){
+    const g=vCtx.createRadialGradient(s.x,s.y,0,s.x,s.y,s.r*4.5);
+    g.addColorStop(0,`hsla(${s.h},${s.s}%,${s.l}%,${a*0.35})`);
+    g.addColorStop(1,`hsla(${s.h},${s.s}%,${s.l}%,0)`);
+    vCtx.beginPath();vCtx.arc(s.x,s.y,s.r*4.5,0,Math.PI*2);
+    vCtx.fillStyle=g;vCtx.fill();
   }
 }
 
-function drawTrail(s) {
-  if(s.trail.length < 2) return;
+function drawTrail(s){
+  if(s.trail.length<2)return;
   vCtx.save();
-  for(let i = 1; i < s.trail.length; i++) {
-    const a = (i / s.trail.length) * 0.3;
-    vCtx.beginPath(); vCtx.moveTo(s.trail[i-1].x, s.trail[i-1].y); vCtx.lineTo(s.trail[i].x, s.trail[i].y);
-    vCtx.strokeStyle = `hsla(${s.h},${s.s}%,${s.l}%,${a})`; 
-    vCtx.lineWidth = s.r * 0.5; vCtx.lineCap = 'round'; vCtx.stroke();
+  for(let i=1;i<s.trail.length;i++){
+    const a=(i/s.trail.length)*0.3;
+    vCtx.beginPath();vCtx.moveTo(s.trail[i-1].x,s.trail[i-1].y);vCtx.lineTo(s.trail[i].x,s.trail[i].y);
+    vCtx.strokeStyle=`hsla(${s.h},${s.s}%,${s.l}%,${a})`;
+    vCtx.lineWidth=s.r*0.5;vCtx.lineCap='round';vCtx.stroke();
   }
   vCtx.restore();
 }
 
-function drawBlackHole() {
-  const l = vCtx.createRadialGradient(bhX, bhY, BH_RADIUS, bhX, bhY, BH_RADIUS * 7);
-  l.addColorStop(0, 'rgba(0,0,0,0.95)'); l.addColorStop(0.3, 'rgba(3,5,12,0.4)'); l.addColorStop(1, 'rgba(0,0,0,0)');
-  vCtx.beginPath(); vCtx.arc(bhX, bhY, BH_RADIUS * 7, 0, Math.PI * 2); vCtx.fillStyle = l; vCtx.fill();
-  vCtx.beginPath(); vCtx.arc(bhX, bhY, BH_RADIUS, 0, Math.PI * 2); vCtx.fillStyle = '#000'; vCtx.fill();
-  const pr = vCtx.createLinearGradient(bhX - BH_RADIUS, bhY - BH_RADIUS, bhX + BH_RADIUS, bhY + BH_RADIUS);
-  pr.addColorStop(0, 'rgba(255,230,200,0.6)'); pr.addColorStop(0.5, 'rgba(200,150,100,0.15)'); pr.addColorStop(1, 'rgba(255,230,200,0.05)');
-  vCtx.beginPath(); vCtx.arc(bhX, bhY, BH_RADIUS + 0.5, 0, Math.PI * 2); 
-  vCtx.strokeStyle = pr; vCtx.lineWidth = 1.2; vCtx.stroke();
+function drawBlackHole(){
+  const l=vCtx.createRadialGradient(bhX,bhY,BH_RADIUS,bhX,bhY,BH_RADIUS*8);
+  l.addColorStop(0,'rgba(0,0,0,0.97)');l.addColorStop(0.3,'rgba(3,5,12,0.5)');l.addColorStop(1,'rgba(0,0,0,0)');
+  vCtx.beginPath();vCtx.arc(bhX,bhY,BH_RADIUS*8,0,Math.PI*2);vCtx.fillStyle=l;vCtx.fill();
+  vCtx.beginPath();vCtx.arc(bhX,bhY,BH_RADIUS,0,Math.PI*2);vCtx.fillStyle='#000';vCtx.fill();
+  const pr=vCtx.createLinearGradient(bhX-BH_RADIUS,bhY-BH_RADIUS,bhX+BH_RADIUS,bhY+BH_RADIUS);
+  pr.addColorStop(0,'rgba(255,230,200,0.55)');pr.addColorStop(0.5,'rgba(200,150,100,0.12)');pr.addColorStop(1,'rgba(255,230,200,0.04)');
+  vCtx.beginPath();vCtx.arc(bhX,bhY,BH_RADIUS+0.5,0,Math.PI*2);
+  vCtx.strokeStyle=pr;vCtx.lineWidth=1.2;vCtx.stroke();
 }
 
-const MT = [
-    {h:15, s:90, l:70, w:[1.2, 2.0], len:[100, 220]},
-    {h:195, s:80, l:85, w:[1.0, 1.8], len:[120, 250]},
-    {h:210, s:20, l:95, w:[0.8, 1.5], len:[80, 150]}
+const MT=[
+  {h:15,s:90,l:70,w:[1.2,2.0],len:[100,220]},
+  {h:195,s:80,l:85,w:[1.0,1.8],len:[120,250]},
+  {h:210,s:20,l:96,w:[0.8,1.5],len:[80,150]}
 ];
 
-function createShootingStar() {
-  const t = MT[Math.floor(Math.random() * MT.length)];
-  const ss = Math.floor(rand(0, 4)); let sx, sy, tx, ty;
-  if(ss === 0) { sx = rand(0, vW); sy = -20; tx = rand(0, vW); ty = vH + 20; } 
-  else if(ss === 1) { sx = vW + 20; sy = rand(0, vH); tx = -20; ty = rand(0, vH); }
-  else if(ss === 2) { sx = rand(0, vW); sy = vH + 20; tx = rand(0, vW); ty = -20; } 
-  else { sx = -20; sy = rand(0, vH); tx = vW + 20; ty = rand(0, vH); }
-  const ang = Math.atan2(ty - sy, tx - sx); const spd = rand(28, 50);
-  return {
-      x: sx, y: sy, vx: Math.cos(ang) * spd, vy: Math.sin(ang) * spd, 
-      len: rand(t.len[0], t.len[1]), alpha: 1.0, fade: rand(0.015, 0.03), 
-      width: rand(t.w[0], t.w[1]), h: t.h, s: t.s, l: t.l
-  };
+function createShootingStar(){
+  const t=MT[Math.floor(Math.random()*MT.length)];
+  const ss=Math.floor(rand(0,4));let sx,sy,tx,ty;
+  if(ss===0){sx=rand(0,vW);sy=-20;tx=rand(0,vW);ty=vH+20;}
+  else if(ss===1){sx=vW+20;sy=rand(0,vH);tx=-20;ty=rand(0,vH);}
+  else if(ss===2){sx=rand(0,vW);sy=vH+20;tx=rand(0,vW);ty=-20;}
+  else{sx=-20;sy=rand(0,vH);tx=vW+20;ty=rand(0,vH);}
+  const ang=Math.atan2(ty-sy,tx-sx);const spd=rand(28,50);
+  return{x:sx,y:sy,vx:Math.cos(ang)*spd,vy:Math.sin(ang)*spd,
+    len:rand(t.len[0],t.len[1]),alpha:1.0,fade:rand(0.015,0.03),
+    width:rand(t.w[0],t.w[1]),h:t.h,s:t.s,l:t.l};
 }
 
-let vFrame = 0, nextShoot = rand(20, 80);
+let vFrame=0,nextShoot=rand(20,80);
 
-function vLoop() {
-  if (!voidActive) {
-      voidRAF = requestAnimationFrame(vLoop);
-      return;
-  }
-
-  vCtx.clearRect(0, 0, vW, vH); vFrame++; drawBlackHole();
-  
-  if(vFrame >= nextShoot && !isWarping) {
+function vLoop(){
+  if(!voidActive){voidRAF=requestAnimationFrame(vLoop);return;}
+  vCtx.clearRect(0,0,vW,vH);vFrame++;drawBlackHole();
+  if(vFrame>=nextShoot&&!isWarping){
     shootingStars.push(createShootingStar());
-    if(Math.random() < 0.4) shootingStars.push(createShootingStar());
-    nextShoot = vFrame + rand(30, 100);
+    if(Math.random()<0.4)shootingStars.push(createShootingStar());
+    nextShoot=vFrame+rand(30,100);
   }
-  
-  shootingStars = shootingStars.filter(s => s.alpha > 0 && s.x > -500 && s.x < vW + 500 && s.y > -500 && s.y < vH + 500);
-  for(const s of shootingStars) {
+  shootingStars=shootingStars.filter(s=>s.alpha>0&&s.x>-500&&s.x<vW+500&&s.y>-500&&s.y<vH+500);
+  for(const s of shootingStars){
     vCtx.save();
-    const tx2 = s.x - s.vx * (s.len / 20), ty2 = s.y - s.vy * (s.len / 20);
-    const g = vCtx.createLinearGradient(s.x, s.y, tx2, ty2);
-    g.addColorStop(0, `hsla(0,0%,100%,${s.alpha})`);
-    g.addColorStop(0.1, `hsla(${s.h},${s.s}%,${s.l}%,${s.alpha*0.9})`);
-    g.addColorStop(1, `hsla(${s.h},${s.s}%,${s.l}%,0)`);
-    vCtx.beginPath(); vCtx.moveTo(s.x, s.y); vCtx.lineTo(tx2, ty2);
-    vCtx.strokeStyle = g; vCtx.lineWidth = s.width; vCtx.lineCap = 'round'; vCtx.stroke();
-    
-    if(Math.random() > 0.3) {
-        starDust.push({
-            x: s.x, y: s.y, vx: s.vx * 0.05 + rand(-1, 1), vy: s.vy * 0.05 + rand(-1, 1), 
-            alpha: s.alpha * 0.8, decay: rand(0.02, 0.06), size: rand(0.5, 2), 
-            h: s.h, s: s.s, l: s.l
-        });
+    const tx2=s.x-s.vx*(s.len/20),ty2=s.y-s.vy*(s.len/20);
+    const g=vCtx.createLinearGradient(s.x,s.y,tx2,ty2);
+    g.addColorStop(0,`hsla(0,0%,100%,${s.alpha})`);
+    g.addColorStop(0.1,`hsla(${s.h},${s.s}%,${s.l}%,${s.alpha*0.9})`);
+    g.addColorStop(1,`hsla(${s.h},${s.s}%,${s.l}%,0)`);
+    vCtx.beginPath();vCtx.moveTo(s.x,s.y);vCtx.lineTo(tx2,ty2);
+    vCtx.strokeStyle=g;vCtx.lineWidth=s.width;vCtx.lineCap='round';vCtx.stroke();
+    if(Math.random()>0.3){
+      starDust.push({x:s.x,y:s.y,vx:s.vx*0.05+rand(-1,1),vy:s.vy*0.05+rand(-1,1),
+        alpha:s.alpha*0.8,decay:rand(0.02,0.06),size:rand(0.5,2),h:s.h,s:s.s,l:s.l});
     }
     vCtx.restore();
-    
-    const dx = bhX - s.x, dy = bhY - s.y, dist = Math.sqrt(dx*dx + dy*dy);
-    if(isWarping) { s.vx -= (dx / dist) * 8; s.vy -= (dy / dist) * 8; } 
-    else { s.vx += (dx / dist) * 0.5; s.vy += (dy / dist) * 0.5; }
-    
-    s.x += s.vx; s.y += s.vy; s.alpha -= s.fade;
+    const dx=bhX-s.x,dy=bhY-s.y,dist=Math.sqrt(dx*dx+dy*dy);
+    if(isWarping){s.vx-=(dx/dist)*8;s.vy-=(dy/dist)*8;}
+    else{s.vx+=(dx/dist)*0.5;s.vy+=(dy/dist)*0.5;}
+    s.x+=s.vx;s.y+=s.vy;s.alpha-=s.fade;
   }
-  
-  starDust = starDust.filter(p => p.alpha > 0 && p.x > -200 && p.x < vW + 200 && p.y > -200 && p.y < vH + 200);
-  for(const p of starDust) {
-    vCtx.beginPath(); vCtx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
-    vCtx.fillStyle = `hsla(${p.h},${p.s}%,${p.l}%,${p.alpha})`; vCtx.fill();
-    if(isWarping) {
-        const dx = bhX - p.x, dy = bhY - p.y, dist = Math.sqrt(dx*dx + dy*dy);
-        p.vx -= (dx / dist) * 2; p.vy -= (dy / dist) * 2;
+  starDust=starDust.filter(p=>p.alpha>0);
+  for(const p of starDust){
+    vCtx.beginPath();vCtx.arc(p.x,p.y,p.size,0,Math.PI*2);
+    vCtx.fillStyle=`hsla(${p.h},${p.s}%,${p.l}%,${p.alpha})`;vCtx.fill();
+    p.x+=p.vx;p.y+=p.vy;p.alpha-=p.decay;
+  }
+  for(let i=stars.length-1;i>=0;i--){
+    const s=stars[i];const dx=bhX-s.x,dy=bhY-s.y,dist=Math.sqrt(dx*dx+dy*dy);
+    if(dist<BH_RADIUS&&!isWarping){stars[i]=spawnStarAtEdge();continue;}
+    if(isWarping){
+      s.vx-=(dx/dist)*3.5;s.vy-=(dy/dist)*3.5;
+      s.trail.push({x:s.x,y:s.y});if(s.trail.length>50)s.trail.shift();
+    }else{
+      const gp=0.001+(150/(dist+50))*0.015;
+      s.vx+=(dx/dist)*gp;s.vy+=(dy/dist)*gp;
+      const spd2=Math.sqrt(s.vx*s.vx+s.vy*s.vy);
+      const ms=0.2+(800/(dist+10))*2;
+      if(spd2>ms){s.vx=(s.vx/spd2)*ms;s.vy=(s.vy/spd2)*ms;}
+      if(dist<300){s.trail.push({x:s.x,y:s.y});if(s.trail.length>20)s.trail.shift();}
+      else{if(s.trail.length>0)s.trail.shift();}
     }
-    p.x += p.vx; p.y += p.vy; p.alpha -= p.decay;
+    const tw=Math.sin(vFrame*s.twinkleSpeed+s.twinkleOffset);
+    let a=Math.max(0.01,s.baseOpacity+tw*s.baseOpacity*0.4);
+    s.x+=s.vx;s.y+=s.vy;drawTrail(s);drawVoidStar(s,a);
   }
-  
-  for(let i = stars.length - 1; i >= 0; i--) {
-    const s = stars[i]; const dx = bhX - s.x, dy = bhY - s.y, dist = Math.sqrt(dx*dx + dy*dy);
-    if(dist < BH_RADIUS && !isWarping) { stars[i] = spawnStarAtEdge(); continue; }
-    
-    if(isWarping) {
-      s.vx -= (dx / dist) * 3.5; s.vy -= (dy / dist) * 3.5; 
-      s.trail.push({x: s.x, y: s.y}); if(s.trail.length > 50) s.trail.shift();
-    } else {
-      const gp = 0.001 + (150 / (dist + 50)) * 0.015;
-      s.vx += (dx / dist) * gp; s.vy += (dy / dist) * gp;
-      const spd2 = Math.sqrt(s.vx*s.vx + s.vy*s.vy); const ms = 0.2 + (800 / (dist + 10)) * 2;
-      if(spd2 > ms) { s.vx = (s.vx / spd2) * ms; s.vy = (s.vy / spd2) * ms; }
-      if(dist < 300) { s.trail.push({x: s.x, y: s.y}); if(s.trail.length > 20) s.trail.shift(); } 
-      else { if(s.trail.length > 0) s.trail.shift(); }
-    }
-    
-    const tw = Math.sin(vFrame * s.twinkleSpeed + s.twinkleOffset);
-    let a = Math.max(0.01, s.baseOpacity + tw * s.baseOpacity * 0.4);
-    s.x += s.vx; s.y += s.vy; drawTrail(s); drawVoidStar(s, a);
-  }
-  voidRAF = requestAnimationFrame(vLoop);
+  voidRAF=requestAnimationFrame(vLoop);
 }
 
 // ==========================================================================
-// PART 2: THE EPIC CINEMATIC DIMENSION (WEBGL / THREE.JS)
+// CINEMATIC DIMENSION — THREE.JS
 // ==========================================================================
-
 const epicConfig = {
-    particleCount: isMobile ? 8000 : 35000, 
-    stages: [
-        { 
-            title: "COSMIC GENESIS", 
-            sub: "IN THE BEGINNING ENERGY SPARKS",
-            c1: new THREE.Color(0x0a0a2a), c2: new THREE.Color(0x4400ff),
-            duration: 12
-        },
-        { 
-            title: "LIFE", 
-            sub: "THE SPARK EMERGES",
-            c1: new THREE.Color(0x00ffaa), c2: new THREE.Color(0x0044ff),
-            duration: 14
-        },
-        { 
-            title: "HUMANS EVOLVE", 
-            sub: "THE FIRST THINKERS WALK THE EARTH",
-            c1: new THREE.Color(0xffaa00), c2: new THREE.Color(0xff2200),
-            duration: 14
-        },
-        { 
-            title: "CIVILIZATION", 
-            sub: "CITIES RISE KNOWLEDGE FLOURISHES",
-            c1: new THREE.Color(0xffcc00), c2: new THREE.Color(0xaaaaaa),
-            duration: 14
-        },
-        { 
-            title: "SINGULARITY", 
-            sub: "THE SINGULARITY AWAKENS",
-            c1: new THREE.Color(0x00ffff), c2: new THREE.Color(0xff00ff),
-            duration: 14
-        },
-        { 
-            title: "INFINITY", 
-            sub: "EVERYTHING RETURNS TO THE VOID",
-            c1: new THREE.Color(0xffffff), c2: new THREE.Color(0x000000),
-            duration: 18
-        }
-    ]
+  particleCount: isMobile ? 7000 : 30000,
+  totalDuration: 80, // seconds
+  stages: [
+    {
+      chapter: 'Prologue',
+      title: 'THE BIG BANG',
+      sub: 'All matter. All energy. All time.\nCompressed to a single point.',
+      year: '13,800,000,000 BCE',
+      c1: new THREE.Color(0x0a0520), c2: new THREE.Color(0x6633ff),
+      duration: 11
+    },
+    {
+      chapter: 'Chapter I',
+      title: 'STARS ARE BORN',
+      sub: 'Gravity pulls gas and dust\ninto the first burning suns.',
+      year: '13,600,000,000 BCE',
+      c1: new THREE.Color(0x001a4a), c2: new THREE.Color(0xffa040),
+      duration: 11
+    },
+    {
+      chapter: 'Chapter II',
+      title: 'LIFE AWAKENS',
+      sub: 'In the shallow ocean, chemistry\nbecomes the first cell.',
+      year: '3,800,000,000 BCE',
+      c1: new THREE.Color(0x00331a), c2: new THREE.Color(0x00ffaa),
+      duration: 12
+    },
+    {
+      chapter: 'Chapter III',
+      title: 'WE STAND UPRIGHT',
+      sub: 'Hands reach. Eyes wonder.\nA species begins to ask why.',
+      year: '300,000 BCE',
+      c1: new THREE.Color(0x3a1800), c2: new THREE.Color(0xff8833),
+      duration: 12
+    },
+    {
+      chapter: 'Chapter IV',
+      title: 'CIVILIZATION',
+      sub: 'We write. We build. We remember.\nKnowledge outlives its maker.',
+      year: '3,000 BCE — Now',
+      c1: new THREE.Color(0x1a1400), c2: new THREE.Color(0xffcc44),
+      duration: 12
+    },
+    {
+      chapter: 'Chapter V',
+      title: 'THE THRESHOLD',
+      sub: 'Intelligence is no longer\nsolely biological.',
+      year: '2024',
+      c1: new THREE.Color(0x000a2a), c2: new THREE.Color(0x00ffff),
+      duration: 12
+    },
+    {
+      chapter: 'Epilogue',
+      title: 'THE VOID REMAINS',
+      sub: 'Every star. Every thought. Every life.\nReturns to the silence it came from.',
+      year: '∞',
+      c1: new THREE.Color(0x080808), c2: new THREE.Color(0xffffff),
+      duration: 10
+    }
+  ]
 };
 
 let scene, camera, renderer;
 let particleSystem, particleMaterial;
-let heroParticle, heroGlow;
+let heroGlow;
 let isEpicInitialized = false;
 let animationActive = false;
 let masterTimeline = null;
 
 const geoBuffers = [];
-
 const mouse3D = new THREE.Vector2(0, 0);
-const targetCamPos = new THREE.Vector3(0, 0, 150);
-let enableMousePush = false; 
 
-// Generators
-function genCosmic() {
-    const pos = new Float32Array(epicConfig.particleCount * 3);
-    for (let i = 0; i < epicConfig.particleCount; i++) {
-        const i3 = i * 3;
-        const radius = Math.pow(Math.random(), 2) * 200 + 10;
-        const arms = 5;
-        const armOffset = (Math.random() * Math.PI * 2) / arms;
-        const angle = (radius * 0.05) + armOffset + rand(-0.5, 0.5);
-        
-        pos[i3] = Math.cos(angle) * radius;
-        pos[i3 + 1] = rand(-5, 5) * (1 - radius/200); 
-        pos[i3 + 2] = Math.sin(angle) * radius;
-    }
-    return pos;
+// ---- Particle Formation Generators ----
+
+function genExplosionOrigin() {
+  // All near origin — the Big Bang
+  const pos = new Float32Array(epicConfig.particleCount * 3);
+  for(let i=0; i < epicConfig.particleCount; i++){
+    const i3 = i*3;
+    const r = Math.pow(Math.random(), 0.3) * 8;
+    const u = Math.random(), v = Math.random();
+    const theta = 2*Math.PI*u, phi = Math.acos(2*v-1);
+    pos[i3]   = r * Math.sin(phi) * Math.cos(theta);
+    pos[i3+1] = r * Math.sin(phi) * Math.sin(theta);
+    pos[i3+2] = r * Math.cos(phi);
+  }
+  return pos;
+}
+
+function genFibonacciGalaxy() {
+  // Beautiful golden-ratio spiral galaxy
+  const pos = new Float32Array(epicConfig.particleCount * 3);
+  const PHI = (1 + Math.sqrt(5)) / 2;
+  for(let i=0; i < epicConfig.particleCount; i++){
+    const i3 = i*3;
+    const t = i / epicConfig.particleCount;
+    const angle = 2 * Math.PI * PHI * i;
+    const radius = Math.sqrt(t) * 160;
+    const armSpread = rand(-4, 4) * (1 - t * 0.5);
+    const diskHeight = rand(-3, 3) * (1 - t * 0.7);
+    pos[i3]   = Math.cos(angle) * radius + armSpread * Math.cos(angle + Math.PI/2);
+    pos[i3+1] = diskHeight;
+    pos[i3+2] = Math.sin(angle) * radius + armSpread * Math.sin(angle + Math.PI/2);
+  }
+  return pos;
 }
 
 function genDNA() {
-    const pos = new Float32Array(epicConfig.particleCount * 3);
-    const radius = 18, height = 180, turns = 6;
-    for (let i = 0; i < epicConfig.particleCount; i++) {
-        const i3 = i * 3;
-        const t = Math.random(); 
-        const y = (t - 0.5) * height, angle = t * Math.PI * 2 * turns;
-        const strand = Math.random() > 0.5 ? 0 : Math.PI;
-        
-        if (Math.random() < 0.15) {
-            const bridgeT = Math.random();
-            const x1 = Math.cos(angle) * radius, z1 = Math.sin(angle) * radius;
-            const x2 = Math.cos(angle + Math.PI) * radius, z2 = Math.sin(angle + Math.PI) * radius;
-            pos[i3] = x1 + (x2 - x1) * bridgeT; pos[i3 + 1] = y; pos[i3 + 2] = z1 + (z2 - z1) * bridgeT;
-        } else {
-            const scatterR = rand(0, 2), scatterA = rand(0, Math.PI * 2);
-            pos[i3] = Math.cos(angle + strand) * radius + Math.cos(scatterA) * scatterR;
-            pos[i3 + 1] = y;
-            pos[i3 + 2] = Math.sin(angle + strand) * radius + Math.sin(scatterA) * scatterR;
-        }
+  const pos = new Float32Array(epicConfig.particleCount * 3);
+  const radius=18, height=160, turns=7;
+  for(let i=0; i < epicConfig.particleCount; i++){
+    const i3=i*3;
+    const t=Math.random();
+    const y=(t-0.5)*height, angle=t*Math.PI*2*turns;
+    const strand=Math.random()>0.5?0:Math.PI;
+    if(Math.random()<0.12){
+      const bT=Math.random();
+      const x1=Math.cos(angle)*radius, z1=Math.sin(angle)*radius;
+      const x2=Math.cos(angle+Math.PI)*radius, z2=Math.sin(angle+Math.PI)*radius;
+      pos[i3]=x1+(x2-x1)*bT;pos[i3+1]=y;pos[i3+2]=z1+(z2-z1)*bT;
+    }else{
+      const sR=rand(0,2.5),sA=rand(0,Math.PI*2);
+      pos[i3]=Math.cos(angle+strand)*radius+Math.cos(sA)*sR;
+      pos[i3+1]=y;
+      pos[i3+2]=Math.sin(angle+strand)*radius+Math.sin(sA)*sR;
     }
-    return pos;
+  }
+  return pos;
 }
 
-function genHuman() {
-    const pos = new Float32Array(epicConfig.particleCount * 3);
-    const parts = [
-        { x: 0, y: 40, z: 0, w: 12, h: 16, d: 12, prob: 0.12 },   
-        { x: 0, y: 15, z: 0, w: 26, h: 36, d: 14, prob: 0.40 },   
-        { x: -18, y: 20, z: 0, w: 8, h: 30, d: 8, prob: 0.10 },   
-        { x: 18, y: 20, z: 0, w: 8, h: 30, d: 8, prob: 0.10 },    
-        { x: -10, y: -20, z: 0, w: 10, h: 38, d: 10, prob: 0.14 },
-        { x: 10, y: -20, z: 0, w: 10, h: 38, d: 10, prob: 0.14 }  
-    ];
-    for (let i = 0; i < epicConfig.particleCount; i++) {
-        const i3 = i * 3;
-        let r = Math.random(), acc = 0, p = parts[parts.length - 1];
-        for(let j=0; j<parts.length; j++) {
-            acc += parts[j].prob;
-            if(r <= acc) { p = parts[j]; break; }
-        }
-        pos[i3] = p.x + rand(-p.w/2, p.w/2);
-        pos[i3 + 1] = p.y + rand(-p.h/2, p.h/2);
-        pos[i3 + 2] = p.z + rand(-p.d/2, p.d/2);
+function genHumanSilhouette() {
+  const pos = new Float32Array(epicConfig.particleCount * 3);
+  // More anatomically structured human figure
+  const parts = [
+    // Head
+    { type: 'sphere', x:0, y:62, z:0, rx:10, ry:12, rz:10, prob:0.10 },
+    // Neck
+    { type: 'box', x:0, y:50, z:0, w:7, h:6, d:7, prob:0.03 },
+    // Shoulders/torso upper
+    { type: 'box', x:0, y:35, z:0, w:38, h:12, d:14, prob:0.12 },
+    // Torso lower
+    { type: 'box', x:0, y:16, z:0, w:28, h:20, d:12, prob:0.15 },
+    // Hips
+    { type: 'box', x:0, y:2, z:0, w:32, h:10, d:13, prob:0.08 },
+    // Left arm
+    { type: 'box', x:-28, y:24, z:0, w:8, h:36, d:8, prob:0.09 },
+    // Right arm
+    { type: 'box', x:28, y:24, z:0, w:8, h:36, d:8, prob:0.09 },
+    // Left hand
+    { type: 'sphere', x:-28, y:4, z:0, rx:5, ry:6, rz:5, prob:0.04 },
+    // Right hand
+    { type: 'sphere', x:28, y:4, z:0, rx:5, ry:6, rz:5, prob:0.04 },
+    // Left thigh
+    { type: 'box', x:-10, y:-18, z:0, w:12, h:28, d:12, prob:0.10 },
+    // Right thigh
+    { type: 'box', x:10, y:-18, z:0, w:12, h:28, d:12, prob:0.10 },
+    // Left shin
+    { type: 'box', x:-10, y:-46, z:0, w:9, h:24, d:9, prob:0.04 },
+    // Right shin
+    { type: 'box', x:10, y:-46, z:0, w:9, h:24, d:9, prob:0.04 },
+  ];
+  
+  for(let i=0; i < epicConfig.particleCount; i++){
+    const i3=i*3;
+    let r=Math.random(), acc=0, p=parts[parts.length-1];
+    for(let j=0;j<parts.length;j++){acc+=parts[j].prob;if(r<=acc){p=parts[j];break;}}
+    if(p.type==='sphere'){
+      const u=Math.random(),v=Math.random();
+      const theta=2*Math.PI*u, phi=Math.acos(2*v-1);
+      const rv = Math.pow(Math.random(), 0.5);
+      pos[i3]=p.x+Math.sin(phi)*Math.cos(theta)*p.rx*rv;
+      pos[i3+1]=p.y+Math.sin(phi)*Math.sin(theta)*p.ry*rv;
+      pos[i3+2]=p.z+Math.cos(phi)*p.rz*rv;
+    }else{
+      pos[i3]=p.x+rand(-p.w/2,p.w/2);
+      pos[i3+1]=p.y+rand(-p.h/2,p.h/2);
+      pos[i3+2]=p.z+rand(-p.d/2,p.d/2);
     }
-    return pos;
+  }
+  return pos;
 }
 
 function genCity() {
-    const pos = new Float32Array(epicConfig.particleCount * 3);
-    const buildings = [];
-    for(let i=0; i<80; i++) {
-        buildings.push({ x: rand(-80, 80), z: rand(-80, 80), w: rand(5, 15), d: rand(5, 15), h: rand(15, 90) });
+  const pos = new Float32Array(epicConfig.particleCount * 3);
+  const buildings = [];
+  for(let i=0;i<120;i++){
+    buildings.push({x:rand(-90,90),z:rand(-90,90),w:rand(4,14),d:rand(4,14),h:rand(10,100)});
+  }
+  for(let i=0; i < epicConfig.particleCount; i++){
+    const i3=i*3;
+    if(Math.random()<0.08){
+      pos[i3]=rand(-110,110);pos[i3+1]=rand(0,60);pos[i3+2]=rand(-110,110);
+    }else{
+      const b=buildings[Math.floor(Math.random()*buildings.length)];
+      const isSurface=Math.random()>0.25;
+      let px=b.x+rand(-b.w/2,b.w/2),py=rand(-45,-45+b.h),pz=b.z+rand(-b.d/2,b.d/2);
+      if(isSurface){
+        const edge=Math.random();
+        if(edge<0.25)px=b.x-b.w/2;else if(edge<0.5)px=b.x+b.w/2;
+        else if(edge<0.75)pz=b.z-b.d/2;else pz=b.z+b.d/2;
+      }
+      pos[i3]=px;pos[i3+1]=py;pos[i3+2]=pz;
     }
-    for (let i = 0; i < epicConfig.particleCount; i++) {
-        const i3 = i * 3;
-        if (Math.random() < 0.1) {
-            pos[i3] = rand(-100, 100); pos[i3 + 1] = rand(0, 50); pos[i3 + 2] = rand(-100, 100);
-        } else {
-            const b = buildings[Math.floor(Math.random() * buildings.length)];
-            const isSurface = Math.random() > 0.3; 
-            let px = b.x + rand(-b.w/2, b.w/2), py = rand(-40, -40 + b.h), pz = b.z + rand(-b.d/2, b.d/2);
-            if (isSurface) {
-                const edge = Math.random();
-                if(edge < 0.25) px = b.x - b.w/2;
-                else if(edge < 0.5) px = b.x + b.w/2;
-                else if(edge < 0.75) pz = b.z - b.d/2;
-                else pz = b.z + b.d/2;
-            }
-            pos[i3] = px; pos[i3 + 1] = py; pos[i3 + 2] = pz;
-        }
-    }
-    return pos;
+  }
+  return pos;
 }
 
-function genSingularity() {
-    const pos = new Float32Array(epicConfig.particleCount * 3);
-    const spread = 180, gridSize = 20;
-    for (let i = 0; i < epicConfig.particleCount; i++) {
-        const i3 = i * 3;
-        if (Math.random() < 0.8) {
-            pos[i3] = Math.round(rand(-spread, spread) / gridSize) * gridSize;
-            pos[i3 + 1] = Math.round(rand(-spread, spread) / gridSize) * gridSize;
-            pos[i3 + 2] = Math.round(rand(-spread, spread) / gridSize) * gridSize;
-        } else {
-            pos[i3] = rand(-spread, spread); pos[i3 + 1] = rand(-spread, spread); pos[i3 + 2] = rand(-spread, spread);
-        }
+function genNeuralNetwork() {
+  // 3D neural network / lattice for singularity
+  const pos = new Float32Array(epicConfig.particleCount * 3);
+  const nodes = [];
+  for(let i=0;i<400;i++){
+    nodes.push({x:rand(-100,100),y:rand(-100,100),z:rand(-100,100)});
+  }
+  for(let i=0; i < epicConfig.particleCount; i++){
+    const i3=i*3;
+    if(Math.random()<0.3){
+      const n=nodes[Math.floor(Math.random()*nodes.length)];
+      pos[i3]=n.x+rand(-3,3);pos[i3+1]=n.y+rand(-3,3);pos[i3+2]=n.z+rand(-3,3);
+    }else{
+      const n1=nodes[Math.floor(Math.random()*nodes.length)];
+      const n2=nodes[Math.floor(Math.random()*nodes.length)];
+      const t=Math.random();
+      pos[i3]=n1.x+(n2.x-n1.x)*t;pos[i3+1]=n1.y+(n2.y-n1.y)*t;pos[i3+2]=n1.z+(n2.z-n1.z)*t;
     }
-    return pos;
+  }
+  return pos;
 }
 
-function genExplosion() {
-    const pos = new Float32Array(epicConfig.particleCount * 3);
-    for (let i = 0; i < epicConfig.particleCount; i++) {
-        const i3 = i * 3;
-        const u = Math.random(), v = Math.random();
-        const theta = 2 * Math.PI * u, phi = Math.acos(2 * v - 1);
-        const radius = rand(200, 600); 
-        pos[i3] = radius * Math.sin(phi) * Math.cos(theta);
-        pos[i3 + 1] = radius * Math.sin(phi) * Math.sin(theta);
-        pos[i3 + 2] = radius * Math.cos(phi);
-    }
-    return pos;
+function genFinalScatter() {
+  const pos = new Float32Array(epicConfig.particleCount * 3);
+  for(let i=0; i < epicConfig.particleCount; i++){
+    const i3=i*3;
+    const u=Math.random(),v=Math.random();
+    const theta=2*Math.PI*u, phi=Math.acos(2*v-1);
+    const radius=rand(300,800);
+    pos[i3]=radius*Math.sin(phi)*Math.cos(theta);
+    pos[i3+1]=radius*Math.sin(phi)*Math.sin(theta);
+    pos[i3+2]=radius*Math.cos(phi);
+  }
+  return pos;
 }
 
-const particleVertexShader = `
-    uniform float uTime; uniform float uProgress; uniform float uExplosion;
-    uniform float uBlackHolePull; uniform vec2 uMouse; uniform vec3 uColor1; 
-    uniform vec3 uColor2; uniform float uInteractive;
-    
-    attribute vec3 targetPosition; attribute vec3 randoms;
-    varying vec3 vColor; varying float vAlpha;
-
-    vec4 permute(vec4 x){return mod(((x*34.0)+1.0)*x, 289.0);}
-    vec4 taylorInvSqrt(vec4 r){return 1.79284291400159 - 0.85373472095314 * r;}
-    float snoise(vec3 v){ 
-        const vec2  C = vec2(1.0/6.0, 1.0/3.0); const vec4  D = vec4(0.0, 0.5, 1.0, 2.0);
-        vec3 i  = floor(v + dot(v, C.yyy) ); vec3 x0 = v - i + dot(i, C.xxx) ;
-        vec3 g = step(x0.yzx, x0.xyz); vec3 l = 1.0 - g;
-        vec3 i1 = min( g.xyz, l.zxy ); vec3 i2 = max( g.xyz, l.zxy );
-        vec3 x1 = x0 - i1 + 1.0 * C.xxx; vec3 x2 = x0 - i2 + 2.0 * C.xxx; vec3 x3 = x0 - 1.0 + 3.0 * C.xxx;
-        i = mod(i, 289.0 ); 
-        vec4 p = permute( permute( permute( i.z + vec4(0.0, i1.z, i2.z, 1.0 )) + i.y + vec4(0.0, i1.y, i2.y, 1.0 )) + i.x + vec4(0.0, i1.x, i2.x, 1.0 ));
-        float n_ = 1.0/7.0; vec3  ns = n_ * D.wyz - D.xzx;
-        vec4 j = p - 49.0 * floor(p * ns.z *ns.z); vec4 x_ = floor(j * ns.z); vec4 y_ = floor(j - 7.0 * x_ );
-        vec4 x = x_ *ns.x + ns.yyyy; vec4 y = y_ *ns.x + ns.yyyy; vec4 h = 1.0 - abs(x) - abs(y);
-        vec4 b0 = vec4( x.xy, y.xy ); vec4 b1 = vec4( x.zw, y.zw );
-        vec4 s0 = floor(b0)*2.0 + 1.0; vec4 s1 = floor(b1)*2.0 + 1.0; vec4 sh = -step(h, vec4(0.0));
-        vec4 a0 = b0.xzyw + s0.xzyw*sh.xxyy ; vec4 a1 = b1.xzyw + s1.xzyw*sh.zzww ;
-        vec3 p0 = vec3(a0.xy,h.x); vec3 p1 = vec3(a0.zw,h.y); vec3 p2 = vec3(a1.xy,h.z); vec3 p3 = vec3(a1.zw,h.w);
-        vec4 norm = taylorInvSqrt(vec4(dot(p0,p0), dot(p1,p1), dot(p2, p2), dot(p3,p3)));
-        p0 *= norm.x; p1 *= norm.y; p2 *= norm.z; p3 *= norm.w;
-        vec4 m = max(0.6 - vec4(dot(x0,x0), dot(x1,x1), dot(x2,x2), dot(x3,x3)), 0.0); m = m * m;
-        return 42.0 * dot( m*m, vec4( dot(p0,x0), dot(p1,x1), dot(p2,x2), dot(p3,x3) ) );
-    }
-
-    void main() {
-        vec3 mixedPosition = mix(position, targetPosition, uProgress);
-        float noiseVal = snoise(vec3(mixedPosition.x * 0.015, mixedPosition.y * 0.015, uTime * 0.15 + randoms.z));
-        mixedPosition.x += noiseVal * 2.0; 
-        mixedPosition.y += snoise(vec3(mixedPosition.y * 0.015, mixedPosition.z * 0.015, uTime * 0.15)) * 2.0; 
-        mixedPosition.z += snoise(vec3(mixedPosition.z * 0.015, mixedPosition.x * 0.015, uTime * 0.15)) * 2.0;
-        
-        vec3 dir = normalize(mixedPosition); 
-        mixedPosition += dir * uExplosion * randoms.x * 50.0;
-        
-        if (uBlackHolePull > 0.0) {
-            float distToCenter = length(mixedPosition);
-            float pullFactor = uBlackHolePull;
-            float angle = uTime * 2.0 + randoms.y * 10.0;
-            mat2 rot = mat2(cos(angle), -sin(angle), sin(angle), cos(angle));
-            mixedPosition.xz = rot * mixedPosition.xz;
-            mixedPosition = mix(mixedPosition, vec3(0.0), pullFactor);
-        }
-        
-        if (uInteractive > 0.5) {
-            float distToMouse = distance(mixedPosition.xy, uMouse * 150.0);
-            if(distToMouse < 40.0) { 
-                vec2 pushDir = normalize(mixedPosition.xy - (uMouse * 150.0)); 
-                mixedPosition.xy += pushDir * (40.0 - distToMouse) * 1.2; 
-            }
-        }
-        
-        vec4 mvPosition = modelViewMatrix * vec4(mixedPosition, 1.0);
-        gl_Position = projectionMatrix * mvPosition;
-        
-        gl_PointSize = (randoms.x * 4.0 + 1.0) * (200.0 / -mvPosition.z);
-        gl_PointSize *= (1.0 - uBlackHolePull * 0.9);
-
-        float colorMix = smoothstep(-50.0, 50.0, mixedPosition.y);
-        vColor = mix(uColor1, uColor2, colorMix + noiseVal * 0.3);
-        
-        vColor += vec3(uExplosion * 0.2);
-        if (uBlackHolePull > 0.8) {
-             vColor = mix(vColor, vec3(1.0), (uBlackHolePull - 0.8) * 5.0); 
-        }
-        vAlpha = 1.0 - (uExplosion * 0.3);
-    }
-`;
-
-const particleFragmentShader = `
-    varying vec3 vColor; varying float vAlpha;
-    void main() {
-        float dist = length(gl_PointCoord - vec2(0.5));
-        if (dist > 0.5) discard;
-        float alpha = (0.5 - dist) * 2.0 * vAlpha;
-        vec3 finalColor = vColor * (1.0 + (0.5 - dist) * 2.0);
-        gl_FragColor = vec4(finalColor, alpha);
-    }
-`;
-
-function initEpicDimension() {
-    if(isEpicInitialized) return;
-    const container = document.getElementById('canvas-container');
-    
-    scene = new THREE.Scene();
-    scene.fog = new THREE.FogExp2(0x000000, 0.002); 
-    
-    camera = new THREE.PerspectiveCamera(60, window.innerWidth / window.innerHeight, 0.1, 2000);
-    camera.position.set(0, 0, 150);
-    
-    renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true, powerPreference: "high-performance" });
-    renderer.setSize(window.innerWidth, window.innerHeight);
-    renderer.setPixelRatio(Math.min(window.devicePixelRatio, isMobile ? 1 : 2));
-    container.appendChild(renderer.domElement);
-
-    geoBuffers.push(genCosmic(), genDNA(), genHuman(), genCity(), genSingularity(), genExplosion());
-    
-    const geometry = new THREE.BufferGeometry();
-    geometry.setAttribute('position', new THREE.BufferAttribute(geoBuffers[0].slice(), 3));
-    geometry.setAttribute('targetPosition', new THREE.BufferAttribute(geoBuffers[1].slice(), 3));
-    
-    const randoms = new Float32Array(epicConfig.particleCount * 3);
-    for(let i=0; i < epicConfig.particleCount * 3; i++) randoms[i] = Math.random();
-    geometry.setAttribute('randoms', new THREE.BufferAttribute(randoms, 3));
-
-    particleMaterial = new THREE.ShaderMaterial({
-        vertexShader: particleVertexShader, 
-        fragmentShader: particleFragmentShader,
-        uniforms: {
-            uTime: { value: 0 }, uProgress: { value: 0 }, uExplosion: { value: 0 },
-            uBlackHolePull: { value: 0 }, uMouse: { value: new THREE.Vector2(-9999, -9999) },
-            uColor1: { value: epicConfig.stages[0].c1 }, uColor2: { value: epicConfig.stages[0].c2 },
-            uInteractive: { value: 0.0 }
-        },
-        transparent: true, depthWrite: false, blending: THREE.AdditiveBlending
-    });
-
-    particleSystem = new THREE.Points(geometry, particleMaterial);
-    scene.add(particleSystem);
-    
-    const heroGeo = new THREE.BufferGeometry();
-    heroGeo.setAttribute('position', new THREE.BufferAttribute(new Float32Array([0,0,0]), 3));
-    const heroMat = new THREE.ShaderMaterial({
-        vertexShader: particleVertexShader, fragmentShader: particleFragmentShader,
-        uniforms: {
-            uTime: { value: 0 }, uProgress: { value: 0 }, uExplosion: { value: 0 },
-            uBlackHolePull: { value: 0 }, uMouse: { value: new THREE.Vector2(-9999, -9999) },
-            uColor1: { value: new THREE.Color(0xffffff) }, uColor2: { value: new THREE.Color(0xffddaa) },
-            uInteractive: { value: 0.0 }
-        },
-        transparent: true, depthWrite: false, blending: THREE.AdditiveBlending
-    });
-    heroParticle = new THREE.Points(heroGeo, heroMat);
-    
-    const spriteMaterial = new THREE.SpriteMaterial({ 
-        map: createGlowTexture(), 
-        color: 0xffeedd, 
-        transparent: true, 
-        blending: THREE.AdditiveBlending,
-        depthWrite: false, // Fixes the black box outline bug!
-        depthTest: false   // Ensures it always blends seamlessly
-    });
-    heroGlow = new THREE.Sprite(spriteMaterial);
-    heroGlow.scale.set(15, 15, 1);
-    heroParticle.add(heroGlow);
-    scene.add(heroParticle);
-
-    window.addEventListener('resize', onResize3D);
-    window.addEventListener('mousemove', onMouseMove3D);
-    window.addEventListener('touchmove', onTouchMove3D, {passive: true});
-    
-    isEpicInitialized = true;
-}
-
-// Rebuilt to be a softer optical flare instead of a hard circle
-function createGlowTexture() {
-    const canvas = document.createElement('canvas');
-    canvas.width = 128; canvas.height = 128;
-    const ctx = canvas.getContext('2d');
-    const grad = ctx.createRadialGradient(64, 64, 0, 64, 64, 64);
-    grad.addColorStop(0, 'rgba(255,255,255,1)');
-    grad.addColorStop(0.1, 'rgba(255,230,150,0.8)');
-    grad.addColorStop(0.4, 'rgba(200,100,50,0.2)');
-    grad.addColorStop(1, 'rgba(0,0,0,0)');
-    ctx.fillStyle = grad; ctx.fillRect(0,0,128,128);
-    return new THREE.CanvasTexture(canvas);
-}
-
-function updateText(stageIndex) {
-    const title = document.getElementById('story-title');
-    const sub = document.getElementById('story-subtitle');
-    
-    gsap.to([title, sub], {
-        opacity: 0, y: -20, duration: 0.8, ease: "power2.in",
-        onComplete: () => {
-            title.innerText = epicConfig.stages[stageIndex].title;
-            sub.innerText = epicConfig.stages[stageIndex].sub;
-            gsap.set([title, sub], { y: 20 });
-            gsap.to([title, sub], { opacity: 1, y: 0, duration: 1.2, ease: "power2.out", stagger: 0.2 });
-        }
-    });
-}
-
-function prepareMorph(fromIndex, toIndex) {
-    const geom = particleSystem.geometry;
-    geom.attributes.position.array.set(geoBuffers[fromIndex]);
-    geom.attributes.targetPosition.array.set(geoBuffers[toIndex]);
-    geom.attributes.position.needsUpdate = true;
-    geom.attributes.targetPosition.needsUpdate = true;
-    particleMaterial.uniforms.uProgress.value = 0;
-}
-
-// ==========================================================================
-// THE AUTOMATIC RETURN FUNCTION
-// ==========================================================================
-function returnToVoid() {
-  const EpicDim = document.getElementById('epic-dimension');
+// ---- Shaders ----
+const vertexShader = `
+  uniform float uTime; uniform float uProgress; uniform float uExplosion;
+  uniform float uBlackHolePull; uniform vec3 uColor1; uniform vec3 uColor2;
   
-  // Smoothly fade the 3D canvas out
-  gsap.to(EpicDim, { opacity: 0, duration: 2.0, ease: "power2.inOut", onComplete: () => {
+  attribute vec3 targetPosition; attribute vec3 randoms;
+  varying vec3 vColor; varying float vAlpha;
+
+  vec4 permute(vec4 x){return mod(((x*34.0)+1.0)*x,289.0);}
+  vec4 taylorInvSqrt(vec4 r){return 1.79284291400159-0.85373472095314*r;}
+  float snoise(vec3 v){
+    const vec2 C=vec2(1.0/6.0,1.0/3.0);const vec4 D=vec4(0.0,0.5,1.0,2.0);
+    vec3 i=floor(v+dot(v,C.yyy));vec3 x0=v-i+dot(i,C.xxx);
+    vec3 g=step(x0.yzx,x0.xyz);vec3 l=1.0-g;
+    vec3 i1=min(g.xyz,l.zxy);vec3 i2=max(g.xyz,l.zxy);
+    vec3 x1=x0-i1+C.xxx;vec3 x2=x0-i2+2.0*C.xxx;vec3 x3=x0-1.0+3.0*C.xxx;
+    i=mod(i,289.0);
+    vec4 p=permute(permute(permute(i.z+vec4(0.0,i1.z,i2.z,1.0))+i.y+vec4(0.0,i1.y,i2.y,1.0))+i.x+vec4(0.0,i1.x,i2.x,1.0));
+    float n_=1.0/7.0;vec3 ns=n_*D.wyz-D.xzx;
+    vec4 j=p-49.0*floor(p*ns.z*ns.z);vec4 x_=floor(j*ns.z);vec4 y_=floor(j-7.0*x_);
+    vec4 x=x_*ns.x+ns.yyyy;vec4 y=y_*ns.x+ns.yyyy;vec4 h=1.0-abs(x)-abs(y);
+    vec4 b0=vec4(x.xy,y.xy);vec4 b1=vec4(x.zw,y.zw);
+    vec4 s0=floor(b0)*2.0+1.0;vec4 s1=floor(b1)*2.0+1.0;vec4 sh=-step(h,vec4(0.0));
+    vec4 a0=b0.xzyw+s0.xzyw*sh.xxyy;vec4 a1=b1.xzyw+s1.xzyw*sh.zzww;
+    vec3 p0=vec3(a0.xy,h.x);vec3 p1=vec3(a0.zw,h.y);vec3 p2=vec3(a1.xy,h.z);vec3 p3=vec3(a1.zw,h.w);
+    vec4 norm=taylorInvSqrt(vec4(dot(p0,p0),dot(p1,p1),dot(p2,p2),dot(p3,p3)));
+    p0*=norm.x;p1*=norm.y;p2*=norm.z;p3*=norm.w;
+    vec4 m=max(0.6-vec4(dot(x0,x0),dot(x1,x1),dot(x2,x2),dot(x3,x3)),0.0);m=m*m;
+    return 42.0*dot(m*m,vec4(dot(p0,x0),dot(p1,x1),dot(p2,x2),dot(p3,x3)));
+  }
+
+  void main(){
+    vec3 pos=mix(position,targetPosition,smoothstep(0.0,1.0,uProgress));
+    float noiseScale=0.012;
+    float n=snoise(vec3(pos.x*noiseScale,pos.y*noiseScale,uTime*0.12+randoms.z));
+    pos.x+=n*2.5;
+    pos.y+=snoise(vec3(pos.y*noiseScale,pos.z*noiseScale,uTime*0.12))*2.5;
+    pos.z+=snoise(vec3(pos.z*noiseScale,pos.x*noiseScale,uTime*0.12))*2.5;
+    
+    vec3 dir=normalize(pos+0.0001);
+    pos+=dir*uExplosion*randoms.x*55.0;
+    
+    if(uBlackHolePull>0.0){
+      float angle=uTime*2.5+randoms.y*10.0;
+      mat2 rot=mat2(cos(angle),-sin(angle),sin(angle),cos(angle));
+      pos.xz=rot*pos.xz;
+      pos=mix(pos,vec3(0.0),uBlackHolePull);
+    }
+    
+    vec4 mvPos=modelViewMatrix*vec4(pos,1.0);
+    gl_Position=projectionMatrix*mvPos;
+    gl_PointSize=(randoms.x*4.5+1.0)*(220.0/-mvPos.z);
+    gl_PointSize*=(1.0-uBlackHolePull*0.92);
+    
+    float colorT=smoothstep(-60.0,60.0,pos.y)+n*0.25;
+    vColor=mix(uColor1,uColor2,clamp(colorT,0.0,1.0));
+    vColor+=vec3(uExplosion*0.15);
+    if(uBlackHolePull>0.7)vColor=mix(vColor,vec3(1.0),(uBlackHolePull-0.7)*3.3);
+    vAlpha=1.0-uExplosion*0.25;
+  }
+`;
+
+const fragmentShader = `
+  varying vec3 vColor; varying float vAlpha;
+  void main(){
+    float d=length(gl_PointCoord-vec2(0.5));
+    if(d>0.5)discard;
+    float alpha=(0.5-d)*2.0*vAlpha;
+    vec3 finalColor=vColor*(1.0+(0.5-d)*1.8);
+    gl_FragColor=vec4(finalColor,alpha);
+  }
+`;
+
+function initEpicDimension(){
+  if(isEpicInitialized) return;
+  const container = document.getElementById('canvas-container');
+  
+  scene = new THREE.Scene();
+  scene.fog = new THREE.FogExp2(0x000000, 0.0015);
+  
+  camera = new THREE.PerspectiveCamera(60, window.innerWidth/window.innerHeight, 0.1, 3000);
+  camera.position.set(0, 0, 150);
+  
+  renderer = new THREE.WebGLRenderer({antialias:true, alpha:true, powerPreference:"high-performance"});
+  renderer.setSize(window.innerWidth, window.innerHeight);
+  renderer.setPixelRatio(Math.min(window.devicePixelRatio, isMobile?1:2));
+  container.appendChild(renderer.domElement);
+
+  // Build all geometry buffers
+  geoBuffers.push(
+    genExplosionOrigin(),   // 0 - big bang origin
+    genFibonacciGalaxy(),   // 1 - galaxy
+    genDNA(),               // 2 - life
+    genHumanSilhouette(),   // 3 - humans
+    genCity(),              // 4 - civilization
+    genNeuralNetwork(),     // 5 - singularity
+    genFinalScatter()       // 6 - dispersal
+  );
+  
+  const geometry = new THREE.BufferGeometry();
+  geometry.setAttribute('position', new THREE.BufferAttribute(geoBuffers[0].slice(), 3));
+  geometry.setAttribute('targetPosition', new THREE.BufferAttribute(geoBuffers[1].slice(), 3));
+  
+  const randoms = new Float32Array(epicConfig.particleCount * 3);
+  for(let i=0;i<epicConfig.particleCount*3;i++) randoms[i]=Math.random();
+  geometry.setAttribute('randoms', new THREE.BufferAttribute(randoms, 3));
+
+  particleMaterial = new THREE.ShaderMaterial({
+    vertexShader, fragmentShader,
+    uniforms: {
+      uTime:{value:0}, uProgress:{value:0}, uExplosion:{value:0},
+      uBlackHolePull:{value:0},
+      uColor1:{value:epicConfig.stages[0].c1.clone()},
+      uColor2:{value:epicConfig.stages[0].c2.clone()}
+    },
+    transparent:true, depthWrite:false, blending:THREE.AdditiveBlending
+  });
+
+  particleSystem = new THREE.Points(geometry, particleMaterial);
+  scene.add(particleSystem);
+
+  // Hero glow sprite
+  const glowTex = createGlowTexture();
+  const spriteMat = new THREE.SpriteMaterial({
+    map:glowTex, color:0xffeedd,
+    transparent:true, blending:THREE.AdditiveBlending,
+    depthWrite:false, depthTest:false
+  });
+  heroGlow = new THREE.Sprite(spriteMat);
+  heroGlow.scale.set(20,20,1);
+  heroGlow.position.set(0,0,50);
+  scene.add(heroGlow);
+
+  window.addEventListener('resize', onResize3D);
+  window.addEventListener('mousemove', e => {
+    mouse3D.x = (e.clientX/window.innerWidth)*2-1;
+    mouse3D.y = -(e.clientY/window.innerHeight)*2+1;
+  });
+  window.addEventListener('touchmove', e => {
+    if(!e.touches.length)return;
+    mouse3D.x = (e.touches[0].clientX/window.innerWidth)*2-1;
+    mouse3D.y = -(e.touches[0].clientY/window.innerHeight)*2+1;
+  }, {passive:true});
+  
+  isEpicInitialized = true;
+}
+
+function createGlowTexture(){
+  const canvas = document.createElement('canvas');
+  canvas.width=128; canvas.height=128;
+  const ctx=canvas.getContext('2d');
+  const g=ctx.createRadialGradient(64,64,0,64,64,64);
+  g.addColorStop(0,'rgba(255,255,255,1)');
+  g.addColorStop(0.08,'rgba(255,240,180,0.9)');
+  g.addColorStop(0.3,'rgba(180,100,50,0.25)');
+  g.addColorStop(0.6,'rgba(50,50,200,0.06)');
+  g.addColorStop(1,'rgba(0,0,0,0)');
+  ctx.fillStyle=g; ctx.fillRect(0,0,128,128);
+  return new THREE.CanvasTexture(canvas);
+}
+
+function onResize3D(){
+  if(!isEpicInitialized)return;
+  camera.aspect=window.innerWidth/window.innerHeight;
+  camera.updateProjectionMatrix();
+  renderer.setSize(window.innerWidth,window.innerHeight);
+}
+
+// ---- Narrative update with richer text ----
+function updateText(stageIndex) {
+  const title = document.getElementById('story-title');
+  const sub = document.getElementById('story-subtitle');
+  const year = document.getElementById('story-year');
+  const chapter = document.getElementById('chapter-number');
+  const divider = document.getElementById('story-divider');
+  const s = epicConfig.stages[stageIndex];
+  
+  const tl = gsap.timeline();
+  tl.to([chapter, title, divider, sub, year], {
+    opacity: 0, y: -25, duration: 0.7, ease: "power2.in", stagger: 0.04
+  });
+  tl.call(() => {
+    chapter.innerText = s.chapter;
+    title.innerText = s.title;
+    sub.innerText = s.sub;
+    year.innerText = s.year;
+    gsap.set([chapter, title, divider, sub, year], {y: 25});
+  });
+  tl.to(chapter, {opacity: 1, y: 0, duration: 0.6, ease: "power2.out"});
+  tl.to(title, {opacity: 1, y: 0, duration: 1.0, ease: "power2.out"}, "-=0.4");
+  tl.to(divider, {opacity: 1, width: '200px', duration: 0.8, ease: "power2.out"}, "-=0.5");
+  tl.to(sub, {opacity: 1, y: 0, duration: 0.8, ease: "power2.out"}, "-=0.4");
+  tl.to(year, {opacity: 1, y: 0, duration: 0.6, ease: "power2.out"}, "-=0.4");
+}
+
+function prepareMorph(fromIndex, toIndex){
+  const geom = particleSystem.geometry;
+  geom.attributes.position.array.set(geoBuffers[fromIndex]);
+  geom.attributes.targetPosition.array.set(geoBuffers[toIndex]);
+  geom.attributes.position.needsUpdate = true;
+  geom.attributes.targetPosition.needsUpdate = true;
+  particleMaterial.uniforms.uProgress.value = 0;
+}
+
+// ---- Shockwave effect ----
+function triggerShockwave(){
+  const sw = document.getElementById('shockwave');
+  gsap.killTweensOf(sw);
+  gsap.set(sw, {width:0, height:0, opacity:0.9, borderWidth:2});
+  gsap.to(sw, {
+    width: Math.max(window.innerWidth, window.innerHeight) * 2.5,
+    height: Math.max(window.innerWidth, window.innerHeight) * 2.5,
+    opacity: 0, borderWidth: 0.5,
+    duration: 1.4, ease: "power2.out"
+  });
+}
+
+// ---- Auto return ----
+function returnToVoid(){
+  const EpicDim = document.getElementById('epic-dimension');
+  gsap.to(EpicDim, {
+    opacity: 0, duration: 2.5, ease: "power2.inOut",
+    onComplete: () => {
       EpicDim.classList.remove('active');
-      
-      if(masterTimeline) masterTimeline.kill(); 
+      if(masterTimeline) masterTimeline.kill();
       animationActive = false;
-      gsap.ticker.remove(animateEpicDimension); 
+      gsap.ticker.remove(animateEpicDimension);
       
-      // Bring back original Void UI
-      const UI_ELEMENTS = ['starfield', 'void-nebula', 'void-uu', 'void-header', 'void-nav', 'btn-life'];
-      UI_ELEMENTS.forEach(id => document.getElementById(id).classList.remove('fade-out'));
+      ['starfield','void-nebula','void-uu','void-header','void-nav','btn-life']
+        .forEach(id => document.getElementById(id).classList.remove('fade-out'));
+      
+      document.getElementById('progress-bar').style.opacity = 0;
+      document.getElementById('skip-btn').style.opacity = 0;
+      document.getElementById('progress-fill').style.width = '0%';
+      
       isWarping = false;
-      
-      // Resume the original 2D Engine
       voidActive = true;
-      initStars(); 
+      initStars();
       vLoop();
-  }});
+    }
+  });
 }
 
-function buildMasterTimeline() {
-    enableMousePush = false;
-    particleMaterial.uniforms.uInteractive.value = 0.0;
-    
-    // Automatically triggers returnToVoid when timeline completes
-    masterTimeline = gsap.timeline({ onComplete: returnToVoid });
+// ---- Master Timeline ----
+function buildMasterTimeline(){
+  prepareMorph(0, 1);
+  particleMaterial.uniforms.uColor1.value.copy(epicConfig.stages[0].c1);
+  particleMaterial.uniforms.uColor2.value.copy(epicConfig.stages[0].c2);
+  particleSystem.position.set(0,0,0);
+  particleSystem.rotation.set(0,0,0);
+  heroGlow.position.set(0,0,50);
+  heroGlow.scale.set(0,0,1);
 
-    prepareMorph(0, 1);
-    particleMaterial.uniforms.uColor1.value.copy(epicConfig.stages[0].c1);
-    particleMaterial.uniforms.uColor2.value.copy(epicConfig.stages[0].c2);
-    particleSystem.position.set(0,0,0);
-    particleSystem.rotation.set(0,0,0);
-    gsap.set(heroParticle.position, {x: -100, y: -50, z: -50});
+  masterTimeline = gsap.timeline({
+    onUpdate: () => {
+      const p = masterTimeline.progress();
+      document.getElementById('progress-fill').style.width = (p * 100) + '%';
+    },
+    onComplete: returnToVoid
+  });
 
-    // 1. COSMIC GENESIS
-    const t0 = 0;
-    masterTimeline.call(() => updateText(0), [], t0 + 0.5);
-    camera.position.set(0, -100, 200);
-    masterTimeline.to(camera.position, { y: 20, z: 140, duration: 10, ease: "sine.inOut" }, t0);
-    masterTimeline.to(particleSystem.rotation, { y: Math.PI / 2, duration: 10, ease: "none" }, t0);
-    masterTimeline.to(heroParticle.position, { x: 0, y: 0, z: 50, duration: 5, ease: "power1.inOut" }, t0);
-    masterTimeline.to(heroParticle.position, { x: 30, y: 20, z: 20, duration: 5, ease: "sine.inOut" }, t0 + 5);
+  // === STAGE 0: BIG BANG ===
+  const t0 = 0;
+  masterTimeline.call(() => { updateText(0); triggerShockwave(); }, [], t0 + 0.3);
+  masterTimeline.to(particleMaterial.uniforms.uExplosion, {value:12,duration:0.4,ease:"power4.out"}, t0);
+  masterTimeline.to(particleMaterial.uniforms.uExplosion, {value:0,duration:5.0,ease:"power3.out"}, t0+0.4);
+  masterTimeline.from(camera.position, {x:0,y:0,z:5,duration:0,ease:"none"}, t0);
+  masterTimeline.to(camera.position, {x:0,y:0,z:180,duration:8,ease:"power3.out"}, t0);
+  masterTimeline.to(heroGlow.scale, {x:80,y:80,z:1,duration:1.0,ease:"power2.out"}, t0);
+  masterTimeline.to(heroGlow.scale, {x:20,y:20,z:1,duration:4.0,ease:"power3.out"}, t0+1);
+  masterTimeline.to(heroGlow.position, {x:60,y:40,z:20,duration:5,ease:"sine.inOut"}, t0+3);
 
-    // 2. LIFE
-    const t1 = 10;
-    masterTimeline.call(() => { prepareMorph(0, 1); updateText(1); }, [], t1);
-    masterTimeline.to(particleMaterial.uniforms.uExplosion, { value: 1.5, duration: 0.8, yoyo: true, repeat: 1, ease: "power2.out" }, t1);
-    masterTimeline.to(particleMaterial.uniforms.uProgress, { value: 1.0, duration: 4.0, ease: "power2.inOut" }, t1 + 0.4);
-    masterTimeline.to(particleMaterial.uniforms.uColor1.value, { r: epicConfig.stages[1].c1.r, g: epicConfig.stages[1].c1.g, b: epicConfig.stages[1].c1.b, duration: 3.0 }, t1);
-    masterTimeline.to(particleMaterial.uniforms.uColor2.value, { r: epicConfig.stages[1].c2.r, g: epicConfig.stages[1].c2.g, b: epicConfig.stages[1].c2.b, duration: 3.0 }, t1);
-    masterTimeline.to(camera.position, { x: 0, y: -40, z: 80, duration: 4.0, ease: "power2.inOut" }, t1);
-    masterTimeline.to(camera.position, { y: 40, duration: 6.0, ease: "none" }, t1 + 4);
-    masterTimeline.to(heroParticle.position, { x: 0, y: -40, z: 0, duration: 2 }, t1);
-    masterTimeline.to(heroParticle.position, { y: 40, duration: 8, ease: "none" }, t1 + 2);
-    masterTimeline.to(heroParticle.position, { x: 20, duration: 2, yoyo: true, repeat: 3, ease: "sine.inOut" }, t1 + 2);
+  // === STAGE 1: GALAXY ===
+  const t1 = 9;
+  masterTimeline.call(() => { prepareMorph(0, 1); updateText(1); triggerShockwave(); }, [], t1);
+  masterTimeline.to(particleMaterial.uniforms.uExplosion, {value:2.5,duration:0.5,yoyo:true,repeat:1,ease:"power3.out"}, t1);
+  masterTimeline.to(particleMaterial.uniforms.uProgress, {value:1.0,duration:5,ease:"power2.inOut"}, t1+0.3);
+  masterTimeline.to(particleMaterial.uniforms.uColor1.value, {r:epicConfig.stages[1].c1.r,g:epicConfig.stages[1].c1.g,b:epicConfig.stages[1].c1.b,duration:3}, t1);
+  masterTimeline.to(particleMaterial.uniforms.uColor2.value, {r:epicConfig.stages[1].c2.r,g:epicConfig.stages[1].c2.g,b:epicConfig.stages[1].c2.b,duration:3}, t1);
+  masterTimeline.to(camera.position, {y:120,z:200,duration:5,ease:"power2.inOut"}, t1);
+  masterTimeline.to(camera.position, {y:0,z:150,duration:5,ease:"sine.inOut"}, t1+5);
+  masterTimeline.to(particleSystem.rotation, {y:Math.PI*0.8,duration:10,ease:"none"}, t1);
+  masterTimeline.to(heroGlow.position, {x:-30,y:-20,z:30,duration:5,ease:"sine.inOut"}, t1);
 
-    // 3. HUMANS EVOLVE
-    const t2 = 20;
-    masterTimeline.call(() => { prepareMorph(1, 2); updateText(2); }, [], t2);
-    masterTimeline.to(particleMaterial.uniforms.uExplosion, { value: 2.0, duration: 0.5, yoyo: true, repeat: 1, ease: "power3.out" }, t2);
-    masterTimeline.to(particleMaterial.uniforms.uProgress, { value: 1.0, duration: 3.5, ease: "back.out(1.2)" }, t2 + 0.3);
-    masterTimeline.to(particleMaterial.uniforms.uColor1.value, { r: epicConfig.stages[2].c1.r, g: epicConfig.stages[2].c1.g, b: epicConfig.stages[2].c1.b, duration: 2.5 }, t2);
-    masterTimeline.to(particleMaterial.uniforms.uColor2.value, { r: epicConfig.stages[2].c2.r, g: epicConfig.stages[2].c2.g, b: epicConfig.stages[2].c2.b, duration: 2.5 }, t2);
-    masterTimeline.to(camera.position, { x: 60, y: 0, z: 100, duration: 4.0, ease: "power2.inOut" }, t2);
-    masterTimeline.to(camera.position, { x: -40, duration: 6.0, ease: "sine.inOut" }, t2 + 4.0);
-    masterTimeline.to(heroParticle.position, { x: 0, y: 15, z: 20, duration: 3.0, ease: "power2.out" }, t2);
-    masterTimeline.to(heroGlow.scale, { x: 25, y: 25, duration: 1, yoyo: true, repeat: 5 }, t2 + 3); 
+  // === STAGE 2: LIFE / DNA ===
+  const t2 = 20;
+  masterTimeline.call(() => { prepareMorph(1, 2); updateText(2); triggerShockwave(); }, [], t2);
+  masterTimeline.to(particleMaterial.uniforms.uExplosion, {value:2,duration:0.4,yoyo:true,repeat:1,ease:"power3.out"}, t2);
+  masterTimeline.to(particleMaterial.uniforms.uProgress, {value:1.0,duration:4,ease:"power2.inOut"}, t2+0.3);
+  masterTimeline.to(particleMaterial.uniforms.uColor1.value, {r:epicConfig.stages[2].c1.r,g:epicConfig.stages[2].c1.g,b:epicConfig.stages[2].c1.b,duration:3}, t2);
+  masterTimeline.to(particleMaterial.uniforms.uColor2.value, {r:epicConfig.stages[2].c2.r,g:epicConfig.stages[2].c2.g,b:epicConfig.stages[2].c2.b,duration:3}, t2);
+  masterTimeline.to(camera.position, {x:40,y:-40,z:80,duration:4,ease:"power2.inOut"}, t2);
+  masterTimeline.to(camera.position, {x:-40,y:40,z:80,duration:7,ease:"sine.inOut"}, t2+4);
+  masterTimeline.to(particleSystem.rotation, {y:Math.PI*2,duration:10,ease:"none"}, t2);
+  masterTimeline.to(heroGlow.position, {x:0,y:0,z:30,duration:3,ease:"power2.inOut"}, t2);
+  masterTimeline.to(heroGlow.scale, {x:30,y:30,z:1,duration:1,yoyo:true,repeat:5,ease:"sine.inOut"}, t2+3);
 
-    // 4. CIVILIZATION
-    const t3 = 30;
-    masterTimeline.call(() => { prepareMorph(2, 3); updateText(3); }, [], t3);
-    masterTimeline.fromTo(particleSystem.position, {y: -80}, {y: 0, duration: 4.0, ease: "power2.out"}, t3);
-    masterTimeline.to(particleMaterial.uniforms.uProgress, { value: 1.0, duration: 4.0, ease: "power2.inOut" }, t3);
-    masterTimeline.to(particleMaterial.uniforms.uColor1.value, { r: epicConfig.stages[3].c1.r, g: epicConfig.stages[3].c1.g, b: epicConfig.stages[3].c1.b, duration: 2.0 }, t3);
-    masterTimeline.to(particleMaterial.uniforms.uColor2.value, { r: epicConfig.stages[3].c2.r, g: epicConfig.stages[3].c2.g, b: epicConfig.stages[3].c2.b, duration: 2.0 }, t3);
-    masterTimeline.to(camera.position, { x: 0, y: 50, z: 180, duration: 5.0, ease: "power3.out" }, t3);
-    masterTimeline.to(camera.position, { y: 20, z: 120, duration: 5.0, ease: "sine.inOut" }, t3 + 5.0);
-    masterTimeline.to(heroParticle.position, { x: -40, y: -20, z: 40, duration: 2.0 }, t3);
-    masterTimeline.to(heroParticle.position, { x: 40, y: 10, z: -20, duration: 3.0, ease: "power1.inOut" }, t3 + 2);
-    masterTimeline.to(heroParticle.position, { x: 0, y: 40, z: 0, duration: 3.0, ease: "power2.inOut" }, t3 + 5);
+  // === STAGE 3: HUMAN SILHOUETTE ===
+  const t3 = 32;
+  masterTimeline.call(() => { prepareMorph(2, 3); updateText(3); triggerShockwave(); }, [], t3);
+  masterTimeline.to(particleMaterial.uniforms.uExplosion, {value:2.5,duration:0.4,yoyo:true,repeat:1,ease:"power3.out"}, t3);
+  masterTimeline.to(particleMaterial.uniforms.uProgress, {value:1.0,duration:4,ease:"back.out(1.1)"}, t3+0.3);
+  masterTimeline.to(particleMaterial.uniforms.uColor1.value, {r:epicConfig.stages[3].c1.r,g:epicConfig.stages[3].c1.g,b:epicConfig.stages[3].c1.b,duration:3}, t3);
+  masterTimeline.to(particleMaterial.uniforms.uColor2.value, {r:epicConfig.stages[3].c2.r,g:epicConfig.stages[3].c2.g,b:epicConfig.stages[3].c2.b,duration:3}, t3);
+  masterTimeline.to(camera.position, {x:0,y:20,z:120,duration:5,ease:"power2.inOut"}, t3);
+  masterTimeline.to(camera.position, {x:50,y:-10,z:100,duration:6,ease:"sine.inOut"}, t3+5);
+  masterTimeline.to(particleSystem.rotation, {y:Math.PI*0.3,duration:10,ease:"sine.inOut"}, t3);
+  masterTimeline.to(heroGlow.position, {x:0,y:60,z:20,duration:2,ease:"power2.out"}, t3);
+  masterTimeline.to(heroGlow.scale, {x:40,y:40,z:1,duration:0.3,yoyo:true,repeat:3,ease:"power2.out"}, t3+3);
 
-    // 5. SINGULARITY
-    const t4 = 40;
-    masterTimeline.call(() => { prepareMorph(3, 4); updateText(4); }, [], t4);
-    masterTimeline.to(particleMaterial.uniforms.uExplosion, { value: 3.0, duration: 0.5, yoyo: true, repeat: 1, ease: "power2.out" }, t4);
-    masterTimeline.to(particleMaterial.uniforms.uProgress, { value: 1.0, duration: 3.0, ease: "power2.inOut" }, t4 + 0.3);
-    masterTimeline.to(particleMaterial.uniforms.uColor1.value, { r: epicConfig.stages[4].c1.r, g: epicConfig.stages[4].c1.g, b: epicConfig.stages[4].c1.b, duration: 2.0 }, t4);
-    masterTimeline.to(particleMaterial.uniforms.uColor2.value, { r: epicConfig.stages[4].c2.r, g: epicConfig.stages[4].c2.g, b: epicConfig.stages[4].c2.b, duration: 2.0 }, t4);
-    masterTimeline.to(camera.position, { x: 100, y: 100, z: 100, duration: 4.0, ease: "power2.inOut" }, t4);
-    masterTimeline.to(camera.position, { x: 0, y: 0, z: 200, duration: 6.0, ease: "power1.inOut" }, t4 + 4.0);
-    masterTimeline.to(heroParticle.position, { x: 0, y: 0, z: 0, duration: 3.0, ease: "back.out(1.5)" }, t4);
-    masterTimeline.to(heroGlow.scale, { x: 40, y: 40, duration: 0.2, yoyo: true, repeat: 20 }, t4 + 3);
+  // === STAGE 4: CIVILIZATION ===
+  const t4 = 44;
+  masterTimeline.call(() => { prepareMorph(3, 4); updateText(4); triggerShockwave(); }, [], t4);
+  masterTimeline.fromTo(particleSystem.position, {y:-80}, {y:0,duration:4.5,ease:"power2.out"}, t4);
+  masterTimeline.to(particleMaterial.uniforms.uProgress, {value:1.0,duration:4.5,ease:"power2.inOut"}, t4);
+  masterTimeline.to(particleMaterial.uniforms.uColor1.value, {r:epicConfig.stages[4].c1.r,g:epicConfig.stages[4].c1.g,b:epicConfig.stages[4].c1.b,duration:3}, t4);
+  masterTimeline.to(particleMaterial.uniforms.uColor2.value, {r:epicConfig.stages[4].c2.r,g:epicConfig.stages[4].c2.g,b:epicConfig.stages[4].c2.b,duration:3}, t4);
+  masterTimeline.to(camera.position, {x:0,y:70,z:200,duration:5,ease:"power3.out"}, t4);
+  masterTimeline.to(camera.position, {y:10,z:130,duration:6,ease:"sine.inOut"}, t4+5);
+  masterTimeline.to(particleSystem.rotation, {y:Math.PI*1.2,duration:10,ease:"none"}, t4);
+  masterTimeline.to(heroGlow.position, {x:20,y:-30,z:50,duration:3,ease:"power2.inOut"}, t4);
 
-    // 6. INFINITY & FINAL EXPLOSION
-    const t5 = 50;
-    masterTimeline.call(() => { prepareMorph(4, 5); updateText(5); }, [], t5);
-    masterTimeline.to(particleMaterial.uniforms.uColor1.value, { r: epicConfig.stages[5].c1.r, g: epicConfig.stages[5].c1.g, b: epicConfig.stages[5].c1.b, duration: 2.0 }, t5);
-    masterTimeline.to(particleMaterial.uniforms.uColor2.value, { r: epicConfig.stages[5].c2.r, g: epicConfig.stages[5].c2.g, b: epicConfig.stages[5].c2.b, duration: 2.0 }, t5);
-    masterTimeline.to(particleMaterial.uniforms.uBlackHolePull, { value: 1.0, duration: 4.0, ease: "power3.in" }, t5);
-    masterTimeline.to(camera.position, { x: 0, y: 0, z: 40, duration: 4.0, ease: "power3.in" }, t5);
-    masterTimeline.to(heroGlow.scale, { x: 80, y: 80, duration: 1.0 }, t5 + 4.0);
-    
-    // Grand Explosion
-    const tExp = t5 + 5.0;
-    masterTimeline.set(particleMaterial.uniforms.uBlackHolePull, { value: 0.0 }, tExp);
-    masterTimeline.to(particleMaterial.uniforms.uProgress, { value: 1.0, duration: 4.0, ease: "power2.out" }, tExp);
-    masterTimeline.set(particleMaterial.uniforms.uExplosion, { value: 10.0 }, tExp);
-    masterTimeline.to(particleMaterial.uniforms.uExplosion, { value: 0.0, duration: 6.0, ease: "power3.out" }, tExp);
-    masterTimeline.to(camera.position, { z: 400, duration: 8.0, ease: "power2.out" }, tExp);
-    
-    // Fade Text prior to auto-return
-    masterTimeline.to(['#story-title', '#story-subtitle'], { opacity: 0, duration: 2.0 }, tExp + 4.0);
-    
-    // Allow 4 extra seconds of awe before hitting the `onComplete: returnToVoid`
-    masterTimeline.to({}, { duration: 4.0 }, tExp + 6.0); 
+  // === STAGE 5: SINGULARITY ===
+  const t5 = 56;
+  masterTimeline.call(() => { prepareMorph(4, 5); updateText(5); triggerShockwave(); }, [], t5);
+  masterTimeline.to(particleMaterial.uniforms.uExplosion, {value:3.5,duration:0.4,yoyo:true,repeat:1,ease:"power4.out"}, t5);
+  masterTimeline.to(particleMaterial.uniforms.uProgress, {value:1.0,duration:3.5,ease:"power2.inOut"}, t5+0.3);
+  masterTimeline.to(particleMaterial.uniforms.uColor1.value, {r:epicConfig.stages[5].c1.r,g:epicConfig.stages[5].c1.g,b:epicConfig.stages[5].c1.b,duration:2.5}, t5);
+  masterTimeline.to(particleMaterial.uniforms.uColor2.value, {r:epicConfig.stages[5].c2.r,g:epicConfig.stages[5].c2.g,b:epicConfig.stages[5].c2.b,duration:2.5}, t5);
+  masterTimeline.to(camera.position, {x:0,y:0,z:200,duration:5,ease:"power2.inOut"}, t5);
+  masterTimeline.to(heroGlow.position, {x:0,y:0,z:0,duration:3,ease:"back.out(1.5)"}, t5);
+  masterTimeline.to(heroGlow.scale, {x:60,y:60,z:1,duration:0.2,yoyo:true,repeat:15,ease:"power2.inOut"}, t5+3);
+
+  // === STAGE 6: VOID / COLLAPSE ===
+  const t6 = 68;
+  masterTimeline.call(() => { prepareMorph(5, 6); updateText(6); }, [], t6);
+  masterTimeline.to(particleMaterial.uniforms.uColor1.value, {r:epicConfig.stages[6].c1.r,g:epicConfig.stages[6].c1.g,b:epicConfig.stages[6].c1.b,duration:3}, t6);
+  masterTimeline.to(particleMaterial.uniforms.uColor2.value, {r:epicConfig.stages[6].c2.r,g:epicConfig.stages[6].c2.g,b:epicConfig.stages[6].c2.b,duration:3}, t6);
+  // Black hole collapse
+  masterTimeline.to(particleMaterial.uniforms.uBlackHolePull, {value:1.0,duration:5,ease:"power3.in"}, t6);
+  masterTimeline.to(camera.position, {x:0,y:0,z:20,duration:5,ease:"power3.in"}, t6);
+  masterTimeline.to(heroGlow.scale, {x:100,y:100,z:1,duration:1.5}, t6+4.5);
+  
+  // Grand re-explosion
+  const tBang = t6 + 6;
+  masterTimeline.set(particleMaterial.uniforms.uBlackHolePull, {value:0}, tBang);
+  masterTimeline.set(particleMaterial.uniforms.uExplosion, {value:15}, tBang);
+  masterTimeline.call(() => { triggerShockwave(); }, [], tBang+0.1);
+  masterTimeline.to(particleMaterial.uniforms.uProgress, {value:1.0,duration:4,ease:"power2.out"}, tBang);
+  masterTimeline.to(particleMaterial.uniforms.uExplosion, {value:0,duration:8,ease:"power3.out"}, tBang);
+  masterTimeline.to(camera.position, {z:600,duration:10,ease:"power2.out"}, tBang);
+  masterTimeline.to(heroGlow.scale, {x:0,y:0,z:1,duration:3,ease:"power3.in"}, tBang+2);
+  
+  // Fade text
+  masterTimeline.to(['#chapter-number','#story-title','#story-divider','#story-subtitle','#story-year'], 
+    {opacity:0,duration:3,stagger:0.1}, tBang+4);
+  
+  // Buffer before return
+  masterTimeline.to({}, {duration:3}, tBang+8);
 }
 
-function onResize3D() {
-    if(!isEpicInitialized) return;
-    camera.aspect = window.innerWidth / window.innerHeight;
-    camera.updateProjectionMatrix();
-    renderer.setSize(window.innerWidth, window.innerHeight);
-}
-
-function onMouseMove3D(e) {
-    mouse3D.x = (e.clientX / window.innerWidth) * 2 - 1;
-    mouse3D.y = -(e.clientY / window.innerHeight) * 2 + 1;
-}
-
-function onTouchMove3D(e) {
-    if(e.touches.length === 0) return;
-    mouse3D.x = (e.touches[0].clientX / window.innerWidth) * 2 - 1;
-    mouse3D.y = -(e.touches[0].clientY / window.innerHeight) * 2 + 1;
-}
-
+// ---- Animation Loop ----
 let epicTime = 0;
-function animateEpicDimension() {
-    if(!animationActive) return;
-    epicTime += 0.015;
-    
-    if (particleMaterial) {
-        particleMaterial.uniforms.uTime.value = epicTime;
-        if(heroParticle && heroParticle.position) {
-            heroParticle.material.uniforms.uTime.value = epicTime;
-        }
-        if (enableMousePush) {
-            particleMaterial.uniforms.uMouse.value.lerp(mouse3D, 0.1);
-        }
-    }
-    
-    if (particleSystem) {
-        particleSystem.rotation.y += 0.002;
-    }
-    
-    const pIntensity = enableMousePush ? 30 : 5; 
-    targetCamPos.x = mouse3D.x * pIntensity;
-    targetCamPos.y = mouse3D.y * pIntensity;
-    camera.position.x += (targetCamPos.x - camera.position.x) * 0.02;
-    camera.position.y += (targetCamPos.y - camera.position.y) * 0.02;
-    camera.lookAt(0, 0, 0);
-
-    renderer.render(scene, camera);
+function animateEpicDimension(){
+  if(!animationActive) return;
+  epicTime += 0.015;
+  
+  if(particleMaterial) particleMaterial.uniforms.uTime.value = epicTime;
+  if(particleSystem) particleSystem.rotation.y += 0.0015;
+  
+  // Gentle camera parallax from mouse
+  camera.position.x += (mouse3D.x * 8 - camera.position.x) * 0.015;
+  camera.position.y += (mouse3D.y * 8 - camera.position.y) * 0.015;
+  camera.lookAt(0, 0, 0);
+  
+  // Hero glow subtle float
+  if(heroGlow){
+    heroGlow.position.y += Math.sin(epicTime * 0.8) * 0.05;
+  }
+  
+  renderer.render(scene, camera);
 }
 
 // ==========================================================================
-// TRIGGERING THE EPIC DIMENSION
+// INTRO SEQUENCE + TRIGGER
 // ==========================================================================
-const UI_ELEMENTS = ['starfield', 'void-nebula', 'void-uu', 'void-header', 'void-nav', 'btn-life'];
+const UI_ELEMENTS = ['starfield','void-nebula','void-uu','void-header','void-nav','btn-life'];
 const EpicDim = document.getElementById('epic-dimension');
+const IntroScreen = document.getElementById('intro-screen');
 
-document.getElementById('btn-life').addEventListener('click', () => {
+function startIntro(){
   isWarping = true;
   
-  setTimeout(() => {
-    // Hide UI
-    UI_ELEMENTS.forEach(id => document.getElementById(id).classList.add('fade-out'));
-    
-    // Completely pause the 2D background calculations
-    voidActive = false; 
-    cancelAnimationFrame(voidRAF);
+  // Fade void UI
+  UI_ELEMENTS.forEach(id => document.getElementById(id).classList.add('fade-out'));
+  voidActive = false;
+  cancelAnimationFrame(voidRAF);
 
-    // Make sure 3D dimension is visible and opacity is 1
-    gsap.set(EpicDim, { opacity: 1 });
-    EpicDim.classList.add('active');
-    
-    initEpicDimension();
-    animationActive = true;
-    gsap.ticker.add(animateEpicDimension); 
-    
-    buildMasterTimeline();
-  }, 800);
+  // Show intro screen
+  IntroScreen.classList.add('active');
+  
+  const introTL = gsap.timeline({
+    onComplete: () => {
+      // Dismiss intro, launch 3D
+      gsap.to(IntroScreen, {opacity:0, duration:1.2, ease:"power2.inOut", onComplete: () => {
+        IntroScreen.classList.remove('active');
+        IntroScreen.style.opacity = 0;
+        
+        gsap.set(EpicDim, {opacity:1});
+        EpicDim.classList.add('active');
+        
+        initEpicDimension();
+        animationActive = true;
+        gsap.ticker.add(animateEpicDimension);
+        
+        // Show progress + skip
+        gsap.to('#progress-bar', {opacity:1, duration:1, delay:1});
+        gsap.to('#skip-btn', {opacity:1, duration:1, delay:1});
+        
+        buildMasterTimeline();
+      }});
+    }
+  });
+
+  introTL.to(IntroScreen, {opacity:1, duration:0.8, ease:"power2.out"});
+  introTL.to('#intro-l1', {opacity:1, y:0, duration:1.0, ease:"power2.out"}, "+=0.3");
+  introTL.to('#intro-s1', {opacity:1, duration:0.8, ease:"power2.out"}, "+=0.2");
+  introTL.to('#intro-l2', {opacity:1, duration:0.8, ease:"power2.out"}, "+=0.4");
+  introTL.to({}, {duration:1.8}); // hold
+  introTL.to(['#intro-l1','#intro-s1','#intro-l2'], {opacity:0, y:-15, duration:0.8, stagger:0.05});
+}
+
+document.getElementById('btn-life').addEventListener('click', startIntro);
+
+document.getElementById('skip-btn').addEventListener('click', () => {
+  if(masterTimeline) masterTimeline.seek(masterTimeline.duration() - 3);
 });
 
-window.addEventListener('resize', () => { vResize(); });
+window.addEventListener('resize', vResize);
 
-// Boot Application
+// Boot
 vResize();
 initStars();
 vLoop();
-
 </script>
 </body>
 </html>
