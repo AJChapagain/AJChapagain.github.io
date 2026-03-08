@@ -103,8 +103,9 @@
 
     #focus-ui {
       position: absolute; top: 0; left: 0; right: 0;
-      display: flex; align-items: center; justify-content: space-between;
+      display: flex; align-items: center; justify-content: center;
       padding: 1.6rem 2rem; pointer-events: none;
+      gap: 2rem;
     }
     #focus-title {
       font-family: 'Cormorant Garamond', serif; font-weight: 300;
@@ -587,14 +588,18 @@ document.getElementById('btn-life').addEventListener('click', () => {
 });
 
 document.getElementById('btn-return').addEventListener('click', () => {
-  // Close focus if open
+  // Close focus simulation if open
   focusLayer.classList.remove('open');
   setTimeout(stopFocus, 1200);
   // Leave life dimension
   LD.classList.remove('active');
+  // Stop constellation loop (life page only)
   cancelAnimationFrame(constellationRAF);
+  constellationRAF = null;
+  // Restore void UI and repopulate stars
   UI.forEach(id => document.getElementById(id).classList.remove('fade-out'));
   isWarping = false;
+  initStars();
 });
 
 window.addEventListener('resize', () => {
