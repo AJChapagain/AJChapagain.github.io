@@ -1,690 +1,1023 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>AJChapa</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com" />
-  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;400&family=DM+Mono:wght@300;400&display=swap" rel="stylesheet" />
-  
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
-
-  <style>
-    /* =========================================
-       ORIGINAL VOID / STARFIELD CSS
-       ========================================= */
-    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
-    html, body { height: 100%; }
-    body {
-      background: #020308;
-      font-family: 'DM Mono', monospace;
-      color: #e8eaf0;
-      cursor: crosshair;
-      overflow: hidden;
-      user-select: none;
-    }
-    #starfield { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: 0; pointer-events: none; transition: opacity 1s ease-in-out; }
-    .nebula {
-      position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: 1; pointer-events: none;
-      background: radial-gradient(ellipse 60% 40% at 25% 70%, rgba(15,25,60,0.12) 0%, transparent 65%),
-                  radial-gradient(ellipse 50% 50% at 80% 30%, rgba(10,15,45,0.15) 0%, transparent 65%),
-                  radial-gradient(ellipse 40% 40% at 50% 50%, rgba(20,25,40,0.08) 0%, transparent 70%);
-      animation: pulseNebula 20s infinite alternate ease-in-out;
-      transition: opacity 1s ease-in-out;
-    }
-    .fade-out { opacity: 0 !important; pointer-events: none !important; }
-    @keyframes pulseNebula { 0%{opacity:0.8;transform:scale(1)} 100%{opacity:1;transform:scale(1.05)} }
-
-    .uu-badge {
-      position: fixed; top: 1.5rem; right: 2rem; z-index: 20; opacity: 0;
-      animation: fadeDown 1.4s cubic-bezier(0.16,1,0.3,1) 0.9s forwards;
-      text-decoration: none; display: flex; flex-direction: column; align-items: center; gap: 0.25rem;
-      transition: opacity 1s ease-in-out;
-    }
-    .uu-badge svg { width: 26px; height: 26px; filter: drop-shadow(0 0 5px rgba(190,20,20,0.35)); transition: filter 0.3s; }
-    .uu-badge:hover svg { filter: drop-shadow(0 0 11px rgba(220,40,40,0.7)); }
-    .uu-text { font-size: 0.37rem; letter-spacing: 0.26em; text-transform: uppercase; color: #321010; transition: color 0.3s; }
-    .uu-badge:hover .uu-text { color: #7a2828; }
-
-    .life-badge {
-      position: fixed; top: 1.5rem; left: 2rem; z-index: 20; opacity: 0;
-      animation: fadeDown 1.4s cubic-bezier(0.16,1,0.3,1) 0.9s forwards;
-      text-decoration: none; display: flex; flex-direction: column; align-items: center; justify-content: center;
-      background: transparent; border: 1px solid rgba(74,127,193,0.3); padding: 0.5rem 1rem;
-      color: #eef0f8; font-family: 'DM Mono', monospace; font-size: 0.65rem; letter-spacing: 0.2em; text-transform: uppercase;
-      cursor: pointer; transition: all 0.3s ease, opacity 1s ease-in-out;
-    }
-    .life-badge:hover { background: rgba(74,127,193,0.1); border-color: rgba(74,127,193,0.8); box-shadow: 0 0 15px rgba(74,127,193,0.2); }
-
-    .top-header {
-      position: fixed; top: 3rem; left: 50%; transform: translateX(-50%); z-index: 10;
-      display: flex; flex-direction: column; align-items: center; pointer-events: none;
-      transition: opacity 1s ease-in-out;
-    }
-    .top-header > * { pointer-events: auto; }
-    .name {
-      font-family: 'Cormorant Garamond', serif; font-weight: 300; font-size: clamp(1.5rem, 4vw, 2.5rem);
-      letter-spacing: 0.24em; text-transform: uppercase; color: #eef0f8; text-align: center;
-      opacity: 0; animation: fadeDown 1.4s cubic-bezier(0.16,1,0.3,1) 0.2s forwards;
-      text-shadow: 0 0 30px rgba(180,200,255,0.2); white-space: nowrap;
-    }
-    .name::after { content:''; display:block; width:60%; height:1px; background:linear-gradient(90deg,transparent,rgba(74,127,193,0.38),transparent); margin:0.4rem auto 0; }
-
-    .bottom-nav {
-      position: fixed; bottom: 3.5rem; left: 0; width: 100%; z-index: 10;
-      display: flex; align-items: center; justify-content: center; gap: 0 2rem;
-      opacity: 0; animation: fadeUp 1.4s cubic-bezier(0.16,1,0.3,1) 0.5s forwards;
-      transition: opacity 1s ease-in-out;
-    }
-    .link-item {
-      display: flex; align-items: center; gap: 0.36rem; text-decoration: none; color: #5a6285;
-      font-size: 0.65rem; letter-spacing: 0.2em; text-transform: uppercase; transition: color 0.3s; position: relative; white-space: nowrap;
-    }
-    .link-item:hover { color: #aeb6d4; }
-    .link-item svg { width: 12px; height: 12px; flex-shrink: 0; opacity: 0.45; transition: opacity 0.3s; }
-    .link-item:hover svg { opacity: 0.9; }
-    .link-item::after { content:''; position:absolute; bottom:-4px; left:0; width:0; height:1px; background:rgba(74,127,193,0.5); transition:width 0.3s; }
-    .link-item:hover::after { width: 100%; }
-    .link-divider { width: 1px; height: 10px; background: #161a2b; flex-shrink: 0; }
-
-    /* =========================================
-       NEW 3D LIFE DIMENSION CSS
-       ========================================= */
-    #evolution-dimension {
-      position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: 30;
-      opacity: 0; pointer-events: none; transition: opacity 1.8s ease-in-out;
-      background: #020202; overflow: hidden;
-    }
-    #evolution-dimension.active { opacity: 1; pointer-events: auto; }
-
-    #canvas-container { position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 1; }
-
-    .scanlines {
-      position: absolute; top: 0; left: 0; width: 100%; height: 100%;
-      background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.2) 50%);
-      background-size: 100% 4px; z-index: 10; pointer-events: none; opacity: 0.4;
-    }
-
-    .vignette {
-      position: absolute; top: 0; left: 0; width: 100%; height: 100%;
-      background: radial-gradient(circle, rgba(0,0,0,0) 30%, rgba(0,0,0,0.9) 100%);
-      z-index: 9; pointer-events: none;
-    }
-
-    #narrative-text {
-      position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
-      font-size: clamp(2rem, 6vw, 5rem); font-weight: 900; letter-spacing: 0.5em;
-      color: #ffffff; text-shadow: 0 0 20px rgba(255, 255, 255, 0.8);
-      opacity: 0; pointer-events: none; z-index: 20; text-align: center; white-space: nowrap;
-      animation: breathe 4s infinite alternate ease-in-out;
-    }
-    @keyframes breathe {
-      0% { transform: translate(-50%, -50%) scale(1); }
-      100% { transform: translate(-50%, -50%) scale(1.05); }
-    }
-
-    #final-ui {
-      position: absolute; bottom: 10%; left: 50%; transform: translateX(-50%);
-      z-index: 30; opacity: 0; pointer-events: none;
-      display: flex; flex-direction: column; align-items: center; gap: 15px;
-    }
+    <!DOCTYPE html>
+    <html lang="en">
+    <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>AJChapa | The Epic Journey</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;400;600&family=DM+Mono:wght@300;400&display=swap" rel="stylesheet" />
     
-    .hud-hint {
-      color: rgba(255, 255, 255, 0.5); font-size: 0.55rem; letter-spacing: 0.2em; text-transform: uppercase;
-    }
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
 
-    .cta-btn {
-      background: transparent; border: 1px solid rgba(74,127,193,0.5);
-      color: #aeb6d4; padding: 12px 30px; font-family: 'DM Mono', monospace; font-size: 0.7rem;
-      letter-spacing: 0.2em; text-transform: uppercase; cursor: pointer; transition: all 0.3s ease;
-      backdrop-filter: blur(5px);
-    }
-    .cta-btn:hover { background: rgba(74,127,193,0.15); border-color: rgba(74,127,193,0.9); color: #eef0f8; box-shadow: 0 0 15px rgba(74,127,193,0.3); }
-
-    /* Mobile Overrides */
-    @media (max-width: 600px) {
-      .uu-badge { top: 1rem; right: 1rem; transform: scale(0.85); transform-origin: top right; }
-      .life-badge { top: 1rem; left: 1rem; padding: 0.4rem 0.7rem; font-size: 0.55rem; }
-      .top-header { top: 4.5rem; }
-      .name { font-size: 1.6rem; letter-spacing: 0.15em; }
-      .bottom-nav { gap: 0 1rem; bottom: 2rem; }
-      .link-item { font-size: 0.55rem; }
-    }
-    @keyframes fadeDown { from{opacity:0;transform:translateY(-15px)} to{opacity:1;transform:translateY(0)} }
-    @keyframes fadeUp   { from{opacity:0;transform:translateY(15px)}  to{opacity:1;transform:translateY(0)} }
-  </style>
-</head>
-<body>
-
-<canvas id="starfield"></canvas>
-<div class="nebula" id="void-nebula"></div>
-<button class="life-badge" id="btn-life">Life</button>
-
-<a class="uu-badge" id="void-uu" href="https://www.utah.edu" target="_blank" rel="noopener">
-  <svg viewBox="0 0 100 105" fill="none"><rect x="6" y="5" width="30" height="58" rx="2" fill="#cc1e1e"/><rect x="64" y="5" width="30" height="58" rx="2" fill="#cc1e1e"/><path d="M6 55 L6 68 Q6 100 50 100 Q94 100 94 68 L94 55 L64 55 L64 68 Q64 78 50 78 Q36 78 36 68 L36 55 Z" fill="#cc1e1e"/></svg>
-  <span class="uu-text">Utah</span>
-</a>
-
-<header class="top-header" id="void-header"><h1 class="name">AJChapa</h1></header>
-
-<nav class="bottom-nav" id="void-nav">
-  <a class="link-item" href="https://www.linkedin.com/in/aj-chapagain" target="_blank" rel="noopener">
-    <svg viewBox="0 0 24 24" fill="currentColor"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 01-2.063-2.065 2.064 2.064 0 112.063 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/></svg>
-    LinkedIn
-  </a>
-  <div class="link-divider"></div>
-  <a class="link-item" href="https://www.instagram.com/aapplejuce/" target="_blank" rel="noopener">
-    <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zM12 0C8.741 0 8.333.014 7.053.072 2.695.272.273 2.69.073 7.052.014 8.333 0 8.741 0 12c0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98C8.333 23.986 8.741 24 12 24c3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98C15.668.014 15.259 0 12 0zm0 5.838a6.162 6.162 0 100 12.324 6.162 6.162 0 000-12.324zM12 16a4 4 0 110-8 4 4 0 010 8zm6.406-11.845a1.44 1.44 0 100 2.881 1.44 1.44 0 000-2.881z"/></svg>
-    Instagram
-  </a>
-  <div class="link-divider"></div>
-  <a class="link-item" href="https://steamcommunity.com/profiles/76561198343184351/" target="_blank" rel="noopener">
-    <svg viewBox="0 0 24 24" fill="currentColor"><path d="M11.979 0C5.678 0 .511 4.86.022 11.037l6.432 2.658c.545-.371 1.203-.59 1.912-.59.063 0 .125.004.188.006l2.861-4.142V8.91c0-2.495 2.028-4.524 4.524-4.524 2.494 0 4.524 2.031 4.524 4.527s-2.03 4.525-4.524 4.525h-.105l-4.076 2.911c0 .052.004.105.004.159 0 1.875-1.515 3.396-3.39 3.396-1.635 0-3.016-1.173-3.331-2.727L.436 15.27C1.862 20.307 6.486 24 11.979 24c6.627 0 11.999-5.373 11.999-12S18.605 0 11.979 0zM7.54 18.21l-1.473-.61c.262.543.714.999 1.314 1.25 1.297.539 2.793-.076 3.332-1.375.263-.63.264-1.319.005-1.949s-.75-1.121-1.377-1.383c-.624-.26-1.29-.249-1.878-.03l1.523.63c.956.4 1.409 1.5 1.009 2.455-.397.957-1.497 1.41-2.454 1.012H7.54zm11.415-9.303c0-1.662-1.353-3.015-3.015-3.015-1.665 0-3.015 1.353-3.015 3.015 0 1.665 1.35 3.015 3.015 3.015 1.663 0 3.015-1.35 3.015-3.015zm-5.273.012c0-1.252 1.013-2.266 2.265-2.266 1.249 0 2.266 1.014 2.266 2.266 0 1.251-1.017 2.265-2.266 2.265-1.253 0-2.265-1.014-2.265-2.265z"/></svg>
-    Steam
-  </a>
-</nav>
-
-<div id="evolution-dimension">
-  <div id="canvas-container"></div>
-  <div class="scanlines"></div>
-  <div class="vignette"></div>
-  <div id="narrative-text">INITIALIZING</div>
-  
-  <div id="final-ui">
-      <div class="hud-hint">SYSTEM_INTERACTIVE // MOUSE_TRACKING_ACTIVE</div>
-      <button class="cta-btn" id="btn-return-void">RETURN TO VOID</button>
-  </div>
-</div>
-
-<script>
-// ═══════════════════════════════════════════════════════
-// UTILITY
-// ═══════════════════════════════════════════════════════
-function rand(a,b){return a+Math.random()*(b-a);}
-
-// ═══════════════════════════════════════════════════════
-// VOID PAGE (YOUR ORIGINAL STARFIELD)
-// ═══════════════════════════════════════════════════════
-const vCanvas=document.getElementById('starfield');
-const vCtx=vCanvas.getContext('2d');
-let vW,vH,stars=[],shootingStars=[],starDust=[];
-const BH={rx:0.5,ry:0.5}; let bhX,bhY; const BH_RADIUS=24;
-let isWarping=false;
-
-function vResize(){vW=vCanvas.width=window.innerWidth;vH=vCanvas.height=window.innerHeight;bhX=vW*BH.rx;bhY=vH*BH.ry;}
-
-const STELLAR_COLORS=[{h:220,s:80,l:85},{h:200,s:40,l:95},{h:60,s:20,l:95},{h:35,s:70,l:80},{h:15,s:80,l:75}];
-
-function spawnStarAtEdge(){
-  const e=Math.floor(rand(0,4));let x,y;
-  if(e===0){x=rand(0,vW);y=-20;}else if(e===1){x=vW+20;y=rand(0,vH);}
-  else if(e===2){x=rand(0,vW);y=vH+20;}else{x=-20;y=rand(0,vH);}
-  const c=STELLAR_COLORS[Math.floor(Math.random()*STELLAR_COLORS.length)];
-  const ib=Math.random()>0.85;
-  return{x,y,vx:0,vy:0,r:ib?rand(0.8,1.4):rand(0.3,0.7),baseOpacity:ib?rand(0.5,0.9):rand(0.1,0.4),twinkleSpeed:rand(0.002,0.01),twinkleOffset:rand(0,Math.PI*2),h:c.h,s:c.s,l:c.l,trail:[],isBright:ib};
-}
-
-function initStars(){stars=[];shootingStars=[];starDust=[];for(let i=0;i<450;i++){const s=spawnStarAtEdge();s.x=rand(0,vW);s.y=rand(0,vH);stars.push(s);}}
-
-function drawVoidStar(s,a){
-  vCtx.beginPath();vCtx.arc(s.x,s.y,s.r,0,Math.PI*2);vCtx.fillStyle=`hsla(${s.h},${s.s}%,${s.l}%,${a})`;vCtx.fill();
-  if(s.isBright&&a>0.4){
-    const g=vCtx.createRadialGradient(s.x,s.y,0,s.x,s.y,s.r*4);
-    g.addColorStop(0,`hsla(${s.h},${s.s}%,${s.l}%,${a*0.4})`);
-    g.addColorStop(1,`hsla(${s.h},${s.s}%,${s.l}%,0)`);
-    vCtx.beginPath();vCtx.arc(s.x,s.y,s.r*4,0,Math.PI*2);vCtx.fillStyle=g;vCtx.fill();
-  }
-}
-
-function drawTrail(s){
-  if(s.trail.length<2)return;
-  vCtx.save();
-  for(let i=1;i<s.trail.length;i++){
-    const a=(i/s.trail.length)*0.3;
-    vCtx.beginPath();vCtx.moveTo(s.trail[i-1].x,s.trail[i-1].y);vCtx.lineTo(s.trail[i].x,s.trail[i].y);
-    vCtx.strokeStyle=`hsla(${s.h},${s.s}%,${s.l}%,${a})`;vCtx.lineWidth=s.r*0.5;vCtx.lineCap='round';vCtx.stroke();
-  }
-  vCtx.restore();
-}
-
-function drawBlackHole(){
-  const l=vCtx.createRadialGradient(bhX,bhY,BH_RADIUS,bhX,bhY,BH_RADIUS*7);
-  l.addColorStop(0,'rgba(0,0,0,0.95)');l.addColorStop(0.3,'rgba(3,5,12,0.4)');l.addColorStop(1,'rgba(0,0,0,0)');
-  vCtx.beginPath();vCtx.arc(bhX,bhY,BH_RADIUS*7,0,Math.PI*2);vCtx.fillStyle=l;vCtx.fill();
-  vCtx.beginPath();vCtx.arc(bhX,bhY,BH_RADIUS,0,Math.PI*2);vCtx.fillStyle='#000';vCtx.fill();
-  const pr=vCtx.createLinearGradient(bhX-BH_RADIUS,bhY-BH_RADIUS,bhX+BH_RADIUS,bhY+BH_RADIUS);
-  pr.addColorStop(0,'rgba(255,230,200,0.6)');pr.addColorStop(0.5,'rgba(200,150,100,0.15)');pr.addColorStop(1,'rgba(255,230,200,0.05)');
-  vCtx.beginPath();vCtx.arc(bhX,bhY,BH_RADIUS+0.5,0,Math.PI*2);vCtx.strokeStyle=pr;vCtx.lineWidth=1.2;vCtx.stroke();
-}
-
-const MT=[{h:15,s:90,l:70,w:[1.2,2.0],len:[100,220]},{h:195,s:80,l:85,w:[1.0,1.8],len:[120,250]},{h:210,s:20,l:95,w:[0.8,1.5],len:[80,150]}];
-
-function createShootingStar(){
-  const t=MT[Math.floor(Math.random()*MT.length)];
-  const ss=Math.floor(rand(0,4));let sx,sy,tx,ty;
-  if(ss===0){sx=rand(0,vW);sy=-20;tx=rand(0,vW);ty=vH+20;}else if(ss===1){sx=vW+20;sy=rand(0,vH);tx=-20;ty=rand(0,vH);}
-  else if(ss===2){sx=rand(0,vW);sy=vH+20;tx=rand(0,vW);ty=-20;}else{sx=-20;sy=rand(0,vH);tx=vW+20;ty=rand(0,vH);}
-  const ang=Math.atan2(ty-sy,tx-sx);const spd=rand(28,50);
-  return{x:sx,y:sy,vx:Math.cos(ang)*spd,vy:Math.sin(ang)*spd,len:rand(t.len[0],t.len[1]),alpha:1.0,fade:rand(0.015,0.03),width:rand(t.w[0],t.w[1]),h:t.h,s:t.s,l:t.l};
-}
-
-let vFrame=0,nextShoot=rand(20,80),voidRAF;
-
-function vLoop(){
-  vCtx.clearRect(0,0,vW,vH);vFrame++;drawBlackHole();
-  if(vFrame>=nextShoot&&!isWarping){
-    shootingStars.push(createShootingStar());
-    if(Math.random()<0.4)shootingStars.push(createShootingStar());
-    nextShoot=vFrame+rand(30,100);
-  }
-  shootingStars=shootingStars.filter(s=>s.alpha>0&&s.x>-500&&s.x<vW+500&&s.y>-500&&s.y<vH+500);
-  for(const s of shootingStars){
-    vCtx.save();
-    const tx2=s.x-s.vx*(s.len/20),ty2=s.y-s.vy*(s.len/20);
-    const g=vCtx.createLinearGradient(s.x,s.y,tx2,ty2);
-    g.addColorStop(0,`hsla(0,0%,100%,${s.alpha})`);g.addColorStop(0.1,`hsla(${s.h},${s.s}%,${s.l}%,${s.alpha*0.9})`);g.addColorStop(1,`hsla(${s.h},${s.s}%,${s.l}%,0)`);
-    vCtx.beginPath();vCtx.moveTo(s.x,s.y);vCtx.lineTo(tx2,ty2);vCtx.strokeStyle=g;vCtx.lineWidth=s.width;vCtx.lineCap='round';vCtx.stroke();
-    if(Math.random()>0.3)starDust.push({x:s.x,y:s.y,vx:s.vx*0.05+rand(-1,1),vy:s.vy*0.05+rand(-1,1),alpha:s.alpha*0.8,decay:rand(0.02,0.06),size:rand(0.5,2),h:s.h,s:s.s,l:s.l});
-    vCtx.restore();
-    const dx=bhX-s.x,dy=bhY-s.y,dist=Math.sqrt(dx*dx+dy*dy);
-    if(isWarping){s.vx-=(dx/dist)*8;s.vy-=(dy/dist)*8;}else{s.vx+=(dx/dist)*0.5;s.vy+=(dy/dist)*0.5;}
-    s.x+=s.vx;s.y+=s.vy;s.alpha-=s.fade;
-  }
-  starDust=starDust.filter(p=>p.alpha>0&&p.x>-200&&p.x<vW+200&&p.y>-200&&p.y<vH+200);
-  for(const p of starDust){
-    vCtx.beginPath();vCtx.arc(p.x,p.y,p.size,0,Math.PI*2);vCtx.fillStyle=`hsla(${p.h},${p.s}%,${p.l}%,${p.alpha})`;vCtx.fill();
-    if(isWarping){const dx=bhX-p.x,dy=bhY-p.y,dist=Math.sqrt(dx*dx+dy*dy);p.vx-=(dx/dist)*2;p.vy-=(dy/dist)*2;}
-    p.x+=p.vx;p.y+=p.vy;p.alpha-=p.decay;
-  }
-  for(let i=stars.length-1;i>=0;i--){
-    const s=stars[i];const dx=bhX-s.x,dy=bhY-s.y,dist=Math.sqrt(dx*dx+dy*dy);
-    if(dist<BH_RADIUS&&!isWarping){stars[i]=spawnStarAtEdge();continue;}
-    if(isWarping){
-      s.vx-=(dx/dist)*3.5;s.vy-=(dy/dist)*3.5;s.trail.push({x:s.x,y:s.y});if(s.trail.length>50)s.trail.shift();
-    }else{
-      const gp=0.001+(150/(dist+50))*0.015;s.vx+=(dx/dist)*gp;s.vy+=(dy/dist)*gp;
-      const spd2=Math.sqrt(s.vx*s.vx+s.vy*s.vy);const ms=0.2+(800/(dist+10))*2;
-      if(spd2>ms){s.vx=(s.vx/spd2)*ms;s.vy=(s.vy/spd2)*ms;}
-      if(dist<300){s.trail.push({x:s.x,y:s.y});if(s.trail.length>20)s.trail.shift();}else{if(s.trail.length>0)s.trail.shift();}
-    }
-    const tw=Math.sin(vFrame*s.twinkleSpeed+s.twinkleOffset);
-    let a=Math.max(0.01,s.baseOpacity+tw*s.baseOpacity*0.4);
-    s.x+=s.vx;s.y+=s.vy;drawTrail(s);drawVoidStar(s,a);
-  }
-  voidRAF=requestAnimationFrame(vLoop);
-}
-
-// ═══════════════════════════════════════════════════════
-// NEW 3D CINEMATIC EVOLUTION DIMENSION (WebGL / Three.js)
-// ═══════════════════════════════════════════════════════
-
-const evoConfig = {
-    particleCount: 20000, 
-    colors: [
-        { c1: new THREE.Color(0x0044ff), c2: new THREE.Color(0xaa00ff) }, // DNA
-        { c1: new THREE.Color(0xff2200), c2: new THREE.Color(0xffaa00) }, // Human
-        { c1: new THREE.Color(0xffcc00), c2: new THREE.Color(0xaaaaaa) }, // City
-        { c1: new THREE.Color(0x00ffcc), c2: new THREE.Color(0x0066ff) }  // Digital
-    ],
-    prompts: ["GENESIS", "EVOLUTION", "CIVILIZATION", "SINGULARITY"]
-};
-
-let evoScene, evoCamera, evoRenderer, evoParticles, evoMaterial;
-let evoGeometries = []; 
-let isEvoInitialized = false;
-let evoAnimationActive = false;
-
-const evoMouse = new THREE.Vector2(-9999, -9999);
-const evoTargetCam = new THREE.Vector3(0, 0, 150);
-let evoInteractive = false; 
-
-function generateDNA() {
-    const positions = new Float32Array(evoConfig.particleCount * 3);
-    const radius = 12, height = 140, turns = 4;
-    for (let i = 0; i < evoConfig.particleCount; i++) {
-        const i3 = i * 3, t = Math.random(); 
-        const y = (t - 0.5) * height, angle = t * Math.PI * 2 * turns;
-        const strand = Math.random() > 0.5 ? 0 : Math.PI;
-        const scatterRadius = rand(0, 1.5), scatterAngle = rand(0, Math.PI * 2);
-        let px, pz;
-        if (Math.random() < 0.1) {
-            const bridgeT = Math.random();
-            const x1 = Math.cos(angle) * radius, z1 = Math.sin(angle) * radius;
-            const x2 = Math.cos(angle + Math.PI) * radius, z2 = Math.sin(angle + Math.PI) * radius;
-            px = x1 + (x2 - x1) * bridgeT; pz = z1 + (z2 - z1) * bridgeT;
-        } else {
-            px = Math.cos(angle + strand) * radius + Math.cos(scatterAngle) * scatterRadius;
-            pz = Math.sin(angle + strand) * radius + Math.sin(scatterAngle) * scatterRadius;
+    <style>
+        /* ==========================================================================
+        PART 1: ORIGINAL VOID / STARFIELD CSS
+        ========================================================================== */
+        *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+        html, body { height: 100%; }
+        body {
+        background: #020308;
+        font-family: 'DM Mono', monospace;
+        color: #e8eaf0;
+        cursor: crosshair;
+        overflow: hidden;
+        user-select: none;
         }
-        positions[i3] = px; positions[i3 + 1] = y; positions[i3 + 2] = pz;
-    }
-    return positions;
-}
+        #starfield { 
+        position: fixed; top: 0; left: 0; width: 100%; height: 100%; 
+        z-index: 0; pointer-events: none; transition: opacity 0.8s ease-in-out; 
+        }
+        .nebula {
+        position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: 1; pointer-events: none;
+        background: radial-gradient(ellipse 60% 40% at 25% 70%, rgba(15,25,60,0.12) 0%, transparent 65%),
+                    radial-gradient(ellipse 50% 50% at 80% 30%, rgba(10,15,45,0.15) 0%, transparent 65%),
+                    radial-gradient(ellipse 40% 40% at 50% 50%, rgba(20,25,40,0.08) 0%, transparent 70%);
+        animation: pulseNebula 20s infinite alternate ease-in-out;
+        transition: opacity 0.8s ease-in-out;
+        }
+        .fade-out { opacity: 0 !important; pointer-events: none !important; }
+        @keyframes pulseNebula { 
+        0% {opacity:0.8; transform:scale(1)} 
+        100% {opacity:1; transform:scale(1.05)} 
+        }
 
-function generateHumanoid() {
-    const positions = new Float32Array(evoConfig.particleCount * 3);
-    const parts = [
-        { x: 0, y: 30, z: 0, w: 10, h: 12, d: 10, prob: 0.10 },   
-        { x: 0, y: 5, z: 0, w: 20, h: 35, d: 12, prob: 0.45 },    
-        { x: -16, y: 10, z: 0, w: 6, h: 28, d: 6, prob: 0.10 },   
-        { x: 16, y: 10, z: 0, w: 6, h: 28, d: 6, prob: 0.10 },    
-        { x: -8, y: -25, z: 0, w: 8, h: 32, d: 8, prob: 0.125 },  
-        { x: 8, y: -25, z: 0, w: 8, h: 32, d: 8, prob: 0.125 }    
+        .uu-badge {
+        position: fixed; top: 1.5rem; right: 2rem; z-index: 20; opacity: 0;
+        animation: fadeDown 1.4s cubic-bezier(0.16,1,0.3,1) 0.9s forwards;
+        text-decoration: none; display: flex; flex-direction: column; align-items: center; gap: 0.25rem;
+        transition: opacity 0.8s ease-in-out;
+        }
+        .uu-badge svg { width: 26px; height: 26px; filter: drop-shadow(0 0 5px rgba(190,20,20,0.35)); transition: filter 0.3s; }
+        .uu-badge:hover svg { filter: drop-shadow(0 0 11px rgba(220,40,40,0.7)); }
+        .uu-text { font-size: 0.37rem; letter-spacing: 0.26em; text-transform: uppercase; color: #321010; transition: color 0.3s; }
+        .uu-badge:hover .uu-text { color: #7a2828; }
+
+        .life-badge {
+        position: fixed; top: 1.5rem; left: 2rem; z-index: 20; opacity: 0;
+        animation: fadeDown 1.4s cubic-bezier(0.16,1,0.3,1) 0.9s forwards;
+        text-decoration: none; display: flex; flex-direction: column; align-items: center; justify-content: center;
+        background: transparent; border: 1px solid rgba(74,127,193,0.3); padding: 0.5rem 1rem;
+        color: #eef0f8; font-family: 'DM Mono', monospace; font-size: 0.65rem; letter-spacing: 0.2em; text-transform: uppercase;
+        cursor: pointer; transition: all 0.3s ease, opacity 0.8s ease-in-out;
+        }
+        .life-badge:hover { 
+        background: rgba(74,127,193,0.1); border-color: rgba(74,127,193,0.8); box-shadow: 0 0 15px rgba(74,127,193,0.2); 
+        }
+
+        .top-header {
+        position: fixed; top: 3rem; left: 50%; transform: translateX(-50%); z-index: 10;
+        display: flex; flex-direction: column; align-items: center; pointer-events: none;
+        transition: opacity 0.8s ease-in-out;
+        }
+        .top-header > * { pointer-events: auto; }
+        .name {
+        font-family: 'Cormorant Garamond', serif; font-weight: 300; font-size: clamp(1.5rem, 4vw, 2.5rem);
+        letter-spacing: 0.24em; text-transform: uppercase; color: #eef0f8; text-align: center;
+        opacity: 0; animation: fadeDown 1.4s cubic-bezier(0.16,1,0.3,1) 0.2s forwards;
+        text-shadow: 0 0 30px rgba(180,200,255,0.2); white-space: nowrap;
+        }
+        .name::after { 
+        content:''; display:block; width:60%; height:1px; 
+        background:linear-gradient(90deg,transparent,rgba(74,127,193,0.38),transparent); margin:0.4rem auto 0; 
+        }
+
+        .bottom-nav {
+        position: fixed; bottom: 3.5rem; left: 0; width: 100%; z-index: 10;
+        display: flex; align-items: center; justify-content: center; gap: 0 2rem;
+        opacity: 0; animation: fadeUp 1.4s cubic-bezier(0.16,1,0.3,1) 0.5s forwards;
+        transition: opacity 0.8s ease-in-out;
+        }
+        .link-item {
+        display: flex; align-items: center; gap: 0.36rem; text-decoration: none; color: #5a6285;
+        font-size: 0.65rem; letter-spacing: 0.2em; text-transform: uppercase; transition: color 0.3s; position: relative; white-space: nowrap;
+        }
+        .link-item:hover { color: #aeb6d4; }
+        .link-item svg { width: 12px; height: 12px; flex-shrink: 0; opacity: 0.45; transition: opacity 0.3s; }
+        .link-item:hover svg { opacity: 0.9; }
+        .link-item::after { 
+        content:''; position:absolute; bottom:-4px; left:0; width:0; height:1px; 
+        background:rgba(74,127,193,0.5); transition:width 0.3s; 
+        }
+        .link-item:hover::after { width: 100%; }
+        .link-divider { width: 1px; height: 10px; background: #161a2b; flex-shrink: 0; }
+
+        /* ==========================================================================
+        PART 2: EPIC CINEMATIC DIMENSION CSS
+        ========================================================================== */
+        #epic-dimension {
+        position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: 30;
+        opacity: 0; pointer-events: none; transition: opacity 1.2s ease-in-out;
+        background: #000000; overflow: hidden;
+        }
+        #epic-dimension.active { opacity: 1; pointer-events: auto; }
+
+        #canvas-container { position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 1; }
+
+        .scanlines {
+        position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+        background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.25) 50%);
+        background-size: 100% 4px; z-index: 10; pointer-events: none; opacity: 0.4;
+        }
+        .vignette {
+        position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+        background: radial-gradient(circle, rgba(0,0,0,0) 20%, rgba(0,0,0,0.95) 100%);
+        z-index: 9; pointer-events: none;
+        }
+
+        #narrative-container {
+        position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
+        z-index: 20; text-align: center; pointer-events: none;
+        display: flex; flex-direction: column; align-items: center; justify-content: center;
+        width: 90%; max-width: 1200px;
+        }
+        
+        .story-title {
+        font-family: 'Cormorant Garamond', serif;
+        font-size: clamp(2rem, 7vw, 5rem);
+        font-weight: 600;
+        letter-spacing: 0.3em;
+        color: #ffffff;
+        text-transform: uppercase;
+        text-shadow: 0 0 30px rgba(255, 255, 255, 0.6), 0 0 60px rgba(100, 200, 255, 0.4);
+        margin-bottom: 10px;
+        opacity: 0; 
+        transform: translateY(20px);
+        }
+
+        .story-subtitle {
+        font-family: 'DM Mono', monospace;
+        font-size: clamp(0.7rem, 2vw, 1.2rem);
+        font-weight: 300;
+        letter-spacing: 0.4em;
+        color: rgba(200, 220, 255, 0.8);
+        text-transform: uppercase;
+        opacity: 0; 
+        transform: translateY(-10px);
+        }
+
+        #btn-skip {
+        position: absolute; top: 1.5rem; right: 2rem; z-index: 40;
+        background: rgba(0,0,0,0.5); border: 1px solid rgba(255,255,255,0.2);
+        color: rgba(255,255,255,0.7); padding: 8px 16px; font-family: 'DM Mono', monospace;
+        font-size: 0.6rem; letter-spacing: 0.2em; text-transform: uppercase;
+        cursor: pointer; opacity: 0; pointer-events: none; transition: all 0.3s;
+        backdrop-filter: blur(5px);
+        }
+        #btn-skip:hover { color: #fff; border-color: #fff; background: rgba(255,255,255,0.15); box-shadow: 0 0 15px rgba(255,255,255,0.3); }
+        #btn-skip.visible { opacity: 1; pointer-events: auto; }
+
+        @media (max-width: 768px) {
+        .uu-badge { top: 1rem; right: 1rem; transform: scale(0.8); }
+        .life-badge { top: 1rem; left: 1rem; padding: 0.4rem 0.7rem; font-size: 0.55rem; }
+        .top-header { top: 4.5rem; }
+        .name { font-size: 1.6rem; letter-spacing: 0.15em; }
+        .bottom-nav { gap: 0 1rem; bottom: 2rem; }
+        .link-item { font-size: 0.55rem; }
+        #btn-skip { top: 1rem; right: 1rem; padding: 6px 12px; font-size: 0.5rem; }
+        .story-title { letter-spacing: 0.15em; }
+        .story-subtitle { letter-spacing: 0.2em; line-height: 1.5; }
+        }
+
+        @keyframes fadeDown { from{opacity:0;transform:translateY(-15px)} to{opacity:1;transform:translateY(0)} }
+        @keyframes fadeUp   { from{opacity:0;transform:translateY(15px)}  to{opacity:1;transform:translateY(0)} }
+    </style>
+    </head>
+    <body>
+
+    <canvas id="starfield"></canvas>
+    <div class="nebula" id="void-nebula"></div>
+    <button class="life-badge" id="btn-life">Life</button>
+
+    <a class="uu-badge" id="void-uu" href="https://www.utah.edu" target="_blank" rel="noopener">
+    <svg viewBox="0 0 100 105" fill="none">
+        <rect x="6" y="5" width="30" height="58" rx="2" fill="#cc1e1e"/>
+        <rect x="64" y="5" width="30" height="58" rx="2" fill="#cc1e1e"/>
+        <path d="M6 55 L6 68 Q6 100 50 100 Q94 100 94 68 L94 55 L64 55 L64 68 Q64 78 50 78 Q36 78 36 68 L36 55 Z" fill="#cc1e1e"/>
+    </svg>
+    <span class="uu-text">Utah</span>
+    </a>
+
+    <header class="top-header" id="void-header">
+        <h1 class="name">AJChapa</h1>
+    </header>
+
+    <nav class="bottom-nav" id="void-nav">
+    <a class="link-item" href="https://www.linkedin.com/in/aj-chapagain" target="_blank" rel="noopener">
+        <svg viewBox="0 0 24 24" fill="currentColor"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 01-2.063-2.065 2.064 2.064 0 112.063 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/></svg>
+        LinkedIn
+    </a>
+    <div class="link-divider"></div>
+    <a class="link-item" href="https://www.instagram.com/aapplejuce/" target="_blank" rel="noopener">
+        <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zM12 0C8.741 0 8.333.014 7.053.072 2.695.272.273 2.69.073 7.052.014 8.333 0 8.741 0 12c0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98C8.333 23.986 8.741 24 12 24c3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98C15.668.014 15.259 0 12 0zm0 5.838a6.162 6.162 0 100 12.324 6.162 6.162 0 000-12.324zM12 16a4 4 0 110-8 4 4 0 010 8zm6.406-11.845a1.44 1.44 0 100 2.881 1.44 1.44 0 000-2.881z"/></svg>
+        Instagram
+    </a>
+    <div class="link-divider"></div>
+    <a class="link-item" href="https://steamcommunity.com/profiles/76561198343184351/" target="_blank" rel="noopener">
+        <svg viewBox="0 0 24 24" fill="currentColor"><path d="M11.979 0C5.678 0 .511 4.86.022 11.037l6.432 2.658c.545-.371 1.203-.59 1.912-.59.063 0 .125.004.188.006l2.861-4.142V8.91c0-2.495 2.028-4.524 4.524-4.524 2.494 0 4.524 2.031 4.524 4.527s-2.03 4.525-4.524 4.525h-.105l-4.076 2.911c0 .052.004.105.004.159 0 1.875-1.515 3.396-3.39 3.396-1.635 0-3.016-1.173-3.331-2.727L.436 15.27C1.862 20.307 6.486 24 11.979 24c6.627 0 11.999-5.373 11.999-12S18.605 0 11.979 0zM7.54 18.21l-1.473-.61c.262.543.714.999 1.314 1.25 1.297.539 2.793-.076 3.332-1.375.263-.63.264-1.319.005-1.949s-.75-1.121-1.377-1.383c-.624-.26-1.29-.249-1.878-.03l1.523.63c.956.4 1.409 1.5 1.009 2.455-.397.957-1.497 1.41-2.454 1.012H7.54zm11.415-9.303c0-1.662-1.353-3.015-3.015-3.015-1.665 0-3.015 1.353-3.015 3.015 0 1.665 1.35 3.015 3.015 3.015 1.663 0 3.015-1.35 3.015-3.015zm-5.273.012c0-1.252 1.013-2.266 2.265-2.266 1.249 0 2.266 1.014 2.266 2.266 0 1.251-1.017 2.265-2.266 2.265-1.253 0-2.265-1.014-2.265-2.265z"/></svg>
+        Steam
+    </a>
+    </nav>
+
+    <div id="epic-dimension">
+    <div id="canvas-container"></div>
+    <div class="scanlines"></div>
+    <div class="vignette"></div>
+    
+    <button id="btn-skip">SKIP TO END >></button>
+    
+    <div id="narrative-container">
+        <div id="story-title" class="story-title">INIT</div>
+        <div id="story-subtitle" class="story-subtitle">STANDBY</div>
+    </div>
+    </div>
+
+    <script>
+    // ==========================================================================
+    // UTILITY FUNCTIONS & GLOBALS
+    // ==========================================================================
+    function rand(a, b) { return a + Math.random() * (b - a); }
+    const isMobile = window.innerWidth < 768;
+
+    // This variable will tell the 2D background to completely stop drawing
+    // when the 3D cinematic is running, saving your phone's processor!
+    let voidActive = true; 
+
+    // ==========================================================================
+    // PART 1: VOID JAVASCRIPT (ORIGINAL LOGIC)
+    // ==========================================================================
+    const vCanvas = document.getElementById('starfield');
+    const vCtx = vCanvas.getContext('2d');
+    let vW, vH, stars = [], shootingStars = [], starDust = [];
+    const BH = { rx: 0.5, ry: 0.5 }; 
+    let bhX, bhY; 
+    const BH_RADIUS = 24;
+    let isWarping = false;
+    let voidRAF;
+
+    function vResize() {
+        vW = vCanvas.width = window.innerWidth;
+        vH = vCanvas.height = window.innerHeight;
+        bhX = vW * BH.rx;
+        bhY = vH * BH.ry;
+    }
+
+    const STELLAR_COLORS = [
+        {h:220, s:80, l:85}, {h:200, s:40, l:95}, {h:60, s:20, l:95}, 
+        {h:35, s:70, l:80}, {h:15, s:80, l:75}
     ];
-    for (let i = 0; i < evoConfig.particleCount; i++) {
-        const i3 = i * 3;
-        let r = Math.random(), acc = 0, part = parts[parts.length - 1];
-        for(let j=0; j<parts.length; j++) {
-            acc += parts[j].prob;
-            if(r <= acc) { part = parts[j]; break; }
-        }
-        positions[i3] = part.x + rand(-part.w/2, part.w/2);
-        positions[i3 + 1] = part.y + rand(-part.h/2, part.h/2);
-        positions[i3 + 2] = part.z + rand(-part.d/2, part.d/2);
-    }
-    return positions;
-}
 
-function generateCity() {
-    const positions = new Float32Array(evoConfig.particleCount * 3);
-    const buildings = [];
-    for(let i=0; i<60; i++) {
-        buildings.push({ x: rand(-60, 60), z: rand(-60, 60), width: rand(4, 12), depth: rand(4, 12), height: rand(10, 80) });
+    function spawnStarAtEdge() {
+    const e = Math.floor(rand(0, 4)); let x, y;
+    if(e === 0) { x = rand(0, vW); y = -20; } 
+    else if(e === 1) { x = vW + 20; y = rand(0, vH); }
+    else if(e === 2) { x = rand(0, vW); y = vH + 20; } 
+    else { x = -20; y = rand(0, vH); }
+    
+    const c = STELLAR_COLORS[Math.floor(Math.random() * STELLAR_COLORS.length)];
+    const ib = Math.random() > 0.85;
+    return {
+        x, y, vx: 0, vy: 0, 
+        r: ib ? rand(0.8, 1.4) : rand(0.3, 0.7), 
+        baseOpacity: ib ? rand(0.5, 0.9) : rand(0.1, 0.4), 
+        twinkleSpeed: rand(0.002, 0.01), 
+        twinkleOffset: rand(0, Math.PI * 2), 
+        h: c.h, s: c.s, l: c.l, trail: [], isBright: ib
+    };
     }
-    for (let i = 0; i < evoConfig.particleCount; i++) {
-        const i3 = i * 3;
-        const b = buildings[Math.floor(Math.random() * buildings.length)];
-        const isSurface = Math.random() > 0.2;
-        let px = b.x + rand(-b.width/2, b.width/2);
-        let py = rand(-40, -40 + b.height);
-        let pz = b.z + rand(-b.depth/2, b.depth/2);
-        if (isSurface) {
-            const edge = Math.random();
-            if(edge < 0.25) px = b.x - b.width/2;
-            else if(edge < 0.5) px = b.x + b.width/2;
-            else if(edge < 0.75) pz = b.z - b.depth/2;
-            else pz = b.z + b.depth/2;
-        }
-        positions[i3] = px; positions[i3 + 1] = py; positions[i3 + 2] = pz;
-    }
-    return positions;
-}
 
-function generateDigitalGrid() {
-    const positions = new Float32Array(evoConfig.particleCount * 3);
-    const spread = 150;
-    for (let i = 0; i < evoConfig.particleCount; i++) {
-        const i3 = i * 3;
-        if (Math.random() < 0.7) {
-            positions[i3] = Math.round(rand(-spread, spread) / 15) * 15;
-            positions[i3 + 1] = Math.round(rand(-spread, spread) / 15) * 15;
-            positions[i3 + 2] = Math.round(rand(-spread, spread) / 15) * 15;
+    function initStars() {
+        stars = []; shootingStars = []; starDust = [];
+        for(let i = 0; i < 450; i++) {
+            const s = spawnStarAtEdge();
+            s.x = rand(0, vW); s.y = rand(0, vH);
+            stars.push(s);
+        }
+    }
+
+    function drawVoidStar(s, a) {
+    vCtx.beginPath(); vCtx.arc(s.x, s.y, s.r, 0, Math.PI * 2);
+    vCtx.fillStyle = `hsla(${s.h},${s.s}%,${s.l}%,${a})`; vCtx.fill();
+    if(s.isBright && a > 0.4) {
+        const g = vCtx.createRadialGradient(s.x, s.y, 0, s.x, s.y, s.r * 4);
+        g.addColorStop(0, `hsla(${s.h},${s.s}%,${s.l}%,${a*0.4})`);
+        g.addColorStop(1, `hsla(${s.h},${s.s}%,${s.l}%,0)`);
+        vCtx.beginPath(); vCtx.arc(s.x, s.y, s.r * 4, 0, Math.PI * 2);
+        vCtx.fillStyle = g; vCtx.fill();
+    }
+    }
+
+    function drawTrail(s) {
+    if(s.trail.length < 2) return;
+    vCtx.save();
+    for(let i = 1; i < s.trail.length; i++) {
+        const a = (i / s.trail.length) * 0.3;
+        vCtx.beginPath(); vCtx.moveTo(s.trail[i-1].x, s.trail[i-1].y); vCtx.lineTo(s.trail[i].x, s.trail[i].y);
+        vCtx.strokeStyle = `hsla(${s.h},${s.s}%,${s.l}%,${a})`; 
+        vCtx.lineWidth = s.r * 0.5; vCtx.lineCap = 'round'; vCtx.stroke();
+    }
+    vCtx.restore();
+    }
+
+    function drawBlackHole() {
+    const l = vCtx.createRadialGradient(bhX, bhY, BH_RADIUS, bhX, bhY, BH_RADIUS * 7);
+    l.addColorStop(0, 'rgba(0,0,0,0.95)'); l.addColorStop(0.3, 'rgba(3,5,12,0.4)'); l.addColorStop(1, 'rgba(0,0,0,0)');
+    vCtx.beginPath(); vCtx.arc(bhX, bhY, BH_RADIUS * 7, 0, Math.PI * 2); vCtx.fillStyle = l; vCtx.fill();
+    vCtx.beginPath(); vCtx.arc(bhX, bhY, BH_RADIUS, 0, Math.PI * 2); vCtx.fillStyle = '#000'; vCtx.fill();
+    const pr = vCtx.createLinearGradient(bhX - BH_RADIUS, bhY - BH_RADIUS, bhX + BH_RADIUS, bhY + BH_RADIUS);
+    pr.addColorStop(0, 'rgba(255,230,200,0.6)'); pr.addColorStop(0.5, 'rgba(200,150,100,0.15)'); pr.addColorStop(1, 'rgba(255,230,200,0.05)');
+    vCtx.beginPath(); vCtx.arc(bhX, bhY, BH_RADIUS + 0.5, 0, Math.PI * 2); 
+    vCtx.strokeStyle = pr; vCtx.lineWidth = 1.2; vCtx.stroke();
+    }
+
+    const MT = [
+        {h:15, s:90, l:70, w:[1.2, 2.0], len:[100, 220]},
+        {h:195, s:80, l:85, w:[1.0, 1.8], len:[120, 250]},
+        {h:210, s:20, l:95, w:[0.8, 1.5], len:[80, 150]}
+    ];
+
+    function createShootingStar() {
+    const t = MT[Math.floor(Math.random() * MT.length)];
+    const ss = Math.floor(rand(0, 4)); let sx, sy, tx, ty;
+    if(ss === 0) { sx = rand(0, vW); sy = -20; tx = rand(0, vW); ty = vH + 20; } 
+    else if(ss === 1) { sx = vW + 20; sy = rand(0, vH); tx = -20; ty = rand(0, vH); }
+    else if(ss === 2) { sx = rand(0, vW); sy = vH + 20; tx = rand(0, vW); ty = -20; } 
+    else { sx = -20; sy = rand(0, vH); tx = vW + 20; ty = rand(0, vH); }
+    const ang = Math.atan2(ty - sy, tx - sx); const spd = rand(28, 50);
+    return {
+        x: sx, y: sy, vx: Math.cos(ang) * spd, vy: Math.sin(ang) * spd, 
+        len: rand(t.len[0], t.len[1]), alpha: 1.0, fade: rand(0.015, 0.03), 
+        width: rand(t.w[0], t.w[1]), h: t.h, s: t.s, l: t.l
+    };
+    }
+
+    let vFrame = 0, nextShoot = rand(20, 80);
+
+    function vLoop() {
+    // PERFORMANCE FIX: If we are inside the 3D dimension, stop calculating the 2D background entirely.
+    if (!voidActive) {
+        voidRAF = requestAnimationFrame(vLoop);
+        return;
+    }
+
+    vCtx.clearRect(0, 0, vW, vH); vFrame++; drawBlackHole();
+    
+    if(vFrame >= nextShoot && !isWarping) {
+        shootingStars.push(createShootingStar());
+        if(Math.random() < 0.4) shootingStars.push(createShootingStar());
+        nextShoot = vFrame + rand(30, 100);
+    }
+    
+    shootingStars = shootingStars.filter(s => s.alpha > 0 && s.x > -500 && s.x < vW + 500 && s.y > -500 && s.y < vH + 500);
+    for(const s of shootingStars) {
+        vCtx.save();
+        const tx2 = s.x - s.vx * (s.len / 20), ty2 = s.y - s.vy * (s.len / 20);
+        const g = vCtx.createLinearGradient(s.x, s.y, tx2, ty2);
+        g.addColorStop(0, `hsla(0,0%,100%,${s.alpha})`);
+        g.addColorStop(0.1, `hsla(${s.h},${s.s}%,${s.l}%,${s.alpha*0.9})`);
+        g.addColorStop(1, `hsla(${s.h},${s.s}%,${s.l}%,0)`);
+        vCtx.beginPath(); vCtx.moveTo(s.x, s.y); vCtx.lineTo(tx2, ty2);
+        vCtx.strokeStyle = g; vCtx.lineWidth = s.width; vCtx.lineCap = 'round'; vCtx.stroke();
+        
+        if(Math.random() > 0.3) {
+            starDust.push({
+                x: s.x, y: s.y, vx: s.vx * 0.05 + rand(-1, 1), vy: s.vy * 0.05 + rand(-1, 1), 
+                alpha: s.alpha * 0.8, decay: rand(0.02, 0.06), size: rand(0.5, 2), 
+                h: s.h, s: s.s, l: s.l
+            });
+        }
+        vCtx.restore();
+        
+        const dx = bhX - s.x, dy = bhY - s.y, dist = Math.sqrt(dx*dx + dy*dy);
+        if(isWarping) { s.vx -= (dx / dist) * 8; s.vy -= (dy / dist) * 8; } 
+        else { s.vx += (dx / dist) * 0.5; s.vy += (dy / dist) * 0.5; }
+        
+        s.x += s.vx; s.y += s.vy; s.alpha -= s.fade;
+    }
+    
+    starDust = starDust.filter(p => p.alpha > 0 && p.x > -200 && p.x < vW + 200 && p.y > -200 && p.y < vH + 200);
+    for(const p of starDust) {
+        vCtx.beginPath(); vCtx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
+        vCtx.fillStyle = `hsla(${p.h},${p.s}%,${p.l}%,${p.alpha})`; vCtx.fill();
+        if(isWarping) {
+            const dx = bhX - p.x, dy = bhY - p.y, dist = Math.sqrt(dx*dx + dy*dy);
+            p.vx -= (dx / dist) * 2; p.vy -= (dy / dist) * 2;
+        }
+        p.x += p.vx; p.y += p.vy; p.alpha -= p.decay;
+    }
+    
+    for(let i = stars.length - 1; i >= 0; i--) {
+        const s = stars[i]; const dx = bhX - s.x, dy = bhY - s.y, dist = Math.sqrt(dx*dx + dy*dy);
+        if(dist < BH_RADIUS && !isWarping) { stars[i] = spawnStarAtEdge(); continue; }
+        
+        if(isWarping) {
+        s.vx -= (dx / dist) * 3.5; s.vy -= (dy / dist) * 3.5; 
+        s.trail.push({x: s.x, y: s.y}); if(s.trail.length > 50) s.trail.shift();
         } else {
-            positions[i3] = rand(-spread, spread);
-            positions[i3 + 1] = rand(-spread, spread);
-            positions[i3 + 2] = rand(-spread, spread);
+        const gp = 0.001 + (150 / (dist + 50)) * 0.015;
+        s.vx += (dx / dist) * gp; s.vy += (dy / dist) * gp;
+        const spd2 = Math.sqrt(s.vx*s.vx + s.vy*s.vy); const ms = 0.2 + (800 / (dist + 10)) * 2;
+        if(spd2 > ms) { s.vx = (s.vx / spd2) * ms; s.vy = (s.vy / spd2) * ms; }
+        if(dist < 300) { s.trail.push({x: s.x, y: s.y}); if(s.trail.length > 20) s.trail.shift(); } 
+        else { if(s.trail.length > 0) s.trail.shift(); }
         }
+        
+        const tw = Math.sin(vFrame * s.twinkleSpeed + s.twinkleOffset);
+        let a = Math.max(0.01, s.baseOpacity + tw * s.baseOpacity * 0.4);
+        s.x += s.vx; s.y += s.vy; drawTrail(s); drawVoidStar(s, a);
     }
-    return positions;
-}
-
-const vertexShader = `
-    uniform float uTime; uniform float uProgress; uniform float uExplosion;
-    uniform vec2 uMouse; uniform vec3 uColor1; uniform vec3 uColor2; uniform float uInteractive;
-    attribute vec3 targetPosition; attribute vec3 randoms;
-    varying vec3 vColor; varying float vAlpha;
-
-    vec4 permute(vec4 x){return mod(((x*34.0)+1.0)*x, 289.0);}
-    vec4 taylorInvSqrt(vec4 r){return 1.79284291400159 - 0.85373472095314 * r;}
-    float snoise(vec3 v){ 
-        const vec2  C = vec2(1.0/6.0, 1.0/3.0); const vec4  D = vec4(0.0, 0.5, 1.0, 2.0);
-        vec3 i  = floor(v + dot(v, C.yyy) ); vec3 x0 = v - i + dot(i, C.xxx) ;
-        vec3 g = step(x0.yzx, x0.xyz); vec3 l = 1.0 - g;
-        vec3 i1 = min( g.xyz, l.zxy ); vec3 i2 = max( g.xyz, l.zxy );
-        vec3 x1 = x0 - i1 + 1.0 * C.xxx; vec3 x2 = x0 - i2 + 2.0 * C.xxx; vec3 x3 = x0 - 1.0 + 3.0 * C.xxx;
-        i = mod(i, 289.0 ); 
-        vec4 p = permute( permute( permute( i.z + vec4(0.0, i1.z, i2.z, 1.0 )) + i.y + vec4(0.0, i1.y, i2.y, 1.0 )) + i.x + vec4(0.0, i1.x, i2.x, 1.0 ));
-        float n_ = 1.0/7.0; vec3  ns = n_ * D.wyz - D.xzx;
-        vec4 j = p - 49.0 * floor(p * ns.z *ns.z); vec4 x_ = floor(j * ns.z); vec4 y_ = floor(j - 7.0 * x_ );
-        vec4 x = x_ *ns.x + ns.yyyy; vec4 y = y_ *ns.x + ns.yyyy; vec4 h = 1.0 - abs(x) - abs(y);
-        vec4 b0 = vec4( x.xy, y.xy ); vec4 b1 = vec4( x.zw, y.zw );
-        vec4 s0 = floor(b0)*2.0 + 1.0; vec4 s1 = floor(b1)*2.0 + 1.0; vec4 sh = -step(h, vec4(0.0));
-        vec4 a0 = b0.xzyw + s0.xzyw*sh.xxyy ; vec4 a1 = b1.xzyw + s1.xzyw*sh.zzww ;
-        vec3 p0 = vec3(a0.xy,h.x); vec3 p1 = vec3(a0.zw,h.y); vec3 p2 = vec3(a1.xy,h.z); vec3 p3 = vec3(a1.zw,h.w);
-        vec4 norm = taylorInvSqrt(vec4(dot(p0,p0), dot(p1,p1), dot(p2, p2), dot(p3,p3)));
-        p0 *= norm.x; p1 *= norm.y; p2 *= norm.z; p3 *= norm.w;
-        vec4 m = max(0.6 - vec4(dot(x0,x0), dot(x1,x1), dot(x2,x2), dot(x3,x3)), 0.0); m = m * m;
-        return 42.0 * dot( m*m, vec4( dot(p0,x0), dot(p1,x1), dot(p2,x2), dot(p3,x3) ) );
+    voidRAF = requestAnimationFrame(vLoop);
     }
-    void main() {
-        vec3 mixedPosition = mix(position, targetPosition, uProgress);
-        float noiseVal = snoise(vec3(mixedPosition.x * 0.02, mixedPosition.y * 0.02, uTime * 0.2 + randoms.z));
-        mixedPosition.x += noiseVal * 1.5; mixedPosition.y += snoise(vec3(mixedPosition.y * 0.02, mixedPosition.z * 0.02, uTime * 0.2)) * 1.5; mixedPosition.z += snoise(vec3(mixedPosition.z * 0.02, mixedPosition.x * 0.02, uTime * 0.2)) * 1.5;
-        vec3 dir = normalize(mixedPosition); mixedPosition += dir * uExplosion * randoms.x * 40.0;
-        if (uInteractive > 0.5) {
-            float distToMouse = distance(mixedPosition.xy, uMouse * 120.0);
-            if(distToMouse < 30.0) { vec2 pushDir = normalize(mixedPosition.xy - (uMouse * 120.0)); mixedPosition.xy += pushDir * (30.0 - distToMouse) * 0.8; }
+
+    // ==========================================================================
+    // PART 2: THE EPIC CINEMATIC DIMENSION (WEBGL / THREE.JS)
+    // ==========================================================================
+
+    // --- Configuration & Updated Narrative Text ---
+    const epicConfig = {
+        particleCount: isMobile ? 8000 : 35000, 
+        stages: [
+            { 
+                title: "COSMIC GENESIS", 
+                sub: "IN THE BEGINNING ENERGY SPARKS",
+                c1: new THREE.Color(0x0a0a2a), c2: new THREE.Color(0x4400ff),
+                duration: 12
+            },
+            { 
+                title: "LIFE", 
+                sub: "THE SPARK EMERGES",
+                c1: new THREE.Color(0x00ffaa), c2: new THREE.Color(0x0044ff),
+                duration: 14
+            },
+            { 
+                title: "HUMANS EVOLVE", 
+                sub: "THE FIRST THINKERS WALK THE EARTH",
+                c1: new THREE.Color(0xffaa00), c2: new THREE.Color(0xff2200),
+                duration: 14
+            },
+            { 
+                title: "CIVILIZATION", 
+                sub: "CITIES RISE KNOWLEDGE FLOURISHES",
+                c1: new THREE.Color(0xffcc00), c2: new THREE.Color(0xaaaaaa),
+                duration: 14
+            },
+            { 
+                title: "SINGULARITY", 
+                sub: "THE SINGULARITY AWAKENS",
+                c1: new THREE.Color(0x00ffff), c2: new THREE.Color(0xff00ff),
+                duration: 14
+            },
+            { 
+                title: "INFINITY", 
+                sub: "EVERYTHING RETURNS TO THE VOID",
+                c1: new THREE.Color(0xffffff), c2: new THREE.Color(0x000000),
+                duration: 18
+            }
+        ]
+    };
+
+    let scene, camera, renderer;
+    let particleSystem, particleMaterial;
+    let heroParticle, heroGlow;
+    let isEpicInitialized = false;
+    let animationActive = false;
+    let masterTimeline = null;
+
+    const geoBuffers = [];
+
+    const mouse3D = new THREE.Vector2(0, 0);
+    const targetCamPos = new THREE.Vector3(0, 0, 150);
+    let enableMousePush = false; 
+
+    // Generators
+    function genCosmic() {
+        const pos = new Float32Array(epicConfig.particleCount * 3);
+        for (let i = 0; i < epicConfig.particleCount; i++) {
+            const i3 = i * 3;
+            const radius = Math.pow(Math.random(), 2) * 200 + 10;
+            const arms = 5;
+            const armOffset = (Math.random() * Math.PI * 2) / arms;
+            const angle = (radius * 0.05) + armOffset + rand(-0.5, 0.5);
+            
+            pos[i3] = Math.cos(angle) * radius;
+            pos[i3 + 1] = rand(-5, 5) * (1 - radius/200); 
+            pos[i3 + 2] = Math.sin(angle) * radius;
         }
-        vec4 mvPosition = modelViewMatrix * vec4(mixedPosition, 1.0);
-        gl_Position = projectionMatrix * mvPosition;
-        gl_PointSize = (randoms.x * 3.5 + 1.0) * (150.0 / -mvPosition.z);
-        float colorMix = smoothstep(-40.0, 40.0, mixedPosition.y);
-        vColor = mix(uColor1, uColor2, colorMix + noiseVal * 0.3);
-        vAlpha = 1.0 - (uExplosion * 0.4);
+        return pos;
     }
-`;
 
-const fragmentShader = `
-    varying vec3 vColor; varying float vAlpha;
-    void main() {
-        float dist = length(gl_PointCoord - vec2(0.5));
-        if (dist > 0.5) discard;
-        gl_FragColor = vec4(vColor, (0.5 - dist) * 2.0 * vAlpha);
+    function genDNA() {
+        const pos = new Float32Array(epicConfig.particleCount * 3);
+        const radius = 18, height = 180, turns = 6;
+        for (let i = 0; i < epicConfig.particleCount; i++) {
+            const i3 = i * 3;
+            const t = Math.random(); 
+            const y = (t - 0.5) * height, angle = t * Math.PI * 2 * turns;
+            const strand = Math.random() > 0.5 ? 0 : Math.PI;
+            
+            if (Math.random() < 0.15) {
+                const bridgeT = Math.random();
+                const x1 = Math.cos(angle) * radius, z1 = Math.sin(angle) * radius;
+                const x2 = Math.cos(angle + Math.PI) * radius, z2 = Math.sin(angle + Math.PI) * radius;
+                pos[i3] = x1 + (x2 - x1) * bridgeT; pos[i3 + 1] = y; pos[i3 + 2] = z1 + (z2 - z1) * bridgeT;
+            } else {
+                const scatterR = rand(0, 2), scatterA = rand(0, Math.PI * 2);
+                pos[i3] = Math.cos(angle + strand) * radius + Math.cos(scatterA) * scatterR;
+                pos[i3 + 1] = y;
+                pos[i3 + 2] = Math.sin(angle + strand) * radius + Math.sin(scatterA) * scatterR;
+            }
+        }
+        return pos;
     }
-`;
 
-function init3D() {
-    if(isEvoInitialized) return;
-    const container = document.getElementById('canvas-container');
-    evoScene = new THREE.Scene();
-    evoScene.fog = new THREE.FogExp2(0x020202, 0.003);
-    evoCamera = new THREE.PerspectiveCamera(60, window.innerWidth / window.innerHeight, 0.1, 1000);
-    
-    evoRenderer = new THREE.WebGLRenderer({ antialias: true, alpha: true, powerPreference: "high-performance" });
-    evoRenderer.setSize(window.innerWidth, window.innerHeight);
-    evoRenderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
-    container.appendChild(evoRenderer.domElement);
+    function genHuman() {
+        const pos = new Float32Array(epicConfig.particleCount * 3);
+        const parts = [
+            { x: 0, y: 40, z: 0, w: 12, h: 16, d: 12, prob: 0.12 },   
+            { x: 0, y: 15, z: 0, w: 26, h: 36, d: 14, prob: 0.40 },   
+            { x: -18, y: 20, z: 0, w: 8, h: 30, d: 8, prob: 0.10 },   
+            { x: 18, y: 20, z: 0, w: 8, h: 30, d: 8, prob: 0.10 },    
+            { x: -10, y: -20, z: 0, w: 10, h: 38, d: 10, prob: 0.14 },
+            { x: 10, y: -20, z: 0, w: 10, h: 38, d: 10, prob: 0.14 }  
+        ];
+        for (let i = 0; i < epicConfig.particleCount; i++) {
+            const i3 = i * 3;
+            let r = Math.random(), acc = 0, p = parts[parts.length - 1];
+            for(let j=0; j<parts.length; j++) {
+                acc += parts[j].prob;
+                if(r <= acc) { p = parts[j]; break; }
+            }
+            pos[i3] = p.x + rand(-p.w/2, p.w/2);
+            pos[i3 + 1] = p.y + rand(-p.h/2, p.h/2);
+            pos[i3 + 2] = p.z + rand(-p.d/2, p.d/2);
+        }
+        return pos;
+    }
 
-    evoGeometries.push(generateDNA(), generateHumanoid(), generateCity(), generateDigitalGrid());
-    
-    const geometry = new THREE.BufferGeometry();
-    geometry.setAttribute('position', new THREE.BufferAttribute(evoGeometries[0].slice(), 3));
-    geometry.setAttribute('targetPosition', new THREE.BufferAttribute(evoGeometries[1].slice(), 3));
-    const randoms = new Float32Array(evoConfig.particleCount * 3);
-    for(let i=0; i<evoConfig.particleCount * 3; i++) randoms[i] = Math.random();
-    geometry.setAttribute('randoms', new THREE.BufferAttribute(randoms, 3));
+    function genCity() {
+        const pos = new Float32Array(epicConfig.particleCount * 3);
+        const buildings = [];
+        for(let i=0; i<80; i++) {
+            buildings.push({ x: rand(-80, 80), z: rand(-80, 80), w: rand(5, 15), d: rand(5, 15), h: rand(15, 90) });
+        }
+        for (let i = 0; i < epicConfig.particleCount; i++) {
+            const i3 = i * 3;
+            if (Math.random() < 0.1) {
+                pos[i3] = rand(-100, 100); pos[i3 + 1] = rand(0, 50); pos[i3 + 2] = rand(-100, 100);
+            } else {
+                const b = buildings[Math.floor(Math.random() * buildings.length)];
+                const isSurface = Math.random() > 0.3; 
+                let px = b.x + rand(-b.w/2, b.w/2), py = rand(-40, -40 + b.h), pz = b.z + rand(-b.d/2, b.d/2);
+                if (isSurface) {
+                    const edge = Math.random();
+                    if(edge < 0.25) px = b.x - b.w/2;
+                    else if(edge < 0.5) px = b.x + b.w/2;
+                    else if(edge < 0.75) pz = b.z - b.d/2;
+                    else pz = b.z + b.d/2;
+                }
+                pos[i3] = px; pos[i3 + 1] = py; pos[i3 + 2] = pz;
+            }
+        }
+        return pos;
+    }
 
-    evoMaterial = new THREE.ShaderMaterial({
-        vertexShader, fragmentShader,
-        uniforms: {
-            uTime: { value: 0 }, uProgress: { value: 0 }, uExplosion: { value: 0 },
-            uMouse: { value: new THREE.Vector2(-9999, -9999) },
-            uColor1: { value: evoConfig.colors[0].c1 }, uColor2: { value: evoConfig.colors[0].c2 },
-            uInteractive: { value: 0.0 }
-        },
-        transparent: true, depthWrite: false, blending: THREE.AdditiveBlending
-    });
+    function genSingularity() {
+        const pos = new Float32Array(epicConfig.particleCount * 3);
+        const spread = 180, gridSize = 20;
+        for (let i = 0; i < epicConfig.particleCount; i++) {
+            const i3 = i * 3;
+            if (Math.random() < 0.8) {
+                pos[i3] = Math.round(rand(-spread, spread) / gridSize) * gridSize;
+                pos[i3 + 1] = Math.round(rand(-spread, spread) / gridSize) * gridSize;
+                pos[i3 + 2] = Math.round(rand(-spread, spread) / gridSize) * gridSize;
+            } else {
+                pos[i3] = rand(-spread, spread); pos[i3 + 1] = rand(-spread, spread); pos[i3 + 2] = rand(-spread, spread);
+            }
+        }
+        return pos;
+    }
 
-    evoParticles = new THREE.Points(geometry, evoMaterial);
-    evoScene.add(evoParticles);
-    
-    window.addEventListener('resize', onWindowResize3D);
-    window.addEventListener('mousemove', onMouseMove3D);
-    window.addEventListener('touchmove', onTouchMove3D, {passive: true});
-    
-    isEvoInitialized = true;
-}
+    function genExplosion() {
+        const pos = new Float32Array(epicConfig.particleCount * 3);
+        for (let i = 0; i < epicConfig.particleCount; i++) {
+            const i3 = i * 3;
+            const u = Math.random(), v = Math.random();
+            const theta = 2 * Math.PI * u, phi = Math.acos(2 * v - 1);
+            const radius = rand(200, 600); 
+            pos[i3] = radius * Math.sin(phi) * Math.cos(theta);
+            pos[i3 + 1] = radius * Math.sin(phi) * Math.sin(theta);
+            pos[i3 + 2] = radius * Math.cos(phi);
+        }
+        return pos;
+    }
 
-function startCinematicSequence() {
-    const textEl = document.getElementById('narrative-text');
-    document.getElementById('final-ui').style.opacity = 0; // Reset UI
-    document.getElementById('final-ui').style.pointerEvents = 'none';
-    evoInteractive = false;
-    evoMaterial.uniforms.uInteractive.value = 0.0;
-    
-    const tl = gsap.timeline({ onComplete: () => {
-        evoInteractive = true;
-        evoMaterial.uniforms.uInteractive.value = 1.0;
-        gsap.to('#final-ui', { opacity: 1, duration: 1.5, y: -20, ease: "power2.out" });
-        document.getElementById('final-ui').style.pointerEvents = 'auto';
-    }});
+    const particleVertexShader = `
+        uniform float uTime; uniform float uProgress; uniform float uExplosion;
+        uniform float uBlackHolePull; uniform vec2 uMouse; uniform vec3 uColor1; 
+        uniform vec3 uColor2; uniform float uInteractive;
+        
+        attribute vec3 targetPosition; attribute vec3 randoms;
+        varying vec3 vColor; varying float vAlpha;
 
-    const prep = (f, t) => {
-        const geom = evoParticles.geometry;
-        geom.attributes.position.array.set(evoGeometries[f]);
-        geom.attributes.targetPosition.array.set(evoGeometries[t]);
+        vec4 permute(vec4 x){return mod(((x*34.0)+1.0)*x, 289.0);}
+        vec4 taylorInvSqrt(vec4 r){return 1.79284291400159 - 0.85373472095314 * r;}
+        float snoise(vec3 v){ 
+            const vec2  C = vec2(1.0/6.0, 1.0/3.0); const vec4  D = vec4(0.0, 0.5, 1.0, 2.0);
+            vec3 i  = floor(v + dot(v, C.yyy) ); vec3 x0 = v - i + dot(i, C.xxx) ;
+            vec3 g = step(x0.yzx, x0.xyz); vec3 l = 1.0 - g;
+            vec3 i1 = min( g.xyz, l.zxy ); vec3 i2 = max( g.xyz, l.zxy );
+            vec3 x1 = x0 - i1 + 1.0 * C.xxx; vec3 x2 = x0 - i2 + 2.0 * C.xxx; vec3 x3 = x0 - 1.0 + 3.0 * C.xxx;
+            i = mod(i, 289.0 ); 
+            vec4 p = permute( permute( permute( i.z + vec4(0.0, i1.z, i2.z, 1.0 )) + i.y + vec4(0.0, i1.y, i2.y, 1.0 )) + i.x + vec4(0.0, i1.x, i2.x, 1.0 ));
+            float n_ = 1.0/7.0; vec3  ns = n_ * D.wyz - D.xzx;
+            vec4 j = p - 49.0 * floor(p * ns.z *ns.z); vec4 x_ = floor(j * ns.z); vec4 y_ = floor(j - 7.0 * x_ );
+            vec4 x = x_ *ns.x + ns.yyyy; vec4 y = y_ *ns.x + ns.yyyy; vec4 h = 1.0 - abs(x) - abs(y);
+            vec4 b0 = vec4( x.xy, y.xy ); vec4 b1 = vec4( x.zw, y.zw );
+            vec4 s0 = floor(b0)*2.0 + 1.0; vec4 s1 = floor(b1)*2.0 + 1.0; vec4 sh = -step(h, vec4(0.0));
+            vec4 a0 = b0.xzyw + s0.xzyw*sh.xxyy ; vec4 a1 = b1.xzyw + s1.xzyw*sh.zzww ;
+            vec3 p0 = vec3(a0.xy,h.x); vec3 p1 = vec3(a0.zw,h.y); vec3 p2 = vec3(a1.xy,h.z); vec3 p3 = vec3(a1.zw,h.w);
+            vec4 norm = taylorInvSqrt(vec4(dot(p0,p0), dot(p1,p1), dot(p2, p2), dot(p3,p3)));
+            p0 *= norm.x; p1 *= norm.y; p2 *= norm.z; p3 *= norm.w;
+            vec4 m = max(0.6 - vec4(dot(x0,x0), dot(x1,x1), dot(x2,x2), dot(x3,x3)), 0.0); m = m * m;
+            return 42.0 * dot( m*m, vec4( dot(p0,x0), dot(p1,x1), dot(p2,x2), dot(p3,x3) ) );
+        }
+
+        void main() {
+            vec3 mixedPosition = mix(position, targetPosition, uProgress);
+            float noiseVal = snoise(vec3(mixedPosition.x * 0.015, mixedPosition.y * 0.015, uTime * 0.15 + randoms.z));
+            mixedPosition.x += noiseVal * 2.0; 
+            mixedPosition.y += snoise(vec3(mixedPosition.y * 0.015, mixedPosition.z * 0.015, uTime * 0.15)) * 2.0; 
+            mixedPosition.z += snoise(vec3(mixedPosition.z * 0.015, mixedPosition.x * 0.015, uTime * 0.15)) * 2.0;
+            
+            vec3 dir = normalize(mixedPosition); 
+            mixedPosition += dir * uExplosion * randoms.x * 50.0;
+            
+            if (uBlackHolePull > 0.0) {
+                float distToCenter = length(mixedPosition);
+                float pullFactor = uBlackHolePull;
+                float angle = uTime * 2.0 + randoms.y * 10.0;
+                mat2 rot = mat2(cos(angle), -sin(angle), sin(angle), cos(angle));
+                mixedPosition.xz = rot * mixedPosition.xz;
+                mixedPosition = mix(mixedPosition, vec3(0.0), pullFactor);
+            }
+            
+            if (uInteractive > 0.5) {
+                float distToMouse = distance(mixedPosition.xy, uMouse * 150.0);
+                if(distToMouse < 40.0) { 
+                    vec2 pushDir = normalize(mixedPosition.xy - (uMouse * 150.0)); 
+                    mixedPosition.xy += pushDir * (40.0 - distToMouse) * 1.2; 
+                }
+            }
+            
+            vec4 mvPosition = modelViewMatrix * vec4(mixedPosition, 1.0);
+            gl_Position = projectionMatrix * mvPosition;
+            
+            gl_PointSize = (randoms.x * 4.0 + 1.0) * (200.0 / -mvPosition.z);
+            gl_PointSize *= (1.0 - uBlackHolePull * 0.9);
+
+            float colorMix = smoothstep(-50.0, 50.0, mixedPosition.y);
+            vColor = mix(uColor1, uColor2, colorMix + noiseVal * 0.3);
+            
+            vColor += vec3(uExplosion * 0.2);
+            if (uBlackHolePull > 0.8) {
+                vColor = mix(vColor, vec3(1.0), (uBlackHolePull - 0.8) * 5.0); 
+            }
+            vAlpha = 1.0 - (uExplosion * 0.3);
+        }
+    `;
+
+    const particleFragmentShader = `
+        varying vec3 vColor; varying float vAlpha;
+        void main() {
+            float dist = length(gl_PointCoord - vec2(0.5));
+            if (dist > 0.5) discard;
+            float alpha = (0.5 - dist) * 2.0 * vAlpha;
+            vec3 finalColor = vColor * (1.0 + (0.5 - dist) * 2.0);
+            gl_FragColor = vec4(finalColor, alpha);
+        }
+    `;
+
+    function initEpicDimension() {
+        if(isEpicInitialized) return;
+        const container = document.getElementById('canvas-container');
+        
+        scene = new THREE.Scene();
+        scene.fog = new THREE.FogExp2(0x000000, 0.002); 
+        
+        camera = new THREE.PerspectiveCamera(60, window.innerWidth / window.innerHeight, 0.1, 2000);
+        camera.position.set(0, 0, 150);
+        
+        renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true, powerPreference: "high-performance" });
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        
+        // Performance limit for mobile pixel ratios
+        renderer.setPixelRatio(Math.min(window.devicePixelRatio, isMobile ? 1 : 2));
+        container.appendChild(renderer.domElement);
+
+        geoBuffers.push(genCosmic(), genDNA(), genHuman(), genCity(), genSingularity(), genExplosion());
+        
+        const geometry = new THREE.BufferGeometry();
+        geometry.setAttribute('position', new THREE.BufferAttribute(geoBuffers[0].slice(), 3));
+        geometry.setAttribute('targetPosition', new THREE.BufferAttribute(geoBuffers[1].slice(), 3));
+        
+        const randoms = new Float32Array(epicConfig.particleCount * 3);
+        for(let i=0; i < epicConfig.particleCount * 3; i++) randoms[i] = Math.random();
+        geometry.setAttribute('randoms', new THREE.BufferAttribute(randoms, 3));
+
+        particleMaterial = new THREE.ShaderMaterial({
+            vertexShader: particleVertexShader, 
+            fragmentShader: particleFragmentShader,
+            uniforms: {
+                uTime: { value: 0 }, uProgress: { value: 0 }, uExplosion: { value: 0 },
+                uBlackHolePull: { value: 0 }, uMouse: { value: new THREE.Vector2(-9999, -9999) },
+                uColor1: { value: epicConfig.stages[0].c1 }, uColor2: { value: epicConfig.stages[0].c2 },
+                uInteractive: { value: 0.0 }
+            },
+            transparent: true, depthWrite: false, blending: THREE.AdditiveBlending
+        });
+
+        particleSystem = new THREE.Points(geometry, particleMaterial);
+        scene.add(particleSystem);
+        
+        const heroGeo = new THREE.BufferGeometry();
+        heroGeo.setAttribute('position', new THREE.BufferAttribute(new Float32Array([0,0,0]), 3));
+        const heroMat = new THREE.ShaderMaterial({
+            vertexShader: particleVertexShader, fragmentShader: particleFragmentShader,
+            uniforms: {
+                uTime: { value: 0 }, uProgress: { value: 0 }, uExplosion: { value: 0 },
+                uBlackHolePull: { value: 0 }, uMouse: { value: new THREE.Vector2(-9999, -9999) },
+                uColor1: { value: new THREE.Color(0xffffff) }, uColor2: { value: new THREE.Color(0xffddaa) },
+                uInteractive: { value: 0.0 }
+            },
+            transparent: true, depthWrite: false, blending: THREE.AdditiveBlending
+        });
+        heroParticle = new THREE.Points(heroGeo, heroMat);
+        
+        const spriteMaterial = new THREE.SpriteMaterial({ 
+            map: createGlowTexture(), color: 0xffddaa, transparent: true, blending: THREE.AdditiveBlending 
+        });
+        heroGlow = new THREE.Sprite(spriteMaterial);
+        heroGlow.scale.set(15, 15, 1);
+        heroParticle.add(heroGlow);
+        scene.add(heroParticle);
+
+        window.addEventListener('resize', onResize3D);
+        window.addEventListener('mousemove', onMouseMove3D);
+        window.addEventListener('touchmove', onTouchMove3D, {passive: true});
+        
+        isEpicInitialized = true;
+    }
+
+    function createGlowTexture() {
+        const canvas = document.createElement('canvas');
+        canvas.width = 64; canvas.height = 64;
+        const ctx = canvas.getContext('2d');
+        const grad = ctx.createRadialGradient(32, 32, 0, 32, 32, 32);
+        grad.addColorStop(0, 'rgba(255,255,255,1)');
+        grad.addColorStop(0.2, 'rgba(255,200,100,0.8)');
+        grad.addColorStop(1, 'rgba(0,0,0,0)');
+        ctx.fillStyle = grad; ctx.fillRect(0,0,64,64);
+        return new THREE.CanvasTexture(canvas);
+    }
+
+    function updateText(stageIndex) {
+        const title = document.getElementById('story-title');
+        const sub = document.getElementById('story-subtitle');
+        
+        gsap.to([title, sub], {
+            opacity: 0, y: -20, duration: 0.8, ease: "power2.in",
+            onComplete: () => {
+                title.innerText = epicConfig.stages[stageIndex].title;
+                sub.innerText = epicConfig.stages[stageIndex].sub;
+                gsap.set([title, sub], { y: 20 });
+                gsap.to([title, sub], { opacity: 1, y: 0, duration: 1.2, ease: "power2.out", stagger: 0.2 });
+            }
+        });
+    }
+
+    function prepareMorph(fromIndex, toIndex) {
+        const geom = particleSystem.geometry;
+        geom.attributes.position.array.set(geoBuffers[fromIndex]);
+        geom.attributes.targetPosition.array.set(geoBuffers[toIndex]);
         geom.attributes.position.needsUpdate = true;
         geom.attributes.targetPosition.needsUpdate = true;
-        evoMaterial.uniforms.uProgress.value = 0;
-    };
-    const setTxt = (i) => { textEl.innerText = evoConfig.prompts[i]; };
-
-    // Reset Camera & Shaders to State 0
-    prep(0, 1);
-    evoMaterial.uniforms.uColor1.value.copy(evoConfig.colors[0].c1);
-    evoMaterial.uniforms.uColor2.value.copy(evoConfig.colors[0].c2);
-
-    // Phase 0
-    evoCamera.position.set(0, -50, 80);
-    setTxt(0);
-    tl.to(textEl, { opacity: 1, duration: 1, ease: "power1.inOut" }, 0);
-    tl.to(evoCamera.position, { y: 20, z: 120, duration: 2.5, ease: "sine.inOut" }, 0);
-    tl.to(textEl, { opacity: 0, duration: 0.5 }, 2.0);
-
-    // Phase 1
-    tl.call(() => { prep(0, 1); setTxt(1); }, [], 2.5);
-    tl.to(evoMaterial.uniforms.uExplosion, { value: 1.2, duration: 0.4, yoyo: true, repeat: 1, ease: "power2.out" }, 2.5);
-    tl.to(evoMaterial.uniforms.uProgress, { value: 1.0, duration: 1.5, ease: "power2.inOut" }, 2.5);
-    tl.to(evoMaterial.uniforms.uColor1.value, { r: evoConfig.colors[1].c1.r, g: evoConfig.colors[1].c1.g, b: evoConfig.colors[1].c1.b, duration: 1.5 }, 2.5);
-    tl.to(evoMaterial.uniforms.uColor2.value, { r: evoConfig.colors[1].c2.r, g: evoConfig.colors[1].c2.g, b: evoConfig.colors[1].c2.b, duration: 1.5 }, 2.5);
-    tl.to(textEl, { opacity: 1, duration: 0.8 }, 3.0);
-    tl.to(evoCamera.position, { x: 30, y: 0, z: 100, duration: 3, ease: "power1.inOut" }, 2.5);
-    tl.to(textEl, { opacity: 0, duration: 0.5 }, 5.0);
-
-    // Phase 2
-    tl.call(() => { prep(1, 2); setTxt(2); }, [], 5.5);
-    tl.to(evoMaterial.uniforms.uExplosion, { value: 1.5, duration: 0.4, yoyo: true, repeat: 1, ease: "power2.out" }, 5.5);
-    tl.to(evoMaterial.uniforms.uProgress, { value: 1.0, duration: 1.5, ease: "power2.inOut" }, 5.5);
-    tl.to(evoMaterial.uniforms.uColor1.value, { r: evoConfig.colors[2].c1.r, g: evoConfig.colors[2].c1.g, b: evoConfig.colors[2].c1.b, duration: 1.5 }, 5.5);
-    tl.to(evoMaterial.uniforms.uColor2.value, { r: evoConfig.colors[2].c2.r, g: evoConfig.colors[2].c2.g, b: evoConfig.colors[2].c2.b, duration: 1.5 }, 5.5);
-    tl.to(textEl, { opacity: 1, duration: 0.8 }, 6.0);
-    tl.to(evoCamera.position, { x: 0, y: 40, z: 150, duration: 3, ease: "power2.out" }, 5.5);
-    tl.to(textEl, { opacity: 0, duration: 0.5 }, 8.0);
-
-    // Phase 3
-    tl.call(() => { prep(2, 3); setTxt(3); }, [], 8.5);
-    tl.to(evoMaterial.uniforms.uExplosion, { value: 2.0, duration: 0.6, yoyo: true, repeat: 1, ease: "power2.out" }, 8.5);
-    tl.to(evoMaterial.uniforms.uProgress, { value: 1.0, duration: 2.0, ease: "power2.inOut" }, 8.5);
-    tl.to(evoMaterial.uniforms.uColor1.value, { r: evoConfig.colors[3].c1.r, g: evoConfig.colors[3].c1.g, b: evoConfig.colors[3].c1.b, duration: 2.0 }, 8.5);
-    tl.to(evoMaterial.uniforms.uColor2.value, { r: evoConfig.colors[3].c2.r, g: evoConfig.colors[3].c2.g, b: evoConfig.colors[3].c2.b, duration: 2.0 }, 8.5);
-    tl.to(textEl, { opacity: 1, duration: 1.0 }, 9.0);
-    tl.to(evoCamera.position, { x: 0, y: 0, z: 250, duration: 3.5, ease: "power3.out" }, 8.5);
-    tl.to(textEl, { opacity: 0, duration: 1.0 }, 11.0);
-}
-
-function onWindowResize3D() {
-    if(!isEvoInitialized) return;
-    evoCamera.aspect = window.innerWidth / window.innerHeight;
-    evoCamera.updateProjectionMatrix();
-    evoRenderer.setSize(window.innerWidth, window.innerHeight);
-}
-
-function onMouseMove3D(e) {
-    if(!evoInteractive) return;
-    evoMouse.x = (e.clientX / window.innerWidth) * 2 - 1;
-    evoMouse.y = -(e.clientY / window.innerHeight) * 2 + 1;
-}
-
-function onTouchMove3D(e) {
-    if(!evoInteractive || e.touches.length === 0) return;
-    evoMouse.x = (e.touches[0].clientX / window.innerWidth) * 2 - 1;
-    evoMouse.y = -(e.touches[0].clientY / window.innerHeight) * 2 + 1;
-}
-
-let evoTime = 0;
-function animate3D() {
-    if(!evoAnimationActive) return;
-    evoTime += 0.015;
-    
-    if (evoMaterial) {
-        evoMaterial.uniforms.uTime.value = evoTime;
-        if (evoInteractive) evoMaterial.uniforms.uMouse.value.lerp(evoMouse, 0.1);
+        particleMaterial.uniforms.uProgress.value = 0;
     }
-    if (evoParticles) {
-        evoParticles.rotation.y = evoTime * 0.1;
-        evoParticles.rotation.z = Math.sin(evoTime * 0.05) * 0.1;
+
+    // ==========================================================================
+    // THE AUTOMATIC RETURN FUNCTION
+    // ==========================================================================
+    function returnToVoid() {
+    const EpicDim = document.getElementById('epic-dimension');
+    EpicDim.classList.remove('active');
+    
+    if(masterTimeline) masterTimeline.kill(); 
+    
+    setTimeout(() => {
+        animationActive = false;
+        gsap.ticker.remove(animateEpicDimension); 
+        
+        // Bring back original Void UI
+        const UI_ELEMENTS = ['starfield', 'void-nebula', 'void-uu', 'void-header', 'void-nav', 'btn-life'];
+        UI_ELEMENTS.forEach(id => document.getElementById(id).classList.remove('fade-out'));
+        isWarping = false;
+        
+        // Resume the original 2D Engine
+        voidActive = true;
+        initStars(); 
+        vLoop();
+    }, 1200);
     }
-    if (evoInteractive) {
-        evoTargetCam.x = evoMouse.x * 20;
-        evoTargetCam.y = evoMouse.y * 20;
-        evoCamera.position.x += (evoTargetCam.x - evoCamera.position.x) * 0.02;
-        evoCamera.position.y += (evoTargetCam.y - evoCamera.position.y) * 0.02;
-        evoCamera.lookAt(0, 0, 0);
+
+    function buildMasterTimeline() {
+        const skipBtn = document.getElementById('btn-skip');
+        skipBtn.classList.add('visible');
+        
+        enableMousePush = false;
+        particleMaterial.uniforms.uInteractive.value = 0.0;
+        
+        // Automatically triggers returnToVoid when timeline completes
+        masterTimeline = gsap.timeline({ onComplete: returnToVoid });
+
+        prepareMorph(0, 1);
+        particleMaterial.uniforms.uColor1.value.copy(epicConfig.stages[0].c1);
+        particleMaterial.uniforms.uColor2.value.copy(epicConfig.stages[0].c2);
+        particleSystem.position.set(0,0,0);
+        particleSystem.rotation.set(0,0,0);
+        gsap.set(heroParticle.position, {x: -100, y: -50, z: -50});
+
+        // 1. COSMIC GENESIS
+        const t0 = 0;
+        masterTimeline.call(() => updateText(0), [], t0 + 0.5);
+        camera.position.set(0, -100, 200);
+        masterTimeline.to(camera.position, { y: 20, z: 140, duration: 10, ease: "sine.inOut" }, t0);
+        masterTimeline.to(particleSystem.rotation, { y: Math.PI / 2, duration: 10, ease: "none" }, t0);
+        masterTimeline.to(heroParticle.position, { x: 0, y: 0, z: 50, duration: 5, ease: "power1.inOut" }, t0);
+        masterTimeline.to(heroParticle.position, { x: 30, y: 20, z: 20, duration: 5, ease: "sine.inOut" }, t0 + 5);
+
+        // 2. LIFE
+        const t1 = 10;
+        masterTimeline.call(() => { prepareMorph(0, 1); updateText(1); }, [], t1);
+        masterTimeline.to(particleMaterial.uniforms.uExplosion, { value: 1.5, duration: 0.8, yoyo: true, repeat: 1, ease: "power2.out" }, t1);
+        masterTimeline.to(particleMaterial.uniforms.uProgress, { value: 1.0, duration: 4.0, ease: "power2.inOut" }, t1 + 0.4);
+        masterTimeline.to(particleMaterial.uniforms.uColor1.value, { r: epicConfig.stages[1].c1.r, g: epicConfig.stages[1].c1.g, b: epicConfig.stages[1].c1.b, duration: 3.0 }, t1);
+        masterTimeline.to(particleMaterial.uniforms.uColor2.value, { r: epicConfig.stages[1].c2.r, g: epicConfig.stages[1].c2.g, b: epicConfig.stages[1].c2.b, duration: 3.0 }, t1);
+        masterTimeline.to(camera.position, { x: 0, y: -40, z: 80, duration: 4.0, ease: "power2.inOut" }, t1);
+        masterTimeline.to(camera.position, { y: 40, duration: 6.0, ease: "none" }, t1 + 4);
+        masterTimeline.to(heroParticle.position, { x: 0, y: -40, z: 0, duration: 2 }, t1);
+        masterTimeline.to(heroParticle.position, { y: 40, duration: 8, ease: "none" }, t1 + 2);
+        masterTimeline.to(heroParticle.position, { x: 20, duration: 2, yoyo: true, repeat: 3, ease: "sine.inOut" }, t1 + 2);
+
+        // 3. HUMANS EVOLVE
+        const t2 = 20;
+        masterTimeline.call(() => { prepareMorph(1, 2); updateText(2); }, [], t2);
+        masterTimeline.to(particleMaterial.uniforms.uExplosion, { value: 2.0, duration: 0.5, yoyo: true, repeat: 1, ease: "power3.out" }, t2);
+        masterTimeline.to(particleMaterial.uniforms.uProgress, { value: 1.0, duration: 3.5, ease: "back.out(1.2)" }, t2 + 0.3);
+        masterTimeline.to(particleMaterial.uniforms.uColor1.value, { r: epicConfig.stages[2].c1.r, g: epicConfig.stages[2].c1.g, b: epicConfig.stages[2].c1.b, duration: 2.5 }, t2);
+        masterTimeline.to(particleMaterial.uniforms.uColor2.value, { r: epicConfig.stages[2].c2.r, g: epicConfig.stages[2].c2.g, b: epicConfig.stages[2].c2.b, duration: 2.5 }, t2);
+        masterTimeline.to(camera.position, { x: 60, y: 0, z: 100, duration: 4.0, ease: "power2.inOut" }, t2);
+        masterTimeline.to(camera.position, { x: -40, duration: 6.0, ease: "sine.inOut" }, t2 + 4.0);
+        masterTimeline.to(heroParticle.position, { x: 0, y: 15, z: 20, duration: 3.0, ease: "power2.out" }, t2);
+        masterTimeline.to(heroGlow.scale, { x: 25, y: 25, duration: 1, yoyo: true, repeat: 5 }, t2 + 3); 
+
+        // 4. CIVILIZATION
+        const t3 = 30;
+        masterTimeline.call(() => { prepareMorph(2, 3); updateText(3); }, [], t3);
+        masterTimeline.fromTo(particleSystem.position, {y: -80}, {y: 0, duration: 4.0, ease: "power2.out"}, t3);
+        masterTimeline.to(particleMaterial.uniforms.uProgress, { value: 1.0, duration: 4.0, ease: "power2.inOut" }, t3);
+        masterTimeline.to(particleMaterial.uniforms.uColor1.value, { r: epicConfig.stages[3].c1.r, g: epicConfig.stages[3].c1.g, b: epicConfig.stages[3].c1.b, duration: 2.0 }, t3);
+        masterTimeline.to(particleMaterial.uniforms.uColor2.value, { r: epicConfig.stages[3].c2.r, g: epicConfig.stages[3].c2.g, b: epicConfig.stages[3].c2.b, duration: 2.0 }, t3);
+        masterTimeline.to(camera.position, { x: 0, y: 50, z: 180, duration: 5.0, ease: "power3.out" }, t3);
+        masterTimeline.to(camera.position, { y: 20, z: 120, duration: 5.0, ease: "sine.inOut" }, t3 + 5.0);
+        masterTimeline.to(heroParticle.position, { x: -40, y: -20, z: 40, duration: 2.0 }, t3);
+        masterTimeline.to(heroParticle.position, { x: 40, y: 10, z: -20, duration: 3.0, ease: "power1.inOut" }, t3 + 2);
+        masterTimeline.to(heroParticle.position, { x: 0, y: 40, z: 0, duration: 3.0, ease: "power2.inOut" }, t3 + 5);
+
+        // 5. SINGULARITY
+        const t4 = 40;
+        masterTimeline.call(() => { prepareMorph(3, 4); updateText(4); }, [], t4);
+        masterTimeline.to(particleMaterial.uniforms.uExplosion, { value: 3.0, duration: 0.5, yoyo: true, repeat: 1, ease: "power2.out" }, t4);
+        masterTimeline.to(particleMaterial.uniforms.uProgress, { value: 1.0, duration: 3.0, ease: "power2.inOut" }, t4 + 0.3);
+        masterTimeline.to(particleMaterial.uniforms.uColor1.value, { r: epicConfig.stages[4].c1.r, g: epicConfig.stages[4].c1.g, b: epicConfig.stages[4].c1.b, duration: 2.0 }, t4);
+        masterTimeline.to(particleMaterial.uniforms.uColor2.value, { r: epicConfig.stages[4].c2.r, g: epicConfig.stages[4].c2.g, b: epicConfig.stages[4].c2.b, duration: 2.0 }, t4);
+        masterTimeline.to(camera.position, { x: 100, y: 100, z: 100, duration: 4.0, ease: "power2.inOut" }, t4);
+        masterTimeline.to(camera.position, { x: 0, y: 0, z: 200, duration: 6.0, ease: "power1.inOut" }, t4 + 4.0);
+        masterTimeline.to(heroParticle.position, { x: 0, y: 0, z: 0, duration: 3.0, ease: "back.out(1.5)" }, t4);
+        masterTimeline.to(heroGlow.scale, { x: 40, y: 40, duration: 0.2, yoyo: true, repeat: 20 }, t4 + 3);
+
+        // 6. INFINITY & FINAL EXPLOSION
+        const t5 = 50;
+        masterTimeline.call(() => { prepareMorph(4, 5); updateText(5); }, [], t5);
+        masterTimeline.to(particleMaterial.uniforms.uColor1.value, { r: epicConfig.stages[5].c1.r, g: epicConfig.stages[5].c1.g, b: epicConfig.stages[5].c1.b, duration: 2.0 }, t5);
+        masterTimeline.to(particleMaterial.uniforms.uColor2.value, { r: epicConfig.stages[5].c2.r, g: epicConfig.stages[5].c2.g, b: epicConfig.stages[5].c2.b, duration: 2.0 }, t5);
+        masterTimeline.to(particleMaterial.uniforms.uBlackHolePull, { value: 1.0, duration: 4.0, ease: "power3.in" }, t5);
+        masterTimeline.to(camera.position, { x: 0, y: 0, z: 40, duration: 4.0, ease: "power3.in" }, t5);
+        masterTimeline.to(heroGlow.scale, { x: 80, y: 80, duration: 1.0 }, t5 + 4.0);
+        
+        // Grand Explosion
+        const tExp = t5 + 5.0;
+        masterTimeline.set(particleMaterial.uniforms.uBlackHolePull, { value: 0.0 }, tExp);
+        masterTimeline.to(particleMaterial.uniforms.uProgress, { value: 1.0, duration: 4.0, ease: "power2.out" }, tExp);
+        masterTimeline.set(particleMaterial.uniforms.uExplosion, { value: 10.0 }, tExp);
+        masterTimeline.to(particleMaterial.uniforms.uExplosion, { value: 0.0, duration: 6.0, ease: "power3.out" }, tExp);
+        masterTimeline.to(camera.position, { z: 400, duration: 8.0, ease: "power2.out" }, tExp);
+        
+        // Fade Text and Skip Button prior to auto-return
+        masterTimeline.to(['#story-title', '#story-subtitle', '#btn-skip'], { opacity: 0, duration: 2.0 }, tExp + 4.0);
+        
+        // Allow 2 extra seconds of viewing the settled explosion before hitting the `onComplete: returnToVoid`
+        masterTimeline.to({}, { duration: 2.0 }, tExp + 6.0); 
     }
-    evoRenderer.render(evoScene, evoCamera);
-}
 
-// ═══════════════════════════════════════════════════════
-// PAGE TRANSITIONS & EVENTS
-// ═══════════════════════════════════════════════════════
-const UI=['starfield','void-nebula','void-uu','void-header','void-nav','btn-life'];
-const EvoDim = document.getElementById('evolution-dimension');
+    // Manual Skip Event
+    document.getElementById('btn-skip').addEventListener('click', () => {
+        if(masterTimeline) {
+            gsap.to(['#story-title', '#story-subtitle', '#btn-skip'], { opacity: 0, duration: 0.5 });
+            masterTimeline.progress(1); // Drives timeline to end, triggering returnToVoid() automatically
+        }
+    });
 
-// 1. Enter the Cinematic
-document.getElementById('btn-life').addEventListener('click', () => {
-  isWarping = true;
-  setTimeout(() => {
-    // Hide Original UI
-    UI.forEach(id => document.getElementById(id).classList.add('fade-out'));
+    function onResize3D() {
+        if(!isEpicInitialized) return;
+        camera.aspect = window.innerWidth / window.innerHeight;
+        camera.updateProjectionMatrix();
+        renderer.setSize(window.innerWidth, window.innerHeight);
+    }
+
+    function onMouseMove3D(e) {
+        mouse3D.x = (e.clientX / window.innerWidth) * 2 - 1;
+        mouse3D.y = -(e.clientY / window.innerHeight) * 2 + 1;
+    }
+
+    function onTouchMove3D(e) {
+        if(e.touches.length === 0) return;
+        mouse3D.x = (e.touches[0].clientX / window.innerWidth) * 2 - 1;
+        mouse3D.y = -(e.touches[0].clientY / window.innerHeight) * 2 + 1;
+    }
+
+    let epicTime = 0;
+    function animateEpicDimension() {
+        if(!animationActive) return;
+        epicTime += 0.015;
+        
+        if (particleMaterial) {
+            particleMaterial.uniforms.uTime.value = epicTime;
+            if(heroParticle && heroParticle.position) {
+                heroParticle.material.uniforms.uTime.value = epicTime;
+            }
+            if (enableMousePush) {
+                particleMaterial.uniforms.uMouse.value.lerp(mouse3D, 0.1);
+            }
+        }
+        
+        if (particleSystem) {
+            particleSystem.rotation.y += 0.002;
+        }
+        
+        const pIntensity = enableMousePush ? 30 : 5; 
+        targetCamPos.x = mouse3D.x * pIntensity;
+        targetCamPos.y = mouse3D.y * pIntensity;
+        camera.position.x += (targetCamPos.x - camera.position.x) * 0.02;
+        camera.position.y += (targetCamPos.y - camera.position.y) * 0.02;
+        camera.lookAt(0, 0, 0);
+
+        renderer.render(scene, camera);
+    }
+
+    // ==========================================================================
+    // TRIGGERING THE EPIC DIMENSION
+    // ==========================================================================
+    const UI_ELEMENTS = ['starfield', 'void-nebula', 'void-uu', 'void-header', 'void-nav', 'btn-life'];
+    const EpicDim = document.getElementById('epic-dimension');
+
+    document.getElementById('btn-life').addEventListener('click', () => {
+    isWarping = true;
     
-    // Show 3D Evolution Dimension
-    EvoDim.classList.add('active');
-    
-    // Boot up 3D Scene
-    init3D();
-    evoAnimationActive = true;
-    gsap.ticker.add(animate3D); // Link to GSAP Ticker for smooth rendering
-    startCinematicSequence();
-    
-  }, 1200);
-});
+    setTimeout(() => {
+        // Hide UI
+        UI_ELEMENTS.forEach(id => document.getElementById(id).classList.add('fade-out'));
+        
+        // Completely pause the 2D background calculations
+        voidActive = false; 
+        cancelAnimationFrame(voidRAF);
 
-// 2. Return to Void
-document.getElementById('btn-return-void').addEventListener('click', () => {
-  // Fade out 3D Scene
-  EvoDim.classList.remove('active');
-  
-  setTimeout(() => {
-      evoAnimationActive = false;
-      gsap.ticker.remove(animate3D); // Stop rendering to save performance
-      
-      // Bring back Void UI
-      UI.forEach(id => document.getElementById(id).classList.remove('fade-out'));
-      isWarping = false;
-      initStars(); // Reset starfield
-  }, 1000);
-});
+        EpicDim.classList.add('active');
+        
+        initEpicDimension();
+        animationActive = true;
+        gsap.ticker.add(animateEpicDimension); 
+        
+        buildMasterTimeline();
+    }, 800);
+    });
 
-window.addEventListener('resize', () => {
-  vResize();
-});
+    window.addEventListener('resize', () => { vResize(); });
 
-// Boot the Original Void
-vResize();
-initStars();
-vLoop();
+    // Boot Application
+    vResize();
+    initStars();
+    vLoop();
 
-</script>
-</body>
-</html>
+    </script>
+    </body>
+    </html>
