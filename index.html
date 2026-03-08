@@ -83,69 +83,49 @@
     /* ══ LIFE DIMENSION ══ */
     #life-dimension {
       position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: 30;
-      opacity: 0; pointer-events: none; transition: opacity 1.5s ease-in-out;
+      opacity: 0; pointer-events: none; transition: opacity 1.8s ease-in-out;
       background: #020308; overflow: hidden;
     }
     #life-dimension.active { opacity: 1; pointer-events: auto; }
 
+    #constellation-canvas {
+      position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+      display: block; cursor: crosshair;
+    }
+
+    #focus-layer {
+      position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+      opacity: 0; pointer-events: none;
+      transition: opacity 1.2s cubic-bezier(0.4,0,0.2,1);
+    }
+    #focus-layer.open { opacity: 1; pointer-events: auto; }
+    #focus-canvas { position: absolute; top: 0; left: 0; width: 100%; height: 100%; display: block; }
+
+    #focus-ui {
+      position: absolute; top: 0; left: 0; right: 0;
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 1.6rem 2rem; pointer-events: none;
+    }
+    #focus-title {
+      font-family: 'Cormorant Garamond', serif; font-weight: 300;
+      font-size: clamp(1rem, 2.5vw, 1.5rem); letter-spacing: 0.3em; text-transform: uppercase;
+      color: rgba(238,240,248,0.4);
+    }
+    #focus-return {
+      pointer-events: auto;
+      background: transparent; border: 1px solid rgba(180,200,255,0.2); padding: 0.45rem 1rem;
+      color: rgba(238,240,248,0.35); font-family: 'DM Mono', monospace; font-size: 0.55rem;
+      letter-spacing: 0.22em; text-transform: uppercase; cursor: pointer; transition: all 0.3s ease;
+    }
+    #focus-return:hover { border-color: rgba(180,200,255,0.6); color: rgba(238,240,248,0.9); }
+
     .way-back-btn {
-      position: fixed; top: 1.5rem; left: 2rem; z-index: 50;
-      background: transparent; border: 1px solid rgba(180,200,255,0.25); padding: 0.5rem 1rem;
-      color: rgba(238,240,248,0.5); font-family: 'DM Mono', monospace; font-size: 0.65rem; letter-spacing: 0.2em; text-transform: uppercase;
-      cursor: pointer; transition: all 0.3s ease;
+      position: absolute; top: 1.5rem; left: 2rem; z-index: 10;
+      background: transparent; border: 1px solid rgba(180,200,255,0.2); padding: 0.45rem 1rem;
+      color: rgba(238,240,248,0.35); font-family: 'DM Mono', monospace; font-size: 0.55rem;
+      letter-spacing: 0.22em; text-transform: uppercase; cursor: pointer; transition: all 0.3s ease;
     }
-    .way-back-btn:hover { background: rgba(180,200,255,0.07); border-color: rgba(180,200,255,0.6); color: #eef0f8; }
-
-    #sim-grid {
-      position: absolute; top: 3.5rem; left: 0; right: 0; bottom: 0;
-      display: grid;
-      grid-template-columns: repeat(4, 1fr);
-      grid-template-rows: repeat(2, 1fr);
-      gap: 1px;
-      background: rgba(255,255,255,0.025);
-    }
-    .sim-cell {
-      position: relative; overflow: hidden; background: #020308; cursor: pointer;
-    }
-    .sim-cell:last-child { grid-column: span 2; }
-    .sim-canvas { position: absolute; top: 0; left: 0; width: 100%; height: 100%; display: block; }
-    .sim-label {
-      position: absolute; bottom: 0.8rem; left: 1rem;
-      font-size: 0.5rem; letter-spacing: 0.3em; text-transform: uppercase;
-      color: rgba(255,255,255,0.2); pointer-events: none; transition: color 0.3s;
-    }
-    .sim-cell:hover .sim-label { color: rgba(255,255,255,0.5); }
-    .sim-cell::after {
-      content: ''; position: absolute; inset: 0; border: 1px solid rgba(255,255,255,0);
-      transition: border-color 0.3s; pointer-events: none;
-    }
-    .sim-cell:hover::after { border-color: rgba(255,255,255,0.06); }
-
-    /* Expanded overlay */
-    #sim-overlay {
-      position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: 60;
-      background: #020308; opacity: 0; pointer-events: none; transition: opacity 0.6s ease;
-    }
-    #sim-overlay.open { opacity: 1; pointer-events: auto; }
-    #sim-overlay-canvas { position: absolute; top: 0; left: 0; width: 100%; height: 100%; }
-    #overlay-ui {
-      position: absolute; top: 1.4rem; left: 0; right: 0;
-      display: flex; align-items: center; justify-content: space-between; padding: 0 2rem;
-    }
-    #sim-overlay-label {
-      font-size: 0.55rem; letter-spacing: 0.4em; text-transform: uppercase; color: rgba(255,255,255,0.25);
-    }
-    #sim-overlay-close {
-      background: none; border: none; color: rgba(255,255,255,0.2);
-      font-family: 'DM Mono', monospace; font-size: 0.6rem; letter-spacing: 0.15em;
-      cursor: pointer; text-transform: uppercase; transition: color 0.2s;
-    }
-    #sim-overlay-close:hover { color: rgba(255,255,255,0.65); }
-
-    @media (max-width: 700px) {
-      #sim-grid { grid-template-columns: repeat(2, 1fr); grid-template-rows: repeat(4, 1fr); }
-      .sim-cell:last-child { grid-column: span 2; }
-    }
+    .way-back-btn:hover { border-color: rgba(180,200,255,0.55); color: rgba(238,240,248,0.8); }
 
     @keyframes fadeDown { from{opacity:0;transform:translateY(-15px)} to{opacity:1;transform:translateY(0)} }
     @keyframes fadeUp   { from{opacity:0;transform:translateY(15px)}  to{opacity:1;transform:translateY(0)} }
@@ -180,21 +160,15 @@
 
 <!-- ══ LIFE DIMENSION ══ -->
 <div id="life-dimension">
+  <canvas id="constellation-canvas"></canvas>
   <button class="way-back-btn" id="btn-return">A Way Back</button>
-  <div id="sim-grid">
-    <div class="sim-cell" data-sim="mathematics"><canvas class="sim-canvas"></canvas><div class="sim-label">Mathematics</div></div>
-    <div class="sim-cell" data-sim="biology"><canvas class="sim-canvas"></canvas><div class="sim-label">Biology</div></div>
-    <div class="sim-cell" data-sim="energy"><canvas class="sim-canvas"></canvas><div class="sim-label">Energy</div></div>
-    <div class="sim-cell" data-sim="humans"><canvas class="sim-canvas"></canvas><div class="sim-label">Humans</div></div>
-    <div class="sim-cell" data-sim="markets"><canvas class="sim-canvas"></canvas><div class="sim-label">Markets</div></div>
-    <div class="sim-cell" data-sim="war"><canvas class="sim-canvas"></canvas><div class="sim-label">War</div></div>
-    <div class="sim-cell" data-sim="love"><canvas class="sim-canvas"></canvas><div class="sim-label">Love</div></div>
-  </div>
-  <div id="sim-overlay">
-    <canvas id="sim-overlay-canvas"></canvas>
-    <div id="overlay-ui">
-      <div id="sim-overlay-label"></div>
-      <button id="sim-overlay-close">close ×</button>
+
+  <!-- Focus mode: fullscreen simulation -->
+  <div id="focus-layer">
+    <canvas id="focus-canvas"></canvas>
+    <div id="focus-ui">
+      <div id="focus-title"></div>
+      <button id="focus-return">Return to Constellation</button>
     </div>
   </div>
 </div>
@@ -225,296 +199,374 @@ function createShootingStar(){const t=MT[Math.floor(Math.random()*MT.length)];co
 let vFrame=0,nextShoot=rand(20,80),voidRAF;
 function vLoop(){vCtx.clearRect(0,0,vW,vH);vFrame++;drawBlackHole();if(vFrame>=nextShoot&&!isWarping){shootingStars.push(createShootingStar());if(Math.random()<0.4)shootingStars.push(createShootingStar());nextShoot=vFrame+rand(30,100);}shootingStars=shootingStars.filter(s=>s.alpha>0&&s.x>-500&&s.x<vW+500&&s.y>-500&&s.y<vH+500);for(const s of shootingStars){vCtx.save();const tx2=s.x-s.vx*(s.len/20),ty2=s.y-s.vy*(s.len/20);const g=vCtx.createLinearGradient(s.x,s.y,tx2,ty2);g.addColorStop(0,`hsla(0,0%,100%,${s.alpha})`);g.addColorStop(0.1,`hsla(${s.h},${s.s}%,${s.l}%,${s.alpha*0.9})`);g.addColorStop(1,`hsla(${s.h},${s.s}%,${s.l}%,0)`);vCtx.beginPath();vCtx.moveTo(s.x,s.y);vCtx.lineTo(tx2,ty2);vCtx.strokeStyle=g;vCtx.lineWidth=s.width;vCtx.lineCap='round';vCtx.stroke();if(Math.random()>0.3)starDust.push({x:s.x,y:s.y,vx:s.vx*0.05+rand(-1,1),vy:s.vy*0.05+rand(-1,1),alpha:s.alpha*0.8,decay:rand(0.02,0.06),size:rand(0.5,2),h:s.h,s:s.s,l:s.l});vCtx.restore();const dx=bhX-s.x,dy=bhY-s.y,dist=Math.sqrt(dx*dx+dy*dy);if(isWarping){s.vx-=(dx/dist)*8;s.vy-=(dy/dist)*8;}else{s.vx+=(dx/dist)*0.5;s.vy+=(dy/dist)*0.5;}s.x+=s.vx;s.y+=s.vy;s.alpha-=s.fade;}starDust=starDust.filter(p=>p.alpha>0&&p.x>-200&&p.x<vW+200&&p.y>-200&&p.y<vH+200);for(const p of starDust){vCtx.beginPath();vCtx.arc(p.x,p.y,p.size,0,Math.PI*2);vCtx.fillStyle=`hsla(${p.h},${p.s}%,${p.l}%,${p.alpha})`;vCtx.fill();if(isWarping){const dx=bhX-p.x,dy=bhY-p.y,dist=Math.sqrt(dx*dx+dy*dy);p.vx-=(dx/dist)*2;p.vy-=(dy/dist)*2;}p.x+=p.vx;p.y+=p.vy;p.alpha-=p.decay;}for(let i=stars.length-1;i>=0;i--){const s=stars[i];const dx=bhX-s.x,dy=bhY-s.y,dist=Math.sqrt(dx*dx+dy*dy);if(dist<BH_RADIUS&&!isWarping){stars[i]=spawnStarAtEdge();continue;}if(isWarping){s.vx-=(dx/dist)*3.5;s.vy-=(dy/dist)*3.5;s.trail.push({x:s.x,y:s.y});if(s.trail.length>50)s.trail.shift();}else{const gp=0.001+(150/(dist+50))*0.015;s.vx+=(dx/dist)*gp;s.vy+=(dy/dist)*gp;const spd2=Math.sqrt(s.vx*s.vx+s.vy*s.vy);const ms=0.2+(800/(dist+10))*2;if(spd2>ms){s.vx=(s.vx/spd2)*ms;s.vy=(s.vy/spd2)*ms;}if(dist<300){s.trail.push({x:s.x,y:s.y});if(s.trail.length>20)s.trail.shift();}else{if(s.trail.length>0)s.trail.shift();}}const tw=Math.sin(vFrame*s.twinkleSpeed+s.twinkleOffset);let a=Math.max(0.01,s.baseOpacity+tw*s.baseOpacity*0.4);s.x+=s.vx;s.y+=s.vy;drawTrail(s);drawVoidStar(s,a);}voidRAF=requestAnimationFrame(vLoop);}
 
-// ═══════════════════════════════════════════════════════
-// SIMULATION CLASSES — EACH A UNIQUE VISUAL SYSTEM
-// ═══════════════════════════════════════════════════════
-
-class SimMathematics {
-  constructor(){this.t=0;this.zoom=0.0032;this.panX=-0.7;this.panY=0.0;this.MAXITER=60;}
-  init(canvas){this.c=canvas;this.x=canvas.getContext('2d');this.W=canvas.width;this.H=canvas.height;}
-  draw(){
-    this.t++;
-    const W=this.W,H=this.H,ctx=this.x;
-    const z=this.zoom*(1+0.04*Math.sin(this.t*0.007));
-    const id=ctx.createImageData(W,H);const d=id.data;
-    for(let px=0;px<W;px+=2){for(let py=0;py<H;py+=2){
-      const x0=(px-W/2)*z+this.panX,y0=(py-H/2)*z+this.panY;
-      let rx=0,ry=0,iter=0;
-      while(rx*rx+ry*ry<=4&&iter<this.MAXITER){const xn=rx*rx-ry*ry+x0;ry=2*rx*ry+y0;rx=xn;iter++;}
-      let r=0,g=0,b=0;
-      if(iter<this.MAXITER){
-        const smooth=iter+1-Math.log2(Math.log2(rx*rx+ry*ry+0.001));
-        const n=smooth/this.MAXITER;
-        const h=(n*400+this.t*0.4)%360;
-        const bright=Math.pow(n,0.5);
-        r=Math.floor(bright*80*(0.5+0.5*Math.sin(h*Math.PI/180)));
-        g=Math.floor(bright*140*(0.5+0.5*Math.sin((h+100)*Math.PI/180)));
-        b=Math.floor(bright*255*(0.5+0.5*Math.sin((h+230)*Math.PI/180)));
-      }
-      for(let ox=0;ox<2&&px+ox<W;ox++)for(let oy=0;oy<2&&py+oy<H;oy++){const idx=((py+oy)*W+(px+ox))*4;d[idx]=r;d[idx+1]=g;d[idx+2]=b;d[idx+3]=255;}
-    }}
-    ctx.putImageData(id,0,0);
-    // Rotating polygons overlay
-    const cx=W/2,cy=H/2;
-    for(let k=3;k<=8;k++){
-      ctx.beginPath();
-      for(let i=0;i<=k;i++){const a=(i/k)*Math.PI*2+this.t*0.003*(k%2===0?1:-1);const rr=Math.min(W,H)*0.055*k;ctx.lineTo(cx+rr*Math.cos(a),cy+rr*Math.sin(a));}
-      ctx.closePath();ctx.strokeStyle=`hsla(${k*45+this.t*0.5},70%,70%,0.06)`;ctx.lineWidth=0.5;ctx.stroke();
-    }
-    // Slowly spiral into interesting region
-    this.zoom*=0.9998;this.panX+=0.000008*Math.sin(this.t*0.0015);this.panY+=0.000005*Math.cos(this.t*0.002);
-    if(this.zoom<0.000005){this.zoom=0.0032;this.panX=-0.5+rand(-0.4,0.4);this.panY=rand(-0.25,0.25);}
-  }
-}
-
-class SimBiology {
-  constructor(){this.t=0;this.pulses=[];}
-  init(canvas){
-    this.c=canvas;this.x=canvas.getContext('2d');this.W=canvas.width;this.H=canvas.height;
-    this.neurons=Array.from({length:30},()=>({x:rand(this.W*0.05,this.W*0.95),y:rand(this.H*0.05,this.H*0.95),vx:rand(-0.2,0.2),vy:rand(-0.2,0.2),r:rand(2,5),pt:rand(0,Math.PI*2)}));
-  }
-  drawHelix(ctx,cx,t,W,H,c1,c2){
-    const stride=16,amp=Math.min(W,H)*0.08;
-    ctx.save();
-    // strand A
-    ctx.beginPath();
-    for(let y=0;y<=H;y+=3){const ph=(y/stride)*Math.PI*2+t*0.035;const x=cx+Math.sin(ph)*amp;y===0?ctx.moveTo(x,y):ctx.lineTo(x,y);}
-    const ga=ctx.createLinearGradient(0,0,0,H);ga.addColorStop(0,c1+'0)');ga.addColorStop(0.2,c1+'0.8)');ga.addColorStop(0.8,c1+'0.8)');ga.addColorStop(1,c1+'0)');
-    ctx.strokeStyle=ga;ctx.lineWidth=1.5;ctx.stroke();
-    // strand B
-    ctx.beginPath();
-    for(let y=0;y<=H;y+=3){const ph=(y/stride)*Math.PI*2+t*0.035+Math.PI;const x=cx+Math.sin(ph)*amp;y===0?ctx.moveTo(x,y):ctx.lineTo(x,y);}
-    const gb=ctx.createLinearGradient(0,0,0,H);gb.addColorStop(0,c2+'0)');gb.addColorStop(0.2,c2+'0.8)');gb.addColorStop(0.8,c2+'0.8)');gb.addColorStop(1,c2+'0)');
-    ctx.strokeStyle=gb;ctx.lineWidth=1.5;ctx.stroke();
-    // rungs
-    for(let y=stride*0.5;y<H;y+=stride){
-      const ph=(y/stride)*Math.PI*2+t*0.035;
-      const x1=cx+Math.sin(ph)*amp,x2=cx+Math.sin(ph+Math.PI)*amp;
-      const depth=Math.sin(ph)*0.5+0.5;
-      ctx.beginPath();ctx.moveTo(x1,y);ctx.lineTo(x2,y);
-      ctx.strokeStyle=`rgba(200,255,210,${0.08+0.22*depth})`;ctx.lineWidth=1;ctx.stroke();
-      ctx.beginPath();ctx.arc(x1,y,2,0,Math.PI*2);ctx.fillStyle=c1+(0.5+0.4*depth)+')';ctx.fill();
-      ctx.beginPath();ctx.arc(x2,y,2,0,Math.PI*2);ctx.fillStyle=c2+(0.5+0.4*depth)+')';ctx.fill();
-    }
-    ctx.restore();
-  }
-  draw(){
-    this.t++;const ctx=this.x;const W=this.W,H=this.H;
-    ctx.fillStyle='rgba(2,3,8,0.3)';ctx.fillRect(0,0,W,H);
-    this.drawHelix(ctx,W*0.28,this.t,W,H,'rgba(60,220,140,','rgba(120,60,200,');
-    this.drawHelix(ctx,W*0.72,this.t+60,W,H,'rgba(60,160,255,','rgba(255,100,160,');
-    // Synapse pulses
-    if(this.t%35===0){const a=this.neurons[Math.floor(rand(0,this.neurons.length))],b=this.neurons[Math.floor(rand(0,this.neurons.length))];this.pulses.push({x:a.x,y:a.y,tx:b.x,ty:b.y,t:0,s:rand(0.018,0.045)});}
-    this.pulses=this.pulses.filter(p=>p.t<=1);
-    for(const p of this.pulses){const px=p.x+(p.tx-p.x)*p.t,py=p.y+(p.ty-p.y)*p.t;const g=ctx.createRadialGradient(px,py,0,px,py,7);g.addColorStop(0,'rgba(100,255,180,0.9)');g.addColorStop(1,'rgba(100,255,180,0)');ctx.beginPath();ctx.arc(px,py,7,0,Math.PI*2);ctx.fillStyle=g;ctx.fill();p.t+=p.s;}
-    for(const n of this.neurons){n.x+=n.vx;n.y+=n.vy;if(n.x<W*0.05||n.x>W*0.95)n.vx*=-1;if(n.y<H*0.05||n.y>H*0.95)n.vy*=-1;n.pt+=0.04;const a=0.2+0.2*Math.sin(n.pt);ctx.beginPath();ctx.arc(n.x,n.y,n.r,0,Math.PI*2);ctx.fillStyle=`rgba(80,220,140,${a})`;ctx.fill();}
-  }
-}
-
-class SimEnergy {
-  init(canvas){
-    this.c=canvas;this.x=canvas.getContext('2d');this.W=canvas.width;this.H=canvas.height;this.t=0;
-    this.particles=Array.from({length:160},()=>({x:rand(0,this.W),y:rand(0,this.H),vx:rand(-1.5,1.5),vy:rand(-1.5,1.5),charge:Math.random()>0.5?1:-1,trail:[],mass:rand(0.6,1.8)}));
-  }
-  draw(){
-    this.t++;const ctx=this.x;const W=this.W,H=this.H;
-    ctx.fillStyle='rgba(2,3,8,0.22)';ctx.fillRect(0,0,W,H);
-    // Wave interference grid
-    for(let px=0;px<W;px+=9){for(let py=0;py<H;py+=9){
-      const w1=Math.sin(px*0.014+this.t*0.022),w2=Math.sin(py*0.011-this.t*0.017),w3=Math.sin((px+py)*0.009+this.t*0.019);
-      const v=(w1+w2+w3)/3;const a=(v*0.5+0.5)*0.045;
-      ctx.fillStyle=v>0?`rgba(255,170,50,${a})`:`rgba(50,140,255,${a})`;
-      ctx.fillRect(px,py,8,8);
-    }}
-    // Particle EM simulation
-    for(let i=0;i<this.particles.length;i++){
-      const p=this.particles[i];
-      for(let j=i+1;j<this.particles.length;j++){
-        const q=this.particles[j];const dx=q.x-p.x,dy=q.y-p.y,d=Math.sqrt(dx*dx+dy*dy);
-        if(d<90&&d>4){const f=(p.charge*q.charge*0.3)/(d*d+8);p.vx+=(dx/d)*f;p.vy+=(dy/d)*f;q.vx-=(dx/d)*f;q.vy-=(dy/d)*f;}
-      }
-      const spd=Math.sqrt(p.vx*p.vx+p.vy*p.vy);if(spd>2.5){p.vx=(p.vx/spd)*2.5;p.vy=(p.vy/spd)*2.5;}
-      p.trail.push({x:p.x,y:p.y});if(p.trail.length>14)p.trail.shift();
-      p.x+=p.vx;p.y+=p.vy;if(p.x<0)p.x=W;if(p.x>W)p.x=0;if(p.y<0)p.y=H;if(p.y>H)p.y=0;
-      if(p.trail.length>1){ctx.beginPath();ctx.moveTo(p.trail[0].x,p.trail[0].y);for(const pt of p.trail)ctx.lineTo(pt.x,pt.y);const col=p.charge>0?'255,150,40':'60,160,255';ctx.strokeStyle=`rgba(${col},0.3)`;ctx.lineWidth=0.8;ctx.stroke();}
-      ctx.beginPath();ctx.arc(p.x,p.y,p.mass*2,0,Math.PI*2);ctx.fillStyle=p.charge>0?'rgba(255,170,70,0.8)':'rgba(70,180,255,0.8)';ctx.fill();
-    }
-  }
-}
-
-class SimHumans {
-  init(canvas){
-    this.c=canvas;this.x=canvas.getContext('2d');this.W=canvas.width;this.H=canvas.height;this.t=0;
-    this.nodes=Array.from({length:60},()=>({x:rand(this.W*0.06,this.W*0.94),y:rand(this.H*0.06,this.H*0.94),vx:rand(-0.1,0.1),vy:rand(-0.1,0.1),r:rand(1.5,4),pt:rand(0,Math.PI*2),layer:Math.floor(rand(0,4))}));
-    this.sigs=[];
-  }
-  draw(){
-    this.t++;const ctx=this.x;const W=this.W,H=this.H;
-    ctx.fillStyle='rgba(2,3,8,0.28)';ctx.fillRect(0,0,W,H);
-    // Brain aura
-    const cx=W/2,cy=H/2;
-    const bg=ctx.createRadialGradient(cx,cy,H*0.05,cx,cy,H*0.48);
-    bg.addColorStop(0,'rgba(50,30,100,0.06)');bg.addColorStop(1,'rgba(50,30,100,0)');
-    ctx.beginPath();ctx.ellipse(cx,cy,W*0.44,H*0.44,0,0,Math.PI*2);ctx.fillStyle=bg;ctx.fill();
-    for(const n of this.nodes){n.x+=n.vx;n.y+=n.vy;if(n.x<W*0.04||n.x>W*0.96)n.vx*=-1;if(n.y<H*0.04||n.y>H*0.96)n.vy*=-1;n.pt+=0.025;}
-    // Connections
-    for(let i=0;i<this.nodes.length;i++){for(let j=i+1;j<this.nodes.length;j++){const a=this.nodes[i],b=this.nodes[j];const dx=b.x-a.x,dy=b.y-a.y,d=Math.sqrt(dx*dx+dy*dy);if(d<95){ctx.beginPath();ctx.moveTo(a.x,a.y);ctx.lineTo(b.x,b.y);ctx.strokeStyle=`rgba(160,100,255,${(1-d/95)*0.1})`;ctx.lineWidth=0.5;ctx.stroke();}}}
-    if(this.t%28===0){const a=this.nodes[Math.floor(rand(0,this.nodes.length))],b=this.nodes[Math.floor(rand(0,this.nodes.length))];const dx=b.x-a.x,dy=b.y-a.y,d=Math.sqrt(dx*dx+dy*dy);if(d<95)this.sigs.push({x:a.x,y:a.y,tx:b.x,ty:b.y,t:0,s:rand(0.025,0.07)});}
-    this.sigs=this.sigs.filter(s=>s.t<=1);
-    for(const s of this.sigs){const sx=s.x+(s.tx-s.x)*s.t,sy=s.y+(s.ty-s.y)*s.t;const g=ctx.createRadialGradient(sx,sy,0,sx,sy,5);g.addColorStop(0,'rgba(220,180,255,1)');g.addColorStop(1,'rgba(180,100,255,0)');ctx.beginPath();ctx.arc(sx,sy,5,0,Math.PI*2);ctx.fillStyle=g;ctx.fill();s.t+=s.s;}
-    const COLS=['180,130,255','150,100,230','200,160,255','130,90,200'];
-    for(const n of this.nodes){const p=0.4+0.4*Math.sin(n.pt);ctx.beginPath();ctx.arc(n.x,n.y,n.r*(0.7+0.5*p),0,Math.PI*2);ctx.fillStyle=`rgba(${COLS[n.layer]},${0.35+0.5*p})`;ctx.fill();}
-  }
-}
-
-class SimMarkets {
-  init(canvas){
-    this.c=canvas;this.x=canvas.getContext('2d');this.W=canvas.width;this.H=canvas.height;this.t=0;
-    this.price=canvas.height/2;this.prices=[];this.vol=1.2;
-    this.agents=Array.from({length:80},()=>({x:rand(0,canvas.width),y:rand(0,canvas.height),vx:rand(-0.8,0.8),vy:rand(-0.8,0.8),sentiment:rand(-1,1),wealth:rand(0.5,2.2)}));
-  }
-  draw(){
-    this.t++;const ctx=this.x;const W=this.W,H=this.H;
-    ctx.fillStyle='rgba(2,3,8,0.38)';ctx.fillRect(0,0,W,H);
-    // Grid
-    ctx.strokeStyle='rgba(255,255,255,0.025)';ctx.lineWidth=0.5;
-    for(let y=H*0.2;y<H;y+=H*0.2){ctx.beginPath();ctx.moveTo(0,y);ctx.lineTo(W,y);ctx.stroke();}
-    for(let x=W*0.25;x<W;x+=W*0.25){ctx.beginPath();ctx.moveTo(x,0);ctx.lineTo(x,H);ctx.stroke();}
-    // Agent sentiment drives price
-    const sentAvg=this.agents.reduce((s,a)=>s+a.sentiment,0)/this.agents.length;
-    this.vol=this.vol*0.98+0.02*(1+Math.abs(sentAvg));
-    const drift=sentAvg*1.0+rand(-1,1)*this.vol*2.2;
-    this.price=Math.max(H*0.05,Math.min(H*0.92,this.price+drift));
-    this.prices.push(this.price);if(this.prices.length>W)this.prices.shift();
-    // Chart
-    if(this.prices.length>1){
-      ctx.beginPath();
-      for(let i=0;i<this.prices.length;i++){const x=i*(W/Math.max(this.prices.length,1));i===0?ctx.moveTo(x,this.prices[i]):ctx.lineTo(x,this.prices[i]);}
-      ctx.strokeStyle='rgba(255,175,55,0.9)';ctx.lineWidth=1.8;ctx.stroke();
-      ctx.lineTo(W,H);ctx.lineTo(0,H);ctx.closePath();
-      const grd=ctx.createLinearGradient(0,0,0,H);grd.addColorStop(0,'rgba(255,140,35,0.1)');grd.addColorStop(1,'rgba(255,140,35,0)');
-      ctx.fillStyle=grd;ctx.fill();
-    }
-    // Agents
-    for(const a of this.agents){
-      const pi=Math.floor(a.x*(this.prices.length/W));const py=this.prices[Math.min(pi,this.prices.length-1)]||H/2;
-      a.vy+=(py-a.y)*0.0012*Math.abs(a.sentiment);a.vx+=rand(-0.3,0.3)*0.15;a.vy+=rand(-0.3,0.3)*0.08;
-      const spd=Math.sqrt(a.vx*a.vx+a.vy*a.vy);if(spd>1.8){a.vx=(a.vx/spd)*1.8;a.vy=(a.vy/spd)*1.8;}
-      a.x+=a.vx;a.y+=a.vy;if(a.x<0)a.x=W;if(a.x>W)a.x=0;if(a.y<0)a.y=H;if(a.y>H)a.y=0;
-      a.sentiment+=rand(-0.04,0.04);a.sentiment=Math.max(-1,Math.min(1,a.sentiment));
-      ctx.beginPath();ctx.arc(a.x,a.y,a.wealth*1.6,0,Math.PI*2);
-      ctx.fillStyle=a.sentiment>0?'rgba(80,220,100,0.45)':'rgba(220,80,80,0.45)';ctx.fill();
-    }
-  }
-}
-
-class SimWar {
-  init(canvas){
-    this.c=canvas;this.x=canvas.getContext('2d');this.W=canvas.width;this.H=canvas.height;this.t=0;
-    this.factions=[{col:'255,70,70',agents:[]},{col:'70,130,255',agents:[]}];
-    for(const f of this.factions)for(let i=0;i<38;i++)f.agents.push({x:rand(0,this.W),y:rand(0,this.H),vx:rand(-1,1),vy:rand(-1,1),hp:1,f});
-    this.blasts=[];
-  }
-  draw(){
-    this.t++;const ctx=this.x;const W=this.W,H=this.H;
-    ctx.fillStyle='rgba(2,3,8,0.32)';ctx.fillRect(0,0,W,H);
-    this.blasts=this.blasts.filter(e=>e.r<e.max);
-    for(const e of this.blasts){const a=1-e.r/e.max;const g=ctx.createRadialGradient(e.x,e.y,0,e.x,e.y,e.r);g.addColorStop(0,`rgba(255,200,80,${a*0.8})`);g.addColorStop(0.5,`rgba(255,80,20,${a*0.3})`);g.addColorStop(1,'rgba(255,20,0,0)');ctx.beginPath();ctx.arc(e.x,e.y,e.r,0,Math.PI*2);ctx.fillStyle=g;ctx.fill();e.r+=2.8;}
-    const all=this.factions.flatMap(f=>f.agents.filter(a=>a.hp>0));
-    for(const a of all){
-      let ne=null,nd=Infinity;
-      for(const b of all){if(b.f===a.f)continue;const dx=b.x-a.x,dy=b.y-a.y,d=Math.sqrt(dx*dx+dy*dy);if(d<nd){nd=d;ne=b;}}
-      if(ne){const dx=ne.x-a.x,dy=ne.y-a.y,d=nd;if(d>28){a.vx+=(dx/d)*0.09;a.vy+=(dy/d)*0.09;}else{ne.hp-=0.009;if(ne.hp<=0)this.blasts.push({x:ne.x,y:ne.y,r:2,max:rand(12,32)});}}
-      a.vx+=rand(-0.08,0.08);a.vy+=rand(-0.08,0.08);const spd=Math.sqrt(a.vx*a.vx+a.vy*a.vy);if(spd>2){a.vx=(a.vx/spd)*2;a.vy=(a.vy/spd)*2;}
-      a.x+=a.vx;a.y+=a.vy;if(a.x<0)a.x=W;if(a.x>W)a.x=0;if(a.y<0)a.y=H;if(a.y>H)a.y=0;
-      ctx.beginPath();ctx.arc(a.x,a.y,2.5,0,Math.PI*2);ctx.fillStyle=`rgba(${a.f.col},${0.4+a.hp*0.5})`;ctx.fill();
-    }
-    for(const f of this.factions){const alive=f.agents.filter(a=>a.hp>0).length;if(alive<6)for(let i=0;i<18;i++)f.agents.push({x:rand(0,W),y:rand(0,H),vx:rand(-1,1),vy:rand(-1,1),hp:1,f});}
-    // Strategy lines
-    for(let i=0;i<4;i++){const f=this.factions[i%2];const av=f.agents.filter(a=>a.hp>0);if(av.length<2)continue;const s=av[Math.floor(rand(0,av.length))],e=av[Math.floor(rand(0,av.length))];ctx.beginPath();ctx.moveTo(s.x,s.y);ctx.lineTo(e.x,e.y);ctx.strokeStyle=`rgba(${f.col},0.035)`;ctx.lineWidth=0.5;ctx.stroke();}
-  }
-}
-
-class SimLove {
-  init(canvas){
-    this.c=canvas;this.x=canvas.getContext('2d');this.W=canvas.width;this.H=canvas.height;this.t=0;
-    const cx=this.W/2,cy=this.H/2;
-    this.bodies=[
-      {x:cx-this.W*0.16,y:cy,vx:0,vy:-0.5,mass:7,hue:340,trail:[],moons:[]},
-      {x:cx+this.W*0.16,y:cy,vx:0,vy:0.5, mass:7,hue:200,trail:[],moons:[]}
-    ];
-    for(const b of this.bodies)for(let i=0;i<6;i++){const ang=rand(0,Math.PI*2),r=rand(22,52);b.moons.push({a:ang,r,spd:rand(0.025,0.055)*(Math.random()>0.5?1:-1),sz:rand(1.5,3)});}
-    this.resonance=Array.from({length:70},()=>({x:rand(0,this.W),y:rand(0,this.H),vx:rand(-0.35,0.35),vy:rand(-0.35,0.35),hue:rand(320,380),alpha:rand(0.1,0.5)}));
-  }
-  draw(){
-    this.t++;const ctx=this.x;const W=this.W,H=this.H;
-    ctx.fillStyle='rgba(2,3,8,0.22)';ctx.fillRect(0,0,W,H);
-    const [A,B]=this.bodies;
-    const dx=B.x-A.x,dy=B.y-A.y,dist=Math.sqrt(dx*dx+dy*dy);
-    const gf=0.9/(dist+1);
-    A.vx+=(dx/dist)*gf;A.vy+=(dy/dist)*gf;B.vx-=(dx/dist)*gf;B.vy-=(dy/dist)*gf;
-    for(const b of this.bodies){const spd=Math.sqrt(b.vx*b.vx+b.vy*b.vy);if(spd>1.6){b.vx=(b.vx/spd)*1.6;b.vy=(b.vy/spd)*1.6;}b.x+=b.vx;b.y+=b.vy;b.x=Math.max(55,Math.min(W-55,b.x));b.y=Math.max(55,Math.min(H-55,b.y));b.trail.push({x:b.x,y:b.y});if(b.trail.length>90)b.trail.shift();}
-    // Trails
-    for(const b of this.bodies){if(b.trail.length<2)continue;ctx.beginPath();for(let i=0;i<b.trail.length;i++){i===0?ctx.moveTo(b.trail[i].x,b.trail[i].y):ctx.lineTo(b.trail[i].x,b.trail[i].y);}ctx.strokeStyle=`hsla(${b.hue},75%,65%,0.12)`;ctx.lineWidth=1.5;ctx.stroke();}
-    // Love thread
-    const mx=(A.x+B.x)/2,my=(A.y+B.y)/2;
-    const th=ctx.createLinearGradient(A.x,A.y,B.x,B.y);
-    th.addColorStop(0,`hsla(${A.hue},80%,70%,0.4)`);th.addColorStop(0.5,'rgba(255,230,240,0.55)');th.addColorStop(1,`hsla(${B.hue},80%,70%,0.4)`);
-    ctx.beginPath();ctx.moveTo(A.x,A.y);ctx.quadraticCurveTo(mx,my-dist*0.15,B.x,B.y);ctx.strokeStyle=th;ctx.lineWidth=1;ctx.stroke();
-    // Resonance ring when close
-    if(dist<120){const ra=(1-dist/120)*0.45;ctx.beginPath();ctx.arc(mx,my,dist*0.5,0,Math.PI*2);ctx.strokeStyle=`rgba(255,200,220,${ra})`;ctx.lineWidth=1;ctx.stroke();}
-    // Resonance particles drawn to midpoint
-    for(const p of this.resonance){const pmx=mx-p.x,pmy=my-p.y,pd=Math.sqrt(pmx*pmx+pmy*pmy);p.vx+=(pmx/pd)*0.018;p.vy+=(pmy/pd)*0.018;const s2=Math.sqrt(p.vx*p.vx+p.vy*p.vy);if(s2>0.7){p.vx=(p.vx/s2)*0.7;p.vy=(p.vy/s2)*0.7;}p.x+=p.vx;p.y+=p.vy;ctx.beginPath();ctx.arc(p.x,p.y,1.2,0,Math.PI*2);ctx.fillStyle=`hsla(${p.hue},80%,75%,${p.alpha*0.45})`;ctx.fill();}
-    // Moons
-    for(const b of this.bodies){for(const m of b.moons){m.a+=m.spd;const mx2=b.x+Math.cos(m.a)*m.r,my2=b.y+Math.sin(m.a)*m.r;ctx.beginPath();ctx.arc(mx2,my2,m.sz,0,Math.PI*2);ctx.fillStyle=`hsla(${b.hue},60%,75%,0.7)`;ctx.fill();}}
-    // Bodies
-    for(const b of this.bodies){const g=ctx.createRadialGradient(b.x,b.y,0,b.x,b.y,b.mass*4.5);g.addColorStop(0,`hsla(${b.hue},90%,92%,1)`);g.addColorStop(0.4,`hsla(${b.hue},80%,65%,0.8)`);g.addColorStop(1,`hsla(${b.hue},70%,50%,0)`);ctx.beginPath();ctx.arc(b.x,b.y,b.mass*4,0,Math.PI*2);ctx.fillStyle=g;ctx.fill();}
-  }
-}
 
 // ═══════════════════════════════════════════════════════
-// SIMULATION MANAGER
+// CONSTELLATION — IDEA MAP
 // ═══════════════════════════════════════════════════════
-const SIM_MAP={mathematics:SimMathematics,biology:SimBiology,energy:SimEnergy,humans:SimHumans,markets:SimMarkets,war:SimWar,love:SimLove};
-const LABELS={mathematics:'Mathematics',biology:'Biology',energy:'Energy',humans:'Humans',markets:'Markets',war:'War',love:'Love'};
-const activeSims={},simRAFs={};
 
-function startSim(key,canvas){
-  if(activeSims[key])stopSim(key);
-  canvas.width=canvas.offsetWidth||canvas.parentElement.offsetWidth||200;
-  canvas.height=canvas.offsetHeight||canvas.parentElement.offsetHeight||150;
-  if(canvas.width<2||canvas.height<2)return;
-  const sim=new SIM_MAP[key]();sim.init(canvas);activeSims[key]=sim;
-  function tick(){sim.draw();simRAFs[key]=requestAnimationFrame(tick);}
+const CC = document.getElementById('constellation-canvas');
+const CX = CC.getContext('2d');
+let CW, CH;
+
+// Star concept definitions — positioned as a sparse constellation
+const CONCEPTS = [
+  { id:'mathematics', label:'Mathematics', rx:0.50, ry:0.16, hue:210, size:3.5, driftA:0.0,  driftR:8  },
+  { id:'energy',      label:'Energy',      rx:0.18, ry:0.35, hue:45,  size:3.0, driftA:1.1,  driftR:10 },
+  { id:'biology',     label:'Biology',     rx:0.80, ry:0.32, hue:140, size:3.0, driftA:2.3,  driftR:9  },
+  { id:'humans',      label:'Humans',      rx:0.50, ry:0.52, hue:270, size:4.0, driftA:0.7,  driftR:7  },
+  { id:'markets',     label:'Markets',     rx:0.22, ry:0.70, hue:30,  size:2.8, driftA:3.8,  driftR:11 },
+  { id:'war',         label:'War',         rx:0.78, ry:0.70, hue:0,   size:2.8, driftA:5.1,  driftR:9  },
+  { id:'love',        label:'Love',        rx:0.50, ry:0.84, hue:340, size:3.5, driftA:2.0,  driftR:8  },
+];
+
+// Constellation edges
+const EDGES = [
+  [0,1],[0,2],[0,3],[1,3],[2,3],[3,4],[3,5],[3,6],[4,6],[5,6],[1,4],[2,5]
+];
+
+// Background dust stars
+let dustStars = [];
+let constellationT = 0;
+let hoveredConcept = null;
+let constellationRAF = null;
+
+function initConstellation() {
+  CW = CC.width = window.innerWidth;
+  CH = CC.height = window.innerHeight;
+  // Background dust
+  dustStars = Array.from({length: 280}, () => ({
+    x: rand(0, CW), y: rand(0, CH),
+    r: rand(0.2, 0.9),
+    opacity: rand(0.04, 0.28),
+    twinkle: rand(0, Math.PI * 2),
+    twinkleSpd: rand(0.004, 0.018)
+  }));
+  // Compute base world positions
+  for (const c of CONCEPTS) {
+    c.bx = c.rx * CW;
+    c.by = c.ry * CH;
+    c.wx = c.bx;
+    c.wy = c.by;
+  }
+}
+
+function getConceptPos(c, t) {
+  // Slow elliptical drift
+  const dx = Math.sin(t * 0.0004 + c.driftA) * c.driftR;
+  const dy = Math.cos(t * 0.0006 + c.driftA * 1.3) * c.driftR * 0.6;
+  return { x: c.bx + dx, y: c.by + dy };
+}
+
+function drawConstellation() {
+  constellationT++;
+  CX.clearRect(0, 0, CW, CH);
+
+  // Update live positions
+  for (const c of CONCEPTS) {
+    const p = getConceptPos(c, constellationT);
+    c.wx = p.x; c.wy = p.y;
+  }
+
+  // Dust stars
+  for (const s of dustStars) {
+    const tw = Math.sin(constellationT * s.twinkleSpd + s.twinkle);
+    const a = s.opacity * (0.7 + 0.3 * tw);
+    CX.beginPath();
+    CX.arc(s.x, s.y, s.r, 0, Math.PI * 2);
+    CX.fillStyle = `rgba(200,210,255,${a})`;
+    CX.fill();
+  }
+
+  const isAnyHovered = hoveredConcept !== null;
+
+  // Constellation edges
+  for (const [ai, bi] of EDGES) {
+    const a = CONCEPTS[ai], b = CONCEPTS[bi];
+    const isConnected = isAnyHovered && (hoveredConcept === a || hoveredConcept === b);
+    const alpha = isAnyHovered ? (isConnected ? 0.18 : 0.03) : 0.08;
+
+    const grad = CX.createLinearGradient(a.wx, a.wy, b.wx, b.wy);
+    grad.addColorStop(0, `hsla(${a.hue},60%,75%,${alpha})`);
+    grad.addColorStop(1, `hsla(${b.hue},60%,75%,${alpha})`);
+    CX.beginPath();
+    CX.moveTo(a.wx, a.wy);
+    CX.lineTo(b.wx, b.wy);
+    CX.strokeStyle = grad;
+    CX.lineWidth = 0.7;
+    CX.stroke();
+  }
+
+  // Concept stars
+  for (const c of CONCEPTS) {
+    const isHov = hoveredConcept === c;
+    const dimmed = isAnyHovered && !isHov;
+    const pulse = Math.sin(constellationT * 0.018 + c.driftA) * 0.25 + 1;
+
+    // Outer glow
+    const glowR = c.size * (isHov ? 16 : 8) * pulse;
+    const glowA = isHov ? 0.18 : (dimmed ? 0.02 : 0.07);
+    const glow = CX.createRadialGradient(c.wx, c.wy, 0, c.wx, c.wy, glowR);
+    glow.addColorStop(0, `hsla(${c.hue},70%,80%,${glowA * 3})`);
+    glow.addColorStop(1, `hsla(${c.hue},70%,70%,0)`);
+    CX.beginPath();
+    CX.arc(c.wx, c.wy, glowR, 0, Math.PI * 2);
+    CX.fillStyle = glow;
+    CX.fill();
+
+    // Star core
+    const coreA = dimmed ? 0.2 : (isHov ? 1.0 : 0.75);
+    const coreR = c.size * (isHov ? 1.5 : 1) * pulse;
+    CX.beginPath();
+    CX.arc(c.wx, c.wy, coreR, 0, Math.PI * 2);
+    CX.fillStyle = `hsla(${c.hue},80%,88%,${coreA})`;
+    CX.fill();
+
+    // Label — appears on hover, fades otherwise
+    const labelA = isHov ? 0.8 : (dimmed ? 0 : 0.18);
+    if (labelA > 0.01) {
+      CX.font = `${Math.round(CW * 0.009 + 9)}px 'DM Mono', monospace`;
+      CX.textAlign = 'center';
+      CX.textBaseline = 'top';
+      CX.fillStyle = `hsla(${c.hue},50%,85%,${labelA})`;
+      CX.fillText(c.label.toUpperCase(), c.wx, c.wy + coreR + 10);
+    }
+  }
+
+  constellationRAF = requestAnimationFrame(drawConstellation);
+}
+
+// ── Hover detection ──
+CC.addEventListener('mousemove', e => {
+  const rect = CC.getBoundingClientRect();
+  const mx = e.clientX - rect.left, my = e.clientY - rect.top;
+  let found = null;
+  for (const c of CONCEPTS) {
+    const dx = mx - c.wx, dy = my - c.wy;
+    if (Math.sqrt(dx*dx + dy*dy) < Math.max(c.size * 5, 28)) { found = c; break; }
+  }
+  hoveredConcept = found;
+  CC.style.cursor = found ? 'pointer' : 'crosshair';
+});
+CC.addEventListener('mouseleave', () => { hoveredConcept = null; CC.style.cursor = 'crosshair'; });
+
+// Touch support
+CC.addEventListener('touchstart', e => {
+  const t = e.touches[0];
+  const rect = CC.getBoundingClientRect();
+  const mx = t.clientX - rect.left, my = t.clientY - rect.top;
+  for (const c of CONCEPTS) {
+    const dx = mx - c.wx, dy = my - c.wy;
+    if (Math.sqrt(dx*dx + dy*dy) < Math.max(c.size * 6, 36)) {
+      e.preventDefault(); openFocus(c); return;
+    }
+  }
+}, { passive: false });
+
+CC.addEventListener('click', e => {
+  if (!hoveredConcept) return;
+  openFocus(hoveredConcept);
+});
+
+// ═══════════════════════════════════════════════════════
+// FOCUS MODE — FULLSCREEN SIMULATIONS
+// ═══════════════════════════════════════════════════════
+
+const focusLayer = document.getElementById('focus-layer');
+const focusCanvas = document.getElementById('focus-canvas');
+const focusCtx = focusCanvas.getContext('2d');
+const focusTitle = document.getElementById('focus-title');
+let focusRAF = null;
+let focusSim = null;
+
+function openFocus(concept) {
+  focusCanvas.width = window.innerWidth;
+  focusCanvas.height = window.innerHeight;
+  focusTitle.textContent = concept.label;
+  focusLayer.classList.add('open');
+  stopFocus();
+  focusSim = buildSim(concept.id, focusCanvas, focusCtx);
+  function tick() { if (focusSim) focusSim(); focusRAF = requestAnimationFrame(tick); }
   tick();
 }
-function stopSim(key){cancelAnimationFrame(simRAFs[key]);delete activeSims[key];delete simRAFs[key];}
-function stopAllSims(){for(const k of Object.keys(activeSims))stopSim(k);}
 
-// Overlay
-const overlay=document.getElementById('sim-overlay');
-const oc=document.getElementById('sim-overlay-canvas');
-const olabel=document.getElementById('sim-overlay-label');
+function stopFocus() {
+  cancelAnimationFrame(focusRAF);
+  focusRAF = null; focusSim = null;
+  focusCtx.clearRect(0, 0, focusCanvas.width, focusCanvas.height);
+}
 
-document.querySelectorAll('.sim-cell').forEach(cell=>{
-  cell.addEventListener('click',()=>{
-    const key=cell.dataset.sim;
-    olabel.textContent=LABELS[key];
-    oc.width=window.innerWidth;oc.height=window.innerHeight;
-    overlay.classList.add('open');
-    stopSim('__ov__');
-    const sim=new SIM_MAP[key]();sim.init(oc);activeSims['__ov__']=sim;
-    function tick(){sim.draw();simRAFs['__ov__']=requestAnimationFrame(tick);}
-    tick();
-  });
+document.getElementById('focus-return').addEventListener('click', () => {
+  focusLayer.classList.remove('open');
+  setTimeout(stopFocus, 1200);
 });
-document.getElementById('sim-overlay-close').addEventListener('click',()=>{overlay.classList.remove('open');stopSim('__ov__');});
 
-function startAllGridSims(){
-  document.querySelectorAll('.sim-cell').forEach(cell=>{
-    const key=cell.dataset.sim;const canvas=cell.querySelector('.sim-canvas');
-    setTimeout(()=>startSim(key,canvas),80);
-  });
+// ─────────────────────────────────────────────
+// SIM BUILDER — returns a draw() closure
+// ─────────────────────────────────────────────
+function buildSim(id, canvas, ctx) {
+  const W = canvas.width, H = canvas.height;
+
+  if (id === 'mathematics') {
+    let t = 0, zoom = 0.0028, panX = -0.5, panY = 0, MAXITER = 72;
+    return function() {
+      t++;
+      const z = zoom * (1 + 0.035 * Math.sin(t * 0.006));
+      const id2 = ctx.createImageData(W, H);
+      const d = id2.data;
+      for (let px = 0; px < W; px += 2) {
+        for (let py = 0; py < H; py += 2) {
+          const x0 = (px - W/2) * z + panX, y0 = (py - H/2) * z + panY;
+          let rx = 0, ry = 0, iter = 0;
+          while (rx*rx + ry*ry <= 4 && iter < MAXITER) { const xn=rx*rx-ry*ry+x0; ry=2*rx*ry+y0; rx=xn; iter++; }
+          let r=0,g=0,b=0;
+          if (iter < MAXITER) {
+            const smooth = iter + 1 - Math.log2(Math.log2(rx*rx+ry*ry+0.001));
+            const n = smooth / MAXITER;
+            const hh = (n * 380 + t * 0.35) % 360;
+            const br = Math.pow(n, 0.48);
+            r = Math.floor(br * 70  * (0.5 + 0.5 * Math.sin(hh * Math.PI/180)));
+            g = Math.floor(br * 130 * (0.5 + 0.5 * Math.sin((hh+110) * Math.PI/180)));
+            b = Math.floor(br * 255 * (0.5 + 0.5 * Math.sin((hh+240) * Math.PI/180)));
+          }
+          for (let ox=0;ox<2&&px+ox<W;ox++) for (let oy=0;oy<2&&py+oy<H;oy++) { const idx=((py+oy)*W+(px+ox))*4; d[idx]=r;d[idx+1]=g;d[idx+2]=b;d[idx+3]=255; }
+        }
+      }
+      ctx.putImageData(id2, 0, 0);
+      // Orbiting polygons
+      const cx=W/2, cy=H/2;
+      for (let k=3;k<=9;k++) {
+        ctx.beginPath();
+        for (let i=0;i<=k;i++) { const a=(i/k)*Math.PI*2+t*0.003*(k%2===0?1:-1); const rr=Math.min(W,H)*0.048*k; ctx.lineTo(cx+rr*Math.cos(a), cy+rr*Math.sin(a)); }
+        ctx.closePath(); ctx.strokeStyle=`hsla(${k*40+t*0.4},65%,65%,0.07)`; ctx.lineWidth=0.6; ctx.stroke();
+      }
+      zoom *= 0.9998;
+      panX += 0.000007 * Math.sin(t*0.0014); panY += 0.000005 * Math.cos(t*0.002);
+      if (zoom < 0.000004) { zoom=0.0028; panX=-0.5+rand(-0.35,0.35); panY=rand(-0.22,0.22); }
+    };
+  }
+
+  if (id === 'biology') {
+    let t = 0;
+    const synapses = Array.from({length:30}, ()=>({x:rand(0,W),y:rand(0,H),vx:rand(-0.2,0.2),vy:rand(-0.2,0.2),r:rand(2,5),pt:rand(0,Math.PI*2)}));
+    const pulses = [];
+    function drawHelix(cx, tOff, c1, c2) {
+      const stride=20, amp=Math.min(W,H)*0.072;
+      ctx.save();
+      ctx.beginPath(); for(let y=0;y<=H;y+=3){const ph=(y/stride)*Math.PI*2+(t+tOff)*0.032;const x=cx+Math.sin(ph)*amp;y===0?ctx.moveTo(x,y):ctx.lineTo(x,y);}
+      const ga=ctx.createLinearGradient(0,0,0,H);ga.addColorStop(0,c1+'0)');ga.addColorStop(0.15,c1+'0.75)');ga.addColorStop(0.85,c1+'0.75)');ga.addColorStop(1,c1+'0)');
+      ctx.strokeStyle=ga;ctx.lineWidth=1.6;ctx.stroke();
+      ctx.beginPath(); for(let y=0;y<=H;y+=3){const ph=(y/stride)*Math.PI*2+(t+tOff)*0.032+Math.PI;const x=cx+Math.sin(ph)*amp;y===0?ctx.moveTo(x,y):ctx.lineTo(x,y);}
+      const gb=ctx.createLinearGradient(0,0,0,H);gb.addColorStop(0,c2+'0)');gb.addColorStop(0.15,c2+'0.75)');gb.addColorStop(0.85,c2+'0.75)');gb.addColorStop(1,c2+'0)');
+      ctx.strokeStyle=gb;ctx.lineWidth=1.6;ctx.stroke();
+      for(let y=stride*0.5;y<H;y+=stride){const ph=(y/stride)*Math.PI*2+(t+tOff)*0.032;const x1=cx+Math.sin(ph)*amp,x2=cx+Math.sin(ph+Math.PI)*amp;const dp=Math.sin(ph)*0.5+0.5;ctx.beginPath();ctx.moveTo(x1,y);ctx.lineTo(x2,y);ctx.strokeStyle=`rgba(190,255,210,${0.07+0.2*dp})`;ctx.lineWidth=1;ctx.stroke();ctx.beginPath();ctx.arc(x1,y,2.2,0,Math.PI*2);ctx.fillStyle=c1+(0.45+0.4*dp)+')';ctx.fill();ctx.beginPath();ctx.arc(x2,y,2.2,0,Math.PI*2);ctx.fillStyle=c2+(0.45+0.4*dp)+')';ctx.fill();}
+      ctx.restore();
+    }
+    return function() {
+      t++;
+      ctx.fillStyle='rgba(2,3,8,0.3)'; ctx.fillRect(0,0,W,H);
+      drawHelix(W*0.3, 0, 'rgba(55,215,130,', 'rgba(110,55,200,');
+      drawHelix(W*0.7, 55, 'rgba(55,150,255,', 'rgba(255,95,150,');
+      if (t%38===0){const a=synapses[Math.floor(rand(0,synapses.length))],b=synapses[Math.floor(rand(0,synapses.length))];pulses.push({x:a.x,y:a.y,tx:b.x,ty:b.y,t:0,s:rand(0.016,0.04)});}
+      pulses.filter(p=>p.t<=1);for(let i=pulses.length-1;i>=0;i--){const p=pulses[i];const px2=p.x+(p.tx-p.x)*p.t,py2=p.y+(p.ty-p.y)*p.t;const g=ctx.createRadialGradient(px2,py2,0,px2,py2,8);g.addColorStop(0,'rgba(100,255,180,0.9)');g.addColorStop(1,'rgba(100,255,180,0)');ctx.beginPath();ctx.arc(px2,py2,8,0,Math.PI*2);ctx.fillStyle=g;ctx.fill();p.t+=p.s;if(p.t>1)pulses.splice(i,1);}
+      for(const s of synapses){s.x+=s.vx;s.y+=s.vy;if(s.x<0||s.x>W)s.vx*=-1;if(s.y<0||s.y>H)s.vy*=-1;s.pt+=0.035;const a=0.18+0.18*Math.sin(s.pt);ctx.beginPath();ctx.arc(s.x,s.y,s.r,0,Math.PI*2);ctx.fillStyle=`rgba(80,220,140,${a})`;ctx.fill();}
+    };
+  }
+
+  if (id === 'energy') {
+    let t = 0;
+    const particles = Array.from({length:200}, ()=>({x:rand(0,W),y:rand(0,H),vx:rand(-1.4,1.4),vy:rand(-1.4,1.4),charge:Math.random()>0.5?1:-1,trail:[],mass:rand(0.6,1.8)}));
+    return function() {
+      t++;
+      ctx.fillStyle='rgba(2,3,8,0.2)'; ctx.fillRect(0,0,W,H);
+      for(let px=0;px<W;px+=10){for(let py=0;py<H;py+=10){const w1=Math.sin(px*0.013+t*0.02),w2=Math.sin(py*0.011-t*0.016),w3=Math.sin((px+py)*0.009+t*0.018);const v=(w1+w2+w3)/3;const a=(v*0.5+0.5)*0.04;ctx.fillStyle=v>0?`rgba(255,170,50,${a})`:`rgba(50,140,255,${a})`;ctx.fillRect(px,py,9,9);}}
+      for(let i=0;i<particles.length;i++){const p=particles[i];for(let j=i+1;j<particles.length;j++){const q=particles[j];const dx=q.x-p.x,dy=q.y-p.y,d=Math.sqrt(dx*dx+dy*dy);if(d<80&&d>4){const f=(p.charge*q.charge*0.28)/(d*d+6);p.vx+=(dx/d)*f;p.vy+=(dy/d)*f;q.vx-=(dx/d)*f;q.vy-=(dy/d)*f;}}const spd=Math.sqrt(p.vx*p.vx+p.vy*p.vy);if(spd>2.4){p.vx=(p.vx/spd)*2.4;p.vy=(p.vy/spd)*2.4;}p.trail.push({x:p.x,y:p.y});if(p.trail.length>14)p.trail.shift();p.x+=p.vx;p.y+=p.vy;if(p.x<0)p.x=W;if(p.x>W)p.x=0;if(p.y<0)p.y=H;if(p.y>H)p.y=0;if(p.trail.length>1){ctx.beginPath();ctx.moveTo(p.trail[0].x,p.trail[0].y);for(const pt of p.trail)ctx.lineTo(pt.x,pt.y);ctx.strokeStyle=p.charge>0?'rgba(255,150,40,0.28)':'rgba(60,160,255,0.28)';ctx.lineWidth=0.8;ctx.stroke();}ctx.beginPath();ctx.arc(p.x,p.y,p.mass*1.8,0,Math.PI*2);ctx.fillStyle=p.charge>0?'rgba(255,175,70,0.85)':'rgba(70,180,255,0.85)';ctx.fill();}
+    };
+  }
+
+  if (id === 'humans') {
+    let t = 0;
+    const nodes = Array.from({length:65}, ()=>({x:rand(W*0.06,W*0.94),y:rand(H*0.06,H*0.94),vx:rand(-0.1,0.1),vy:rand(-0.1,0.1),r:rand(1.5,4),pt:rand(0,Math.PI*2),layer:Math.floor(rand(0,4))}));
+    const sigs = [];
+    const COLS=['190,130,255','155,95,235','210,165,255','125,80,205'];
+    return function() {
+      t++;
+      ctx.fillStyle='rgba(2,3,8,0.26)'; ctx.fillRect(0,0,W,H);
+      const cx=W/2,cy=H/2;
+      const bg=ctx.createRadialGradient(cx,cy,H*0.04,cx,cy,H*0.5);bg.addColorStop(0,'rgba(45,25,100,0.07)');bg.addColorStop(1,'rgba(45,25,100,0)');ctx.beginPath();ctx.ellipse(cx,cy,W*0.46,H*0.46,0,0,Math.PI*2);ctx.fillStyle=bg;ctx.fill();
+      for(const n of nodes){n.x+=n.vx;n.y+=n.vy;if(n.x<W*0.04||n.x>W*0.96)n.vx*=-1;if(n.y<H*0.04||n.y>H*0.96)n.vy*=-1;n.pt+=0.022;}
+      for(let i=0;i<nodes.length;i++){for(let j=i+1;j<nodes.length;j++){const a=nodes[i],b=nodes[j];const dx=b.x-a.x,dy=b.y-a.y,d=Math.sqrt(dx*dx+dy*dy);if(d<110){ctx.beginPath();ctx.moveTo(a.x,a.y);ctx.lineTo(b.x,b.y);ctx.strokeStyle=`rgba(155,100,255,${(1-d/110)*0.09})`;ctx.lineWidth=0.5;ctx.stroke();}}}
+      if(t%26===0){const a=nodes[Math.floor(rand(0,nodes.length))],b=nodes[Math.floor(rand(0,nodes.length))];const dx=b.x-a.x,dy=b.y-a.y,d=Math.sqrt(dx*dx+dy*dy);if(d<110)sigs.push({x:a.x,y:a.y,tx:b.x,ty:b.y,t:0,s:rand(0.022,0.065)});}
+      for(let i=sigs.length-1;i>=0;i--){const s=sigs[i];const sx=s.x+(s.tx-s.x)*s.t,sy=s.y+(s.ty-s.y)*s.t;const g=ctx.createRadialGradient(sx,sy,0,sx,sy,5);g.addColorStop(0,'rgba(225,185,255,1)');g.addColorStop(1,'rgba(180,110,255,0)');ctx.beginPath();ctx.arc(sx,sy,5,0,Math.PI*2);ctx.fillStyle=g;ctx.fill();s.t+=s.s;if(s.t>1)sigs.splice(i,1);}
+      for(const n of nodes){const p=0.38+0.4*Math.sin(n.pt);ctx.beginPath();ctx.arc(n.x,n.y,n.r*(0.7+0.5*p),0,Math.PI*2);ctx.fillStyle=`rgba(${COLS[n.layer]},${0.3+0.55*p})`;ctx.fill();}
+    };
+  }
+
+  if (id === 'markets') {
+    let t = 0, price = H/2, prices = [], vol = 1.2;
+    const agents = Array.from({length:90}, ()=>({x:rand(0,W),y:rand(0,H),vx:rand(-0.8,0.8),vy:rand(-0.8,0.8),sentiment:rand(-1,1),wealth:rand(0.5,2.2)}));
+    return function() {
+      t++;
+      ctx.fillStyle='rgba(2,3,8,0.38)'; ctx.fillRect(0,0,W,H);
+      ctx.strokeStyle='rgba(255,255,255,0.025)';ctx.lineWidth=0.5;
+      for(let y=H*0.2;y<H;y+=H*0.2){ctx.beginPath();ctx.moveTo(0,y);ctx.lineTo(W,y);ctx.stroke();}
+      for(let x=W*0.25;x<W;x+=W*0.25){ctx.beginPath();ctx.moveTo(x,0);ctx.lineTo(x,H);ctx.stroke();}
+      const sentAvg=agents.reduce((s,a)=>s+a.sentiment,0)/agents.length;
+      vol=vol*0.98+0.02*(1+Math.abs(sentAvg));
+      price=Math.max(H*0.05,Math.min(H*0.92,price+sentAvg*1.0+rand(-1,1)*vol*2.2));
+      prices.push(price);if(prices.length>W)prices.shift();
+      if(prices.length>1){ctx.beginPath();for(let i=0;i<prices.length;i++){const x=i*(W/Math.max(prices.length,1));i===0?ctx.moveTo(x,prices[i]):ctx.lineTo(x,prices[i]);}ctx.strokeStyle='rgba(255,175,55,0.9)';ctx.lineWidth=1.8;ctx.stroke();ctx.lineTo(W,H);ctx.lineTo(0,H);ctx.closePath();const grd=ctx.createLinearGradient(0,0,0,H);grd.addColorStop(0,'rgba(255,140,35,0.1)');grd.addColorStop(1,'rgba(255,140,35,0)');ctx.fillStyle=grd;ctx.fill();}
+      for(const a of agents){const pi=Math.floor(a.x*(prices.length/W));const py2=prices[Math.min(pi,prices.length-1)]||H/2;a.vy+=(py2-a.y)*0.0012*Math.abs(a.sentiment);a.vx+=rand(-0.3,0.3)*0.15;a.vy+=rand(-0.3,0.3)*0.08;const spd=Math.sqrt(a.vx*a.vx+a.vy*a.vy);if(spd>1.8){a.vx=(a.vx/spd)*1.8;a.vy=(a.vy/spd)*1.8;}a.x+=a.vx;a.y+=a.vy;if(a.x<0)a.x=W;if(a.x>W)a.x=0;if(a.y<0)a.y=H;if(a.y>H)a.y=0;a.sentiment+=rand(-0.04,0.04);a.sentiment=Math.max(-1,Math.min(1,a.sentiment));ctx.beginPath();ctx.arc(a.x,a.y,a.wealth*1.6,0,Math.PI*2);ctx.fillStyle=a.sentiment>0?'rgba(80,220,100,0.42)':'rgba(220,80,80,0.42)';ctx.fill();}
+    };
+  }
+
+  if (id === 'war') {
+    let t = 0;
+    const factions = [{col:'255,70,70',agents:[]},{col:'70,130,255',agents:[]}];
+    for(const f of factions)for(let i=0;i<42;i++)f.agents.push({x:rand(0,W),y:rand(0,H),vx:rand(-1,1),vy:rand(-1,1),hp:1,f});
+    const blasts = [];
+    return function() {
+      t++;
+      ctx.fillStyle='rgba(2,3,8,0.3)'; ctx.fillRect(0,0,W,H);
+      for(let i=blasts.length-1;i>=0;i--){const e=blasts[i];const a=1-e.r/e.max;const g=ctx.createRadialGradient(e.x,e.y,0,e.x,e.y,e.r);g.addColorStop(0,`rgba(255,200,80,${a*0.8})`);g.addColorStop(0.5,`rgba(255,80,20,${a*0.3})`);g.addColorStop(1,'rgba(255,20,0,0)');ctx.beginPath();ctx.arc(e.x,e.y,e.r,0,Math.PI*2);ctx.fillStyle=g;ctx.fill();e.r+=3;if(e.r>=e.max)blasts.splice(i,1);}
+      const all=factions.flatMap(f=>f.agents.filter(a=>a.hp>0));
+      for(const a of all){let ne=null,nd=Infinity;for(const b of all){if(b.f===a.f)continue;const dx=b.x-a.x,dy=b.y-a.y,d=Math.sqrt(dx*dx+dy*dy);if(d<nd){nd=d;ne=b;}}if(ne){const dx=ne.x-a.x,dy=ne.y-a.y,d=nd;if(d>30){a.vx+=(dx/d)*0.09;a.vy+=(dy/d)*0.09;}else{ne.hp-=0.009;if(ne.hp<=0)blasts.push({x:ne.x,y:ne.y,r:2,max:rand(14,35)});}}a.vx+=rand(-0.08,0.08);a.vy+=rand(-0.08,0.08);const spd=Math.sqrt(a.vx*a.vx+a.vy*a.vy);if(spd>2){a.vx=(a.vx/spd)*2;a.vy=(a.vy/spd)*2;}a.x+=a.vx;a.y+=a.vy;if(a.x<0)a.x=W;if(a.x>W)a.x=0;if(a.y<0)a.y=H;if(a.y>H)a.y=0;ctx.beginPath();ctx.arc(a.x,a.y,2.5,0,Math.PI*2);ctx.fillStyle=`rgba(${a.f.col},${0.4+a.hp*0.5})`;ctx.fill();}
+      for(const f of factions){const alive=f.agents.filter(a=>a.hp>0).length;if(alive<6)for(let i=0;i<18;i++)f.agents.push({x:rand(0,W),y:rand(0,H),vx:rand(-1,1),vy:rand(-1,1),hp:1,f});}
+      for(let i=0;i<4;i++){const f=factions[i%2];const av=f.agents.filter(a=>a.hp>0);if(av.length<2)continue;const s=av[Math.floor(rand(0,av.length))],e=av[Math.floor(rand(0,av.length))];ctx.beginPath();ctx.moveTo(s.x,s.y);ctx.lineTo(e.x,e.y);ctx.strokeStyle=`rgba(${f.col},0.03)`;ctx.lineWidth=0.5;ctx.stroke();}
+    };
+  }
+
+  if (id === 'love') {
+    let t = 0;
+    const cx = W/2, cy = H/2;
+    const bodies = [
+      {x:cx-W*0.16,y:cy,vx:0,vy:-0.5,mass:7,hue:340,trail:[],moons:[]},
+      {x:cx+W*0.16,y:cy,vx:0,vy:0.5, mass:7,hue:200,trail:[],moons:[]}
+    ];
+    for(const b of bodies)for(let i=0;i<6;i++){const ang=rand(0,Math.PI*2),r=rand(24,54);b.moons.push({a:ang,r,spd:rand(0.024,0.055)*(Math.random()>0.5?1:-1),sz:rand(1.5,3)});}
+    const resonance = Array.from({length:75}, ()=>({x:rand(0,W),y:rand(0,H),vx:rand(-0.35,0.35),vy:rand(-0.35,0.35),hue:rand(320,380),alpha:rand(0.1,0.5)}));
+    return function() {
+      t++;
+      ctx.fillStyle='rgba(2,3,8,0.22)'; ctx.fillRect(0,0,W,H);
+      const [A,B]=bodies;
+      const dx=B.x-A.x,dy=B.y-A.y,dist=Math.sqrt(dx*dx+dy*dy);
+      const gf=0.85/(dist+1);
+      A.vx+=(dx/dist)*gf;A.vy+=(dy/dist)*gf;B.vx-=(dx/dist)*gf;B.vy-=(dy/dist)*gf;
+      for(const b of bodies){const spd=Math.sqrt(b.vx*b.vx+b.vy*b.vy);if(spd>1.6){b.vx=(b.vx/spd)*1.6;b.vy=(b.vy/spd)*1.6;}b.x+=b.vx;b.y+=b.vy;b.x=Math.max(55,Math.min(W-55,b.x));b.y=Math.max(55,Math.min(H-55,b.y));b.trail.push({x:b.x,y:b.y});if(b.trail.length>90)b.trail.shift();}
+      for(const b of bodies){if(b.trail.length<2)continue;ctx.beginPath();for(let i=0;i<b.trail.length;i++){i===0?ctx.moveTo(b.trail[i].x,b.trail[i].y):ctx.lineTo(b.trail[i].x,b.trail[i].y);}ctx.strokeStyle=`hsla(${b.hue},75%,65%,0.11)`;ctx.lineWidth=1.5;ctx.stroke();}
+      const mx=(A.x+B.x)/2,my=(A.y+B.y)/2;
+      const th=ctx.createLinearGradient(A.x,A.y,B.x,B.y);th.addColorStop(0,`hsla(${A.hue},80%,70%,0.38)`);th.addColorStop(0.5,'rgba(255,230,240,0.52)');th.addColorStop(1,`hsla(${B.hue},80%,70%,0.38)`);
+      ctx.beginPath();ctx.moveTo(A.x,A.y);ctx.quadraticCurveTo(mx,my-dist*0.14,B.x,B.y);ctx.strokeStyle=th;ctx.lineWidth=1;ctx.stroke();
+      if(dist<130){const ra=(1-dist/130)*0.42;ctx.beginPath();ctx.arc(mx,my,dist*0.5,0,Math.PI*2);ctx.strokeStyle=`rgba(255,200,220,${ra})`;ctx.lineWidth=1;ctx.stroke();}
+      for(const p of resonance){const pmx=mx-p.x,pmy=my-p.y,pd=Math.sqrt(pmx*pmx+pmy*pmy);p.vx+=(pmx/pd)*0.016;p.vy+=(pmy/pd)*0.016;const s2=Math.sqrt(p.vx*p.vx+p.vy*p.vy);if(s2>0.7){p.vx=(p.vx/s2)*0.7;p.vy=(p.vy/s2)*0.7;}p.x+=p.vx;p.y+=p.vy;ctx.beginPath();ctx.arc(p.x,p.y,1.2,0,Math.PI*2);ctx.fillStyle=`hsla(${p.hue},80%,75%,${p.alpha*0.42})`;ctx.fill();}
+      for(const b of bodies){for(const m of b.moons){m.a+=m.spd;const mx2=b.x+Math.cos(m.a)*m.r,my2=b.y+Math.sin(m.a)*m.r;ctx.beginPath();ctx.arc(mx2,my2,m.sz,0,Math.PI*2);ctx.fillStyle=`hsla(${b.hue},60%,75%,0.7)`;ctx.fill();}}
+      for(const b of bodies){const g=ctx.createRadialGradient(b.x,b.y,0,b.x,b.y,b.mass*4.5);g.addColorStop(0,`hsla(${b.hue},90%,92%,1)`);g.addColorStop(0.4,`hsla(${b.hue},80%,65%,0.8)`);g.addColorStop(1,`hsla(${b.hue},70%,50%,0)`);ctx.beginPath();ctx.arc(b.x,b.y,b.mass*4,0,Math.PI*2);ctx.fillStyle=g;ctx.fill();}
+    };
+  }
+
+  // Fallback
+  return function() {
+    ctx.fillStyle='rgba(2,3,8,0.5)'; ctx.fillRect(0,0,W,H);
+  };
 }
 
 // ═══════════════════════════════════════════════════════
@@ -523,25 +575,44 @@ function startAllGridSims(){
 const UI=['starfield','void-nebula','void-uu','void-header','void-nav','btn-life'];
 const LD=document.getElementById('life-dimension');
 
-document.getElementById('btn-life').addEventListener('click',()=>{
-  isWarping=true;
-  setTimeout(()=>{UI.forEach(id=>document.getElementById(id).classList.add('fade-out'));LD.classList.add('active');startAllGridSims();},1200);
+document.getElementById('btn-life').addEventListener('click', () => {
+  isWarping = true;
+  setTimeout(() => {
+    UI.forEach(id => document.getElementById(id).classList.add('fade-out'));
+    LD.classList.add('active');
+    initConstellation();
+    cancelAnimationFrame(constellationRAF);
+    drawConstellation();
+  }, 1200);
 });
-document.getElementById('btn-return').addEventListener('click',()=>{
-  stopSim('__ov__');overlay.classList.remove('open');LD.classList.remove('active');
-  setTimeout(()=>{stopAllSims();isWarping=false;initStars();UI.forEach(id=>document.getElementById(id).classList.remove('fade-out'));},1000);
+
+document.getElementById('btn-return').addEventListener('click', () => {
+  // Close focus if open
+  focusLayer.classList.remove('open');
+  setTimeout(stopFocus, 1200);
+  // Leave life dimension
+  LD.classList.remove('active');
+  cancelAnimationFrame(constellationRAF);
+  UI.forEach(id => document.getElementById(id).classList.remove('fade-out'));
+  isWarping = false;
 });
-window.addEventListener('resize',()=>{
+
+window.addEventListener('resize', () => {
   vResize();
-  if(LD.classList.contains('active')){
-    document.querySelectorAll('.sim-cell').forEach(cell=>{
-      const key=cell.dataset.sim;const canvas=cell.querySelector('.sim-canvas');
-      if(activeSims[key]){stopSim(key);setTimeout(()=>startSim(key,canvas),50);}
-    });
+  if (LD.classList.contains('active')) {
+    initConstellation();
+    if (focusLayer.classList.contains('open')) {
+      focusCanvas.width = window.innerWidth;
+      focusCanvas.height = window.innerHeight;
+    }
   }
 });
 
-vResize();initStars();vLoop();
+// Start void simulation
+vResize();
+initStars();
+vLoop();
+
 </script>
 </body>
 </html>
