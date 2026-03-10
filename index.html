@@ -51,46 +51,6 @@
     }
 
     /* ===================== VOID UI ===================== */
-    .uu-badge {
-      position: fixed; top: 1.5rem; right: 2rem; z-index: 20; opacity: 0;
-      animation: fadeDown 1.4s cubic-bezier(0.16,1,0.3,1) 0.9s forwards;
-      text-decoration: none; display: flex; flex-direction: column; align-items: center; gap: 0.25rem;
-      transition: opacity 1s ease-in-out;
-    }
-    .uu-badge svg { width: 26px; height: 26px; filter: drop-shadow(0 0 5px rgba(190,20,20,0.35)); transition: filter 0.3s; }
-    .uu-badge:hover svg { filter: drop-shadow(0 0 11px rgba(220,40,40,0.7)); }
-    .uu-text { font-size: 0.37rem; letter-spacing: 0.26em; text-transform: uppercase; color: #321010; transition: color 0.3s; }
-    .uu-badge:hover .uu-text { color: #7a2828; }
-
-    .life-badge {
-      position: fixed; top: 1.5rem; left: 2rem; z-index: 20; opacity: 0;
-      animation: fadeDown 1.4s cubic-bezier(0.16,1,0.3,1) 0.9s forwards;
-      text-decoration: none; display: flex; align-items: center; justify-content: center; gap: 0.5rem;
-      background: transparent; border: 1px solid rgba(74,127,193,0.35); padding: 0.55rem 1.2rem;
-      color: #eef0f8; font-family: 'DM Mono', monospace; font-size: 0.62rem; letter-spacing: 0.25em; text-transform: uppercase;
-      cursor: pointer; transition: all 0.4s ease, opacity 1s ease-in-out;
-      overflow: hidden; position: relative;
-    }
-    .life-badge::before {
-      content: ''; position: absolute; inset: 0;
-      background: linear-gradient(90deg, transparent, rgba(74,127,193,0.08), transparent);
-      transform: translateX(-100%); transition: transform 0.6s ease;
-    }
-    .life-badge:hover::before { transform: translateX(100%); }
-    .life-badge:hover { 
-      background: rgba(74,127,193,0.08); border-color: rgba(74,127,193,0.9); 
-      box-shadow: 0 0 20px rgba(74,127,193,0.2), inset 0 0 20px rgba(74,127,193,0.05); 
-      color: #fff;
-    }
-    .life-badge .pulse-dot {
-      width: 5px; height: 5px; border-radius: 50%; background: var(--cosmic-blue);
-      animation: pulseDot 2s ease-in-out infinite;
-    }
-    @keyframes pulseDot {
-      0%, 100% { opacity: 0.4; transform: scale(1); }
-      50% { opacity: 1; transform: scale(1.5); box-shadow: 0 0 6px var(--cosmic-blue); }
-    }
-
     .top-header {
       position: fixed; top: 3rem; left: 50%; transform: translateX(-50%); z-index: 10;
       display: flex; flex-direction: column; align-items: center; pointer-events: none;
@@ -289,8 +249,6 @@
     }
 
     @media (max-width: 768px) {
-      .uu-badge { top: 1rem; right: 1rem; transform: scale(0.8); }
-      .life-badge { top: 1rem; left: 1rem; padding: 0.4rem 0.7rem; font-size: 0.5rem; }
       .top-header { top: 4.5rem; }
       .name { font-size: 1.6rem; letter-spacing: 0.15em; }
       .bottom-nav { gap: 0 1rem; bottom: 2rem; }
@@ -309,20 +267,6 @@
 <!-- VOID -->
 <canvas id="starfield"></canvas>
 <div class="nebula" id="void-nebula"></div>
-
-<button class="life-badge" id="btn-life">
-  <span class="pulse-dot"></span>
-  Life
-</button>
-
-<a class="uu-badge" id="void-uu" href="https://www.utah.edu" target="_blank" rel="noopener">
-  <svg viewBox="0 0 100 105" fill="none">
-    <rect x="6" y="5" width="30" height="58" rx="2" fill="#cc1e1e"/>
-    <rect x="64" y="5" width="30" height="58" rx="2" fill="#cc1e1e"/>
-    <path d="M6 55 L6 68 Q6 100 50 100 Q94 100 94 68 L94 55 L64 55 L64 68 Q64 78 50 78 Q36 78 36 68 L36 55 Z" fill="#cc1e1e"/>
-  </svg>
-  <span class="uu-text">Utah</span>
-</a>
 
 <header class="top-header" id="void-header">
   <h1 class="name">AJChapa</h1>
@@ -543,7 +487,7 @@ function vLoop(){
 // ==========================================================================
 const epicConfig = {
   particleCount: isMobile ? 7000 : 30000,
-  totalDuration: 80, // seconds
+  totalDuration: 80,
   stages: [
     {
       chapter: 'Prologue',
@@ -614,10 +558,7 @@ let masterTimeline = null;
 const geoBuffers = [];
 const mouse3D = new THREE.Vector2(0, 0);
 
-// ---- Particle Formation Generators ----
-
 function genExplosionOrigin() {
-  // All near origin — the Big Bang
   const pos = new Float32Array(epicConfig.particleCount * 3);
   for(let i=0; i < epicConfig.particleCount; i++){
     const i3 = i*3;
@@ -632,7 +573,6 @@ function genExplosionOrigin() {
 }
 
 function genFibonacciGalaxy() {
-  // Beautiful golden-ratio spiral galaxy
   const pos = new Float32Array(epicConfig.particleCount * 3);
   const PHI = (1 + Math.sqrt(5)) / 2;
   for(let i=0; i < epicConfig.particleCount; i++){
@@ -674,36 +614,21 @@ function genDNA() {
 
 function genHumanSilhouette() {
   const pos = new Float32Array(epicConfig.particleCount * 3);
-  // More anatomically structured human figure
   const parts = [
-    // Head
     { type: 'sphere', x:0, y:62, z:0, rx:10, ry:12, rz:10, prob:0.10 },
-    // Neck
     { type: 'box', x:0, y:50, z:0, w:7, h:6, d:7, prob:0.03 },
-    // Shoulders/torso upper
     { type: 'box', x:0, y:35, z:0, w:38, h:12, d:14, prob:0.12 },
-    // Torso lower
     { type: 'box', x:0, y:16, z:0, w:28, h:20, d:12, prob:0.15 },
-    // Hips
     { type: 'box', x:0, y:2, z:0, w:32, h:10, d:13, prob:0.08 },
-    // Left arm
     { type: 'box', x:-28, y:24, z:0, w:8, h:36, d:8, prob:0.09 },
-    // Right arm
     { type: 'box', x:28, y:24, z:0, w:8, h:36, d:8, prob:0.09 },
-    // Left hand
     { type: 'sphere', x:-28, y:4, z:0, rx:5, ry:6, rz:5, prob:0.04 },
-    // Right hand
     { type: 'sphere', x:28, y:4, z:0, rx:5, ry:6, rz:5, prob:0.04 },
-    // Left thigh
     { type: 'box', x:-10, y:-18, z:0, w:12, h:28, d:12, prob:0.10 },
-    // Right thigh
     { type: 'box', x:10, y:-18, z:0, w:12, h:28, d:12, prob:0.10 },
-    // Left shin
     { type: 'box', x:-10, y:-46, z:0, w:9, h:24, d:9, prob:0.04 },
-    // Right shin
     { type: 'box', x:10, y:-46, z:0, w:9, h:24, d:9, prob:0.04 },
   ];
-  
   for(let i=0; i < epicConfig.particleCount; i++){
     const i3=i*3;
     let r=Math.random(), acc=0, p=parts[parts.length-1];
@@ -750,7 +675,6 @@ function genCity() {
 }
 
 function genNeuralNetwork() {
-  // 3D neural network / lattice for singularity
   const pos = new Float32Array(epicConfig.particleCount * 3);
   const nodes = [];
   for(let i=0;i<400;i++){
@@ -785,14 +709,11 @@ function genFinalScatter() {
   return pos;
 }
 
-// ---- Shaders ----
 const vertexShader = `
   uniform float uTime; uniform float uProgress; uniform float uExplosion;
   uniform float uBlackHolePull; uniform vec3 uColor1; uniform vec3 uColor2;
-  
   attribute vec3 targetPosition; attribute vec3 randoms;
   varying vec3 vColor; varying float vAlpha;
-
   vec4 permute(vec4 x){return mod(((x*34.0)+1.0)*x,289.0);}
   vec4 taylorInvSqrt(vec4 r){return 1.79284291400159-0.85373472095314*r;}
   float snoise(vec3 v){
@@ -815,7 +736,6 @@ const vertexShader = `
     vec4 m=max(0.6-vec4(dot(x0,x0),dot(x1,x1),dot(x2,x2),dot(x3,x3)),0.0);m=m*m;
     return 42.0*dot(m*m,vec4(dot(p0,x0),dot(p1,x1),dot(p2,x2),dot(p3,x3)));
   }
-
   void main(){
     vec3 pos=mix(position,targetPosition,smoothstep(0.0,1.0,uProgress));
     float noiseScale=0.012;
@@ -823,22 +743,18 @@ const vertexShader = `
     pos.x+=n*2.5;
     pos.y+=snoise(vec3(pos.y*noiseScale,pos.z*noiseScale,uTime*0.12))*2.5;
     pos.z+=snoise(vec3(pos.z*noiseScale,pos.x*noiseScale,uTime*0.12))*2.5;
-    
     vec3 dir=normalize(pos+0.0001);
     pos+=dir*uExplosion*randoms.x*55.0;
-    
     if(uBlackHolePull>0.0){
       float angle=uTime*2.5+randoms.y*10.0;
       mat2 rot=mat2(cos(angle),-sin(angle),sin(angle),cos(angle));
       pos.xz=rot*pos.xz;
       pos=mix(pos,vec3(0.0),uBlackHolePull);
     }
-    
     vec4 mvPos=modelViewMatrix*vec4(pos,1.0);
     gl_Position=projectionMatrix*mvPos;
     gl_PointSize=(randoms.x*4.5+1.0)*(220.0/-mvPos.z);
     gl_PointSize*=(1.0-uBlackHolePull*0.92);
-    
     float colorT=smoothstep(-60.0,60.0,pos.y)+n*0.25;
     vColor=mix(uColor1,uColor2,clamp(colorT,0.0,1.0));
     vColor+=vec3(uExplosion*0.15);
@@ -861,33 +777,28 @@ const fragmentShader = `
 function initEpicDimension(){
   if(isEpicInitialized) return;
   const container = document.getElementById('canvas-container');
-  
   scene = new THREE.Scene();
   scene.fog = new THREE.FogExp2(0x000000, 0.0015);
-  
   camera = new THREE.PerspectiveCamera(60, window.innerWidth/window.innerHeight, 0.1, 3000);
   camera.position.set(0, 0, 150);
-  
   renderer = new THREE.WebGLRenderer({antialias:true, alpha:true, powerPreference:"high-performance"});
   renderer.setSize(window.innerWidth, window.innerHeight);
   renderer.setPixelRatio(Math.min(window.devicePixelRatio, isMobile?1:2));
   container.appendChild(renderer.domElement);
 
-  // Build all geometry buffers
   geoBuffers.push(
-    genExplosionOrigin(),   // 0 - big bang origin
-    genFibonacciGalaxy(),   // 1 - galaxy
-    genDNA(),               // 2 - life
-    genHumanSilhouette(),   // 3 - humans
-    genCity(),              // 4 - civilization
-    genNeuralNetwork(),     // 5 - singularity
-    genFinalScatter()       // 6 - dispersal
+    genExplosionOrigin(),
+    genFibonacciGalaxy(),
+    genDNA(),
+    genHumanSilhouette(),
+    genCity(),
+    genNeuralNetwork(),
+    genFinalScatter()
   );
-  
+
   const geometry = new THREE.BufferGeometry();
   geometry.setAttribute('position', new THREE.BufferAttribute(geoBuffers[0].slice(), 3));
   geometry.setAttribute('targetPosition', new THREE.BufferAttribute(geoBuffers[1].slice(), 3));
-  
   const randoms = new Float32Array(epicConfig.particleCount * 3);
   for(let i=0;i<epicConfig.particleCount*3;i++) randoms[i]=Math.random();
   geometry.setAttribute('randoms', new THREE.BufferAttribute(randoms, 3));
@@ -906,7 +817,6 @@ function initEpicDimension(){
   particleSystem = new THREE.Points(geometry, particleMaterial);
   scene.add(particleSystem);
 
-  // Hero glow sprite
   const glowTex = createGlowTexture();
   const spriteMat = new THREE.SpriteMaterial({
     map:glowTex, color:0xffeedd,
@@ -928,7 +838,6 @@ function initEpicDimension(){
     mouse3D.x = (e.touches[0].clientX/window.innerWidth)*2-1;
     mouse3D.y = -(e.touches[0].clientY/window.innerHeight)*2+1;
   }, {passive:true});
-  
   isEpicInitialized = true;
 }
 
@@ -953,7 +862,6 @@ function onResize3D(){
   renderer.setSize(window.innerWidth,window.innerHeight);
 }
 
-// ---- Narrative update with richer text ----
 function updateText(stageIndex) {
   const title = document.getElementById('story-title');
   const sub = document.getElementById('story-subtitle');
@@ -961,7 +869,6 @@ function updateText(stageIndex) {
   const chapter = document.getElementById('chapter-number');
   const divider = document.getElementById('story-divider');
   const s = epicConfig.stages[stageIndex];
-  
   const tl = gsap.timeline();
   tl.to([chapter, title, divider, sub, year], {
     opacity: 0, y: -25, duration: 0.7, ease: "power2.in", stagger: 0.04
@@ -989,7 +896,6 @@ function prepareMorph(fromIndex, toIndex){
   particleMaterial.uniforms.uProgress.value = 0;
 }
 
-// ---- Shockwave effect ----
 function triggerShockwave(){
   const sw = document.getElementById('shockwave');
   gsap.killTweensOf(sw);
@@ -1002,7 +908,6 @@ function triggerShockwave(){
   });
 }
 
-// ---- Auto return ----
 function returnToVoid(){
   const EpicDim = document.getElementById('epic-dimension');
   gsap.to(EpicDim, {
@@ -1012,14 +917,11 @@ function returnToVoid(){
       if(masterTimeline) masterTimeline.kill();
       animationActive = false;
       gsap.ticker.remove(animateEpicDimension);
-      
-      ['starfield','void-nebula','void-uu','void-header','void-nav','btn-life']
+      ['starfield','void-nebula','void-header','void-nav']
         .forEach(id => document.getElementById(id).classList.remove('fade-out'));
-      
       document.getElementById('progress-bar').style.opacity = 0;
       document.getElementById('skip-btn').style.opacity = 0;
       document.getElementById('progress-fill').style.width = '0%';
-      
       isWarping = false;
       voidActive = true;
       initStars();
@@ -1028,7 +930,6 @@ function returnToVoid(){
   });
 }
 
-// ---- Master Timeline ----
 function buildMasterTimeline(){
   prepareMorph(0, 1);
   particleMaterial.uniforms.uColor1.value.copy(epicConfig.stages[0].c1);
@@ -1046,7 +947,6 @@ function buildMasterTimeline(){
     onComplete: returnToVoid
   });
 
-  // === STAGE 0: BIG BANG ===
   const t0 = 0;
   masterTimeline.call(() => { updateText(0); triggerShockwave(); }, [], t0 + 0.3);
   masterTimeline.to(particleMaterial.uniforms.uExplosion, {value:12,duration:0.4,ease:"power4.out"}, t0);
@@ -1057,7 +957,6 @@ function buildMasterTimeline(){
   masterTimeline.to(heroGlow.scale, {x:20,y:20,z:1,duration:4.0,ease:"power3.out"}, t0+1);
   masterTimeline.to(heroGlow.position, {x:60,y:40,z:20,duration:5,ease:"sine.inOut"}, t0+3);
 
-  // === STAGE 1: GALAXY ===
   const t1 = 9;
   masterTimeline.call(() => { prepareMorph(0, 1); updateText(1); triggerShockwave(); }, [], t1);
   masterTimeline.to(particleMaterial.uniforms.uExplosion, {value:2.5,duration:0.5,yoyo:true,repeat:1,ease:"power3.out"}, t1);
@@ -1069,7 +968,6 @@ function buildMasterTimeline(){
   masterTimeline.to(particleSystem.rotation, {y:Math.PI*0.8,duration:10,ease:"none"}, t1);
   masterTimeline.to(heroGlow.position, {x:-30,y:-20,z:30,duration:5,ease:"sine.inOut"}, t1);
 
-  // === STAGE 2: LIFE / DNA ===
   const t2 = 20;
   masterTimeline.call(() => { prepareMorph(1, 2); updateText(2); triggerShockwave(); }, [], t2);
   masterTimeline.to(particleMaterial.uniforms.uExplosion, {value:2,duration:0.4,yoyo:true,repeat:1,ease:"power3.out"}, t2);
@@ -1082,7 +980,6 @@ function buildMasterTimeline(){
   masterTimeline.to(heroGlow.position, {x:0,y:0,z:30,duration:3,ease:"power2.inOut"}, t2);
   masterTimeline.to(heroGlow.scale, {x:30,y:30,z:1,duration:1,yoyo:true,repeat:5,ease:"sine.inOut"}, t2+3);
 
-  // === STAGE 3: HUMAN SILHOUETTE ===
   const t3 = 32;
   masterTimeline.call(() => { prepareMorph(2, 3); updateText(3); triggerShockwave(); }, [], t3);
   masterTimeline.to(particleMaterial.uniforms.uExplosion, {value:2.5,duration:0.4,yoyo:true,repeat:1,ease:"power3.out"}, t3);
@@ -1095,7 +992,6 @@ function buildMasterTimeline(){
   masterTimeline.to(heroGlow.position, {x:0,y:60,z:20,duration:2,ease:"power2.out"}, t3);
   masterTimeline.to(heroGlow.scale, {x:40,y:40,z:1,duration:0.3,yoyo:true,repeat:3,ease:"power2.out"}, t3+3);
 
-  // === STAGE 4: CIVILIZATION ===
   const t4 = 44;
   masterTimeline.call(() => { prepareMorph(3, 4); updateText(4); triggerShockwave(); }, [], t4);
   masterTimeline.fromTo(particleSystem.position, {y:-80}, {y:0,duration:4.5,ease:"power2.out"}, t4);
@@ -1107,7 +1003,6 @@ function buildMasterTimeline(){
   masterTimeline.to(particleSystem.rotation, {y:Math.PI*1.2,duration:10,ease:"none"}, t4);
   masterTimeline.to(heroGlow.position, {x:20,y:-30,z:50,duration:3,ease:"power2.inOut"}, t4);
 
-  // === STAGE 5: SINGULARITY ===
   const t5 = 56;
   masterTimeline.call(() => { prepareMorph(4, 5); updateText(5); triggerShockwave(); }, [], t5);
   masterTimeline.to(particleMaterial.uniforms.uExplosion, {value:3.5,duration:0.4,yoyo:true,repeat:1,ease:"power4.out"}, t5);
@@ -1118,17 +1013,13 @@ function buildMasterTimeline(){
   masterTimeline.to(heroGlow.position, {x:0,y:0,z:0,duration:3,ease:"back.out(1.5)"}, t5);
   masterTimeline.to(heroGlow.scale, {x:60,y:60,z:1,duration:0.2,yoyo:true,repeat:15,ease:"power2.inOut"}, t5+3);
 
-  // === STAGE 6: VOID / COLLAPSE ===
   const t6 = 68;
   masterTimeline.call(() => { prepareMorph(5, 6); updateText(6); }, [], t6);
   masterTimeline.to(particleMaterial.uniforms.uColor1.value, {r:epicConfig.stages[6].c1.r,g:epicConfig.stages[6].c1.g,b:epicConfig.stages[6].c1.b,duration:3}, t6);
   masterTimeline.to(particleMaterial.uniforms.uColor2.value, {r:epicConfig.stages[6].c2.r,g:epicConfig.stages[6].c2.g,b:epicConfig.stages[6].c2.b,duration:3}, t6);
-  // Black hole collapse
   masterTimeline.to(particleMaterial.uniforms.uBlackHolePull, {value:1.0,duration:5,ease:"power3.in"}, t6);
   masterTimeline.to(camera.position, {x:0,y:0,z:20,duration:5,ease:"power3.in"}, t6);
   masterTimeline.to(heroGlow.scale, {x:100,y:100,z:1,duration:1.5}, t6+4.5);
-  
-  // Grand re-explosion
   const tBang = t6 + 6;
   masterTimeline.set(particleMaterial.uniforms.uBlackHolePull, {value:0}, tBang);
   masterTimeline.set(particleMaterial.uniforms.uExplosion, {value:15}, tBang);
@@ -1137,95 +1028,36 @@ function buildMasterTimeline(){
   masterTimeline.to(particleMaterial.uniforms.uExplosion, {value:0,duration:8,ease:"power3.out"}, tBang);
   masterTimeline.to(camera.position, {z:600,duration:10,ease:"power2.out"}, tBang);
   masterTimeline.to(heroGlow.scale, {x:0,y:0,z:1,duration:3,ease:"power3.in"}, tBang+2);
-  
-  // Fade text
-  masterTimeline.to(['#chapter-number','#story-title','#story-divider','#story-subtitle','#story-year'], 
+  masterTimeline.to(['#chapter-number','#story-title','#story-divider','#story-subtitle','#story-year'],
     {opacity:0,duration:3,stagger:0.1}, tBang+4);
-  
-  // Buffer before return
   masterTimeline.to({}, {duration:3}, tBang+8);
 }
 
-// ---- Animation Loop ----
 let epicTime = 0;
 function animateEpicDimension(){
   if(!animationActive) return;
   epicTime += 0.015;
-  
   if(particleMaterial) particleMaterial.uniforms.uTime.value = epicTime;
   if(particleSystem) particleSystem.rotation.y += 0.0015;
-  
-  // Gentle camera parallax from mouse
   camera.position.x += (mouse3D.x * 8 - camera.position.x) * 0.015;
   camera.position.y += (mouse3D.y * 8 - camera.position.y) * 0.015;
   camera.lookAt(0, 0, 0);
-  
-  // Hero glow subtle float
-  if(heroGlow){
-    heroGlow.position.y += Math.sin(epicTime * 0.8) * 0.05;
-  }
-  
+  if(heroGlow){ heroGlow.position.y += Math.sin(epicTime * 0.8) * 0.05; }
   renderer.render(scene, camera);
 }
 
 // ==========================================================================
-// INTRO SEQUENCE + TRIGGER
+// BOOT
 // ==========================================================================
-const UI_ELEMENTS = ['starfield','void-nebula','void-uu','void-header','void-nav','btn-life'];
+const UI_ELEMENTS = ['starfield','void-nebula','void-header','void-nav'];
 const EpicDim = document.getElementById('epic-dimension');
 const IntroScreen = document.getElementById('intro-screen');
-
-function startIntro(){
-  isWarping = true;
-  
-  // Fade void UI
-  UI_ELEMENTS.forEach(id => document.getElementById(id).classList.add('fade-out'));
-  voidActive = false;
-  cancelAnimationFrame(voidRAF);
-
-  // Show intro screen
-  IntroScreen.classList.add('active');
-  
-  const introTL = gsap.timeline({
-    onComplete: () => {
-      // Dismiss intro, launch 3D
-      gsap.to(IntroScreen, {opacity:0, duration:1.2, ease:"power2.inOut", onComplete: () => {
-        IntroScreen.classList.remove('active');
-        IntroScreen.style.opacity = 0;
-        
-        gsap.set(EpicDim, {opacity:1});
-        EpicDim.classList.add('active');
-        
-        initEpicDimension();
-        animationActive = true;
-        gsap.ticker.add(animateEpicDimension);
-        
-        // Show progress + skip
-        gsap.to('#progress-bar', {opacity:1, duration:1, delay:1});
-        gsap.to('#skip-btn', {opacity:1, duration:1, delay:1});
-        
-        buildMasterTimeline();
-      }});
-    }
-  });
-
-  introTL.to(IntroScreen, {opacity:1, duration:0.8, ease:"power2.out"});
-  introTL.to('#intro-l1', {opacity:1, y:0, duration:1.0, ease:"power2.out"}, "+=0.3");
-  introTL.to('#intro-s1', {opacity:1, duration:0.8, ease:"power2.out"}, "+=0.2");
-  introTL.to('#intro-l2', {opacity:1, duration:0.8, ease:"power2.out"}, "+=0.4");
-  introTL.to({}, {duration:1.8}); // hold
-  introTL.to(['#intro-l1','#intro-s1','#intro-l2'], {opacity:0, y:-15, duration:0.8, stagger:0.05});
-}
-
-document.getElementById('btn-life').addEventListener('click', startIntro);
 
 document.getElementById('skip-btn').addEventListener('click', () => {
   if(masterTimeline) masterTimeline.seek(masterTimeline.duration() - 3);
 });
 
 window.addEventListener('resize', vResize);
-
-// Boot
 vResize();
 initStars();
 vLoop();
