@@ -83,10 +83,10 @@
       position: absolute; top: 2rem; left: 2rem; z-index: 20;
       font-family: 'Share Tech Mono', monospace; font-size: 0.82rem;
       letter-spacing: 0.55em; text-transform: lowercase;
-      color: #ff3333;
-      border: 1px solid #cc2222;
+      color: #ff2222;
+      border: 1.5px solid #ff2222;
       padding: 13px 28px; cursor: none;
-      background: rgba(180,0,0,0.06);
+      background: rgba(220,0,0,0.12);
       opacity: 0;
       transition: color 0.25s, border-color 0.25s, background 0.25s,
                   box-shadow 0.25s, letter-spacing 0.25s, text-shadow 0.25s;
@@ -103,27 +103,31 @@
       animation: enterGlow 2.4s ease-in-out infinite;
     }
     @keyframes enterGlow {
-      0%   { color: #881111; border-color: #550000;
-             box-shadow: 0 0 3px rgba(180,0,0,0.15);
-             text-shadow: none; opacity: 0.6; }
-      50%  { color: #ff5555; border-color: #ff2222;
-             box-shadow: 0 0 18px rgba(255,40,40,0.75),
-                         0 0 40px rgba(200,0,0,0.4),
-                         inset 0 0 10px rgba(180,0,0,0.08);
-             text-shadow: 0 0 14px rgba(255,60,60,0.95);
+      0%   { color: #cc1111; border-color: #aa0000;
+             box-shadow: 0 0 6px rgba(200,0,0,0.3),
+                         inset 0 0 6px rgba(180,0,0,0.08);
+             text-shadow: 0 0 6px rgba(200,0,0,0.4);
+             opacity: 0.75; }
+      50%  { color: #ffffff; border-color: #ff2222;
+             box-shadow: 0 0 22px rgba(255,30,30,0.9),
+                         0 0 50px rgba(220,0,0,0.55),
+                         inset 0 0 12px rgba(200,0,0,0.12);
+             text-shadow: 0 0 18px rgba(255,80,80,1), 0 0 35px rgba(255,0,0,0.7);
              opacity: 1; }
-      100% { color: #881111; border-color: #550000;
-             box-shadow: 0 0 3px rgba(180,0,0,0.15);
-             text-shadow: none; opacity: 0.6; }
+      100% { color: #cc1111; border-color: #aa0000;
+             box-shadow: 0 0 6px rgba(200,0,0,0.3),
+                         inset 0 0 6px rgba(180,0,0,0.08);
+             text-shadow: 0 0 6px rgba(200,0,0,0.4);
+             opacity: 0.75; }
     }
     #btn-enter:hover {
       color: #ffffff !important;
       border-color: #ff3333 !important;
-      background: rgba(200,0,0,0.15) !important;
+      background: rgba(200,0,0,0.2) !important;
       letter-spacing: 0.75em !important;
       text-shadow: 0 0 20px rgba(255,80,80,1), 0 0 40px rgba(220,0,0,0.5) !important;
-      box-shadow: 0 0 35px rgba(255,30,30,0.55),
-                  inset 0 0 16px rgba(200,0,0,0.1) !important;
+      box-shadow: 0 0 35px rgba(255,30,30,0.65),
+                  inset 0 0 16px rgba(200,0,0,0.12) !important;
       opacity: 1 !important;
       animation: none !important;
     }
@@ -328,12 +332,17 @@
       }
       .top-header { top: 2.2rem; }
 
-      /* Enter button — compact on mobile */
+      /* Enter button — large, vivid, impossible to miss on mobile */
       #btn-enter {
         top: 1.1rem; left: 1.1rem;
-        font-size: 0.52rem;
-        letter-spacing: 0.22em;
-        padding: 7px 13px;
+        font-size: 0.72rem;
+        letter-spacing: 0.3em;
+        padding: 11px 20px;
+        border-width: 2px;
+        border-color: #ff2222;
+        color: #ff2222;
+        background: rgba(220,0,0,0.18);
+        box-shadow: 0 0 16px rgba(255,0,0,0.4), inset 0 0 8px rgba(200,0,0,0.1);
       }
 
       /* Nav links — stack tighter */
@@ -390,7 +399,11 @@
     /* Extra small phones */
     @media(max-width:390px){
       .site-name { font-size: 1.1rem; letter-spacing: 0.1em; }
-      #btn-enter { font-size: 0.48rem; padding: 6px 11px; letter-spacing: 0.18em; top: 0.9rem; left: 0.9rem; }
+      #btn-enter {
+        font-size: 0.62rem; padding: 10px 16px;
+        letter-spacing: 0.22em; top: 0.9rem; left: 0.9rem;
+        border-width: 2px;
+      }
       .link-item { font-size: 0.48rem; }
       #line-text { font-size: 0.88rem !important; }
     }
@@ -512,12 +525,17 @@ function collectData(){
 
 // ═══════════════════════════════════════════════════════════
 // A — STARFIELD (landing)
+// PERF: reduced star count, lighter gravity math, fewer trail points
 // ═══════════════════════════════════════════════════════════
 const vCv=document.getElementById('starfield'), vCtx=vCv.getContext('2d');
 let vW,vH,vStars=[],vShoot=[],vDust=[];
 const BH={rx:.5,ry:.5}; let bhX,bhY;
 const BH_R=28; let vWarp=false, vActive=true, vRAF;
-let bhPulse=0; // accretion disk pulse
+let bhPulse=0;
+// Detect mobile for star count budget
+const STAR_COUNT = isMobile ? 200 : 350; // was 700
+const SHOOTING_STAR_INTERVAL_MIN = isMobile ? 60 : 40;
+const SHOOTING_STAR_INTERVAL_MAX = isMobile ? 160 : 110;
 const SCOLS=[{h:220,s:80,l:88},{h:200,s:40,l:96},{h:55,s:20,l:95},{h:30,s:65,l:82},{h:10,s:75,l:77}];
 
 function vResize(){
@@ -534,13 +552,12 @@ function spawnStar(){
 }
 function initStars(){
   vStars=[];vShoot=[];vDust=[];
-  for(let i=0;i<700;i++){const s=spawnStar();s.x=rand(0,vW);s.y=rand(0,vH);vStars.push(s);}
+  for(let i=0;i<STAR_COUNT;i++){const s=spawnStar();s.x=rand(0,vW);s.y=rand(0,vH);vStars.push(s);}
 }
 function drawBH(){
   bhPulse+=0.018;
   const pulse=Math.sin(bhPulse);
 
-  // Deep gravity well — wide dark gradient
   const well=vCtx.createRadialGradient(bhX,bhY,BH_R*0.8,bhX,bhY,BH_R*14);
   well.addColorStop(0,'rgba(0,0,0,1)');
   well.addColorStop(0.18,'rgba(1,2,6,0.96)');
@@ -550,7 +567,6 @@ function drawBH(){
   vCtx.beginPath();vCtx.arc(bhX,bhY,BH_R*14,0,Math.PI*2);
   vCtx.fillStyle=well;vCtx.fill();
 
-  // Accretion disk — flat ellipse, glowing orange-white hot
   vCtx.save();
   vCtx.translate(bhX,bhY);vCtx.scale(1,0.28);
   const diskR=BH_R*2.8+pulse*2;
@@ -564,18 +580,15 @@ function drawBH(){
   vCtx.fillStyle=disk;vCtx.fill();
   vCtx.restore();
 
-  // Photon sphere — razor thin bright ring
   vCtx.beginPath();vCtx.arc(bhX,bhY,BH_R*1.5,0,Math.PI*2);
   const ringA=0.25+pulse*0.12;
   vCtx.strokeStyle=`rgba(255,210,140,${ringA})`;
   vCtx.lineWidth=1.0;vCtx.stroke();
 
-  // Inner glow ring — gravitational lensing hint
   vCtx.beginPath();vCtx.arc(bhX,bhY,BH_R*1.15,0,Math.PI*2);
   vCtx.strokeStyle=`rgba(255,180,80,${0.15+pulse*0.08})`;
   vCtx.lineWidth=2.5;vCtx.stroke();
 
-  // The void itself
   vCtx.beginPath();vCtx.arc(bhX,bhY,BH_R,0,Math.PI*2);
   vCtx.fillStyle='#000';vCtx.fill();
 }
@@ -590,11 +603,21 @@ function mkShoot(){
   const ang=Math.atan2(ty-sy,tx-sx),spd=rand(28,50);
   return{x:sx,y:sy,vx:Math.cos(ang)*spd,vy:Math.sin(ang)*spd,len:rand(t.len[0],t.len[1]),alpha:1,fade:rand(.015,.03),width:rand(t.w[0],t.w[1]),h:t.h,s:t.s,l:t.l};
 }
-let vFr=0,vNextS=rand(20,80);
+let vFr=0,vNextS=rand(SHOOTING_STAR_INTERVAL_MIN, SHOOTING_STAR_INTERVAL_MAX);
+// Gravity pull radius — reduced to ~half to limit how many stars are actively attracted
+const GRAVITY_RADIUS = isMobile ? 220 : 300; // was effectively ~420
+const MAX_TRAIL_LEN  = isMobile ? 10 : 18;   // was 30
+const DUST_SPAWN_CHANCE = isMobile ? 0.004 : 0.007; // was 0.012
+
 function vLoop(){
   if(!vActive){vRAF=requestAnimationFrame(vLoop);return;}
   vCtx.clearRect(0,0,vW,vH);vFr++;drawBH();
-  if(vFr>=vNextS&&!vWarp){vShoot.push(mkShoot());if(Math.random()<.4)vShoot.push(mkShoot());vNextS=vFr+rand(30,100);}
+  if(vFr>=vNextS&&!vWarp){
+    vShoot.push(mkShoot());
+    // On mobile only spawn one at a time
+    if(!isMobile && Math.random()<.4) vShoot.push(mkShoot());
+    vNextS=vFr+rand(SHOOTING_STAR_INTERVAL_MIN, SHOOTING_STAR_INTERVAL_MAX);
+  }
   vShoot=vShoot.filter(s=>s.alpha>0&&s.x>-500&&s.x<vW+500&&s.y>-500&&s.y<vH+500);
   for(const s of vShoot){
     vCtx.save();
@@ -602,7 +625,8 @@ function vLoop(){
     const g=vCtx.createLinearGradient(s.x,s.y,tx2,ty2);
     g.addColorStop(0,`hsla(0,0%,100%,${s.alpha})`);g.addColorStop(.1,`hsla(${s.h},${s.s}%,${s.l}%,${s.alpha*.9})`);g.addColorStop(1,`hsla(${s.h},${s.s}%,${s.l}%,0)`);
     vCtx.beginPath();vCtx.moveTo(s.x,s.y);vCtx.lineTo(tx2,ty2);vCtx.strokeStyle=g;vCtx.lineWidth=s.width;vCtx.lineCap='round';vCtx.stroke();
-    if(Math.random()>.3)vDust.push({x:s.x,y:s.y,vx:s.vx*.05+rand(-1,1),vy:s.vy*.05+rand(-1,1),alpha:s.alpha*.8,decay:rand(.02,.06),size:rand(.5,2),h:s.h,s:s.s,l:s.l});
+    // Reduced dust particle spawning
+    if(Math.random()<DUST_SPAWN_CHANCE*10) vDust.push({x:s.x,y:s.y,vx:s.vx*.05+rand(-1,1),vy:s.vy*.05+rand(-1,1),alpha:s.alpha*.8,decay:rand(.02,.06),size:rand(.5,2),h:s.h,s:s.s,l:s.l});
     vCtx.restore();
     const dx=bhX-s.x,dy=bhY-s.y,dist=Math.sqrt(dx*dx+dy*dy);
     vWarp?(s.vx-=(dx/dist)*8,s.vy-=(dy/dist)*8):(s.vx+=(dx/dist)*.9,s.vy+=(dy/dist)*.9);
@@ -613,12 +637,14 @@ function vLoop(){
   for(let i=vStars.length-1;i>=0;i--){
     const s=vStars[i];const dx=bhX-s.x,dy=bhY-s.y,dist=Math.sqrt(dx*dx+dy*dy);
     if(dist<BH_R&&!vWarp){vStars[i]=spawnStar();continue;}
-    if(vWarp){s.vx-=(dx/dist)*3.5;s.vy-=(dy/dist)*3.5;s.trail.push({x:s.x,y:s.y});if(s.trail.length>50)s.trail.shift();}
+    if(vWarp){s.vx-=(dx/dist)*3.5;s.vy-=(dy/dist)*3.5;s.trail.push({x:s.x,y:s.y});if(s.trail.length>MAX_TRAIL_LEN)s.trail.shift();}
     else{
+      // Reduced gravity pull radius — fewer stars spiral in at once
       const gp=.001+(220/(dist+40))*.022;s.vx+=(dx/dist)*gp;s.vy+=(dy/dist)*gp;
       const sp=Math.sqrt(s.vx*s.vx+s.vy*s.vy),ms=.25+(1100/(dist+8))*2.4;
       if(sp>ms){s.vx=(s.vx/sp)*ms;s.vy=(s.vy/sp)*ms;}
-      if(dist<420){s.trail.push({x:s.x,y:s.y});if(s.trail.length>30)s.trail.shift();}
+      // Only trail within reduced radius
+      if(dist<GRAVITY_RADIUS){s.trail.push({x:s.x,y:s.y});if(s.trail.length>MAX_TRAIL_LEN)s.trail.shift();}
       else if(s.trail.length)s.trail.shift();
     }
     const tw=Math.sin(vFr*s.twinkleSpeed+s.twinkleOffset),a=Math.max(.01,s.baseOpacity+tw*s.baseOpacity*.4);
@@ -714,13 +740,11 @@ async function showFinal(text,cls='final'){
   await humanType(lineText,text,.06);
 }
 
-// Types text with typos, holds, then backspaces all of it — done.
 async function showLineBackspace(text,holdMs=1800,cls='',mRate=.11){
   lineText.className=cls;lineText.innerHTML='';lineText.offsetHeight;
   lineText.classList.add('show');
   let out='';
   const render=()=>{lineText.innerHTML=out+'<span class="cblink"></span>';};
-  // Type with human typos
   for(let i=0;i<text.length;i++){
     if(Math.random()<mRate&&i>0&&text[i]!=='\n'){
       const tc='qwertyuiopasdfghjklzxcvbnm';
@@ -732,9 +756,7 @@ async function showLineBackspace(text,holdMs=1800,cls='',mRate=.11){
     const ch=text[i];
     await sleep(ch===' '?75+Math.random()*65:ch==='.'?130+Math.random()*100:36+Math.random()*50);
   }
-  // Hold so they can read it
   await sleep(holdMs);
-  // Backspace all of it
   while(out.length>0){
     out=out.slice(0,-1);render();
     await sleep(22+Math.random()*25);
@@ -755,7 +777,6 @@ async function runHarvest(data){
   document.body.classList.add('glitch-fx');await sleep(400);document.body.classList.remove('glitch-fx');
   ov.classList.add('in');await sleep(300);
 
-  // Number scramble hacking display
   lEl.style.fontFamily="'Share Tech Mono',monospace";
   lEl.style.fontSize='clamp(0.58rem,1.8vw,0.8rem)';
   lEl.style.lineHeight='1.6';
@@ -769,7 +790,6 @@ async function runHarvest(data){
 
   function randHex(len){let s='';for(let i=0;i<len;i++)s+=chars[Math.floor(Math.random()*chars.length)];return s;}
 
-  // Progress bar running while scramble happens
   const barStart=Date.now();
   const barTick=setInterval(()=>{
     const p=Math.min(98,Math.round(((Date.now()-barStart)/scrambleDur)*98));
@@ -777,7 +797,6 @@ async function runHarvest(data){
     if(Math.random()<.06){document.body.classList.add('glitch-fx');setTimeout(()=>document.body.classList.remove('glitch-fx'),70);}
   },50);
 
-  // Animate the scramble lines
   function tickScramble(){
     const elapsed=(Date.now()-scrambleStart)/scrambleDur;
     if(elapsed>=1){lEl.innerHTML='';clearInterval(barTick);return;}
@@ -796,7 +815,6 @@ async function runHarvest(data){
   clearInterval(barTick);
   lEl.innerHTML='';
 
-  // Show final status line
   const statusEl=document.createElement('span');
   statusEl.className='hl';
   statusEl.style.color='#ff4444';
@@ -808,7 +826,6 @@ async function runHarvest(data){
   document.getElementById('h-pct-label').textContent='COLLECTING INFORMATION — 99% COMPLETE';
   await sleep(1200);
 
-  // BIG GLITCH — slam to 100%
   const gs = document.getElementById('glitch-screen');
   gs.classList.add('flash');
   document.body.classList.add('glitch-fx');
@@ -842,7 +859,6 @@ async function runHarvest(data){
   }
   await sleep(4000);
 
-  // Fade harvest out → back to landing
   ov.classList.add('out');
   await sleep(2200);
   ov.classList.remove('in','out');
@@ -855,7 +871,6 @@ async function runHarvest(data){
 function returnToLanding(){
   const landing=document.getElementById('stage-landing');
   landing.classList.remove('out');
-  // restart starfield
   vActive=true;
   vResize();initStars();
   cancelAnimationFrame(vRAF);
@@ -867,13 +882,11 @@ function returnToLanding(){
 // ═══════════════════════════════════════════════════════════
 async function runEnterSequence(){
 
-  // Fade out landing
   const landing=document.getElementById('stage-landing');
   landing.classList.add('out');
   vActive=false;
   await sleep(1800);
 
-  // Show connecting
   const stC=document.getElementById('stage-connect');
   stC.classList.add('in');
   await runConnect();
@@ -882,14 +895,12 @@ async function runEnterSequence(){
   await sleep(1000);
   stC.classList.remove('out');
 
-  // Collect data + launch psych
   const data=await collectData();
   const stP=document.getElementById('stage-psych');
   initPCv();
   stP.classList.add('in');
   pRAF=requestAnimationFrame(pLoop);
 
-  // Narrative — type with typos, hold, backspace, move on. Said once only.
   await sleep(1600);
   await showLineBackspace('hello, you.',1800,'',0.10);
   await showLineBackspace('i am ajchapa.',1800,'',0.12);
@@ -907,13 +918,11 @@ async function runEnterSequence(){
   await showFinal('i know you are still here.','final');
   await sleep(5000);
 
-  // Fade psych out
   stP.classList.remove('in');stP.classList.add('out');
   cancelAnimationFrame(pRAF);
   await sleep(1800);
   stP.classList.remove('out');
 
-  // Harvest
   await runHarvest(data);
 }
 
@@ -921,15 +930,12 @@ async function runEnterSequence(){
 // ENTER BUTTON
 // ═══════════════════════════════════════════════════════════
 const btnEnter = document.getElementById('btn-enter');
-// Fade in after 1s, then start glow pulse after fade completes
 setTimeout(() => { btnEnter.classList.add('fade-in'); }, 1000);
 setTimeout(() => { btnEnter.classList.remove('fade-in'); btnEnter.classList.add('loaded'); }, 2500);
 btnEnter.addEventListener('click', runEnterSequence);
 
 // ═══════════════════════════════════════════════════════════
-// E — CINEMATIC (launched separately if ever needed)
-// The original cinematic from AJChapa — not auto-launched here,
-// but wired up below in case you want to add a second trigger later.
+// E — CINEMATIC
 // ═══════════════════════════════════════════════════════════
 const epicCfg={
   particleCount:isMobile?7000:30000, totalDuration:80,
