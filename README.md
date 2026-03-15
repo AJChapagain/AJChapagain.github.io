@@ -1,1 +1,1 @@
-https://ajchapagain.github.io/
+ajchapa.com
