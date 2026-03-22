@@ -3,448 +3,497 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Archive — AJChapa</title>
+  <title>AJChapa — Archive</title>
   <link rel="icon" type="image/png" href="favicon.png">
   <link rel="preconnect" href="https://fonts.googleapis.com" />
-  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=DM+Mono:wght@300;400&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Mulish:wght@400;600;700&display=swap" rel="stylesheet" />
   <style>
+    /* ── TOKENS ──────────────────────────────────────────── */
     :root {
-      --bg:     #0e0e0f;
-      --fg:     #e8e6e1;
-      --muted:  #4a4a52;
-      --line:   rgba(255,255,255,0.06);
-      --accent: #c8b99a;
-      --ease:   cubic-bezier(0.22, 1, 0.36, 1);
+      --bg:         #ffffff;
+      --card-bg:    #f7f7f7;
+      --border:     #ededed;
+      --text-main:  #000000;
+      --text-muted: #999999;
+      --text-link:  #333333;
+      --font:       'Mulish', sans-serif;
+      --mono:       Menlo, Monaco, Consolas, monospace;
     }
 
+    /* ── RESET ───────────────────────────────────────────── */
     *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
-
     html, body {
       background: var(--bg);
-      color: var(--fg);
-      font-family: 'DM Mono', monospace;
-      font-size: 13px;
-      line-height: 1.6;
+      color: var(--text-main);
+      font-family: var(--font);
+      font-size: 14px;
+      line-height: 1.45;
       -webkit-font-smoothing: antialiased;
-      min-height: 100vh;
-      cursor: none;
     }
-    @media(hover:none){ body { cursor: auto; } }
-
     a { color: inherit; text-decoration: none; }
-    img { display: block; }
-
-    /* ── CURSOR ──────────────────────────────────────────── */
-    #cur {
-      position: fixed; z-index: 99999;
-      width: 5px; height: 5px; border-radius: 50%;
-      background: var(--accent);
-      pointer-events: none;
-      transform: translate(-50%, -50%);
-      transition: width 0.22s var(--ease),
-                  height 0.22s var(--ease),
-                  background 0.22s ease,
-                  border-radius 0.22s ease;
-      mix-blend-mode: difference;
-    }
-    #cur.big {
-      width: 42px; height: 42px;
-      background: transparent;
-      border: 1px solid rgba(200,185,154,0.5);
-      mix-blend-mode: normal;
-    }
+    img { display: block; max-width: 100%; }
+    button { font-family: var(--font); }
 
     /* ── NAV ─────────────────────────────────────────────── */
     #nav {
-      position: fixed; top: 0; left: 0; right: 0; z-index: 1000;
-      height: 56px;
-      display: flex; align-items: center; justify-content: space-between;
-      padding: 0 40px;
-      border-bottom: 1px solid var(--line);
-      background: rgba(14,14,15,0.82);
-      backdrop-filter: blur(18px);
-      -webkit-backdrop-filter: blur(18px);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      height: 55px;
+      background: var(--bg);
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 20px;
     }
 
     #nav-logo {
-      font-family: 'Cormorant Garamond', serif;
-      font-size: 16px; font-weight: 300;
-      letter-spacing: 0.18em; text-transform: uppercase;
-      color: var(--fg); cursor: default;
-      transition: opacity 0.2s;
-    }
-    #nav-logo:hover { opacity: 0.5; }
-
-    #nav-back {
-      font-size: 11px; letter-spacing: 0.18em;
-      color: var(--muted);
-      display: flex; align-items: center; gap: 7px;
-      transition: color 0.2s; cursor: none;
-    }
-    #nav-back:hover { color: var(--fg); }
-    #nav-back svg { width: 10px; height: 10px; }
-
-    /* ── HERO HEADER ─────────────────────────────────────── */
-    #hero {
-      padding: 140px 40px 60px;
-      border-bottom: 1px solid var(--line);
-      display: flex; align-items: flex-end; justify-content: space-between;
-      gap: 40px;
+      font-size: 14px;
+      font-weight: 700;
+      color: var(--text-main);
+      letter-spacing: 0;
     }
 
-    #hero-left {}
-    #hero-title {
-      font-family: 'Cormorant Garamond', serif;
-      font-size: clamp(52px, 8vw, 96px);
-      font-weight: 300; letter-spacing: -0.02em;
-      color: var(--fg); line-height: 0.95;
+    #nav-right {
+      display: flex;
+      align-items: center;
+      gap: 16px;
     }
-    #hero-title em {
-      font-style: italic;
-      color: var(--accent);
+    #nav-right a {
+      font-size: 13px;
+      font-weight: 400;
+      color: var(--text-muted);
+      transition: color 0.1s;
+    }
+    #nav-right a:hover { color: var(--text-main); }
+
+    /* ── PROFILE HEADER ──────────────────────────────────── */
+    #profile {
+      padding: 30px 20px 0;
+      border-bottom: 1px solid var(--border);
     }
 
-    #hero-right {
-      text-align: right; flex-shrink: 0;
-    }
-    #hero-count {
-      font-size: 11px; letter-spacing: 0.2em;
-      color: var(--muted); display: block;
-      margin-bottom: 4px;
-    }
-    #hero-year {
-      font-family: 'Cormorant Garamond', serif;
-      font-size: 13px; font-style: italic;
-      color: var(--muted);
+    #profile-top {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 20px;
     }
 
-    /* ── GRID ────────────────────────────────────────────── */
+    #profile-name {
+      font-size: 24px;
+      font-weight: 700;
+      color: var(--text-main);
+      letter-spacing: -0.01em;
+    }
+
+    #profile-meta {
+      font-size: 12px;
+      color: var(--text-muted);
+      font-family: var(--mono);
+    }
+
+    /* filter tabs */
+    #profile-tabs {
+      display: flex;
+      align-items: center;
+      gap: 0;
+    }
+
+    .tab {
+      font-size: 13px;
+      font-weight: 400;
+      color: var(--text-muted);
+      padding: 10px 14px 10px 0;
+      margin-right: 6px;
+      border-bottom: 2px solid transparent;
+      cursor: pointer;
+      position: relative;
+      top: 1px;
+      transition: color 0.1s;
+      user-select: none;
+    }
+    .tab:hover { color: var(--text-main); }
+    .tab.active {
+      color: var(--text-main);
+      font-weight: 600;
+      border-bottom-color: var(--text-main);
+    }
+
+    /* ── GRID CONTAINER ──────────────────────────────────── */
+    #grid-wrap {
+      padding: 20px;
+    }
+
     #grid {
       display: grid;
       grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
-      gap: 1px;
-      background: var(--line);
-      border-top: 1px solid var(--line);
+      gap: 15px;
     }
 
-    /* focus mode */
-    #grid:hover .block { opacity: 0.35; }
-    #grid:hover .block:hover { opacity: 1; }
-
-    /* ── BLOCK ───────────────────────────────────────────── */
+    /* ── BLOCK / CARD ────────────────────────────────────── */
     .block {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      cursor: pointer;
       position: relative;
-      background: var(--bg);
-      cursor: none;
-      overflow: hidden;
-      transition: opacity 0.35s ease;
     }
 
-    /* image */
+    /* image container */
     .block-img {
       aspect-ratio: 1 / 1;
+      background: var(--card-bg);
+      border-radius: 3px;
+      border: 1px solid transparent;
       overflow: hidden;
-      background: #1a1a1c;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: border-color 0.1s;
+      position: relative;
     }
-    .block:nth-child(3n)   .block-img { aspect-ratio: 3 / 4; }
-    .block:nth-child(5n)   .block-img { aspect-ratio: 4 / 3; }
-    .block:nth-child(1)    .block-img { aspect-ratio: 16 / 7; }
 
     .block-img img {
-      width: 100%; height: 100%;
-      object-fit: cover;
-      filter: grayscale(15%) contrast(1.04);
-      transition: transform 0.6s var(--ease), filter 0.4s ease, opacity 0.3s ease;
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+      opacity: 1;
+      transition: opacity 0.1s;
+    }
+
+    .block:hover .block-img {
+      border-color: var(--border);
     }
     .block:hover .block-img img {
-      transform: scale(1.06);
-      filter: grayscale(0%) contrast(1.06);
+      opacity: 0.9;
     }
 
-    /* overlay — slides up on hover */
-    .block-overlay {
-      position: absolute; bottom: 0; left: 0; right: 0;
-      padding: 40px 18px 18px;
-      background: linear-gradient(to top, rgba(0,0,0,0.72) 0%, transparent 100%);
-      transform: translateY(100%);
-      transition: transform 0.4s var(--ease);
-      display: flex; align-items: flex-end; justify-content: space-between;
+    /* options button — top right, visible on hover */
+    .block-options {
+      position: absolute;
+      top: 6px;
+      right: 6px;
+      z-index: 2;
+      opacity: 0;
+      transition: opacity 0.1s;
     }
-    .block:hover .block-overlay { transform: translateY(0); }
+    .block:hover .block-options { opacity: 1; }
 
-    .block-label {
-      font-size: 11px; letter-spacing: 0.16em;
-      text-transform: uppercase; color: rgba(232,230,225,0.7);
+    .block-options button {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 24px;
+      height: 24px;
+      background: rgba(255,255,255,0.9);
+      border: 1px solid var(--border);
+      border-radius: 3px;
+      cursor: pointer;
+      padding: 0;
     }
-    .block-index {
-      font-family: 'Cormorant Garamond', serif;
-      font-size: 22px; font-weight: 300; font-style: italic;
-      color: var(--accent); line-height: 1;
+    .block-options button:hover {
+      background: var(--bg);
+    }
+    .block-options svg {
+      width: 12px;
+      height: 12px;
+      fill: var(--text-muted);
     }
 
-    /* bottom meta strip */
+    /* metadata */
     .block-meta {
-      padding: 12px 18px;
-      border-top: 1px solid var(--line);
-      display: flex; align-items: center; justify-content: space-between;
-    }
-    .block-title {
-      font-size: 11px; letter-spacing: 0.12em;
-      color: var(--muted);
-      white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
-      max-width: 70%;
-    }
-    .block-num {
-      font-family: 'Cormorant Garamond', serif;
-      font-size: 11px; font-style: italic;
-      color: var(--muted);
-      flex-shrink: 0;
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+      padding: 0 1px;
     }
 
-    /* ── FOOTER LINE ─────────────────────────────────────── */
-    #foot {
-      padding: 32px 40px;
-      border-top: 1px solid var(--line);
-      display: flex; align-items: center; justify-content: space-between;
+    .block-title {
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--text-main);
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+      line-height: 1.4;
     }
-    #foot-left {
-      font-family: 'Cormorant Garamond', serif;
-      font-size: 12px; font-style: italic;
-      color: var(--muted);
+
+    .block-author {
+      font-size: 13px;
+      font-weight: 400;
+      color: var(--text-main);
     }
-    #foot-right {
-      font-size: 10px; letter-spacing: 0.22em;
-      color: var(--muted); text-transform: uppercase;
+
+    .block-info {
+      font-size: 12px;
+      color: var(--text-muted);
+      font-family: var(--mono);
+      font-variant-numeric: tabular-nums;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
     }
 
     /* ── LIGHTBOX ────────────────────────────────────────── */
     #lb {
-      position: fixed; inset: 0; z-index: 9999;
-      background: rgba(10,10,11,0.94);
-      backdrop-filter: blur(20px);
-      -webkit-backdrop-filter: blur(20px);
-      display: flex; align-items: center; justify-content: center;
-      opacity: 0; pointer-events: none;
-      transition: opacity 0.28s ease;
-      cursor: none;
+      position: fixed;
+      inset: 0;
+      z-index: 9999;
+      background: rgba(255,255,255,0.96);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.15s ease;
     }
-    #lb.open { opacity: 1; pointer-events: all; }
+    #lb.open {
+      opacity: 1;
+      pointer-events: all;
+    }
 
     #lb-inner {
-      display: flex; flex-direction: column;
-      align-items: center; gap: 16px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 14px;
       max-width: 90vw;
     }
 
     #lb-img {
-      max-width: 78vw; max-height: 70vh;
+      max-width: 80vw;
+      max-height: 72vh;
       object-fit: contain;
+      border: 1px solid var(--border);
       border-radius: 3px;
-      box-shadow: 0 40px 100px rgba(0,0,0,0.6);
-      transform: scale(0.95); opacity: 0;
-      transition: transform 0.5s var(--ease), opacity 0.4s ease;
     }
-    #lb.open #lb-img { transform: scale(1); opacity: 1; }
 
-    #lb-caption {
-      font-family: 'Cormorant Garamond', serif;
-      font-style: italic; font-size: 14px;
-      color: rgba(200,185,154,0.6);
-      letter-spacing: 0.06em;
+    #lb-label {
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--text-main);
+      text-align: center;
+    }
+
+    #lb-sublabel {
+      font-size: 12px;
+      color: var(--text-muted);
+      font-family: var(--mono);
+      margin-top: -8px;
+      text-align: center;
     }
 
     #lb-top {
-      position: absolute; top: 0; left: 0; right: 0;
-      height: 52px;
-      display: flex; align-items: center; justify-content: space-between;
-      padding: 0 32px;
-      border-bottom: 1px solid var(--line);
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 55px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 20px;
+      border-bottom: 1px solid var(--border);
     }
-    #lb-n {
-      font-size: 11px; letter-spacing: 0.2em; color: var(--muted);
+
+    #lb-counter {
+      font-size: 12px;
+      color: var(--text-muted);
+      font-family: var(--mono);
     }
+
     #lb-close {
-      font-size: 11px; letter-spacing: 0.18em;
-      color: var(--muted); cursor: none;
-      transition: color 0.18s; text-transform: uppercase;
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--text-muted);
+      cursor: pointer;
+      transition: color 0.1s;
+      background: none;
+      border: none;
+      font-family: var(--font);
     }
-    #lb-close:hover { color: var(--fg); }
+    #lb-close:hover { color: var(--text-main); }
 
     #lb-bot {
-      position: absolute; bottom: 0; left: 0; right: 0;
-      height: 52px;
-      display: flex; align-items: center; justify-content: center;
-      gap: 48px;
-      border-top: 1px solid var(--line);
+      position: absolute;
+      bottom: 0; left: 0; right: 0;
+      height: 55px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 40px;
+      border-top: 1px solid var(--border);
     }
-    .lb-btn {
-      font-size: 11px; letter-spacing: 0.18em;
-      color: var(--muted); background: none; border: none;
-      font-family: 'DM Mono', monospace; cursor: none;
-      transition: color 0.18s; text-transform: uppercase;
-    }
-    .lb-btn:hover { color: var(--fg); }
 
-    /* ── MOBILE ──────────────────────────────────────────── */
-    @media(max-width: 768px) {
-      #cur { display: none; }
-      body { cursor: auto; }
-      .block { cursor: pointer; }
-      #nav { padding: 0 20px; }
-      #hero { padding: 110px 20px 40px; flex-direction: column; align-items: flex-start; gap: 20px; }
-      #hero-right { text-align: left; }
-      #grid { grid-template-columns: repeat(2, 1fr); }
-      .block:nth-child(1) .block-img { aspect-ratio: 3 / 2; }
-      #foot { padding: 24px 20px; }
-      #lb-img { max-width: 94vw; max-height: 60vh; }
+    .lb-nav {
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--text-muted);
+      cursor: pointer;
+      background: none;
+      border: none;
+      font-family: var(--font);
+      transition: color 0.1s;
+    }
+    .lb-nav:hover { color: var(--text-main); }
+
+    /* ── RESPONSIVE ──────────────────────────────────────── */
+    @media (max-width: 600px) {
+      #grid {
+        grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+        gap: 10px;
+      }
+      #profile { padding: 20px 14px 0; }
+      #grid-wrap { padding: 14px; }
+      #nav { padding: 0 14px; }
+      #lb-img { max-width: 96vw; max-height: 60vh; }
     }
   </style>
 </head>
 <body>
 
-<div id="cur"></div>
-
-<!-- NAV -->
+<!-- ── NAV ──────────────────────────────────────────────── -->
 <nav id="nav">
   <div id="nav-logo">AJChapa</div>
-  <a id="nav-back" href="index.html" class="hoverable">
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
-      <path d="M19 12H5M5 12l7-7M5 12l7 7"/>
-    </svg>
-    index
-  </a>
+  <div id="nav-right">
+    <a href="index.html">← home</a>
+  </div>
 </nav>
 
-<!-- HERO -->
-<header id="hero">
-  <div id="hero-left">
-    <h1 id="hero-title">Arch<em>ive</em></h1>
+<!-- ── PROFILE HEADER ───────────────────────────────────── -->
+<div id="profile">
+  <div id="profile-top">
+    <h1 id="profile-name">Archive</h1>
+    <span id="profile-meta">6 blocks</span>
   </div>
-  <div id="hero-right">
-    <span id="hero-count">06 blocks</span>
-    <span id="hero-year">personal collection</span>
+  <div id="profile-tabs">
+    <span class="tab active">Blocks</span>
   </div>
-</header>
-
-<!-- GRID -->
-<div id="grid">
-
-  <div class="block hoverable" onclick="openLB(0)">
-    <div class="block-img"><img src="photo1.jpg" alt="block 01" loading="lazy" /></div>
-    <div class="block-overlay">
-      <span class="block-label">block 01</span>
-      <span class="block-index">01</span>
-    </div>
-    <div class="block-meta">
-      <span class="block-title">frame 01</span>
-      <span class="block-num">01 / 06</span>
-    </div>
-  </div>
-
-  <div class="block hoverable" onclick="openLB(1)">
-    <div class="block-img"><img src="photo2.jpg" alt="block 02" loading="lazy" /></div>
-    <div class="block-overlay">
-      <span class="block-label">block 02</span>
-      <span class="block-index">02</span>
-    </div>
-    <div class="block-meta">
-      <span class="block-title">frame 02</span>
-      <span class="block-num">02 / 06</span>
-    </div>
-  </div>
-
-  <div class="block hoverable" onclick="openLB(2)">
-    <div class="block-img"><img src="photo3.jpg" alt="block 03" loading="lazy" /></div>
-    <div class="block-overlay">
-      <span class="block-label">block 03</span>
-      <span class="block-index">03</span>
-    </div>
-    <div class="block-meta">
-      <span class="block-title">frame 03</span>
-      <span class="block-num">03 / 06</span>
-    </div>
-  </div>
-
-  <div class="block hoverable" onclick="openLB(3)">
-    <div class="block-img"><img src="photo4.jpg" alt="block 04" loading="lazy" /></div>
-    <div class="block-overlay">
-      <span class="block-label">block 04</span>
-      <span class="block-index">04</span>
-    </div>
-    <div class="block-meta">
-      <span class="block-title">frame 04</span>
-      <span class="block-num">04 / 06</span>
-    </div>
-  </div>
-
-  <div class="block hoverable" onclick="openLB(4)">
-    <div class="block-img"><img src="photo5.jpg" alt="block 05" loading="lazy" /></div>
-    <div class="block-overlay">
-      <span class="block-label">block 05</span>
-      <span class="block-index">05</span>
-    </div>
-    <div class="block-meta">
-      <span class="block-title">frame 05</span>
-      <span class="block-num">05 / 06</span>
-    </div>
-  </div>
-
-  <div class="block hoverable" onclick="openLB(5)">
-    <div class="block-img"><img src="photo6.jpg" alt="block 06" loading="lazy" /></div>
-    <div class="block-overlay">
-      <span class="block-label">block 06</span>
-      <span class="block-index">06</span>
-    </div>
-    <div class="block-meta">
-      <span class="block-title">frame 06</span>
-      <span class="block-num">06 / 06</span>
-    </div>
-  </div>
-
 </div>
 
-<!-- FOOTER -->
-<footer id="foot">
-  <span id="foot-left">AJChapa — personal archive</span>
-  <span id="foot-right">06 blocks</span>
-</footer>
+<!-- ── GRID ─────────────────────────────────────────────── -->
+<div id="grid-wrap">
+  <div id="grid">
 
-<!-- LIGHTBOX -->
+    <div class="block" onclick="openLB(0)">
+      <div class="block-img">
+        <img src="photo1.jpg" alt="block 01" loading="lazy" />
+        <div class="block-options">
+          <button onclick="event.stopPropagation()" title="Options" aria-label="Options">
+            <svg viewBox="0 0 16 16"><circle cx="3" cy="8" r="1.2"/><circle cx="8" cy="8" r="1.2"/><circle cx="13" cy="8" r="1.2"/></svg>
+          </button>
+        </div>
+      </div>
+      <div class="block-meta">
+        <div class="block-title">block 01</div>
+        <div class="block-info">frame 01 &bull; 1 block</div>
+      </div>
+    </div>
+
+    <div class="block" onclick="openLB(1)">
+      <div class="block-img">
+        <img src="photo2.jpg" alt="block 02" loading="lazy" />
+        <div class="block-options">
+          <button onclick="event.stopPropagation()" title="Options" aria-label="Options">
+            <svg viewBox="0 0 16 16"><circle cx="3" cy="8" r="1.2"/><circle cx="8" cy="8" r="1.2"/><circle cx="13" cy="8" r="1.2"/></svg>
+          </button>
+        </div>
+      </div>
+      <div class="block-meta">
+        <div class="block-title">block 02</div>
+        <div class="block-info">frame 02 &bull; 1 block</div>
+      </div>
+    </div>
+
+    <div class="block" onclick="openLB(2)">
+      <div class="block-img">
+        <img src="photo3.jpg" alt="block 03" loading="lazy" />
+        <div class="block-options">
+          <button onclick="event.stopPropagation()" title="Options" aria-label="Options">
+            <svg viewBox="0 0 16 16"><circle cx="3" cy="8" r="1.2"/><circle cx="8" cy="8" r="1.2"/><circle cx="13" cy="8" r="1.2"/></svg>
+          </button>
+        </div>
+      </div>
+      <div class="block-meta">
+        <div class="block-title">block 03</div>
+        <div class="block-info">frame 03 &bull; 1 block</div>
+      </div>
+    </div>
+
+    <div class="block" onclick="openLB(3)">
+      <div class="block-img">
+        <img src="photo4.jpg" alt="block 04" loading="lazy" />
+        <div class="block-options">
+          <button onclick="event.stopPropagation()" title="Options" aria-label="Options">
+            <svg viewBox="0 0 16 16"><circle cx="3" cy="8" r="1.2"/><circle cx="8" cy="8" r="1.2"/><circle cx="13" cy="8" r="1.2"/></svg>
+          </button>
+        </div>
+      </div>
+      <div class="block-meta">
+        <div class="block-title">block 04</div>
+        <div class="block-info">frame 04 &bull; 1 block</div>
+      </div>
+    </div>
+
+    <div class="block" onclick="openLB(4)">
+      <div class="block-img">
+        <img src="photo5.jpg" alt="block 05" loading="lazy" />
+        <div class="block-options">
+          <button onclick="event.stopPropagation()" title="Options" aria-label="Options">
+            <svg viewBox="0 0 16 16"><circle cx="3" cy="8" r="1.2"/><circle cx="8" cy="8" r="1.2"/><circle cx="13" cy="8" r="1.2"/></svg>
+          </button>
+        </div>
+      </div>
+      <div class="block-meta">
+        <div class="block-title">block 05</div>
+        <div class="block-info">frame 05 &bull; 1 block</div>
+      </div>
+    </div>
+
+    <div class="block" onclick="openLB(5)">
+      <div class="block-img">
+        <img src="photo6.jpg" alt="block 06" loading="lazy" />
+        <div class="block-options">
+          <button onclick="event.stopPropagation()" title="Options" aria-label="Options">
+            <svg viewBox="0 0 16 16"><circle cx="3" cy="8" r="1.2"/><circle cx="8" cy="8" r="1.2"/><circle cx="13" cy="8" r="1.2"/></svg>
+          </button>
+        </div>
+      </div>
+      <div class="block-meta">
+        <div class="block-title">block 06</div>
+        <div class="block-info">frame 06 &bull; 1 block</div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- ── LIGHTBOX ──────────────────────────────────────────── -->
 <div id="lb" onclick="handleLBBg(event)">
   <div id="lb-top">
-    <span id="lb-n"></span>
-    <span id="lb-close" onclick="closeLB()">[ close ]</span>
+    <span id="lb-counter"></span>
+    <button id="lb-close" onclick="closeLB()">Close</button>
   </div>
   <div id="lb-inner">
     <img id="lb-img" src="" alt="" />
-    <div id="lb-caption"></div>
+    <div id="lb-label"></div>
+    <div id="lb-sublabel"></div>
   </div>
   <div id="lb-bot">
-    <button class="lb-btn" onclick="stepLB(-1)">← prev</button>
-    <button class="lb-btn" onclick="stepLB(1)">next →</button>
+    <button class="lb-nav" onclick="stepLB(-1)">← Previous</button>
+    <button class="lb-nav" onclick="stepLB(1)">Next →</button>
   </div>
 </div>
 
 <script>
-  // cursor
-  const cur = document.getElementById('cur');
-  window.addEventListener('mousemove', e => {
-    cur.style.left = e.clientX + 'px';
-    cur.style.top  = e.clientY + 'px';
-  });
-  document.querySelectorAll('.hoverable').forEach(el => {
-    el.addEventListener('mouseenter', () => cur.classList.add('big'));
-    el.addEventListener('mouseleave', () => cur.classList.remove('big'));
-  });
-
-  // lightbox
   const photos = [
-    { src:'photo1.jpg', label:'block 01 — frame 01' },
-    { src:'photo2.jpg', label:'block 02 — frame 02' },
-    { src:'photo3.jpg', label:'block 03 — frame 03' },
-    { src:'photo4.jpg', label:'block 04 — frame 04' },
-    { src:'photo5.jpg', label:'block 05 — frame 05' },
-    { src:'photo6.jpg', label:'block 06 — frame 06' },
+    { src: 'photo1.jpg', title: 'block 01', info: 'frame 01 \u2022 1 block' },
+    { src: 'photo2.jpg', title: 'block 02', info: 'frame 02 \u2022 1 block' },
+    { src: 'photo3.jpg', title: 'block 03', info: 'frame 03 \u2022 1 block' },
+    { src: 'photo4.jpg', title: 'block 04', info: 'frame 04 \u2022 1 block' },
+    { src: 'photo5.jpg', title: 'block 05', info: 'frame 05 \u2022 1 block' },
+    { src: 'photo6.jpg', title: 'block 06', info: 'frame 06 \u2022 1 block' },
   ];
 
   let idx = 0;
@@ -452,18 +501,11 @@
   function openLB(i) {
     idx = i;
     const p = photos[i];
-    const img = document.getElementById('lb-img');
-    img.style.transition = 'none';
-    img.style.transform  = 'scale(0.95)';
-    img.style.opacity    = '0';
-    img.src = p.src;
-    requestAnimationFrame(() => requestAnimationFrame(() => {
-      img.style.transition = '';
-      img.style.transform  = 'scale(1)';
-      img.style.opacity    = '1';
-    }));
-    document.getElementById('lb-caption').textContent = p.label;
-    document.getElementById('lb-n').textContent = `${String(i+1).padStart(2,'0')} / 06`;
+    document.getElementById('lb-img').src         = p.src;
+    document.getElementById('lb-img').alt         = p.title;
+    document.getElementById('lb-label').textContent    = p.title;
+    document.getElementById('lb-sublabel').textContent = p.info;
+    document.getElementById('lb-counter').textContent  = (i + 1) + ' / ' + photos.length;
     document.getElementById('lb').classList.add('open');
   }
 
@@ -479,11 +521,19 @@
     if (e.target === document.getElementById('lb')) closeLB();
   }
 
-  document.addEventListener('keydown', e => {
+  document.addEventListener('keydown', function(e) {
     if (!document.getElementById('lb').classList.contains('open')) return;
     if (e.key === 'Escape')     closeLB();
     if (e.key === 'ArrowRight') stepLB(1);
     if (e.key === 'ArrowLeft')  stepLB(-1);
+  });
+
+  // tab switching (visual only)
+  document.querySelectorAll('.tab').forEach(function(tab) {
+    tab.addEventListener('click', function() {
+      document.querySelectorAll('.tab').forEach(function(t) { t.classList.remove('active'); });
+      tab.classList.add('active');
+    });
   });
 </script>
 </body>
