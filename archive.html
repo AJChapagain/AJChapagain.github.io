@@ -6,450 +6,440 @@
   <title>Archive — AJChapa</title>
   <link rel="icon" type="image/png" href="favicon.png">
   <link rel="preconnect" href="https://fonts.googleapis.com" />
-  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300&family=Share+Tech+Mono&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Mulish:wght@200;300;400;500;600;700&display=swap" rel="stylesheet" />
   <style>
+    /* ── TOKENS ─────────────────────────────────────────── */
+    :root {
+      --bg:        #ffffff;
+      --fg:        #000000;
+      --muted:     #999999;
+      --border:    #ededed;
+      --hover-bg:  #f7f7f7;
+      --input-bg:  #f7f7f7;
+
+      --sp-1:  5px;
+      --sp-2:  10px;
+      --sp-3:  15px;
+      --sp-4:  20px;
+      --sp-5:  30px;
+      --sp-6:  40px;
+
+      --nav-h: 55px;
+      --font:  'Mulish', sans-serif;
+      --radius: 3px;
+    }
+
     *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
-    html { scroll-behavior: smooth; }
 
-    body {
-      background: #f4f2ee;
-      cursor: none;
-      user-select: none;
-      min-height: 100vh;
-      overflow-x: hidden;
-    }
-    @media(hover:none){ body { cursor: auto; } }
-
-    /* BACKGROUND GRADIENT DRIFT */
-    body::before {
-      content: '';
-      position: fixed; inset: 0; pointer-events: none; z-index: 0;
-      background:
-        radial-gradient(circle at 20% 30%, rgba(0,0,0,0.025), transparent 58%),
-        radial-gradient(circle at 80% 70%, rgba(0,0,0,0.025), transparent 58%);
-      animation: drift 18s ease-in-out infinite alternate;
-    }
-    @keyframes drift {
-      from { transform: translate(0, 0); }
-      to   { transform: translate(-40px, -30px); }
+    html, body {
+      background: var(--bg);
+      color: var(--fg);
+      font-family: var(--font);
+      font-size: 14px;
+      line-height: 1.5;
+      -webkit-font-smoothing: antialiased;
     }
 
-    /* GRAIN */
-    body::after {
-      content: '';
-      position: fixed; inset: 0; pointer-events: none; z-index: 9001; opacity: 0.028;
-      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
-      background-size: 180px;
+    a { color: inherit; text-decoration: none; }
+    img { display: block; width: 100%; height: 100%; }
+
+    /* ── NAV ─────────────────────────────────────────────── */
+    #nav {
+      position: sticky; top: 0; z-index: 1000;
+      height: var(--nav-h);
+      background: var(--bg);
+      border-bottom: 1px solid var(--border);
+      display: flex; align-items: center;
+      padding: 0 var(--sp-4);
+      gap: var(--sp-4);
     }
 
-    /* CURSOR */
-    #custom-cursor {
-      position: fixed; width: 6px; height: 6px; border-radius: 50%;
-      pointer-events: none; z-index: 999999; transform: translate(-50%,-50%);
-      background: rgba(15,15,15,0.5);
-      transition: all 0.25s cubic-bezier(0.16,1,0.3,1);
-    }
-    #custom-cursor.expand {
-      width: 36px; height: 36px;
-      background: transparent;
-      border: 1px solid rgba(15,15,15,0.18);
+    #nav-logo {
+      font-size: 13px; font-weight: 700;
+      letter-spacing: 0.04em;
+      white-space: nowrap; flex-shrink: 0;
     }
 
-    /* BACK */
-    #back {
-      position: fixed; top: 2rem; left: 2.2rem; z-index: 8000;
-      font-family: 'Share Tech Mono', monospace; font-size: 0.6rem;
-      letter-spacing: 0.24em; color: rgba(20,20,20,0.28);
-      text-decoration: none; cursor: none;
-      transition: color 0.25s;
-      display: flex; align-items: center; gap: 8px;
+    #nav-search {
+      flex: 1; max-width: 320px; margin: 0 auto;
     }
-    #back:hover { color: rgba(20,20,20,0.72); }
-    #back svg { width: 11px; height: 11px; transition: transform 0.22s; }
-    #back:hover svg { transform: translateX(-3px); }
-
-    /* HEADER — terminal style */
-    #header {
-      position: fixed; top: 0; left: 0; right: 0; z-index: 100;
-      display: flex; justify-content: center; align-items: center;
-      padding-top: 1.85rem; pointer-events: none;
-      gap: 12px;
-    }
-    .h-bracket {
-      font-family: 'Share Tech Mono', monospace; font-size: 0.6rem;
-      color: rgba(20,20,20,0.18); letter-spacing: 0.1em;
-    }
-    .h-title {
-      font-family: 'Share Tech Mono', monospace; font-size: 0.6rem;
-      letter-spacing: 0.5em; text-transform: uppercase;
-      color: rgba(20,20,20,0.22);
-    }
-
-    /* CORNER META */
-    #meta-tl {
-      position: fixed; top: 2rem; right: 2.2rem; z-index: 8000;
-      font-family: 'Share Tech Mono', monospace; font-size: 0.5rem;
-      letter-spacing: 0.18em; color: rgba(20,20,20,0.2);
-      text-align: right; line-height: 1.8;
-    }
-    #meta-bl {
-      position: fixed; bottom: 2rem; left: 2.2rem; z-index: 8000;
-      font-family: 'Share Tech Mono', monospace; font-size: 0.5rem;
-      letter-spacing: 0.18em; color: rgba(20,20,20,0.2);
-      line-height: 1.8;
-    }
-
-    /* SCROLL HINT */
-    #hint {
-      position: fixed; bottom: 2rem; left: 50%; transform: translateX(-50%);
-      font-family: 'Share Tech Mono', monospace; font-size: 0.5rem;
-      letter-spacing: 0.32em; color: rgba(20,20,20,0.2);
-      z-index: 8000; opacity: 0;
-      animation: hintFade 5.5s ease 1.6s forwards;
-      white-space: nowrap;
-    }
-    @keyframes hintFade {
-      0%   { opacity: 0; }
-      16%  { opacity: 1; }
-      70%  { opacity: 1; }
-      100% { opacity: 0; }
-    }
-
-    /* STAGE */
-    #stage {
-      position: relative;
+    #nav-search input {
       width: 100%;
-      min-height: 230vh;
-      padding-top: 80px;
-      z-index: 1;
+      background: var(--input-bg);
+      border: none; outline: none;
+      border-radius: var(--radius);
+      padding: 7px 12px;
+      font-family: var(--font); font-size: 13px;
+      color: var(--fg);
+    }
+    #nav-search input::placeholder { color: var(--muted); }
+
+    #nav-links {
+      display: flex; align-items: center; gap: var(--sp-3);
+      flex-shrink: 0;
+    }
+    #nav-links a {
+      font-size: 13px; font-weight: 400; color: var(--fg);
+      transition: opacity 0.15s;
+    }
+    #nav-links a:hover { opacity: 0.5; }
+
+    /* ── MAIN ────────────────────────────────────────────── */
+    #main {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: var(--sp-6) var(--sp-4) 80px;
     }
 
-    /* FOCUS MODE — hover one, rest dim */
-    #stage:hover .card {
-      opacity: 0.38;
-      filter: blur(0.4px);
-    }
-    #stage:hover .card:hover {
-      opacity: 1;
-      filter: blur(0);
+    /* ── PROFILE HEADER ──────────────────────────────────── */
+    #profile {
+      margin-bottom: var(--sp-5);
     }
 
-    /* CARD */
+    #profile-top {
+      display: flex; align-items: baseline; gap: var(--sp-3);
+      margin-bottom: var(--sp-2);
+    }
+    #profile-name {
+      font-size: 22px; font-weight: 700; letter-spacing: -0.02em;
+    }
+    #profile-meta {
+      font-size: 12px; color: var(--muted); font-weight: 400;
+    }
+
+    #profile-back {
+      display: inline-flex; align-items: center; gap: 6px;
+      font-size: 12px; color: var(--muted);
+      margin-bottom: var(--sp-3);
+      transition: color 0.15s;
+    }
+    #profile-back:hover { color: var(--fg); }
+    #profile-back svg { width: 10px; height: 10px; }
+
+    #profile-filters {
+      display: flex; align-items: center; gap: 0;
+      border-bottom: 1px solid var(--border);
+    }
+    .filter-tab {
+      font-size: 12px; font-weight: 500;
+      color: var(--muted);
+      padding: var(--sp-2) var(--sp-3) var(--sp-2) 0;
+      margin-right: var(--sp-3);
+      border-bottom: 2px solid transparent;
+      cursor: pointer;
+      transition: color 0.15s, border-color 0.15s;
+      position: relative; top: 1px;
+    }
+    .filter-tab:hover { color: var(--fg); }
+    .filter-tab.active {
+      color: var(--fg);
+      border-bottom-color: var(--fg);
+    }
+
+    /* ── GRID ────────────────────────────────────────────── */
+    #grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+      gap: var(--sp-3);
+      margin-top: var(--sp-5);
+    }
+
+    /* ── CARD ────────────────────────────────────────────── */
     .card {
-      position: absolute;
-      cursor: none;
-      opacity: 0;
-      will-change: transform;
-      transition:
-        opacity 0.5s ease,
-        filter 0.5s ease,
-        box-shadow 0.4s cubic-bezier(0.16,1,0.3,1);
-    }
-    .card.visible {
-      animation: cardIn var(--dur, 0.85s) cubic-bezier(0.16,1,0.3,1) var(--delay, 0s) forwards;
-    }
-    @keyframes cardIn {
-      from { opacity: 0; transform: var(--rot) translateY(20px) scale(0.95); }
-      to   { opacity: 1; transform: var(--rot); }
-    }
-    .card:hover {
-      z-index: 600 !important;
-      box-shadow: 0 30px 75px rgba(0,0,0,0.16), 0 8px 22px rgba(0,0,0,0.09) !important;
+      cursor: pointer;
+      display: flex; flex-direction: column;
+      gap: var(--sp-1);
     }
 
-    /* INDEX TAG — top right of each photo, terminal style */
-    .card-idx {
-      position: absolute;
-      top: -20px; right: 0;
-      font-family: 'Share Tech Mono', monospace;
-      font-size: 0.46rem; letter-spacing: 0.2em;
-      color: rgba(20,20,20,0.28);
-      pointer-events: none;
+    .card-img {
+      aspect-ratio: 1 / 1;
+      background: var(--hover-bg);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      overflow: hidden;
+      position: relative;
+      transition: border-color 0.15s;
     }
-
-    /* WHITE MAT */
-    .mat {
-      background: #fff;
-      padding: 7px 7px 7px 7px;
-      box-shadow: 0 2px 10px rgba(0,0,0,0.07), 0 10px 38px rgba(0,0,0,0.055);
-      transition: transform 0.4s cubic-bezier(0.16,1,0.3,1);
-    }
-    .mat img {
-      display: block;
+    .card-img img {
       width: 100%; height: 100%;
       object-fit: cover;
-      filter: contrast(1.04) saturate(0.85) brightness(1.01);
+      transition: opacity 0.2s;
+    }
+    .card:hover .card-img {
+      border-color: #c8c8c8;
+    }
+    .card:hover .card-img img {
+      opacity: 0.88;
     }
 
-    /* LIGHTBOX */
+    /* empty card placeholder */
+    .card-img.empty {
+      display: flex; align-items: center; justify-content: center;
+    }
+    .card-img.empty svg {
+      width: 28px; height: 28px;
+      opacity: 0.18;
+    }
+
+    .card-body {
+      padding: 0 2px;
+    }
+    .card-title {
+      font-size: 13px; font-weight: 600;
+      color: var(--fg);
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+      line-height: 1.4;
+    }
+    .card-by {
+      font-size: 12px; font-weight: 400;
+      color: var(--muted);
+      margin-top: 2px;
+    }
+    .card-meta {
+      font-size: 11px; font-weight: 300;
+      color: var(--muted);
+      margin-top: 1px;
+    }
+
+    /* ── LIGHTBOX ────────────────────────────────────────── */
     #lb {
-      position: fixed; inset: 0; z-index: 99000;
-      background: rgba(244,242,238,0.97);
+      position: fixed; inset: 0; z-index: 9999;
+      background: rgba(255,255,255,0.96);
       display: flex; align-items: center; justify-content: center;
       opacity: 0; pointer-events: none;
-      transition: opacity 0.32s ease;
-      cursor: none;
+      transition: opacity 0.22s ease;
     }
     #lb.open { opacity: 1; pointer-events: all; }
 
+    #lb-inner {
+      display: flex; flex-direction: column; align-items: center;
+      gap: var(--sp-3);
+      max-width: 86vw;
+    }
     #lb-img {
-      max-width: 78vw; max-height: 74vh;
+      max-width: 80vw; max-height: 72vh;
       object-fit: contain;
-      filter: contrast(1.04) saturate(0.85) brightness(1.01);
-      box-shadow: 0 28px 85px rgba(0,0,0,0.13), 0 6px 22px rgba(0,0,0,0.07);
-      transform: scale(0.95);
-      opacity: 0;
-      transition: all 0.42s cubic-bezier(0.16,1,0.3,1);
+      border: 1px solid var(--border);
+      transform: scale(0.97); opacity: 0;
+      transition: transform 0.35s cubic-bezier(0.16,1,0.3,1), opacity 0.35s ease;
     }
-    #lb.open #lb-img {
-      transform: scale(1);
-      opacity: 1;
+    #lb.open #lb-img { transform: scale(1); opacity: 1; }
+
+    #lb-title {
+      font-size: 13px; font-weight: 600;
+      color: var(--fg); text-align: center;
+    }
+    #lb-submeta {
+      font-size: 11px; color: var(--muted);
+      text-align: center; margin-top: -8px;
     }
 
-    /* LB corners — terminal aesthetic */
-    #lb-tl {
-      position: absolute; top: 2rem; left: 2.5rem;
-      font-family: 'Share Tech Mono', monospace; font-size: 0.5rem;
-      letter-spacing: 0.22em; color: rgba(20,20,20,0.22);
+    #lb-ui {
+      position: absolute; top: 0; left: 0; right: 0;
+      display: flex; justify-content: space-between; align-items: center;
+      padding: var(--sp-3) var(--sp-4);
+      border-bottom: 1px solid var(--border);
     }
-    #lb-tr {
-      position: absolute; top: 2rem; right: 2.5rem;
-      font-family: 'Share Tech Mono', monospace; font-size: 0.5rem;
-      letter-spacing: 0.22em; color: rgba(20,20,20,0.22);
-      cursor: none; transition: color 0.2s;
+    #lb-counter {
+      font-size: 12px; color: var(--muted); font-weight: 400;
     }
-    #lb-tr:hover { color: rgba(20,20,20,0.6); }
-    #lb-bl {
-      position: absolute; bottom: 2rem; left: 2.5rem;
-      font-family: 'Cormorant Garamond', serif; font-style: italic;
-      font-size: 0.78rem; letter-spacing: 0.08em;
-      color: rgba(20,20,20,0.2);
+    #lb-close {
+      font-size: 12px; color: var(--muted);
+      cursor: pointer; transition: color 0.15s;
+      font-weight: 500;
     }
-    #lb-br {
-      position: absolute; bottom: 2rem; right: 2.5rem;
-      font-family: 'Share Tech Mono', monospace; font-size: 0.5rem;
-      letter-spacing: 0.22em; color: rgba(20,20,20,0.2);
-      display: flex; gap: 1.8rem;
-    }
-    .lb-nav-btn {
-      cursor: none; transition: color 0.2s;
-    }
-    .lb-nav-btn:hover { color: rgba(20,20,20,0.6); }
+    #lb-close:hover { color: var(--fg); }
 
-    /* MOBILE */
-    @media(max-width: 768px){
-      #custom-cursor { display: none; }
-      body { cursor: auto; }
-      .card { cursor: pointer; }
-      #stage { min-height: 340vh; }
-      #lb-img { max-width: 92vw; max-height: 70vh; }
+    #lb-nav {
+      position: absolute; bottom: 0; left: 0; right: 0;
+      display: flex; justify-content: center; gap: var(--sp-5);
+      padding: var(--sp-3) var(--sp-4);
+      border-top: 1px solid var(--border);
+    }
+    .lb-btn {
+      font-size: 12px; font-weight: 500;
+      color: var(--muted); cursor: pointer;
+      transition: color 0.15s;
+      font-family: var(--font);
+      background: none; border: none;
+    }
+    .lb-btn:hover { color: var(--fg); }
+
+    /* ── RESPONSIVE ──────────────────────────────────────── */
+    @media(max-width: 600px){
+      #nav-search { display: none; }
+      #grid { grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: var(--sp-2); }
+      #lb-img { max-width: 94vw; max-height: 60vh; }
     }
   </style>
 </head>
 <body>
 
-<div id="custom-cursor"></div>
+<!-- NAV -->
+<nav id="nav">
+  <div id="nav-logo">AJChapa</div>
+  <div id="nav-search">
+    <input type="text" placeholder="Search archive..." />
+  </div>
+  <div id="nav-links">
+    <a href="index.html">← home</a>
+  </div>
+</nav>
 
-<a id="back" href="index.html">
-  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
-    <path d="M19 12H5M5 12l7-7M5 12l7 7"/>
-  </svg>
-  index
-</a>
+<!-- MAIN -->
+<main id="main">
 
-<div id="header">
-  <span class="h-bracket">[</span>
-  <span class="h-title">archive</span>
-  <span class="h-bracket">]</span>
-</div>
+  <!-- PROFILE HEADER -->
+  <div id="profile">
+    <div id="profile-top">
+      <h1 id="profile-name">Archive</h1>
+      <span id="profile-meta">6 blocks</span>
+    </div>
 
-<div id="meta-tl">
-  AJChapa<br>
-  06 frames
-</div>
+    <div id="profile-filters">
+      <span class="filter-tab active">All</span>
+      <span class="filter-tab">Photos</span>
+      <span class="filter-tab">Projects</span>
+    </div>
+  </div>
 
-<div id="meta-bl">
-  &gt;_ scroll
-</div>
+  <!-- GRID -->
+  <div id="grid">
 
-<div id="hint">scroll to explore</div>
+    <div class="card" onclick="openLB(0)">
+      <div class="card-img">
+        <img src="photo1.jpg" alt="frame 01" />
+      </div>
+      <div class="card-body">
+        <div class="card-title">frame 01</div>
+        <div class="card-by">by AJChapa</div>
+        <div class="card-meta">1 block</div>
+      </div>
+    </div>
 
-<div id="stage"></div>
+    <div class="card" onclick="openLB(1)">
+      <div class="card-img">
+        <img src="photo2.jpg" alt="frame 02" />
+      </div>
+      <div class="card-body">
+        <div class="card-title">frame 02</div>
+        <div class="card-by">by AJChapa</div>
+        <div class="card-meta">1 block</div>
+      </div>
+    </div>
+
+    <div class="card" onclick="openLB(2)">
+      <div class="card-img">
+        <img src="photo3.jpg" alt="frame 03" />
+      </div>
+      <div class="card-body">
+        <div class="card-title">frame 03</div>
+        <div class="card-by">by AJChapa</div>
+        <div class="card-meta">1 block</div>
+      </div>
+    </div>
+
+    <div class="card" onclick="openLB(3)">
+      <div class="card-img">
+        <img src="photo4.jpg" alt="frame 04" />
+      </div>
+      <div class="card-body">
+        <div class="card-title">frame 04</div>
+        <div class="card-by">by AJChapa</div>
+        <div class="card-meta">1 block</div>
+      </div>
+    </div>
+
+    <div class="card" onclick="openLB(4)">
+      <div class="card-img">
+        <img src="photo5.jpg" alt="frame 05" />
+      </div>
+      <div class="card-body">
+        <div class="card-title">frame 05</div>
+        <div class="card-by">by AJChapa</div>
+        <div class="card-meta">1 block</div>
+      </div>
+    </div>
+
+    <div class="card" onclick="openLB(5)">
+      <div class="card-img">
+        <img src="photo6.jpg" alt="frame 06" />
+      </div>
+      <div class="card-body">
+        <div class="card-title">frame 06</div>
+        <div class="card-by">by AJChapa</div>
+        <div class="card-meta">1 block</div>
+      </div>
+    </div>
+
+  </div>
+</main>
 
 <!-- LIGHTBOX -->
 <div id="lb" onclick="handleLBBg(event)">
-  <span id="lb-tl"></span>
-  <img id="lb-img" src="" alt="" />
-  <span id="lb-tr" onclick="closeLB()">[ esc ]</span>
-  <div id="lb-bl"></div>
-  <div id="lb-br">
-    <span class="lb-nav-btn" onclick="stepLB(-1)">← prev</span>
-    <span class="lb-nav-btn" onclick="stepLB(1)">next →</span>
+  <div id="lb-ui">
+    <span id="lb-counter"></span>
+    <span id="lb-close" onclick="closeLB()">close</span>
+  </div>
+  <div id="lb-inner">
+    <img id="lb-img" src="" alt="" />
+    <div id="lb-title"></div>
+    <div id="lb-submeta">by AJChapa</div>
+  </div>
+  <div id="lb-nav">
+    <button class="lb-btn" onclick="stepLB(-1)">← prev</button>
+    <button class="lb-btn" onclick="stepLB(1)">next →</button>
   </div>
 </div>
 
 <script>
-// ── CURSOR ────────────────────────────────────────────────
-const cur = document.getElementById('custom-cursor');
-window.addEventListener('mousemove', e => {
-  cur.style.left = e.clientX + 'px';
-  cur.style.top  = e.clientY + 'px';
-});
-
-// ── PHOTOS ────────────────────────────────────────────────
-const photos = [
-  { src:'photo1.jpg', w:315, h:235 },
-  { src:'photo2.jpg', w:258, h:338 },
-  { src:'photo3.jpg', w:298, h:218 },
-  { src:'photo4.jpg', w:272, h:354 },
-  { src:'photo5.jpg', w:336, h:252 },
-  { src:'photo6.jpg', w:262, h:325 },
-];
-
-// [leftPct, topPx, rotateDeg, zIndex, parallaxSpeed]
-// parallaxSpeed: positive = slower (background feel), negative = faster (foreground feel)
-const layout = [
-  [  6,  135,  -2.6,  10,  0.045 ],
-  [ 54,  105,   1.8,  20, -0.038 ],
-  [ 30,  385,   2.4,  14,  0.032 ],
-  [ 60,  435,  -1.7,  22, -0.042 ],
-  [  8,  660,   1.5,  11,  0.028 ],
-  [ 44,  710,  -2.2,  17, -0.035 ],
-];
-
-const delays = [0.04, 0.17, 0.30, 0.43, 0.56, 0.69];
-const stage  = document.getElementById('stage');
-const cards  = [];
-
-photos.forEach((p, i) => {
-  const [lp, tp, rot, zi, spd] = layout[i];
-
-  const card = document.createElement('div');
-  card.className = 'card';
-  card.dataset.rot  = rot;
-  card.dataset.spd  = spd;
-  card.style.cssText = [
-    `left:${lp}%`,
-    `top:${tp}px`,
-    `width:${p.w}px`,
-    `z-index:${zi}`,
-    `--rot:rotate(${rot}deg)`,
-    `--delay:${delays[i]}s`,
-    `--dur:${0.72 + i * 0.04}s`,
-    `transform:rotate(${rot}deg)`,
-    `box-shadow:0 3px 14px rgba(0,0,0,0.07),0 12px 40px rgba(0,0,0,0.05)`,
-  ].join(';');
-
-  const idx = document.createElement('div');
-  idx.className = 'card-idx';
-  idx.textContent = `${String(i+1).padStart(2,'0')} / 06`;
-  card.appendChild(idx);
-
-  const mat = document.createElement('div');
-  mat.className = 'mat';
-  mat.style.height = p.h + 'px';
-
-  const img = document.createElement('img');
-  img.src = p.src;
-  img.alt = `frame ${i+1}`;
-  img.draggable = false;
-  mat.appendChild(img);
-  card.appendChild(mat);
-
-  // cursor expand
-  card.addEventListener('mouseenter', () => cur.classList.add('expand'));
-  card.addEventListener('mouseleave', () => cur.classList.remove('expand'));
-
-  // MICRO TILT on mousemove
-  card.addEventListener('mousemove', e => {
-    const r  = card.getBoundingClientRect();
-    const rx = ((e.clientY - r.top)  / r.height - 0.5) *  7;
-    const ry = ((e.clientX - r.left) / r.width  - 0.5) * -7;
-    card.style.transform = `perspective(620px) rotateX(${rx}deg) rotateY(${ry}deg) rotate(${rot}deg)`;
-  });
-  card.addEventListener('mouseleave', () => {
-    card.style.transform = `rotate(${rot}deg)`;
+  // filter tabs
+  document.querySelectorAll('.filter-tab').forEach(tab => {
+    tab.addEventListener('click', () => {
+      document.querySelectorAll('.filter-tab').forEach(t => t.classList.remove('active'));
+      tab.classList.add('active');
+    });
   });
 
-  card.addEventListener('click', () => openLB(i));
+  // lightbox
+  const photos = [
+    { src:'photo1.jpg', title:'frame 01' },
+    { src:'photo2.jpg', title:'frame 02' },
+    { src:'photo3.jpg', title:'frame 03' },
+    { src:'photo4.jpg', title:'frame 04' },
+    { src:'photo5.jpg', title:'frame 05' },
+    { src:'photo6.jpg', title:'frame 06' },
+  ];
 
-  stage.appendChild(card);
-  cards.push(card);
-});
+  let idx = 0;
 
-// ── INTERSECTION OBSERVER ─────────────────────────────────
-const io = new IntersectionObserver(entries => {
-  entries.forEach(e => {
-    if (e.isIntersecting) {
-      e.target.classList.add('visible');
-      io.unobserve(e.target);
-    }
+  function openLB(i) {
+    idx = i;
+    const p = photos[i];
+    document.getElementById('lb-img').src = p.src;
+    document.getElementById('lb-img').alt = p.title;
+    document.getElementById('lb-title').textContent = p.title;
+    document.getElementById('lb-counter').textContent = `${i+1} / ${photos.length}`;
+    document.getElementById('lb').classList.add('open');
+  }
+  function closeLB() {
+    document.getElementById('lb').classList.remove('open');
+  }
+  function stepLB(dir) {
+    openLB((idx + dir + photos.length) % photos.length);
+  }
+  function handleLBBg(e) {
+    if (e.target === document.getElementById('lb')) closeLB();
+  }
+  document.addEventListener('keydown', e => {
+    if (!document.getElementById('lb').classList.contains('open')) return;
+    if (e.key === 'Escape')     closeLB();
+    if (e.key === 'ArrowRight') stepLB(1);
+    if (e.key === 'ArrowLeft')  stepLB(-1);
   });
-}, { threshold: 0.06 });
-cards.forEach(c => io.observe(c));
-
-// ── PARALLAX SCROLL ───────────────────────────────────────
-window.addEventListener('scroll', () => {
-  const sy = window.scrollY;
-  cards.forEach((card, i) => {
-    const rot = parseFloat(card.dataset.rot);
-    const spd = parseFloat(card.dataset.spd);
-    const offset = sy * spd;
-    card.style.transform = `translateY(${offset}px) rotate(${rot}deg)`;
-  });
-}, { passive: true });
-
-// ── SUBTLE RANDOM DRIFT ───────────────────────────────────
-// tiny nudge every few seconds — makes photos feel like real objects
-let driftOffsets = photos.map(() => ({ x: 0, y: 0 }));
-setInterval(() => {
-  cards.forEach((card, i) => {
-    driftOffsets[i].x = (Math.random() - 0.5) * 1.6;
-    driftOffsets[i].y = (Math.random() - 0.5) * 1.6;
-  });
-}, 3200);
-
-// ── STAGE HEIGHT ──────────────────────────────────────────
-window.addEventListener('load', () => {
-  let max = 0;
-  cards.forEach(c => {
-    const b = c.offsetTop + c.offsetHeight;
-    if (b > max) max = b;
-  });
-  stage.style.minHeight = (max + 240) + 'px';
-});
-
-// ── LIGHTBOX ──────────────────────────────────────────────
-let idx = 0;
-
-function openLB(i) {
-  idx = i;
-  const p = photos[i];
-  document.getElementById('lb-img').src   = p.src;
-  document.getElementById('lb-img').alt   = `frame ${i+1}`;
-  document.getElementById('lb-tl').textContent = `[ 0${i+1} / 0${photos.length} ]`;
-  document.getElementById('lb-bl').textContent = `AJChapa`;
-  document.getElementById('lb').classList.add('open');
-}
-
-function closeLB() {
-  document.getElementById('lb').classList.remove('open');
-}
-
-function stepLB(dir) {
-  openLB((idx + dir + photos.length) % photos.length);
-}
-
-function handleLBBg(e) {
-  if (e.target === document.getElementById('lb')) closeLB();
-}
-
-document.addEventListener('keydown', e => {
-  if (!document.getElementById('lb').classList.contains('open')) return;
-  if (e.key === 'Escape')     closeLB();
-  if (e.key === 'ArrowRight') stepLB(1);
-  if (e.key === 'ArrowLeft')  stepLB(-1);
-});
 </script>
 </body>
 </html>
