@@ -1,1 +1,381 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Archive — AJChapa</title>
+  <link rel="icon" type="image/png" href="favicon.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300;1,400&family=Share+Tech+Mono&family=DM+Mono:wght@300;400&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
 
+    html { scroll-behavior: smooth; }
+    body {
+      background: #f5f3ef;
+      font-family: 'DM Mono', monospace;
+      color: #1a1a1a;
+      cursor: none;
+      user-select: none;
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+    @media(hover:none){ body { cursor: auto; } }
+
+    /* CURSOR */
+    #custom-cursor {
+      position: fixed; width: 6px; height: 6px; border-radius: 50%;
+      pointer-events: none; z-index: 999999; transform: translate(-50%,-50%);
+      background: rgba(20,20,20,0.55);
+      transition: width 0.2s ease, height 0.2s ease, background 0.2s ease;
+    }
+    #custom-cursor.expand {
+      width: 34px; height: 34px;
+      background: transparent;
+      border: 1px solid rgba(20,20,20,0.2);
+    }
+
+    /* GRAIN */
+    .fx-grain {
+      position: fixed; inset: 0; pointer-events: none; z-index: 9000; opacity: 0.03;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+      background-size: 180px;
+    }
+
+    /* BACK LINK */
+    #back {
+      position: fixed; top: 2rem; left: 2.2rem; z-index: 8000;
+      font-family: 'Share Tech Mono', monospace; font-size: 0.62rem;
+      letter-spacing: 0.22em; color: rgba(30,30,30,0.3);
+      text-decoration: none; cursor: none;
+      transition: color 0.25s;
+      display: flex; align-items: center; gap: 8px;
+    }
+    #back:hover { color: rgba(30,30,30,0.75); }
+    #back svg { width: 12px; height: 12px; transition: transform 0.2s; }
+    #back:hover svg { transform: translateX(-3px); }
+
+    /* HEADER */
+    #header {
+      position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+      display: flex; justify-content: center; padding-top: 1.85rem;
+      pointer-events: none;
+    }
+    .header-title {
+      font-family: 'Cormorant Garamond', serif; font-weight: 300;
+      font-size: 0.75rem; letter-spacing: 0.6em; text-transform: uppercase;
+      color: rgba(30,30,30,0.25);
+    }
+
+    /* FRAME COUNT */
+    #count {
+      position: fixed; bottom: 2rem; right: 2.2rem; z-index: 8000;
+      font-family: 'Share Tech Mono', monospace; font-size: 0.52rem;
+      letter-spacing: 0.2em; color: rgba(30,30,30,0.25);
+    }
+
+    /* SCROLL HINT */
+    #hint {
+      position: fixed; bottom: 2rem; left: 50%; transform: translateX(-50%);
+      font-family: 'Share Tech Mono', monospace; font-size: 0.52rem;
+      letter-spacing: 0.3em; color: rgba(30,30,30,0.22);
+      z-index: 8000; opacity: 0;
+      animation: hintFade 5s ease 1.4s forwards;
+    }
+    @keyframes hintFade {
+      0%   { opacity: 0; }
+      18%  { opacity: 1; }
+      72%  { opacity: 1; }
+      100% { opacity: 0; }
+    }
+
+    /* STAGE */
+    #stage {
+      position: relative;
+      width: 100%;
+      min-height: 220vh;
+      padding-top: 80px;
+    }
+
+    /* CARD */
+    .card {
+      position: absolute;
+      cursor: none;
+      opacity: 0;
+      will-change: transform;
+      transition: box-shadow 0.4s cubic-bezier(0.16,1,0.3,1);
+    }
+    .card.visible {
+      animation: cardIn var(--dur, 0.85s) cubic-bezier(0.16,1,0.3,1) var(--delay, 0s) forwards;
+    }
+    @keyframes cardIn {
+      from {
+        opacity: 0;
+        transform: var(--rot) translateY(22px) scale(0.95);
+      }
+      to {
+        opacity: 1;
+        transform: var(--rot);
+      }
+    }
+    .card:hover {
+      z-index: 600 !important;
+      box-shadow: 0 28px 70px rgba(0,0,0,0.16), 0 8px 24px rgba(0,0,0,0.09) !important;
+    }
+    .card:hover .mat {
+      transform: scale(1.014);
+      transition: transform 0.4s cubic-bezier(0.16,1,0.3,1);
+    }
+
+    /* PRINTED PHOTO FEEL */
+    .mat {
+      background: #ffffff;
+      padding: 7px 7px 30px 7px;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.07), 0 10px 36px rgba(0,0,0,0.06);
+      transition: transform 0.4s cubic-bezier(0.16,1,0.3,1), box-shadow 0.4s;
+    }
+    .mat img {
+      display: block;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      filter: contrast(1.04) saturate(0.86) brightness(1.01);
+    }
+
+    /* CAPTION BELOW MAT */
+    .caption {
+      position: absolute; bottom: 9px;
+      left: 0; right: 0; text-align: center;
+      font-family: 'Cormorant Garamond', serif;
+      font-style: italic; font-weight: 300;
+      font-size: 0.6rem; letter-spacing: 0.1em;
+      color: rgba(80,80,80,0.45);
+      pointer-events: none;
+    }
+
+    /* LIGHTBOX */
+    #lb {
+      position: fixed; inset: 0; z-index: 99000;
+      background: rgba(245,243,239,0.97);
+      display: flex; align-items: center; justify-content: center;
+      opacity: 0; pointer-events: none;
+      transition: opacity 0.3s ease;
+      cursor: none;
+    }
+    #lb.open { opacity: 1; pointer-events: all; }
+    #lb-wrap {
+      display: flex; flex-direction: column; align-items: center; gap: 1.4rem;
+    }
+    #lb-img {
+      max-width: 80vw; max-height: 76vh;
+      object-fit: contain;
+      filter: contrast(1.04) saturate(0.86) brightness(1.01);
+      box-shadow: 0 24px 80px rgba(0,0,0,0.13), 0 6px 24px rgba(0,0,0,0.07);
+      transform: scale(0.96);
+      transition: transform 0.45s cubic-bezier(0.16,1,0.3,1);
+    }
+    #lb.open #lb-img { transform: scale(1); }
+    #lb-meta {
+      font-family: 'Cormorant Garamond', serif; font-style: italic;
+      font-size: 0.82rem; letter-spacing: 0.1em;
+      color: rgba(60,60,60,0.38);
+    }
+    #lb-close {
+      position: absolute; top: 2rem; right: 2.5rem;
+      font-family: 'Share Tech Mono', monospace; font-size: 0.6rem;
+      letter-spacing: 0.22em; color: rgba(30,30,30,0.28);
+      cursor: none; transition: color 0.2s;
+    }
+    #lb-close:hover { color: rgba(30,30,30,0.65); }
+    #lb-n {
+      position: absolute; top: 2rem; left: 2.5rem;
+      font-family: 'Share Tech Mono', monospace; font-size: 0.52rem;
+      letter-spacing: 0.2em; color: rgba(30,30,30,0.22);
+    }
+    #lb-nav {
+      position: absolute; bottom: 2rem; left: 50%; transform: translateX(-50%);
+      display: flex; gap: 2rem;
+    }
+    .lb-arrow {
+      font-family: 'Share Tech Mono', monospace; font-size: 0.58rem;
+      letter-spacing: 0.2em; color: rgba(30,30,30,0.28);
+      cursor: none; transition: color 0.2s;
+    }
+    .lb-arrow:hover { color: rgba(30,30,30,0.65); }
+
+    /* MOBILE */
+    @media(max-width: 768px){
+      #custom-cursor { display: none; }
+      body { cursor: auto; }
+      .card { cursor: pointer; }
+      #stage { min-height: 320vh; }
+      #lb-img { max-width: 92vw; }
+    }
+  </style>
+</head>
+<body>
+
+<div id="custom-cursor"></div>
+<div class="fx-grain"></div>
+
+<a id="back" href="index.html">
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M19 12H5M5 12l7-7M5 12l7 7"/>
+  </svg>
+  index
+</a>
+
+<div id="header">
+  <span class="header-title">Archive</span>
+</div>
+
+<div id="count">06 frames</div>
+<div id="hint">scroll to explore</div>
+
+<div id="stage"></div>
+
+<!-- LIGHTBOX -->
+<div id="lb" onclick="handleLBClick(event)">
+  <span id="lb-n"></span>
+  <div id="lb-wrap">
+    <img id="lb-img" src="" alt="" />
+    <div id="lb-meta"></div>
+  </div>
+  <span id="lb-close" onclick="closeLB()">esc</span>
+  <div id="lb-nav">
+    <span class="lb-arrow" onclick="stepLB(-1)">← prev</span>
+    <span class="lb-arrow" onclick="stepLB(1)">next →</span>
+  </div>
+</div>
+
+<script>
+// CURSOR
+const cur = document.getElementById('custom-cursor');
+window.addEventListener('mousemove', e => {
+  cur.style.left = e.clientX + 'px';
+  cur.style.top  = e.clientY + 'px';
+});
+
+// ─── PHOTOS ───────────────────────────────────────────────
+// Add captions if you want, leave empty string for none.
+const photos = [
+  { src:'photo1.jpg', caption:'', w:310, h:230 },
+  { src:'photo2.jpg', caption:'', w:255, h:335 },
+  { src:'photo3.jpg', caption:'', w:295, h:215 },
+  { src:'photo4.jpg', caption:'', w:270, h:350 },
+  { src:'photo5.jpg', caption:'', w:330, h:248 },
+  { src:'photo6.jpg', caption:'', w:260, h:320 },
+];
+
+// ─── LAYOUT ───────────────────────────────────────────────
+// [leftPercent, topPx, rotateDeg, zIndex]
+// Feels like photos loosely dropped on a table — nothing perfectly aligned
+const layout = [
+  [  6,  130,  -2.6,  10 ],   // 1 — far left, tilts left
+  [ 54,  100,   1.8,  20 ],   // 2 — upper right of center
+  [ 30,  380,   2.4,  14 ],   // 3 — mid left
+  [ 60,  430,  -1.7,  22 ],   // 4 — mid right
+  [  8,  650,   1.5,  11 ],   // 5 — lower left
+  [ 44,  700,  -2.2,  17 ],   // 6 — lower center
+];
+
+const delays = [0.04, 0.16, 0.28, 0.40, 0.52, 0.64];
+const stage  = document.getElementById('stage');
+
+photos.forEach((p, i) => {
+  const [lp, tp, rot, zi] = layout[i];
+
+  const card = document.createElement('div');
+  card.className = 'card';
+  card.style.cssText = [
+    `left:${lp}%`,
+    `top:${tp}px`,
+    `width:${p.w}px`,
+    `z-index:${zi}`,
+    `--rot:rotate(${rot}deg)`,
+    `--delay:${delays[i]}s`,
+    `--dur:${0.72 + i * 0.04}s`,
+    `transform:rotate(${rot}deg)`,
+    `box-shadow:0 3px 14px rgba(0,0,0,0.07),0 12px 40px rgba(0,0,0,0.05)`,
+  ].join(';');
+
+  const mat = document.createElement('div');
+  mat.className = 'mat';
+  mat.style.height = p.h + 'px';
+
+  const img = document.createElement('img');
+  img.src = p.src;
+  img.alt = p.caption || `frame ${i + 1}`;
+  img.draggable = false;
+  mat.appendChild(img);
+  card.appendChild(mat);
+
+  if (p.caption) {
+    const cap = document.createElement('div');
+    cap.className = 'caption';
+    cap.textContent = p.caption;
+    card.appendChild(cap);
+  }
+
+  card.addEventListener('mouseenter', () => cur.classList.add('expand'));
+  card.addEventListener('mouseleave', () => cur.classList.remove('expand'));
+  card.addEventListener('click', () => openLB(i));
+
+  stage.appendChild(card);
+});
+
+// ─── INTERSECTION OBSERVER ────────────────────────────────
+const io = new IntersectionObserver(entries => {
+  entries.forEach(e => {
+    if (e.isIntersecting) {
+      e.target.classList.add('visible');
+      io.unobserve(e.target);
+    }
+  });
+}, { threshold: 0.06 });
+document.querySelectorAll('.card').forEach(c => io.observe(c));
+
+// ─── LIGHTBOX ─────────────────────────────────────────────
+let idx = 0;
+
+function openLB(i) {
+  idx = i;
+  const p = photos[i];
+  document.getElementById('lb-img').src = p.src;
+  document.getElementById('lb-img').alt = p.caption || '';
+  document.getElementById('lb-meta').textContent = p.caption || '';
+  document.getElementById('lb-n').textContent = `0${i+1} \u00a0/\u00a0 0${photos.length}`;
+  document.getElementById('lb').classList.add('open');
+}
+
+function closeLB() {
+  document.getElementById('lb').classList.remove('open');
+}
+
+function stepLB(dir) {
+  openLB((idx + dir + photos.length) % photos.length);
+}
+
+function handleLBClick(e) {
+  if (e.target === document.getElementById('lb')) closeLB();
+}
+
+document.addEventListener('keydown', e => {
+  if (!document.getElementById('lb').classList.contains('open')) return;
+  if (e.key === 'Escape')      closeLB();
+  if (e.key === 'ArrowRight')  stepLB(1);
+  if (e.key === 'ArrowLeft')   stepLB(-1);
+});
+
+// ─── STAGE HEIGHT ─────────────────────────────────────────
+window.addEventListener('load', () => {
+  let max = 0;
+  document.querySelectorAll('.card').forEach(c => {
+    const b = c.offsetTop + c.offsetHeight;
+    if (b > max) max = b;
+  });
+  stage.style.minHeight = (max + 220) + 'px';
+});
+</script>
+</body>
+</html>
