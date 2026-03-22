@@ -6,428 +6,445 @@
   <title>Archive — AJChapa</title>
   <link rel="icon" type="image/png" href="favicon.png">
   <link rel="preconnect" href="https://fonts.googleapis.com" />
-  <link href="https://fonts.googleapis.com/css2?family=Mulish:wght@200;300;400;500;600;700&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=DM+Mono:wght@300;400&display=swap" rel="stylesheet" />
   <style>
-    /* ── ARE.NA DESIGN TOKENS ─────────────────────────────── */
     :root {
-      --colors-gray0: #ffffff;
-      --colors-gray1: #f7f7f7;
-      --colors-gray2: #ededed;
-      --colors-gray3: #dedede;
-      --colors-gray4: #999999;
-      --colors-gray5: #696969;
-      --colors-gray6: #333333;
-      --colors-gray7: #000000;
-
-      --colors-background: var(--colors-gray0);
-      --colors-foreground: var(--colors-gray7);
-      --colors-muted:      var(--colors-gray4);
-      --colors-border:     var(--colors-gray2);
-      --colors-hover:      var(--colors-gray1);
-
-      --space-1: 5px;
-      --space-2: 10px;
-      --space-3: 15px;
-      --space-4: 20px;
-      --space-5: 30px;
-      --space-6: 40px;
-
-      --fonts-sans: 'Mulish', 'Arial', Arial, Helvetica, sans-serif;
-      --radii-1: 3px;
-
-      /* Apple spring */
-      --ease: cubic-bezier(0.22, 1, 0.36, 1);
+      --bg:     #0e0e0f;
+      --fg:     #e8e6e1;
+      --muted:  #4a4a52;
+      --line:   rgba(255,255,255,0.06);
+      --accent: #c8b99a;
+      --ease:   cubic-bezier(0.22, 1, 0.36, 1);
     }
 
     *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
 
-    html { background: var(--colors-gray1); }
-
-    body {
-      font-family: var(--fonts-sans);
-      background: var(--colors-gray1);
-      color: var(--colors-foreground);
-      font-size: 14px;
-      line-height: 1.5;
+    html, body {
+      background: var(--bg);
+      color: var(--fg);
+      font-family: 'DM Mono', monospace;
+      font-size: 13px;
+      line-height: 1.6;
       -webkit-font-smoothing: antialiased;
       min-height: 100vh;
-      animation: pageIn 0.45s var(--ease) both;
+      cursor: none;
     }
-    @keyframes pageIn {
-      from { opacity: 0; transform: translateY(6px); }
-      to   { opacity: 1; transform: translateY(0); }
-    }
+    @media(hover:none){ body { cursor: auto; } }
 
     a { color: inherit; text-decoration: none; }
     img { display: block; }
 
+    /* ── CURSOR ──────────────────────────────────────────── */
+    #cur {
+      position: fixed; z-index: 99999;
+      width: 5px; height: 5px; border-radius: 50%;
+      background: var(--accent);
+      pointer-events: none;
+      transform: translate(-50%, -50%);
+      transition: width 0.22s var(--ease),
+                  height 0.22s var(--ease),
+                  background 0.22s ease,
+                  border-radius 0.22s ease;
+      mix-blend-mode: difference;
+    }
+    #cur.big {
+      width: 42px; height: 42px;
+      background: transparent;
+      border: 1px solid rgba(200,185,154,0.5);
+      mix-blend-mode: normal;
+    }
+
     /* ── NAV ─────────────────────────────────────────────── */
     #nav {
-      position: sticky; top: 0; z-index: 1000;
-      height: 55px;
-      background: rgba(255,255,255,0.78);
-      backdrop-filter: blur(16px);
-      -webkit-backdrop-filter: blur(16px);
-      border-bottom: 1px solid var(--colors-border);
+      position: fixed; top: 0; left: 0; right: 0; z-index: 1000;
+      height: 56px;
       display: flex; align-items: center; justify-content: space-between;
-      padding: 0 var(--space-4);
+      padding: 0 40px;
+      border-bottom: 1px solid var(--line);
+      background: rgba(14,14,15,0.82);
+      backdrop-filter: blur(18px);
+      -webkit-backdrop-filter: blur(18px);
     }
 
     #nav-logo {
-      font-size: 13px; font-weight: 700;
-      letter-spacing: 0.01em;
-      color: var(--colors-foreground);
-      transition: opacity 0.18s;
-      cursor: default;
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 16px; font-weight: 300;
+      letter-spacing: 0.18em; text-transform: uppercase;
+      color: var(--fg); cursor: default;
+      transition: opacity 0.2s;
     }
-    #nav-logo:hover { opacity: 0.55; }
+    #nav-logo:hover { opacity: 0.5; }
 
     #nav-back {
-      display: inline-flex; align-items: center; gap: 6px;
-      font-size: 13px; font-weight: 400;
-      color: var(--colors-gray5);
-      transition: color 0.18s;
+      font-size: 11px; letter-spacing: 0.18em;
+      color: var(--muted);
+      display: flex; align-items: center; gap: 7px;
+      transition: color 0.2s; cursor: none;
     }
-    #nav-back:hover { color: var(--colors-foreground); }
-    #nav-back svg { width: 11px; height: 11px; }
+    #nav-back:hover { color: var(--fg); }
+    #nav-back svg { width: 10px; height: 10px; }
 
-    /* ── PAGE WRAPPER ────────────────────────────────────── */
-    #page {
-      max-width: 1080px;
-      margin: 24px auto 80px;
-      background: var(--colors-background);
-      border-radius: 12px;
-      border: 1px solid var(--colors-border);
-      box-shadow:
-        0 1px 2px rgba(0,0,0,0.03),
-        0 6px 18px rgba(0,0,0,0.04),
-        0 32px 72px rgba(0,0,0,0.04);
-      overflow: hidden;
+    /* ── HERO HEADER ─────────────────────────────────────── */
+    #hero {
+      padding: 140px 40px 60px;
+      border-bottom: 1px solid var(--line);
+      display: flex; align-items: flex-end; justify-content: space-between;
+      gap: 40px;
     }
 
-    /* ── PROFILE HEADER ──────────────────────────────────── */
-    #profile {
-      padding: var(--space-5) var(--space-5) 0;
-      border-bottom: 1px solid var(--colors-border);
+    #hero-left {}
+    #hero-title {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: clamp(52px, 8vw, 96px);
+      font-weight: 300; letter-spacing: -0.02em;
+      color: var(--fg); line-height: 0.95;
+    }
+    #hero-title em {
+      font-style: italic;
+      color: var(--accent);
     }
 
-    #profile-row {
-      display: flex; align-items: baseline; gap: var(--space-2);
-      margin-bottom: var(--space-3);
+    #hero-right {
+      text-align: right; flex-shrink: 0;
     }
-    #profile-name {
-      font-size: 22px; font-weight: 700;
-      letter-spacing: -0.02em;
-      color: var(--colors-foreground);
+    #hero-count {
+      font-size: 11px; letter-spacing: 0.2em;
+      color: var(--muted); display: block;
+      margin-bottom: 4px;
     }
-    #profile-count {
-      font-size: 12px; font-weight: 400;
-      color: var(--colors-muted);
-    }
-
-    /* single tab — just "Archive" label */
-    #profile-tabs {
-      display: flex; align-items: center;
-      margin-top: var(--space-1);
-    }
-    .tab {
-      font-size: 12px; font-weight: 600;
-      color: var(--colors-foreground);
-      padding: var(--space-2) 0;
-      border-bottom: 2px solid var(--colors-foreground);
-      margin-right: var(--space-4);
-      position: relative; top: 1px;
-      letter-spacing: 0.01em;
+    #hero-year {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 13px; font-style: italic;
+      color: var(--muted);
     }
 
-    /* ── GRID AREA ───────────────────────────────────────── */
-    #grid-wrap {
-      padding: var(--space-4);
-    }
-
+    /* ── GRID ────────────────────────────────────────────── */
     #grid {
       display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-      gap: var(--space-3);
+      grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+      gap: 1px;
+      background: var(--line);
+      border-top: 1px solid var(--line);
     }
 
     /* focus mode */
-    #grid:hover .block { opacity: 0.45; }
+    #grid:hover .block { opacity: 0.35; }
     #grid:hover .block:hover { opacity: 1; }
 
-    /* ── BLOCK (Are.na card anatomy) ─────────────────────── */
+    /* ── BLOCK ───────────────────────────────────────────── */
     .block {
-      cursor: pointer;
-      display: flex; flex-direction: column;
-      transition: opacity 0.3s ease;
-    }
-
-    .block-content {
-      display: flex; flex-direction: column; gap: 6px;
-    }
-
-    /* image wrapper — square default */
-    .block-image {
-      aspect-ratio: 1 / 1;
-      background: var(--colors-gray1);
-      border: 1px solid var(--colors-border);
-      border-radius: var(--radii-1);
+      position: relative;
+      background: var(--bg);
+      cursor: none;
       overflow: hidden;
-      transition:
-        border-color 0.2s ease,
-        transform 0.35s var(--ease),
-        box-shadow 0.35s var(--ease);
+      transition: opacity 0.35s ease;
     }
-    /* size variation */
-    .block:nth-child(3n) .block-image { aspect-ratio: 3 / 4; }
-    .block:nth-child(5n) .block-image { aspect-ratio: 4 / 3; }
-    /* hero */
-    .block:nth-child(1)  .block-image { aspect-ratio: 16 / 9; }
 
-    .block-image img {
+    /* image */
+    .block-img {
+      aspect-ratio: 1 / 1;
+      overflow: hidden;
+      background: #1a1a1c;
+    }
+    .block:nth-child(3n)   .block-img { aspect-ratio: 3 / 4; }
+    .block:nth-child(5n)   .block-img { aspect-ratio: 4 / 3; }
+    .block:nth-child(1)    .block-img { aspect-ratio: 16 / 7; }
+
+    .block-img img {
       width: 100%; height: 100%;
       object-fit: cover;
-      transition: transform 0.45s var(--ease), opacity 0.2s ease;
+      filter: grayscale(15%) contrast(1.04);
+      transition: transform 0.6s var(--ease), filter 0.4s ease, opacity 0.3s ease;
+    }
+    .block:hover .block-img img {
+      transform: scale(1.06);
+      filter: grayscale(0%) contrast(1.06);
     }
 
-    .block:hover .block-image {
-      border-color: var(--colors-gray3);
-      transform: translateY(-4px);
-      box-shadow: 0 12px 32px rgba(0,0,0,0.08), 0 3px 10px rgba(0,0,0,0.05);
+    /* overlay — slides up on hover */
+    .block-overlay {
+      position: absolute; bottom: 0; left: 0; right: 0;
+      padding: 40px 18px 18px;
+      background: linear-gradient(to top, rgba(0,0,0,0.72) 0%, transparent 100%);
+      transform: translateY(100%);
+      transition: transform 0.4s var(--ease);
+      display: flex; align-items: flex-end; justify-content: space-between;
     }
-    .block:hover .block-image img {
-      transform: scale(1.05);
-      opacity: 0.92;
+    .block:hover .block-overlay { transform: translateY(0); }
+
+    .block-label {
+      font-size: 11px; letter-spacing: 0.16em;
+      text-transform: uppercase; color: rgba(232,230,225,0.7);
     }
-    .block:active .block-image {
-      transform: scale(0.98);
-      box-shadow: none;
+    .block-index {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 22px; font-weight: 300; font-style: italic;
+      color: var(--accent); line-height: 1;
     }
 
-    /* block meta */
+    /* bottom meta strip */
     .block-meta {
-      padding: 0 2px;
+      padding: 12px 18px;
+      border-top: 1px solid var(--line);
+      display: flex; align-items: center; justify-content: space-between;
     }
     .block-title {
-      font-size: 12px; font-weight: 600;
-      color: var(--colors-foreground);
-      letter-spacing: 0;
+      font-size: 11px; letter-spacing: 0.12em;
+      color: var(--muted);
       white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+      max-width: 70%;
     }
-    .block-sub {
-      font-size: 11px; font-weight: 400;
-      color: var(--colors-muted);
-      margin-top: 1px;
-      white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+    .block-num {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 11px; font-style: italic;
+      color: var(--muted);
+      flex-shrink: 0;
+    }
+
+    /* ── FOOTER LINE ─────────────────────────────────────── */
+    #foot {
+      padding: 32px 40px;
+      border-top: 1px solid var(--line);
+      display: flex; align-items: center; justify-content: space-between;
+    }
+    #foot-left {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 12px; font-style: italic;
+      color: var(--muted);
+    }
+    #foot-right {
+      font-size: 10px; letter-spacing: 0.22em;
+      color: var(--muted); text-transform: uppercase;
     }
 
     /* ── LIGHTBOX ────────────────────────────────────────── */
     #lb {
       position: fixed; inset: 0; z-index: 9999;
-      background: rgba(247,247,247,0.88);
-      backdrop-filter: blur(14px);
-      -webkit-backdrop-filter: blur(14px);
+      background: rgba(10,10,11,0.94);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
       display: flex; align-items: center; justify-content: center;
       opacity: 0; pointer-events: none;
-      transition: opacity 0.24s ease;
+      transition: opacity 0.28s ease;
+      cursor: none;
     }
     #lb.open { opacity: 1; pointer-events: all; }
 
     #lb-inner {
       display: flex; flex-direction: column;
-      align-items: center; gap: 12px;
+      align-items: center; gap: 16px;
       max-width: 90vw;
     }
+
     #lb-img {
-      max-width: 76vw; max-height: 68vh;
+      max-width: 78vw; max-height: 70vh;
       object-fit: contain;
-      border-radius: 6px;
-      border: 1px solid var(--colors-border);
-      box-shadow: 0 30px 90px rgba(0,0,0,0.11), 0 6px 24px rgba(0,0,0,0.06);
-      transform: scale(0.96); opacity: 0;
-      transition: transform 0.48s var(--ease), opacity 0.38s ease;
+      border-radius: 3px;
+      box-shadow: 0 40px 100px rgba(0,0,0,0.6);
+      transform: scale(0.95); opacity: 0;
+      transition: transform 0.5s var(--ease), opacity 0.4s ease;
     }
     #lb.open #lb-img { transform: scale(1); opacity: 1; }
 
-    #lb-label {
-      font-size: 12px; font-weight: 600;
-      color: var(--colors-foreground);
-    }
-    #lb-sublabel {
-      font-size: 11px; color: var(--colors-muted);
-      margin-top: -6px;
+    #lb-caption {
+      font-family: 'Cormorant Garamond', serif;
+      font-style: italic; font-size: 14px;
+      color: rgba(200,185,154,0.6);
+      letter-spacing: 0.06em;
     }
 
     #lb-top {
       position: absolute; top: 0; left: 0; right: 0;
-      height: 44px;
+      height: 52px;
       display: flex; align-items: center; justify-content: space-between;
-      padding: 0 var(--space-4);
-      border-bottom: 1px solid var(--colors-border);
-      background: rgba(255,255,255,0.6);
+      padding: 0 32px;
+      border-bottom: 1px solid var(--line);
     }
-    #lb-counter { font-size: 11px; color: var(--colors-muted); font-weight: 400; }
+    #lb-n {
+      font-size: 11px; letter-spacing: 0.2em; color: var(--muted);
+    }
     #lb-close {
-      font-size: 11px; font-weight: 600;
-      color: var(--colors-gray5); cursor: pointer;
-      transition: color 0.16s;
-      letter-spacing: 0.02em;
+      font-size: 11px; letter-spacing: 0.18em;
+      color: var(--muted); cursor: none;
+      transition: color 0.18s; text-transform: uppercase;
     }
-    #lb-close:hover { color: var(--colors-foreground); }
+    #lb-close:hover { color: var(--fg); }
 
-    #lb-bottom {
+    #lb-bot {
       position: absolute; bottom: 0; left: 0; right: 0;
-      height: 44px;
+      height: 52px;
       display: flex; align-items: center; justify-content: center;
-      gap: var(--space-5);
-      border-top: 1px solid var(--colors-border);
-      background: rgba(255,255,255,0.6);
+      gap: 48px;
+      border-top: 1px solid var(--line);
     }
     .lb-btn {
-      font-size: 11px; font-weight: 600;
-      color: var(--colors-gray5);
-      background: none; border: none; cursor: pointer;
-      font-family: var(--fonts-sans);
-      letter-spacing: 0.02em;
-      transition: color 0.16s;
+      font-size: 11px; letter-spacing: 0.18em;
+      color: var(--muted); background: none; border: none;
+      font-family: 'DM Mono', monospace; cursor: none;
+      transition: color 0.18s; text-transform: uppercase;
     }
-    .lb-btn:hover { color: var(--colors-foreground); }
+    .lb-btn:hover { color: var(--fg); }
 
-    /* ── RESPONSIVE ──────────────────────────────────────── */
+    /* ── MOBILE ──────────────────────────────────────────── */
     @media(max-width: 768px) {
-      #page { margin: 10px; border-radius: 8px; }
-      #profile { padding: var(--space-4) var(--space-3) 0; }
-      #grid-wrap { padding: var(--space-3); }
-      #grid { grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: var(--space-2); }
-      .block:nth-child(1) .block-image { aspect-ratio: 3 / 2; }
-      #lb-img { max-width: 94vw; max-height: 58vh; }
-      #nav { padding: 0 var(--space-3); }
-    }
-    @media(max-width: 420px) {
+      #cur { display: none; }
+      body { cursor: auto; }
+      .block { cursor: pointer; }
+      #nav { padding: 0 20px; }
+      #hero { padding: 110px 20px 40px; flex-direction: column; align-items: flex-start; gap: 20px; }
+      #hero-right { text-align: left; }
       #grid { grid-template-columns: repeat(2, 1fr); }
+      .block:nth-child(1) .block-img { aspect-ratio: 3 / 2; }
+      #foot { padding: 24px 20px; }
+      #lb-img { max-width: 94vw; max-height: 60vh; }
     }
   </style>
 </head>
 <body>
 
+<div id="cur"></div>
+
 <!-- NAV -->
 <nav id="nav">
   <div id="nav-logo">AJChapa</div>
-  <a id="nav-back" href="index.html">
+  <a id="nav-back" href="index.html" class="hoverable">
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
       <path d="M19 12H5M5 12l7-7M5 12l7 7"/>
     </svg>
-    home
+    index
   </a>
 </nav>
 
-<!-- PAGE -->
-<div id="page">
+<!-- HERO -->
+<header id="hero">
+  <div id="hero-left">
+    <h1 id="hero-title">Arch<em>ive</em></h1>
+  </div>
+  <div id="hero-right">
+    <span id="hero-count">06 blocks</span>
+    <span id="hero-year">personal collection</span>
+  </div>
+</header>
 
-  <!-- PROFILE -->
-  <div id="profile">
-    <div id="profile-row">
-      <h1 id="profile-name">Archive</h1>
-      <span id="profile-count">06 blocks</span>
+<!-- GRID -->
+<div id="grid">
+
+  <div class="block hoverable" onclick="openLB(0)">
+    <div class="block-img"><img src="photo1.jpg" alt="block 01" loading="lazy" /></div>
+    <div class="block-overlay">
+      <span class="block-label">block 01</span>
+      <span class="block-index">01</span>
     </div>
-    <div id="profile-tabs">
-      <span class="tab">Blocks</span>
+    <div class="block-meta">
+      <span class="block-title">frame 01</span>
+      <span class="block-num">01 / 06</span>
     </div>
   </div>
 
-  <!-- GRID -->
-  <div id="grid-wrap">
-    <div id="grid">
-
-      <div class="block" onclick="openLB(0)">
-        <div class="block-content">
-          <div class="block-image"><img src="photo1.jpg" alt="block 01" loading="lazy" /></div>
-          <div class="block-meta">
-            <div class="block-title">block 01</div>
-            <div class="block-sub">frame 01</div>
-          </div>
-        </div>
-      </div>
-
-      <div class="block" onclick="openLB(1)">
-        <div class="block-content">
-          <div class="block-image"><img src="photo2.jpg" alt="block 02" loading="lazy" /></div>
-          <div class="block-meta">
-            <div class="block-title">block 02</div>
-            <div class="block-sub">frame 02</div>
-          </div>
-        </div>
-      </div>
-
-      <div class="block" onclick="openLB(2)">
-        <div class="block-content">
-          <div class="block-image"><img src="photo3.jpg" alt="block 03" loading="lazy" /></div>
-          <div class="block-meta">
-            <div class="block-title">block 03</div>
-            <div class="block-sub">frame 03</div>
-          </div>
-        </div>
-      </div>
-
-      <div class="block" onclick="openLB(3)">
-        <div class="block-content">
-          <div class="block-image"><img src="photo4.jpg" alt="block 04" loading="lazy" /></div>
-          <div class="block-meta">
-            <div class="block-title">block 04</div>
-            <div class="block-sub">frame 04</div>
-          </div>
-        </div>
-      </div>
-
-      <div class="block" onclick="openLB(4)">
-        <div class="block-content">
-          <div class="block-image"><img src="photo5.jpg" alt="block 05" loading="lazy" /></div>
-          <div class="block-meta">
-            <div class="block-title">block 05</div>
-            <div class="block-sub">frame 05</div>
-          </div>
-        </div>
-      </div>
-
-      <div class="block" onclick="openLB(5)">
-        <div class="block-content">
-          <div class="block-image"><img src="photo6.jpg" alt="block 06" loading="lazy" /></div>
-          <div class="block-meta">
-            <div class="block-title">block 06</div>
-            <div class="block-sub">frame 06</div>
-          </div>
-        </div>
-      </div>
-
+  <div class="block hoverable" onclick="openLB(1)">
+    <div class="block-img"><img src="photo2.jpg" alt="block 02" loading="lazy" /></div>
+    <div class="block-overlay">
+      <span class="block-label">block 02</span>
+      <span class="block-index">02</span>
+    </div>
+    <div class="block-meta">
+      <span class="block-title">frame 02</span>
+      <span class="block-num">02 / 06</span>
     </div>
   </div>
+
+  <div class="block hoverable" onclick="openLB(2)">
+    <div class="block-img"><img src="photo3.jpg" alt="block 03" loading="lazy" /></div>
+    <div class="block-overlay">
+      <span class="block-label">block 03</span>
+      <span class="block-index">03</span>
+    </div>
+    <div class="block-meta">
+      <span class="block-title">frame 03</span>
+      <span class="block-num">03 / 06</span>
+    </div>
+  </div>
+
+  <div class="block hoverable" onclick="openLB(3)">
+    <div class="block-img"><img src="photo4.jpg" alt="block 04" loading="lazy" /></div>
+    <div class="block-overlay">
+      <span class="block-label">block 04</span>
+      <span class="block-index">04</span>
+    </div>
+    <div class="block-meta">
+      <span class="block-title">frame 04</span>
+      <span class="block-num">04 / 06</span>
+    </div>
+  </div>
+
+  <div class="block hoverable" onclick="openLB(4)">
+    <div class="block-img"><img src="photo5.jpg" alt="block 05" loading="lazy" /></div>
+    <div class="block-overlay">
+      <span class="block-label">block 05</span>
+      <span class="block-index">05</span>
+    </div>
+    <div class="block-meta">
+      <span class="block-title">frame 05</span>
+      <span class="block-num">05 / 06</span>
+    </div>
+  </div>
+
+  <div class="block hoverable" onclick="openLB(5)">
+    <div class="block-img"><img src="photo6.jpg" alt="block 06" loading="lazy" /></div>
+    <div class="block-overlay">
+      <span class="block-label">block 06</span>
+      <span class="block-index">06</span>
+    </div>
+    <div class="block-meta">
+      <span class="block-title">frame 06</span>
+      <span class="block-num">06 / 06</span>
+    </div>
+  </div>
+
 </div>
+
+<!-- FOOTER -->
+<footer id="foot">
+  <span id="foot-left">AJChapa — personal archive</span>
+  <span id="foot-right">06 blocks</span>
+</footer>
 
 <!-- LIGHTBOX -->
 <div id="lb" onclick="handleLBBg(event)">
   <div id="lb-top">
-    <span id="lb-counter"></span>
-    <span id="lb-close" onclick="closeLB()">close</span>
+    <span id="lb-n"></span>
+    <span id="lb-close" onclick="closeLB()">[ close ]</span>
   </div>
   <div id="lb-inner">
     <img id="lb-img" src="" alt="" />
-    <div id="lb-label"></div>
-    <div id="lb-sublabel"></div>
+    <div id="lb-caption"></div>
   </div>
-  <div id="lb-bottom">
+  <div id="lb-bot">
     <button class="lb-btn" onclick="stepLB(-1)">← prev</button>
     <button class="lb-btn" onclick="stepLB(1)">next →</button>
   </div>
 </div>
 
 <script>
+  // cursor
+  const cur = document.getElementById('cur');
+  window.addEventListener('mousemove', e => {
+    cur.style.left = e.clientX + 'px';
+    cur.style.top  = e.clientY + 'px';
+  });
+  document.querySelectorAll('.hoverable').forEach(el => {
+    el.addEventListener('mouseenter', () => cur.classList.add('big'));
+    el.addEventListener('mouseleave', () => cur.classList.remove('big'));
+  });
+
+  // lightbox
   const photos = [
-    { src:'photo1.jpg', title:'block 01', sub:'frame 01' },
-    { src:'photo2.jpg', title:'block 02', sub:'frame 02' },
-    { src:'photo3.jpg', title:'block 03', sub:'frame 03' },
-    { src:'photo4.jpg', title:'block 04', sub:'frame 04' },
-    { src:'photo5.jpg', title:'block 05', sub:'frame 05' },
-    { src:'photo6.jpg', title:'block 06', sub:'frame 06' },
+    { src:'photo1.jpg', label:'block 01 — frame 01' },
+    { src:'photo2.jpg', label:'block 02 — frame 02' },
+    { src:'photo3.jpg', label:'block 03 — frame 03' },
+    { src:'photo4.jpg', label:'block 04 — frame 04' },
+    { src:'photo5.jpg', label:'block 05 — frame 05' },
+    { src:'photo6.jpg', label:'block 06 — frame 06' },
   ];
 
   let idx = 0;
@@ -437,7 +454,7 @@
     const p = photos[i];
     const img = document.getElementById('lb-img');
     img.style.transition = 'none';
-    img.style.transform  = 'scale(0.96)';
+    img.style.transform  = 'scale(0.95)';
     img.style.opacity    = '0';
     img.src = p.src;
     requestAnimationFrame(() => requestAnimationFrame(() => {
@@ -445,9 +462,8 @@
       img.style.transform  = 'scale(1)';
       img.style.opacity    = '1';
     }));
-    document.getElementById('lb-label').textContent    = p.title;
-    document.getElementById('lb-sublabel').textContent = p.sub;
-    document.getElementById('lb-counter').textContent  = `${String(i+1).padStart(2,'0')} / 06`;
+    document.getElementById('lb-caption').textContent = p.label;
+    document.getElementById('lb-n').textContent = `${String(i+1).padStart(2,'0')} / 06`;
     document.getElementById('lb').classList.add('open');
   }
 
