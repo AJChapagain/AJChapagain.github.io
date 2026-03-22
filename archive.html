@@ -5,249 +5,305 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Archive — AJChapa</title>
   <link rel="icon" type="image/png" href="favicon.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Mulish:wght@200;300;400;500;600;700&display=swap" rel="stylesheet" />
   <style>
+    /* ── ARE.NA DESIGN TOKENS ─────────────────────────────── */
     :root {
-      --bg-body:  #f5f5f7;
-      --bg-main:  #ffffff;
-      --fg:       #1d1d1f;
-      --muted:    #6e6e73;
-      --border:   rgba(0,0,0,0.07);
-      --card-bg:  #f5f5f7;
-      --font: -apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text", sans-serif;
-      --ease-apple: cubic-bezier(0.22, 1, 0.36, 1);
+      --colors-gray0: #ffffff;
+      --colors-gray1: #f7f7f7;
+      --colors-gray2: #ededed;
+      --colors-gray3: #dedede;
+      --colors-gray4: #999999;
+      --colors-gray5: #696969;
+      --colors-gray6: #333333;
+      --colors-gray7: #000000;
+
+      --colors-background: var(--colors-gray0);
+      --colors-foreground: var(--colors-gray7);
+      --colors-muted:      var(--colors-gray4);
+      --colors-border:     var(--colors-gray2);
+      --colors-hover:      var(--colors-gray1);
+
+      --space-1: 5px;
+      --space-2: 10px;
+      --space-3: 15px;
+      --space-4: 20px;
+      --space-5: 30px;
+      --space-6: 40px;
+
+      --fonts-sans: 'Mulish', 'Arial', Arial, Helvetica, sans-serif;
+      --radii-1: 3px;
+
+      /* Apple spring */
+      --ease: cubic-bezier(0.22, 1, 0.36, 1);
     }
 
     *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
 
-    html { background: var(--bg-body); }
+    html { background: var(--colors-gray1); }
 
     body {
-      background: var(--bg-body);
-      color: var(--fg);
-      font-family: var(--font);
+      font-family: var(--fonts-sans);
+      background: var(--colors-gray1);
+      color: var(--colors-foreground);
       font-size: 14px;
       line-height: 1.5;
       -webkit-font-smoothing: antialiased;
       min-height: 100vh;
-      animation: pageIn 0.5s var(--ease-apple) forwards;
+      animation: pageIn 0.45s var(--ease) both;
     }
     @keyframes pageIn {
-      from { opacity: 0; transform: translateY(8px); }
+      from { opacity: 0; transform: translateY(6px); }
       to   { opacity: 1; transform: translateY(0); }
     }
 
     a { color: inherit; text-decoration: none; }
+    img { display: block; }
 
     /* ── NAV ─────────────────────────────────────────────── */
     #nav {
       position: sticky; top: 0; z-index: 1000;
-      height: 52px;
-      background: rgba(245,245,247,0.78);
+      height: 55px;
+      background: rgba(255,255,255,0.78);
       backdrop-filter: blur(16px);
       -webkit-backdrop-filter: blur(16px);
-      border-bottom: 1px solid var(--border);
+      border-bottom: 1px solid var(--colors-border);
       display: flex; align-items: center; justify-content: space-between;
-      padding: 0 32px;
+      padding: 0 var(--space-4);
     }
+
     #nav-logo {
-      font-size: 13px; font-weight: 600;
-      letter-spacing: -0.01em; color: var(--fg);
-      transition: opacity 0.2s ease;
+      font-size: 13px; font-weight: 700;
+      letter-spacing: 0.01em;
+      color: var(--colors-foreground);
+      transition: opacity 0.18s;
       cursor: default;
     }
-    #nav-logo:hover { opacity: 0.6; }
+    #nav-logo:hover { opacity: 0.55; }
 
-    #nav-right a {
-      font-size: 13px; font-weight: 400; color: var(--muted);
-      display: inline-flex; align-items: center; gap: 5px;
-      transition: color 0.18s ease;
+    #nav-back {
+      display: inline-flex; align-items: center; gap: 6px;
+      font-size: 13px; font-weight: 400;
+      color: var(--colors-gray5);
+      transition: color 0.18s;
     }
-    #nav-right a:hover { color: var(--fg); }
-    #nav-right svg { width: 11px; height: 11px; }
+    #nav-back:hover { color: var(--colors-foreground); }
+    #nav-back svg { width: 11px; height: 11px; }
 
-    /* ── MAIN CARD ───────────────────────────────────────── */
-    #main {
-      max-width: 1100px;
-      margin: 28px auto 80px;
-      padding: 48px 32px 72px;
-      background: var(--bg-main);
-      border-radius: 18px;
+    /* ── PAGE WRAPPER ────────────────────────────────────── */
+    #page {
+      max-width: 1080px;
+      margin: 24px auto 80px;
+      background: var(--colors-background);
+      border-radius: 12px;
+      border: 1px solid var(--colors-border);
       box-shadow:
-        0 1px 1px rgba(0,0,0,0.03),
-        0 4px 12px rgba(0,0,0,0.04),
-        0 40px 80px rgba(0,0,0,0.04);
+        0 1px 2px rgba(0,0,0,0.03),
+        0 6px 18px rgba(0,0,0,0.04),
+        0 32px 72px rgba(0,0,0,0.04);
+      overflow: hidden;
     }
 
-    /* ── PROFILE ─────────────────────────────────────────── */
-    #profile { margin-bottom: 28px; }
+    /* ── PROFILE HEADER ──────────────────────────────────── */
+    #profile {
+      padding: var(--space-5) var(--space-5) 0;
+      border-bottom: 1px solid var(--colors-border);
+    }
 
-    #profile-top {
-      display: flex; align-items: baseline; gap: 12px;
-      margin-bottom: 18px;
+    #profile-row {
+      display: flex; align-items: baseline; gap: var(--space-2);
+      margin-bottom: var(--space-3);
     }
     #profile-name {
-      font-size: 28px; font-weight: 600;
-      letter-spacing: -0.028em; color: var(--fg);
+      font-size: 22px; font-weight: 700;
+      letter-spacing: -0.02em;
+      color: var(--colors-foreground);
     }
     #profile-count {
-      font-size: 13px; color: var(--muted); font-weight: 400;
+      font-size: 12px; font-weight: 400;
+      color: var(--colors-muted);
     }
 
-    #profile-filters {
+    /* single tab — just "Archive" label */
+    #profile-tabs {
       display: flex; align-items: center;
-      border-bottom: 1px solid var(--border);
+      margin-top: var(--space-1);
     }
-    .filter-tab {
-      font-size: 12px; font-weight: 500; color: var(--muted);
-      padding: 9px 14px 9px 0; margin-right: 14px;
-      border-bottom: 1.5px solid transparent;
-      cursor: pointer; user-select: none;
-      transition: color 0.16s, border-color 0.16s;
+    .tab {
+      font-size: 12px; font-weight: 600;
+      color: var(--colors-foreground);
+      padding: var(--space-2) 0;
+      border-bottom: 2px solid var(--colors-foreground);
+      margin-right: var(--space-4);
       position: relative; top: 1px;
+      letter-spacing: 0.01em;
     }
-    .filter-tab:hover { color: var(--fg); }
-    .filter-tab.active { color: var(--fg); border-bottom-color: var(--fg); }
 
-    /* ── GRID ────────────────────────────────────────────── */
+    /* ── GRID AREA ───────────────────────────────────────── */
+    #grid-wrap {
+      padding: var(--space-4);
+    }
+
     #grid {
       display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
-      gap: 18px;
-      margin-top: 28px;
+      grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+      gap: var(--space-3);
     }
 
     /* focus mode */
-    #grid:hover .card { opacity: 0.42; }
-    #grid:hover .card:hover { opacity: 1; }
+    #grid:hover .block { opacity: 0.45; }
+    #grid:hover .block:hover { opacity: 1; }
 
-    /* ── CARD ────────────────────────────────────────────── */
-    .card {
+    /* ── BLOCK (Are.na card anatomy) ─────────────────────── */
+    .block {
       cursor: pointer;
-      display: flex; flex-direction: column; gap: 9px;
-      transition: opacity 0.32s ease;
+      display: flex; flex-direction: column;
+      transition: opacity 0.3s ease;
     }
 
-    /* hero first card */
-    .card:nth-child(1) { grid-column: span 2; }
+    .block-content {
+      display: flex; flex-direction: column; gap: 6px;
+    }
 
-    .card-img {
+    /* image wrapper — square default */
+    .block-image {
       aspect-ratio: 1 / 1;
-      background: var(--card-bg);
-      border-radius: 10px;
+      background: var(--colors-gray1);
+      border: 1px solid var(--colors-border);
+      border-radius: var(--radii-1);
       overflow: hidden;
       transition:
-        transform 0.35s var(--ease-apple),
-        box-shadow 0.35s var(--ease-apple);
+        border-color 0.2s ease,
+        transform 0.35s var(--ease),
+        box-shadow 0.35s var(--ease);
     }
-
     /* size variation */
-    .card:nth-child(3n) .card-img { aspect-ratio: 3 / 4; }
-    .card:nth-child(5n) .card-img { aspect-ratio: 4 / 3; }
-    /* hero is wide */
-    .card:nth-child(1) .card-img  { aspect-ratio: 16 / 9; }
+    .block:nth-child(3n) .block-image { aspect-ratio: 3 / 4; }
+    .block:nth-child(5n) .block-image { aspect-ratio: 4 / 3; }
+    /* hero */
+    .block:nth-child(1)  .block-image { aspect-ratio: 16 / 9; }
 
-    .card:hover .card-img {
-      transform: translateY(-5px);
-      box-shadow: 0 16px 40px rgba(0,0,0,0.09), 0 4px 12px rgba(0,0,0,0.05);
+    .block-image img {
+      width: 100%; height: 100%;
+      object-fit: cover;
+      transition: transform 0.45s var(--ease), opacity 0.2s ease;
     }
-    .card:active .card-img {
+
+    .block:hover .block-image {
+      border-color: var(--colors-gray3);
+      transform: translateY(-4px);
+      box-shadow: 0 12px 32px rgba(0,0,0,0.08), 0 3px 10px rgba(0,0,0,0.05);
+    }
+    .block:hover .block-image img {
+      transform: scale(1.05);
+      opacity: 0.92;
+    }
+    .block:active .block-image {
       transform: scale(0.98);
       box-shadow: none;
     }
 
-    .card-img img {
-      width: 100%; height: 100%;
-      object-fit: cover; display: block;
-      transition: transform 0.45s var(--ease-apple), opacity 0.22s ease;
+    /* block meta */
+    .block-meta {
+      padding: 0 2px;
     }
-    .card:hover .card-img img {
-      transform: scale(1.05);
-      opacity: 0.93;
+    .block-title {
+      font-size: 12px; font-weight: 600;
+      color: var(--colors-foreground);
+      letter-spacing: 0;
+      white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
     }
-
-    .card-body { padding: 0 2px; }
-    .card-title {
-      font-size: 13px; font-weight: 500;
-      color: var(--fg); letter-spacing: -0.01em;
-      display: -webkit-box;
-      -webkit-line-clamp: 2; -webkit-box-orient: vertical;
-      overflow: hidden; line-height: 1.4;
-    }
-    .card-meta {
+    .block-sub {
       font-size: 11px; font-weight: 400;
-      color: var(--muted); margin-top: 2px;
+      color: var(--colors-muted);
+      margin-top: 1px;
+      white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
     }
 
     /* ── LIGHTBOX ────────────────────────────────────────── */
     #lb {
       position: fixed; inset: 0; z-index: 9999;
-      background: rgba(245,245,247,0.84);
+      background: rgba(247,247,247,0.88);
       backdrop-filter: blur(14px);
       -webkit-backdrop-filter: blur(14px);
       display: flex; align-items: center; justify-content: center;
       opacity: 0; pointer-events: none;
-      transition: opacity 0.26s ease;
+      transition: opacity 0.24s ease;
     }
     #lb.open { opacity: 1; pointer-events: all; }
 
     #lb-inner {
-      display: flex; flex-direction: column; align-items: center;
-      gap: 14px; max-width: 88vw;
+      display: flex; flex-direction: column;
+      align-items: center; gap: 12px;
+      max-width: 90vw;
     }
-
     #lb-img {
       max-width: 76vw; max-height: 68vh;
       object-fit: contain;
-      border-radius: 12px;
-      box-shadow: 0 36px 100px rgba(0,0,0,0.13), 0 8px 28px rgba(0,0,0,0.07);
-      transform: scale(0.95); opacity: 0;
-      transition:
-        transform 0.5s var(--ease-apple),
-        opacity 0.4s ease;
+      border-radius: 6px;
+      border: 1px solid var(--colors-border);
+      box-shadow: 0 30px 90px rgba(0,0,0,0.11), 0 6px 24px rgba(0,0,0,0.06);
+      transform: scale(0.96); opacity: 0;
+      transition: transform 0.48s var(--ease), opacity 0.38s ease;
     }
     #lb.open #lb-img { transform: scale(1); opacity: 1; }
 
     #lb-label {
-      font-size: 13px; font-weight: 500;
-      color: var(--fg); text-align: center;
+      font-size: 12px; font-weight: 600;
+      color: var(--colors-foreground);
+    }
+    #lb-sublabel {
+      font-size: 11px; color: var(--colors-muted);
+      margin-top: -6px;
     }
 
     #lb-top {
       position: absolute; top: 0; left: 0; right: 0;
-      display: flex; justify-content: space-between; align-items: center;
-      padding: 16px 28px;
-      border-bottom: 1px solid var(--border);
+      height: 44px;
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 0 var(--space-4);
+      border-bottom: 1px solid var(--colors-border);
+      background: rgba(255,255,255,0.6);
     }
-    #lb-counter { font-size: 12px; color: var(--muted); font-weight: 400; }
+    #lb-counter { font-size: 11px; color: var(--colors-muted); font-weight: 400; }
     #lb-close {
-      font-size: 12px; font-weight: 500; color: var(--muted);
-      cursor: pointer; transition: color 0.16s;
+      font-size: 11px; font-weight: 600;
+      color: var(--colors-gray5); cursor: pointer;
+      transition: color 0.16s;
+      letter-spacing: 0.02em;
     }
-    #lb-close:hover { color: var(--fg); }
+    #lb-close:hover { color: var(--colors-foreground); }
 
     #lb-bottom {
       position: absolute; bottom: 0; left: 0; right: 0;
-      display: flex; justify-content: center; gap: 40px;
-      padding: 16px 28px;
-      border-top: 1px solid var(--border);
+      height: 44px;
+      display: flex; align-items: center; justify-content: center;
+      gap: var(--space-5);
+      border-top: 1px solid var(--colors-border);
+      background: rgba(255,255,255,0.6);
     }
     .lb-btn {
-      font-size: 12px; font-weight: 500; color: var(--muted);
+      font-size: 11px; font-weight: 600;
+      color: var(--colors-gray5);
       background: none; border: none; cursor: pointer;
-      font-family: var(--font);
+      font-family: var(--fonts-sans);
+      letter-spacing: 0.02em;
       transition: color 0.16s;
     }
-    .lb-btn:hover { color: var(--fg); }
+    .lb-btn:hover { color: var(--colors-foreground); }
 
     /* ── RESPONSIVE ──────────────────────────────────────── */
-    @media(max-width: 768px){
-      #main { margin: 14px; padding: 28px 18px 56px; border-radius: 14px; }
-      #grid { grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 12px; }
-      .card:nth-child(1) { grid-column: span 2; }
-      #lb-img { max-width: 94vw; max-height: 60vh; }
-      #nav { padding: 0 18px; }
+    @media(max-width: 768px) {
+      #page { margin: 10px; border-radius: 8px; }
+      #profile { padding: var(--space-4) var(--space-3) 0; }
+      #grid-wrap { padding: var(--space-3); }
+      #grid { grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: var(--space-2); }
+      .block:nth-child(1) .block-image { aspect-ratio: 3 / 2; }
+      #lb-img { max-width: 94vw; max-height: 58vh; }
+      #nav { padding: 0 var(--space-3); }
     }
-    @media(max-width: 480px){
+    @media(max-width: 420px) {
       #grid { grid-template-columns: repeat(2, 1fr); }
     }
   </style>
@@ -257,83 +313,95 @@
 <!-- NAV -->
 <nav id="nav">
   <div id="nav-logo">AJChapa</div>
-  <div id="nav-right">
-    <a href="index.html">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
-        <path d="M19 12H5M5 12l7-7M5 12l7 7"/>
-      </svg>
-      home
-    </a>
-  </div>
+  <a id="nav-back" href="index.html">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M19 12H5M5 12l7-7M5 12l7 7"/>
+    </svg>
+    home
+  </a>
 </nav>
 
-<!-- MAIN -->
-<main id="main">
+<!-- PAGE -->
+<div id="page">
 
+  <!-- PROFILE -->
   <div id="profile">
-    <div id="profile-top">
+    <div id="profile-row">
       <h1 id="profile-name">Archive</h1>
       <span id="profile-count">06 blocks</span>
     </div>
-    <div id="profile-filters">
-      <span class="filter-tab active">All</span>
-      <span class="filter-tab">Photos</span>
-      <span class="filter-tab">Projects</span>
+    <div id="profile-tabs">
+      <span class="tab">Blocks</span>
     </div>
   </div>
 
-  <div id="grid">
+  <!-- GRID -->
+  <div id="grid-wrap">
+    <div id="grid">
 
-    <div class="card" onclick="openLB(0)">
-      <div class="card-img"><img src="photo1.jpg" alt="block 01" loading="lazy" /></div>
-      <div class="card-body">
-        <div class="card-title">block 01</div>
-        <div class="card-meta">frame 01</div>
+      <div class="block" onclick="openLB(0)">
+        <div class="block-content">
+          <div class="block-image"><img src="photo1.jpg" alt="block 01" loading="lazy" /></div>
+          <div class="block-meta">
+            <div class="block-title">block 01</div>
+            <div class="block-sub">frame 01</div>
+          </div>
+        </div>
       </div>
-    </div>
 
-    <div class="card" onclick="openLB(1)">
-      <div class="card-img"><img src="photo2.jpg" alt="block 02" loading="lazy" /></div>
-      <div class="card-body">
-        <div class="card-title">block 02</div>
-        <div class="card-meta">frame 02</div>
+      <div class="block" onclick="openLB(1)">
+        <div class="block-content">
+          <div class="block-image"><img src="photo2.jpg" alt="block 02" loading="lazy" /></div>
+          <div class="block-meta">
+            <div class="block-title">block 02</div>
+            <div class="block-sub">frame 02</div>
+          </div>
+        </div>
       </div>
-    </div>
 
-    <div class="card" onclick="openLB(2)">
-      <div class="card-img"><img src="photo3.jpg" alt="block 03" loading="lazy" /></div>
-      <div class="card-body">
-        <div class="card-title">block 03</div>
-        <div class="card-meta">frame 03</div>
+      <div class="block" onclick="openLB(2)">
+        <div class="block-content">
+          <div class="block-image"><img src="photo3.jpg" alt="block 03" loading="lazy" /></div>
+          <div class="block-meta">
+            <div class="block-title">block 03</div>
+            <div class="block-sub">frame 03</div>
+          </div>
+        </div>
       </div>
-    </div>
 
-    <div class="card" onclick="openLB(3)">
-      <div class="card-img"><img src="photo4.jpg" alt="block 04" loading="lazy" /></div>
-      <div class="card-body">
-        <div class="card-title">block 04</div>
-        <div class="card-meta">frame 04</div>
+      <div class="block" onclick="openLB(3)">
+        <div class="block-content">
+          <div class="block-image"><img src="photo4.jpg" alt="block 04" loading="lazy" /></div>
+          <div class="block-meta">
+            <div class="block-title">block 04</div>
+            <div class="block-sub">frame 04</div>
+          </div>
+        </div>
       </div>
-    </div>
 
-    <div class="card" onclick="openLB(4)">
-      <div class="card-img"><img src="photo5.jpg" alt="block 05" loading="lazy" /></div>
-      <div class="card-body">
-        <div class="card-title">block 05</div>
-        <div class="card-meta">frame 05</div>
+      <div class="block" onclick="openLB(4)">
+        <div class="block-content">
+          <div class="block-image"><img src="photo5.jpg" alt="block 05" loading="lazy" /></div>
+          <div class="block-meta">
+            <div class="block-title">block 05</div>
+            <div class="block-sub">frame 05</div>
+          </div>
+        </div>
       </div>
-    </div>
 
-    <div class="card" onclick="openLB(5)">
-      <div class="card-img"><img src="photo6.jpg" alt="block 06" loading="lazy" /></div>
-      <div class="card-body">
-        <div class="card-title">block 06</div>
-        <div class="card-meta">frame 06</div>
+      <div class="block" onclick="openLB(5)">
+        <div class="block-content">
+          <div class="block-image"><img src="photo6.jpg" alt="block 06" loading="lazy" /></div>
+          <div class="block-meta">
+            <div class="block-title">block 06</div>
+            <div class="block-sub">frame 06</div>
+          </div>
+        </div>
       </div>
-    </div>
 
+    </div>
   </div>
-</main>
+</div>
 
 <!-- LIGHTBOX -->
 <div id="lb" onclick="handleLBBg(event)">
@@ -344,6 +412,7 @@
   <div id="lb-inner">
     <img id="lb-img" src="" alt="" />
     <div id="lb-label"></div>
+    <div id="lb-sublabel"></div>
   </div>
   <div id="lb-bottom">
     <button class="lb-btn" onclick="stepLB(-1)">← prev</button>
@@ -352,20 +421,13 @@
 </div>
 
 <script>
-  document.querySelectorAll('.filter-tab').forEach(tab => {
-    tab.addEventListener('click', () => {
-      document.querySelectorAll('.filter-tab').forEach(t => t.classList.remove('active'));
-      tab.classList.add('active');
-    });
-  });
-
   const photos = [
-    { src:'photo1.jpg', title:'block 01', meta:'frame 01' },
-    { src:'photo2.jpg', title:'block 02', meta:'frame 02' },
-    { src:'photo3.jpg', title:'block 03', meta:'frame 03' },
-    { src:'photo4.jpg', title:'block 04', meta:'frame 04' },
-    { src:'photo5.jpg', title:'block 05', meta:'frame 05' },
-    { src:'photo6.jpg', title:'block 06', meta:'frame 06' },
+    { src:'photo1.jpg', title:'block 01', sub:'frame 01' },
+    { src:'photo2.jpg', title:'block 02', sub:'frame 02' },
+    { src:'photo3.jpg', title:'block 03', sub:'frame 03' },
+    { src:'photo4.jpg', title:'block 04', sub:'frame 04' },
+    { src:'photo5.jpg', title:'block 05', sub:'frame 05' },
+    { src:'photo6.jpg', title:'block 06', sub:'frame 06' },
   ];
 
   let idx = 0;
@@ -375,18 +437,17 @@
     const p = photos[i];
     const img = document.getElementById('lb-img');
     img.style.transition = 'none';
-    img.style.transform  = 'scale(0.95)';
+    img.style.transform  = 'scale(0.96)';
     img.style.opacity    = '0';
     img.src = p.src;
-    requestAnimationFrame(() => {
-      requestAnimationFrame(() => {
-        img.style.transition = '';
-        img.style.transform  = 'scale(1)';
-        img.style.opacity    = '1';
-      });
-    });
-    document.getElementById('lb-label').textContent   = p.title;
-    document.getElementById('lb-counter').textContent = `${String(i+1).padStart(2,'0')} / 06`;
+    requestAnimationFrame(() => requestAnimationFrame(() => {
+      img.style.transition = '';
+      img.style.transform  = 'scale(1)';
+      img.style.opacity    = '1';
+    }));
+    document.getElementById('lb-label').textContent    = p.title;
+    document.getElementById('lb-sublabel').textContent = p.sub;
+    document.getElementById('lb-counter').textContent  = `${String(i+1).padStart(2,'0')} / 06`;
     document.getElementById('lb').classList.add('open');
   }
 
