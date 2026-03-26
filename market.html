@@ -173,112 +173,56 @@
     .threshold b { color: var(--text); font-weight: 400; }
 
     /* FULL WIDTH CARD */
-    .card-wide {
-      grid-column: 1 / -1;
-    }
+    .card-wide { grid-column: 1 / -1; }
 
     /* SAHM GAUGE */
-    .sahm-gauge {
-      display: flex; align-items: center; gap: 1rem;
-      margin: 0.6rem 0;
-    }
+    .sahm-gauge { display: flex; align-items: center; gap: 1rem; margin: 0.6rem 0; }
     .gauge-track {
-      flex: 1; height: 3px;
-      background: rgba(255,255,255,0.06);
+      flex: 1; height: 3px; background: rgba(255,255,255,0.06);
       border-radius: 99px; position: relative; overflow: visible;
     }
     .gauge-fill-sahm {
-      height: 100%; border-radius: 99px;
-      background: var(--amber);
+      height: 100%; border-radius: 99px; background: var(--amber);
       box-shadow: 0 0 8px var(--amber);
       transition: width 1.2s cubic-bezier(0.16,1,0.3,1);
     }
     .gauge-marker {
       position: absolute; top: 50%; transform: translate(-50%,-50%);
-      width: 1px; height: 10px;
-      background: var(--red);
-      opacity: 0.6;
+      width: 1px; height: 10px; background: var(--red); opacity: 0.6;
     }
-    .gauge-val {
-      font-family: 'Share Tech Mono', monospace;
-      font-size: 0.65rem; color: var(--dim); white-space: nowrap;
-    }
+    .gauge-val { font-family: 'Share Tech Mono', monospace; font-size: 0.65rem; color: var(--dim); white-space: nowrap; }
 
     /* YIELD CURVE ROW */
-    .yield-row {
-      display: grid;
-      grid-template-columns: repeat(4, 1fr);
-      gap: 1rem; margin-top: 0.8rem;
-    }
-    .yield-item { }
-    .yield-tenor {
-      font-size: 0.58rem; letter-spacing: 0.2em;
-      color: var(--dim); margin-bottom: 0.25rem;
-    }
-    .yield-rate {
-      font-family: 'Share Tech Mono', monospace;
-      font-size: 1.1rem; color: var(--bright);
-    }
-    .spread-row {
-      display: flex; gap: 2rem; margin-top: 1.2rem;
-      padding-top: 1rem; border-top: 1px solid var(--border);
-    }
-    .spread-item { }
+    .yield-row { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1rem; margin-top: 0.8rem; }
+    .yield-tenor { font-size: 0.58rem; letter-spacing: 0.2em; color: var(--dim); margin-bottom: 0.25rem; }
+    .yield-rate { font-family: 'Share Tech Mono', monospace; font-size: 1.1rem; color: var(--bright); }
+    .spread-row { display: flex; gap: 2rem; margin-top: 1.2rem; padding-top: 1rem; border-top: 1px solid var(--border); }
     .spread-label { font-size: 0.58rem; letter-spacing: 0.18em; color: var(--dim); margin-bottom: 0.2rem; }
-    .spread-val {
-      font-family: 'Share Tech Mono', monospace;
-      font-size: 0.95rem;
-    }
+    .spread-val { font-family: 'Share Tech Mono', monospace; font-size: 0.95rem; }
 
     /* OIL ROW */
-    .oil-row {
-      display: grid; grid-template-columns: 1fr 1fr;
-      gap: 1rem; margin-top: 0.6rem;
-    }
-    .oil-item { }
+    .oil-row { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-top: 0.6rem; }
     .oil-label { font-size: 0.58rem; letter-spacing: 0.2em; color: var(--dim); margin-bottom: 0.25rem; }
-    .oil-val {
-      font-family: 'Share Tech Mono', monospace;
-      font-size: 1.5rem; color: var(--bright);
-    }
+    .oil-val { font-family: 'Share Tech Mono', monospace; font-size: 1.5rem; color: var(--bright); }
     .oil-change { font-size: 0.62rem; margin-top: 0.2rem; }
 
     /* STATUS BAR */
     .statusbar {
       position: fixed; bottom: 0; left: 0; right: 0;
       display: flex; align-items: center; justify-content: space-between;
-      padding: 0.5rem 2rem;
-      border-top: 1px solid var(--border);
-      background: rgba(2,3,8,0.95);
-      backdrop-filter: blur(12px);
-      z-index: 100;
+      padding: 0.5rem 2rem; border-top: 1px solid var(--border);
+      background: rgba(2,3,8,0.95); backdrop-filter: blur(12px); z-index: 100;
     }
-    .sb-left {
-      font-family: 'Share Tech Mono', monospace;
-      font-size: 0.6rem; letter-spacing: 0.15em; color: var(--dim);
-      display: flex; align-items: center; gap: 0.6rem;
-    }
-    .sb-right {
-      font-family: 'Share Tech Mono', monospace;
-      font-size: 0.6rem; letter-spacing: 0.12em; color: var(--dim);
-    }
-    .pulse {
-      width: 5px; height: 5px; border-radius: 50%;
-      background: var(--green);
-      box-shadow: 0 0 6px var(--green);
-      animation: blink 2s infinite;
-    }
+    .sb-left { font-family: 'Share Tech Mono', monospace; font-size: 0.6rem; letter-spacing: 0.15em; color: var(--dim); display: flex; align-items: center; gap: 0.6rem; }
+    .sb-right { font-family: 'Share Tech Mono', monospace; font-size: 0.6rem; letter-spacing: 0.12em; color: var(--dim); }
+    .pulse { width: 5px; height: 5px; border-radius: 50%; background: var(--green); box-shadow: 0 0 6px var(--green); animation: blink 2s infinite; }
     @keyframes blink { 0%,100%{opacity:1} 50%{opacity:0.2} }
 
     /* LOADING SKELETON */
     .skel {
-      display: inline-block;
-      width: 80px; height: 1em;
+      display: inline-block; width: 80px; height: 1em;
       background: linear-gradient(90deg, rgba(255,255,255,0.04) 25%, rgba(255,255,255,0.08) 50%, rgba(255,255,255,0.04) 75%);
-      background-size: 200% 100%;
-      animation: shimmer 1.5s infinite;
-      border-radius: 2px;
-      vertical-align: middle;
+      background-size: 200% 100%; animation: shimmer 1.5s infinite; border-radius: 2px; vertical-align: middle;
     }
     @keyframes shimmer { 0%{background-position:200% 0} 100%{background-position:-200% 0} }
 
@@ -292,8 +236,6 @@
     .card:nth-child(5){animation-delay:0.25s}
     .card:nth-child(6){animation-delay:0.3s}
     .card:nth-child(7){animation-delay:0.35s}
-
-    /* ERROR */
     .err { color: var(--red); font-size: 0.65rem; letter-spacing: 0.1em; }
 
     @media(max-width:600px){
@@ -311,14 +253,12 @@
 
 <div id="cur"></div>
 
-<!-- NAV -->
 <nav>
   <div class="nav-left"><span>&gt;_</span> AJChapa / market</div>
   <div class="nav-time" id="navtime">--:--:-- UTC</div>
   <a class="nav-back" href="index.html">&larr; back</a>
 </nav>
 
-<!-- HERO -->
 <div class="hero">
   <div class="hero-label">macro dashboard</div>
   <h1 class="hero-title">Market Intelligence</h1>
@@ -326,10 +266,8 @@
 </div>
 <hr class="divider"/>
 
-<!-- GRID -->
 <div class="grid">
 
-  <!-- SAHM RULE -->
   <div class="card">
     <div class="card-tag">recession indicator</div>
     <div class="card-value" id="sahm-val"><span class="skel"></span></div>
@@ -348,7 +286,6 @@
     <div class="threshold">threshold &mdash; <b>0.50</b> &nbsp;|&nbsp; current low: <b id="sahm-low">—</b></div>
   </div>
 
-  <!-- UNEMPLOYMENT -->
   <div class="card">
     <div class="card-tag">labor market</div>
     <div class="card-value" id="unemp-val"><span class="skel"></span></div>
@@ -363,7 +300,6 @@
     <div class="threshold">danger zone &mdash; <b>&gt; 4.7%</b> &nbsp;|&nbsp; Sahm trigger range</div>
   </div>
 
-  <!-- CORE PCE -->
   <div class="card">
     <div class="card-tag">inflation</div>
     <div class="card-value" id="pce-val"><span class="skel"></span></div>
@@ -378,7 +314,6 @@
     <div class="threshold">Fed target &mdash; <b>2.0%</b> &nbsp;|&nbsp; stagflation risk above <b>3.5%</b></div>
   </div>
 
-  <!-- S&P 500 -->
   <div class="card">
     <div class="card-tag">equity</div>
     <div class="card-value" id="sp-val"><span class="skel"></span></div>
@@ -393,7 +328,6 @@
     <div class="threshold">sell zone &mdash; <b>6,750</b> &nbsp;|&nbsp; recession target: <b>5,400–5,800</b></div>
   </div>
 
-  <!-- OIL -->
   <div class="card">
     <div class="card-tag">commodities</div>
     <div class="card-label" style="margin-bottom:0.5rem">Crude Oil</div>
@@ -412,7 +346,6 @@
     <div class="threshold" style="margin-top:0.8rem">stagflation risk &mdash; Brent <b>&gt; $110</b></div>
   </div>
 
-  <!-- YIELD CURVE — wide -->
   <div class="card card-wide">
     <div class="card-tag">yield curve</div>
     <div class="yield-row">
@@ -451,7 +384,6 @@
 
 </div>
 
-<!-- STATUS BAR -->
 <div class="statusbar">
   <div class="sb-left">
     <div class="pulse" id="pulse-dot"></div>
@@ -461,9 +393,10 @@
 </div>
 
 <script>
-// ── KEYS ──────────────────────────────────────────────────────────────────
+// ── KEYS & PROXY ──────────────────────────────────────────────────────────
 const FRED_KEY = 'cb9b47e53198facae9de7f48d17a1c6c';
 const AV_KEY   = 'CKJIRZA2I2PGXVBJ';
+const PROXY    = 'https://corsproxy.io/?';
 
 // ── CURSOR ────────────────────────────────────────────────────────────────
 const cur = document.getElementById('cur');
@@ -482,9 +415,7 @@ function tick() {
 tick(); setInterval(tick, 1000);
 
 // ── HELPERS ───────────────────────────────────────────────────────────────
-function fmt(v, decimals=2) {
-  return parseFloat(v).toFixed(decimals);
-}
+function fmt(v, decimals=2) { return parseFloat(v).toFixed(decimals); }
 function colorSpread(val) {
   const n = parseFloat(val);
   if (n < 0)    return 'var(--red)';
@@ -492,17 +423,15 @@ function colorSpread(val) {
   return 'var(--green)';
 }
 function setStatus(id, dotClass, text) {
-  const el = document.getElementById(id);
-  el.innerHTML = `<div class="dot ${dotClass}"></div><span>${text}</span>`;
+  document.getElementById(id).innerHTML = `<div class="dot ${dotClass}"></div><span>${text}</span>`;
 }
-function setVal(id, text) {
-  document.getElementById(id).textContent = text;
-}
+function setVal(id, text) { document.getElementById(id).textContent = text; }
 
-// ── FRED FETCH ────────────────────────────────────────────────────────────
+// ── FRED FETCH (WITH PROXY) ───────────────────────────────────────────────
 async function fred(series) {
   const url = `https://api.stlouisfed.org/fred/series/observations?series_id=${series}&api_key=${FRED_KEY}&file_type=json&sort_order=desc&limit=1`;
-  const r = await fetch(url);
+  const r = await fetch(PROXY + encodeURIComponent(url));
+  if (!r.ok) throw new Error('FRED fetch failed');
   const d = await r.json();
   return d.observations[0].value;
 }
@@ -520,7 +449,8 @@ async function loadSahm() {
     else if (n >= 0.35) setStatus('sahm-status','dot-amber','WARNING — approaching trigger threshold');
     else setStatus('sahm-status','dot-green','CLEAR — below danger threshold');
   } catch(e) {
-    setVal('sahm-val','ERR'); setStatus('sahm-status','dot-red','fetch failed');
+    console.error(e);
+    setVal('sahm-val','ERR'); setStatus('sahm-status','dot-red','CORS/Fetch Error');
   }
 }
 
@@ -535,32 +465,27 @@ async function loadUnemp() {
     if (n >= 4.7) setStatus('unemp-status','dot-red','ELEVATED — Sahm trigger zone');
     else if (n >= 4.2) setStatus('unemp-status','dot-amber','RISING — watch closely');
     else setStatus('unemp-status','dot-green','STABLE');
-  } catch(e) {
-    setVal('unemp-val','ERR');
-  }
+  } catch(e) { setVal('unemp-val','ERR'); }
 }
 
 // ── CORE PCE ──────────────────────────────────────────────────────────────
 async function loadPCE() {
   try {
-    const val = await fred('PCEPILFE');
-    // PCEPILFE is index level — compute YoY
     const url2 = `https://api.stlouisfed.org/fred/series/observations?series_id=PCEPILFE&api_key=${FRED_KEY}&file_type=json&sort_order=desc&limit=13`;
-    const r = await fetch(url2);
+    const r = await fetch(PROXY + encodeURIComponent(url2));
     const d = await r.json();
     const obs = d.observations;
     const latest = parseFloat(obs[0].value);
     const yearAgo = parseFloat(obs[12].value);
     const yoy = ((latest - yearAgo) / yearAgo * 100);
+    
     setVal('pce-val', fmt(yoy) + '%');
     document.getElementById('pce-bar').style.width = Math.min(yoy / 6 * 100, 100) + '%';
     document.getElementById('pce-val').style.color = yoy >= 3.5 ? 'var(--red)' : yoy >= 2.5 ? 'var(--amber)' : 'var(--green)';
     if (yoy >= 3.5) setStatus('pce-status','dot-red','HOT — stagflation risk, Fed hands tied');
     else if (yoy >= 2.5) setStatus('pce-status','dot-amber','ELEVATED — above Fed target');
     else setStatus('pce-status','dot-green','NEAR TARGET');
-  } catch(e) {
-    setVal('pce-val','ERR');
-  }
+  } catch(e) { setVal('pce-val','ERR'); }
 }
 
 // ── YIELD CURVE ───────────────────────────────────────────────────────────
@@ -598,20 +523,29 @@ async function loadYields() {
 async function loadSP() {
   try {
     const url = `https://www.alphavantage.co/query?function=GLOBAL_QUOTE&symbol=SPY&apikey=${AV_KEY}`;
-    const r = await fetch(url);
+    const r = await fetch(PROXY + encodeURIComponent(url));
     const d = await r.json();
+    
+    // Catch rate limit
+    if (d.Note || d.Information) {
+       setVal('sp-val', 'LIMIT'); setStatus('sp-status', 'dot-amber', 'API Limit Reached'); return;
+    }
+
     const q = d['Global Quote'];
     if (!q || !q['05. price']) throw new Error('no data');
-    const price  = parseFloat(q['05. price']) * 10; // SPY × 10 ≈ S&P 500
+    const price  = parseFloat(q['05. price']) * 10; 
     const chgPct = parseFloat(q['10. change percent']);
+    
     setVal('sp-val', price.toLocaleString('en-US',{maximumFractionDigits:0}));
     document.getElementById('sp-bar').style.width = Math.min(price / 8000 * 100, 100) + '%';
     document.getElementById('sp-val').style.color = price >= 6750 ? 'var(--amber)' : price >= 6200 ? 'var(--bright)' : 'var(--red)';
+    
     const sign = chgPct >= 0 ? '+' : '';
     if (price >= 6750) setStatus('sp-status','dot-amber',`SELL ZONE — ${sign}${fmt(chgPct)}% today`);
     else if (price >= 5800) setStatus('sp-status','dot-blue',`HOLD — ${sign}${fmt(chgPct)}% today`);
     else setStatus('sp-status','dot-red',`RECESSION RANGE — ${sign}${fmt(chgPct)}% today`);
   } catch(e) {
+    console.error(e);
     setVal('sp-val','ERR'); setStatus('sp-status','dot-red','fetch failed');
   }
 }
@@ -619,11 +553,19 @@ async function loadSP() {
 // ── OIL ───────────────────────────────────────────────────────────────────
 async function loadOil() {
   try {
+    const wtiUrl = `https://www.alphavantage.co/query?function=WTI&interval=daily&apikey=${AV_KEY}`;
+    const brentUrl = `https://www.alphavantage.co/query?function=BRENT&interval=daily&apikey=${AV_KEY}`;
+
     const [wtiR, brentR] = await Promise.all([
-      fetch(`https://www.alphavantage.co/query?function=WTI&interval=daily&apikey=${AV_KEY}`),
-      fetch(`https://www.alphavantage.co/query?function=BRENT&interval=daily&apikey=${AV_KEY}`)
+      fetch(PROXY + encodeURIComponent(wtiUrl)),
+      fetch(PROXY + encodeURIComponent(brentUrl))
     ]);
+    
     const [wtiD, brentD] = await Promise.all([wtiR.json(), brentR.json()]);
+
+    if (wtiD.Note || brentD.Note || wtiD.Information || brentD.Information) {
+      setVal('wti-val','LIMIT'); setVal('brent-val','LIMIT'); return;
+    }
 
     const wtiArr   = wtiD?.data;
     const brentArr = brentD?.data;
@@ -636,9 +578,7 @@ async function loadOil() {
       const wChgEl = document.getElementById('wti-chg');
       wChgEl.textContent = (wtiChg >= 0 ? '+' : '') + fmt(wtiChg) + ' today';
       wChgEl.style.color = wtiChg >= 0 ? 'var(--green)' : 'var(--red)';
-    } else {
-      setVal('wti-val','—');
-    }
+    } else { setVal('wti-val','—'); }
 
     if (brentArr && brentArr.length >= 2) {
       const brent  = parseFloat(brentArr[0].value);
@@ -648,9 +588,8 @@ async function loadOil() {
       const bChgEl = document.getElementById('brent-chg');
       bChgEl.textContent = (bChg >= 0 ? '+' : '') + fmt(bChg) + ' today';
       bChgEl.style.color = bChg >= 0 ? 'var(--green)' : 'var(--red)';
-    } else {
-      setVal('brent-val','—');
-    }
+    } else { setVal('brent-val','—'); }
+    
   } catch(e) {
     setVal('wti-val','ERR'); setVal('brent-val','ERR');
   }
@@ -659,13 +598,16 @@ async function loadOil() {
 // ── INIT ──────────────────────────────────────────────────────────────────
 async function init() {
   document.getElementById('sb-msg').textContent = 'fetching live data…';
+  
+  // Wait for all to finish, whether they succeed or fail
   await Promise.allSettled([
     loadSahm(), loadUnemp(), loadPCE(), loadYields(), loadSP(), loadOil()
   ]);
+  
   const now = new Date();
   document.getElementById('last-updated').textContent =
     'updated ' + now.toLocaleTimeString('en-US',{hour:'2-digit',minute:'2-digit'});
-  document.getElementById('sb-msg').textContent = 'live — all sources fetched';
+  document.getElementById('sb-msg').textContent = 'live — requests completed';
 }
 
 init();
