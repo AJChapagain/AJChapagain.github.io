@@ -40,19 +40,6 @@
       background-repeat: repeat; background-size: 128px;
     }
 
-    /* RED SURGE OVERLAY */
-    #surge-overlay {
-      position: fixed; inset: 0; pointer-events: none; z-index: 99995; opacity: 0;
-    }
-    @keyframes surgeFlare {
-      0%   { opacity:0; background: radial-gradient(ellipse at center, rgba(200,10,10,0.0) 0%, rgba(100,0,0,0.0) 100%); }
-      12%  { opacity:1; background: radial-gradient(ellipse at center, rgba(200,10,10,0.16) 0%, rgba(100,0,0,0.36) 100%); }
-      100% { opacity:0; background: radial-gradient(ellipse at center, rgba(160,5,5,0.04) 0%, rgba(60,0,0,0.14) 100%); }
-    }
-    #surge-overlay.active {
-      animation: surgeFlare var(--surge-dur, 3s) ease-out forwards;
-    }
-
     #stage-landing { position: fixed; inset: 0; z-index: 10; }
     #starfield { position: absolute; inset: 0; width: 100%; height: 100%; z-index: 0; }
 
@@ -69,99 +56,91 @@
     @keyframes fadeDown { from{opacity:0;transform:translateY(-15px)} to{opacity:1;transform:translateY(0)} }
     @keyframes fadeUp   { from{opacity:0;transform:translateY(15px)}  to{opacity:1;transform:translateY(0)} }
 
-    /* SIGIL ANIMATIONS */
-    @keyframes spinSlow { from{transform:rotate(0deg)} to{transform:rotate(360deg)} }
-    @keyframes spinFast { from{transform:rotate(0deg)} to{transform:rotate(360deg)} }
-    @keyframes glowIdle {
-      0%,100%{ filter: drop-shadow(0 0 4px rgba(200,180,255,0.45)) drop-shadow(0 0 10px rgba(160,100,255,0.25)); }
-      50%    { filter: drop-shadow(0 0 7px rgba(220,200,255,0.8))  drop-shadow(0 0 18px rgba(180,120,255,0.5)); }
-    }
-    @keyframes glowSurge {
-      0%,100%{ filter: drop-shadow(0 0 10px rgba(255,40,20,0.9)) drop-shadow(0 0 28px rgba(200,0,0,0.65)) drop-shadow(0 0 50px rgba(150,0,0,0.4)); }
-      50%    { filter: drop-shadow(0 0 18px rgba(255,90,50,1))   drop-shadow(0 0 46px rgba(220,20,0,0.9))  drop-shadow(0 0 88px rgba(170,0,0,0.55)); }
+    /* ── STAR → ARCHIVE ─────────────────────────────────────────────────────── */
+    #star-nav {
+      position: absolute;
+      top: 2rem; left: 2rem;
+      z-index: 20;
+      opacity: 0;
+      animation: fadeDown 1.4s cubic-bezier(0.16,1,0.3,1) 0.5s forwards;
     }
 
-    #sigil-wrap {
-      position: absolute; top: 2rem; left: 2rem; z-index: 20;
-      opacity: 0; animation: fadeDown 1.4s cubic-bezier(0.16,1,0.3,1) 0.5s forwards;
-      display: flex; flex-direction: column; align-items: center; gap: 8px;
-    }
-
-    #sigil-btn {
-      width: 42px; height: 42px;
-      background: none; border: none; padding: 0;
-      cursor: none; display: flex; align-items: center; justify-content: center;
+    #star-anchor {
+      display: flex;
+      align-items: center;
+      gap: 0;
+      text-decoration: none;
+      cursor: none;
       position: relative;
     }
 
-    #sigil-star {
-      animation: spinSlow 12s linear infinite, glowIdle 3s ease-in-out infinite;
-      transform-origin: center; display: block;
+    #sky-star {
+      width: 32px; height: 32px;
+      flex-shrink: 0;
+      transition: transform 0.45s cubic-bezier(0.16,1,0.3,1),
+                  filter 0.45s ease;
+      transform-origin: center;
+      filter: drop-shadow(0 0 4px rgba(210,225,255,0.55))
+              drop-shadow(0 0 12px rgba(180,205,255,0.28));
+      animation: starBreath 4.5s ease-in-out infinite;
     }
-    #sigil-star.surge {
-      animation: spinFast 0.55s linear infinite, glowSurge 0.35s ease-in-out infinite;
-    }
-    #sigil-star.surge .star-main  { stroke: rgba(255,70,50,0.95); }
-    #sigil-star.surge .star-hex   { stroke: rgba(255,55,35,0.55); fill: rgba(200,15,0,0.2); }
-    #sigil-star.surge .star-dot,
-    #sigil-star.surge .star-pip  { fill: rgba(255,100,70,0.95); }
-
-    /* warning dot */
-    #warn-dot {
-      position: absolute; top: 1px; right: 1px;
-      width: 7px; height: 7px; border-radius: 50%;
-      background: #ff1a00;
-      box-shadow: 0 0 6px #ff1a00, 0 0 14px rgba(255,26,0,0.8);
-      opacity: 0; pointer-events: none; transition: opacity 0.1s;
-    }
-    #warn-dot.active {
-      opacity: 1;
-      animation: warnPulse 0.22s ease-in-out infinite;
-    }
-    @keyframes warnPulse {
-      0%,100%{ opacity:1; box-shadow:0 0 8px #ff1a00, 0 0 22px rgba(255,26,0,0.9); }
-      50%    { opacity:0.35; box-shadow:0 0 3px #ff1a00; }
+    @keyframes starBreath {
+      0%,100% {
+        filter: drop-shadow(0 0 3px rgba(210,225,255,0.5))
+                drop-shadow(0 0 10px rgba(180,205,255,0.22));
+      }
+      50% {
+        filter: drop-shadow(0 0 7px rgba(235,245,255,0.85))
+                drop-shadow(0 0 20px rgba(195,215,255,0.52));
+      }
     }
 
-    /* CONNECTOR LINE */
-    .sig-line {
-      width: 1px; height: 12px;
-      background: linear-gradient(to bottom, rgba(180,140,255,0.4), rgba(180,140,255,0.06));
-      transition: background 0.4s;
-    }
-    .sig-line.surge {
-      background: linear-gradient(to bottom, rgba(255,70,50,0.6), rgba(180,10,0,0.06));
-    }
-
-    /* ARCHIVE LINK — always visible */
-    #sigil-archive-link {
+    #archive-label {
       font-family: 'Share Tech Mono', monospace;
-      font-size: 0.68rem; letter-spacing: 0.24em;
-      color: #b89cdd;
-      text-decoration: none;
-      padding: 6px 14px;
-      border: 1px solid rgba(170,130,240,0.22);
-      border-radius: 2px;
-      background: rgba(110,70,180,0.05);
-      cursor: none;
+      font-size: 0.68rem;
+      letter-spacing: 0.22em;
+      color: rgba(190,170,230,0);
       white-space: nowrap;
-      transition: color 0.25s, border-color 0.25s, background 0.25s, text-shadow 0.25s;
-      text-shadow: 0 0 8px rgba(190,150,255,0.35);
-    }
-    #sigil-archive-link:hover {
-      color: #fff;
-      border-color: rgba(220,190,255,0.6);
-      background: rgba(150,90,255,0.13);
-      text-shadow: 0 0 10px rgba(230,210,255,1), 0 0 24px rgba(200,150,255,0.8), 0 0 46px rgba(160,90,255,0.5);
-    }
-    #sigil-archive-link.surge {
-      color: #ff9978;
-      border-color: rgba(255,70,50,0.48);
-      background: rgba(170,15,0,0.09);
-      text-shadow: 0 0 8px rgba(255,70,50,0.8), 0 0 20px rgba(200,10,0,0.5);
+      overflow: hidden;
+      max-width: 0;
+      transition: max-width 0.42s cubic-bezier(0.16,1,0.3,1),
+                  color 0.35s ease,
+                  text-shadow 0.35s ease;
+      text-shadow: none;
+      pointer-events: none;
+      padding-left: 0;
+      transition-delay: 0s;
     }
 
-    /* SITE NAME */
+    #star-anchor:hover #sky-star {
+      transform: scale(0.78);
+      animation: none;
+      filter: drop-shadow(0 0 9px rgba(235,245,255,0.9))
+              drop-shadow(0 0 26px rgba(200,220,255,0.6));
+    }
+
+    #star-anchor:hover #archive-label {
+      max-width: 140px;
+      padding-left: 10px;
+      color: #c4b0e8;
+      text-shadow: 0 0 10px rgba(210,185,255,0.85),
+                   0 0 24px rgba(185,145,255,0.5);
+      pointer-events: auto;
+    }
+
+    /* underline sweep */
+    #archive-label::after {
+      content: '';
+      display: block;
+      width: 0;
+      height: 1px;
+      background: rgba(140,100,220,0.45);
+      transition: width 0.3s ease 0.18s;
+      margin-top: 2px;
+    }
+    #star-anchor:hover #archive-label::after { width: 100%; }
+
+    /* ── SITE NAME ───────────────────────────────────────────────────────────── */
     .top-header {
       position: absolute; top: 3rem; left: 50%; transform: translateX(-50%);
       z-index: 10; display: flex; flex-direction: column; align-items: center; pointer-events: none;
@@ -179,7 +158,7 @@
       margin: 0.5rem auto 0;
     }
 
-    /* BOTTOM NAV */
+    /* ── BOTTOM NAV ──────────────────────────────────────────────────────────── */
     .bottom-nav {
       position: absolute; bottom: 3.5rem; left: 0; width: 100%;
       z-index: 10; display: flex; align-items: center; justify-content: center; gap: 0 2rem;
@@ -200,6 +179,7 @@
     .link-item:hover::after { width:100%; }
     .link-divider { width:1px; height:10px; background:#2a2f4a; }
 
+    /* ── RESPONSIVE ──────────────────────────────────────────────────────────── */
     @media(max-width:768px){
       #custom-cursor { display: none; }
       .site-name { font-size: 1.5rem; letter-spacing: 0.18em; }
@@ -208,9 +188,8 @@
       .link-item { font-size: 0.58rem; letter-spacing: 0.12em; gap: 0.28rem; cursor: pointer; }
       .link-item svg { width: 10px; height: 10px; }
       .link-divider { display: none; }
-      #sigil-wrap { top: 1.1rem; left: 1.1rem; }
-      #sigil-btn { cursor: pointer; }
-      #sigil-archive-link { cursor: pointer; }
+      #star-nav { top: 1.1rem; left: 1.1rem; }
+      #star-anchor { cursor: pointer; }
     }
     @media(max-width:390px){
       .site-name { font-size: 1.1rem; letter-spacing: 0.1em; }
@@ -224,38 +203,52 @@
 <div class="fx-scan"></div>
 <div class="fx-vig"></div>
 <div class="fx-noise"></div>
-<div id="surge-overlay"></div>
 
 <div id="stage-landing">
   <canvas id="starfield"></canvas>
   <div class="nebula"></div>
 
-  <!-- SIGIL NAV -->
-  <div id="sigil-wrap">
-    <div style="position:relative;display:inline-flex;align-items:center;justify-content:center;">
-      <button id="sigil-btn" aria-label="Go to archive">
-        <svg id="sigil-star" width="42" height="42" viewBox="0 0 42 42" fill="none" xmlns="http://www.w3.org/2000/svg">
-          <path class="star-main"
-            d="M21 2 L24.5 14.5 L37 11 L29 21 L37 31 L24.5 27.5 L21 40 L17.5 27.5 L5 31 L13 21 L5 11 L17.5 14.5 Z"
-            fill="none" stroke="rgba(200,170,255,0.85)" stroke-width="1.1" stroke-linejoin="round"
-            style="transition:stroke 0.3s;"/>
-          <polygon class="star-hex"
-            points="21,13 26.2,16 26.2,22 21,25 15.8,22 15.8,16"
-            fill="rgba(160,110,255,0.12)" stroke="rgba(200,170,255,0.4)" stroke-width="0.7"
-            style="transition:stroke 0.3s,fill 0.3s;"/>
-          <circle class="star-dot" cx="21" cy="19" r="1.5" fill="rgba(220,200,255,0.8)" style="transition:fill 0.3s;"/>
-          <circle class="star-pip" cx="21" cy="4"  r="0.9" fill="rgba(200,170,255,0.6)" style="transition:fill 0.3s;"/>
-          <circle class="star-pip" cx="21" cy="38" r="0.9" fill="rgba(200,170,255,0.6)" style="transition:fill 0.3s;"/>
-          <circle class="star-pip" cx="6"  cy="12" r="0.9" fill="rgba(200,170,255,0.6)" style="transition:fill 0.3s;"/>
-          <circle class="star-pip" cx="36" cy="12" r="0.9" fill="rgba(200,170,255,0.6)" style="transition:fill 0.3s;"/>
-          <circle class="star-pip" cx="6"  cy="30" r="0.9" fill="rgba(200,170,255,0.6)" style="transition:fill 0.3s;"/>
-          <circle class="star-pip" cx="36" cy="30" r="0.9" fill="rgba(200,170,255,0.6)" style="transition:fill 0.3s;"/>
-        </svg>
-      </button>
-      <div id="warn-dot"></div>
-    </div>
-    <div class="sig-line" id="sig-line"></div>
-    <a href="archive.html" id="sigil-archive-link">archive</a>
+  <!-- STAR → ARCHIVE NAV -->
+  <div id="star-nav">
+    <a href="archive.html" id="star-anchor" aria-label="Go to archive">
+      <!-- Four-point diffraction star (like a real star through a telescope) -->
+      <svg id="sky-star" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <defs>
+          <radialGradient id="vg" cx="50%" cy="50%" r="50%" gradientTransform="scale(1,13) translate(0,-0.46)">
+            <stop offset="0%"   stop-color="rgba(240,245,255,0.92)"/>
+            <stop offset="30%"  stop-color="rgba(200,220,255,0.5)"/>
+            <stop offset="100%" stop-color="rgba(170,200,255,0)"/>
+          </radialGradient>
+          <radialGradient id="hg" cx="50%" cy="50%" r="50%" gradientTransform="scale(13,1) translate(-0.46,0)">
+            <stop offset="0%"   stop-color="rgba(240,245,255,0.92)"/>
+            <stop offset="30%"  stop-color="rgba(200,220,255,0.5)"/>
+            <stop offset="100%" stop-color="rgba(170,200,255,0)"/>
+          </radialGradient>
+          <radialGradient id="d1g" cx="50%" cy="50%" r="50%">
+            <stop offset="0%"   stop-color="rgba(225,235,255,0.5)"/>
+            <stop offset="100%" stop-color="rgba(170,200,255,0)"/>
+          </radialGradient>
+          <radialGradient id="coref" cx="50%" cy="50%" r="50%">
+            <stop offset="0%"   stop-color="rgba(255,255,255,1)"/>
+            <stop offset="45%"  stop-color="rgba(220,232,255,0.75)"/>
+            <stop offset="100%" stop-color="rgba(190,215,255,0)"/>
+          </radialGradient>
+        </defs>
+        <!-- vertical spike -->
+        <ellipse cx="16" cy="16" rx="1.05" ry="14.5" fill="url(#vg)"/>
+        <!-- horizontal spike -->
+        <ellipse cx="16" cy="16" rx="14.5" ry="1.05" fill="url(#hg)"/>
+        <!-- diagonal spikes (shorter, softer) -->
+        <ellipse cx="16" cy="16" rx="0.65" ry="8.5" transform="rotate(45 16 16)" fill="url(#d1g)"/>
+        <ellipse cx="16" cy="16" rx="0.65" ry="8.5" transform="rotate(-45 16 16)" fill="url(#d1g)"/>
+        <!-- soft outer glow -->
+        <circle cx="16" cy="16" r="3.8" fill="url(#coref)"/>
+        <!-- bright core -->
+        <circle cx="16" cy="16" r="1.2" fill="rgba(255,255,255,0.97)"/>
+      </svg>
+
+      <span id="archive-label">archive</span>
+    </a>
   </div>
 
   <header class="top-header">
@@ -287,46 +280,6 @@ window.addEventListener('mousemove', e => {
   cur.style.left = e.clientX + 'px';
   cur.style.top  = e.clientY + 'px';
 });
-
-// ── SURGE SYSTEM ──────────────────────────────────────────────────────────────
-let surgeActive = false;
-let surgeGravMult = 1;
-
-function triggerSurge() {
-  if (surgeActive) return;
-  surgeActive = true;
-  surgeGravMult = 26;
-
-  const dur = 3000 + Math.random() * 2200;
-
-  // overlay
-  const ov = document.getElementById('surge-overlay');
-  ov.style.setProperty('--surge-dur', (dur/1000).toFixed(2)+'s');
-  ov.classList.remove('active');
-  void ov.offsetWidth; // force reflow
-  ov.classList.add('active');
-
-  // sigil
-  document.getElementById('sigil-star').classList.add('surge');
-  document.getElementById('warn-dot').classList.add('active');
-  document.getElementById('sig-line').classList.add('surge');
-  document.getElementById('sigil-archive-link').classList.add('surge');
-
-  setTimeout(() => {
-    surgeActive = false;
-    surgeGravMult = 1;
-    document.getElementById('sigil-star').classList.remove('surge');
-    document.getElementById('warn-dot').classList.remove('active');
-    document.getElementById('sig-line').classList.remove('surge');
-    document.getElementById('sigil-archive-link').classList.remove('surge');
-
-    // next surge: 18–45 seconds later
-    setTimeout(triggerSurge, 18000 + Math.random() * 27000);
-  }, dur);
-}
-
-// first surge: 10–20 seconds after load
-setTimeout(triggerSurge, 10000 + Math.random() * 10000);
 
 // ── STARFIELD ─────────────────────────────────────────────────────────────────
 function rand(a,b){ return a+Math.random()*(b-a); }
@@ -368,11 +321,7 @@ function spawnStar(){
   else if (e===1){x=vW+20;y=rand(0,vH);}
   else if (e===2){x=rand(0,vW);y=vH+20;}
   else           {x=-20;y=rand(0,vH);}
-  // during surge, spawn some red-hued stars
-  const useRed = surgeActive && Math.random() < 0.6;
-  const c = useRed
-    ? {h: rand(0,18)|0, s:85, l:72}
-    : SCOLS[Math.floor(Math.random()*SCOLS.length)];
+  const c = SCOLS[Math.floor(Math.random()*SCOLS.length)];
   const ib = Math.random() > .84;
   return {
     x, y, vx:0, vy:0,
@@ -409,32 +358,22 @@ function drawBH(){
   // accretion disk
   vCtx.save();
   vCtx.translate(bhX,bhY); vCtx.scale(1,0.28);
-  const diskR = BH_R*(surgeActive ? 3.6 : 2.8) + pulse*2;
+  const diskR = BH_R*2.8 + pulse*2;
   const disk = vCtx.createRadialGradient(0,0,BH_R*1.05,0,0,diskR);
-  if(surgeActive){
-    disk.addColorStop(0,   'rgba(255,240,200,0)');
-    disk.addColorStop(0.15,`rgba(255,70,30,${0.75+pulse*.15})`);
-    disk.addColorStop(0.45,`rgba(210,20,5,${0.5+pulse*.1})`);
-    disk.addColorStop(0.75,'rgba(140,5,0,0.22)');
-    disk.addColorStop(1,   'rgba(0,0,0,0)');
-  } else {
-    disk.addColorStop(0,   'rgba(255,240,200,0)');
-    disk.addColorStop(0.2, `rgba(255,200,120,${0.55+pulse*.12})`);
-    disk.addColorStop(0.5, `rgba(255,140,60,${0.35+pulse*.08})`);
-    disk.addColorStop(0.8, 'rgba(180,80,20,0.18)');
-    disk.addColorStop(1,   'rgba(0,0,0,0)');
-  }
+  disk.addColorStop(0,   'rgba(255,240,200,0)');
+  disk.addColorStop(0.2, `rgba(255,200,120,${0.55+pulse*.12})`);
+  disk.addColorStop(0.5, `rgba(255,140,60,${0.35+pulse*.08})`);
+  disk.addColorStop(0.8, 'rgba(180,80,20,0.18)');
+  disk.addColorStop(1,   'rgba(0,0,0,0)');
   vCtx.beginPath(); vCtx.arc(0,0,diskR,0,Math.PI*2);
   vCtx.fillStyle=disk; vCtx.fill();
   vCtx.restore();
 
   // photon rings
-  const rc1 = surgeActive ? `rgba(255,70,30,${0.4+pulse*.2})`  : `rgba(255,210,140,${0.25+pulse*.12})`;
-  const rc2 = surgeActive ? `rgba(230,40,10,${0.28+pulse*.12})` : `rgba(255,180,80,${0.15+pulse*.08})`;
   vCtx.beginPath(); vCtx.arc(bhX,bhY,BH_R*1.5,0,Math.PI*2);
-  vCtx.strokeStyle=rc1; vCtx.lineWidth=1; vCtx.stroke();
+  vCtx.strokeStyle=`rgba(255,210,140,${0.25+pulse*.12})`; vCtx.lineWidth=1; vCtx.stroke();
   vCtx.beginPath(); vCtx.arc(bhX,bhY,BH_R*1.15,0,Math.PI*2);
-  vCtx.strokeStyle=rc2; vCtx.lineWidth=2.5; vCtx.stroke();
+  vCtx.strokeStyle=`rgba(255,180,80,${0.15+pulse*.08})`; vCtx.lineWidth=2.5; vCtx.stroke();
 
   // event horizon
   vCtx.beginPath(); vCtx.arc(bhX,bhY,BH_R,0,Math.PI*2);
@@ -469,13 +408,6 @@ function vLoop(){
     vNextS = vFr + rand(S_MIN, S_MAX);
   }
 
-  // during surge: rapidly spawn new stars at edges to feed the suction
-  if(surgeActive && vFr % 2 === 0){
-    vStars.push(spawnStar());
-    if(vStars.length > STAR_COUNT * 2.5) vStars.splice(0,1);
-  }
-
-  // shooting star tails
   vShoot = vShoot.filter(s => s.alpha>0 && s.x>-500 && s.x<vW+500 && s.y>-500 && s.y<vH+500);
   for(const s of vShoot){
     vCtx.save();
@@ -496,7 +428,6 @@ function vLoop(){
     s.x+=s.vx; s.y+=s.vy; s.alpha-=s.fade;
   }
 
-  // dust
   vDust = vDust.filter(p => p.alpha>0);
   for(const p of vDust){
     vCtx.beginPath(); vCtx.arc(p.x,p.y,p.size,0,Math.PI*2);
@@ -504,38 +435,21 @@ function vLoop(){
     p.x+=p.vx; p.y+=p.vy; p.alpha-=p.decay;
   }
 
-  // stars
   for(let i=vStars.length-1; i>=0; i--){
     const s=vStars[i];
     const dx=bhX-s.x, dy=bhY-s.y, dist=Math.sqrt(dx*dx+dy*dy);
 
-    if(dist < BH_R){
-      // star consumed — during surge, spit out a tiny red flare
-      if(surgeActive){
-        for(let k=0;k<3;k++)
-          vDust.push({x:bhX+rand(-6,6),y:bhY+rand(-6,6),
-            vx:rand(-3,3),vy:rand(-3,3),
-            alpha:0.85,decay:rand(.05,.12),size:rand(.8,2.5),h:8,s:90,l:65});
-      }
-      vStars[i] = spawnStar();
-      continue;
-    }
+    if(dist < BH_R){ vStars[i] = spawnStar(); continue; }
 
-    // gravity — massively amplified during surge
-    const gBase = .001 + (220/(dist+40))*.022;
-    const gp = gBase * surgeGravMult;
+    const gp = .001 + (220/(dist+40))*.022;
     s.vx += (dx/dist)*gp;
     s.vy += (dy/dist)*gp;
 
-    // speed cap — loosened during surge so stars visibly spiral fast
     const sp = Math.sqrt(s.vx*s.vx+s.vy*s.vy);
-    const maxSpd = (surgeActive ? 5 : 0.25) + ((surgeActive ? 2000:1100)/(dist+8))*2.4;
+    const maxSpd = 0.25 + (1100/(dist+8))*2.4;
     if(sp > maxSpd){ s.vx=(s.vx/sp)*maxSpd; s.vy=(s.vy/sp)*maxSpd; }
 
-    // trail — whole screen during surge
-    const trailR = surgeActive ? Math.max(vW,vH) : GRAVITY_RADIUS;
-    const trailLen = surgeActive ? MAX_TRAIL*3 : MAX_TRAIL;
-    if(dist < trailR){ s.trail.push({x:s.x,y:s.y}); if(s.trail.length>trailLen) s.trail.shift(); }
+    if(dist < GRAVITY_RADIUS){ s.trail.push({x:s.x,y:s.y}); if(s.trail.length>MAX_TRAIL) s.trail.shift(); }
     else if(s.trail.length) s.trail.shift();
 
     s.x += s.vx; s.y += s.vy;
@@ -543,32 +457,26 @@ function vLoop(){
     const tw = Math.sin(vFr*s.twinkleSpeed+s.twinkleOffset);
     const a  = Math.max(.01, s.baseOpacity + tw*s.baseOpacity*.4);
 
-    // draw trail
     if(s.trail.length > 1){
       vCtx.save();
       for(let j=1;j<s.trail.length;j++){
         const ta=(j/s.trail.length)*.3;
-        const th2 = surgeActive ? 8 : s.h;
-        const ts2 = surgeActive ? 88 : s.s;
         vCtx.beginPath();
         vCtx.moveTo(s.trail[j-1].x, s.trail[j-1].y);
         vCtx.lineTo(s.trail[j].x,   s.trail[j].y);
-        vCtx.strokeStyle=`hsla(${th2},${ts2}%,${s.l}%,${ta})`;
+        vCtx.strokeStyle=`hsla(${s.h},${s.s}%,${s.l}%,${ta})`;
         vCtx.lineWidth=s.r*.5; vCtx.lineCap='round'; vCtx.stroke();
       }
       vCtx.restore();
     }
 
-    // draw star (shift hue toward red during surge)
-    const dh = surgeActive ? s.h*.3 + 8*.7 : s.h;
-    const ds = surgeActive ? Math.min(100,s.s*1.25) : s.s;
     vCtx.beginPath(); vCtx.arc(s.x,s.y,s.r,0,Math.PI*2);
-    vCtx.fillStyle=`hsla(${dh},${ds}%,${s.l}%,${a})`; vCtx.fill();
+    vCtx.fillStyle=`hsla(${s.h},${s.s}%,${s.l}%,${a})`; vCtx.fill();
 
     if(s.isBright && a>.4){
       const gg=vCtx.createRadialGradient(s.x,s.y,0,s.x,s.y,s.r*4.5);
-      gg.addColorStop(0,`hsla(${dh},${ds}%,${s.l}%,${a*.35})`);
-      gg.addColorStop(1,`hsla(${dh},${ds}%,${s.l}%,0)`);
+      gg.addColorStop(0,`hsla(${s.h},${s.s}%,${s.l}%,${a*.35})`);
+      gg.addColorStop(1,`hsla(${s.h},${s.s}%,${s.l}%,0)`);
       vCtx.beginPath(); vCtx.arc(s.x,s.y,s.r*4.5,0,Math.PI*2);
       vCtx.fillStyle=gg; vCtx.fill();
     }
