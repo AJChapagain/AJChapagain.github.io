@@ -5,844 +5,644 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
 <title>ajchapa</title>
 <style>
-@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=Karla:wght@300;400&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;1,400&family=Karla:wght@300;400&display=swap');
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+html,body{width:100%;height:100%;overflow:hidden;background:#fafaf8;font-family:'Karla',sans-serif}
 
-*, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
+/* ── CANVAS ── */
+#canvas{position:fixed;inset:0;transition:background 3s ease}
 
-:root {
-  --cream: #f0ece3;
-  --ink: #080808;
-  --muted: #2a2322;
-  --ghost: rgba(240,236,227,0.06);
-  --serif: 'Playfair Display', Georgia, serif;
-  --sans: 'Karla', Helvetica, sans-serif;
-}
+/* ── GRAIN ── */
+#grain{position:fixed;inset:0;z-index:900;pointer-events:none;opacity:0.045;
+  background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  background-size:160px;mix-blend-mode:multiply}
 
-html, body {
-  width:100%; height:100%;
-  background: var(--ink);
-  overflow: hidden;
-  cursor: none;
-}
+/* ── NAV ── */
+#nav{position:fixed;top:0;left:0;right:0;z-index:800;
+  display:flex;justify-content:space-between;align-items:center;
+  padding:1.3rem 1.8rem;pointer-events:none}
+#nav>*{pointer-events:auto}
+#logo{font-family:'Playfair Display',serif;font-size:0.7rem;letter-spacing:0.22em;
+  color:rgba(8,8,8,0.35);font-weight:400;text-transform:uppercase;transition:color 1s}
+.nl{font-family:'Karla',sans-serif;font-size:0.42rem;letter-spacing:0.3em;
+  text-transform:uppercase;color:rgba(8,8,8,0.2);text-decoration:none;
+  margin-left:1.4rem;transition:color 0.3s}
+.nl:hover{color:rgba(8,8,8,0.6)}
 
-/* CUSTOM CURSOR */
-#cur {
-  position: fixed; z-index: 9999;
-  width: 6px; height: 6px;
-  background: var(--cream);
-  border-radius: 50%;
-  pointer-events: none;
-  transform: translate(-50%,-50%);
-  transition: opacity 0.3s;
-  mix-blend-mode: difference;
-}
+/* ── VIGNETTE ── */
+#vig{position:fixed;inset:0;z-index:700;pointer-events:none;
+  background:radial-gradient(ellipse at center,transparent 35%,rgba(8,8,8,0) 100%);
+  transition:background 4s ease}
 
-/* NAV */
-nav {
-  position: fixed; top:0; left:0; right:0; z-index:500;
-  display: flex; justify-content: space-between; align-items: center;
-  padding: 1.4rem 2rem;
-  pointer-events: none;
-}
-nav > * { pointer-events: auto; }
+/* ── LIGHT STREAK ── */
+#streak{position:fixed;z-index:600;pointer-events:none;
+  top:18%;left:-20%;width:140%;height:1px;
+  background:linear-gradient(to right,transparent,rgba(255,248,230,0.7),transparent);
+  opacity:0;transform:skewY(-3deg);filter:blur(1px)}
 
-.logo {
-  font-family: var(--serif);
-  font-size: 0.72rem;
-  color: var(--cream);
-  letter-spacing: 0.22em;
-  font-weight: 400;
-  opacity: 0.6;
-  text-transform: uppercase;
-  transition: opacity 0.3s;
-}
-.logo:hover { opacity: 1; }
+/* ── LIGHT LEAK ── */
+#leak{position:fixed;z-index:600;pointer-events:none;
+  bottom:-10%;left:-10%;width:50%;height:50%;border-radius:50%;
+  background:radial-gradient(circle,rgba(255,200,100,0.18) 0%,transparent 70%);
+  opacity:0;filter:blur(30px)}
 
-.nav-links {
-  display: flex; gap: 1.8rem;
-}
-.nav-links a {
-  font-family: var(--sans);
-  font-size: 0.48rem;
-  color: rgba(240,236,227,0.3);
-  text-decoration: none;
-  letter-spacing: 0.3em;
-  text-transform: uppercase;
-  transition: color 0.3s;
-}
-.nav-links a:hover { color: var(--cream); }
+/* ── IMAGE FRAGMENT BASE ── */
+.frag{position:fixed;pointer-events:none;z-index:100;
+  overflow:hidden;will-change:transform,opacity;
+  opacity:0;transition:opacity 0s}
+.frag-img{position:absolute;inset:-12%;background-size:cover;background-position:center;
+  will-change:transform;transform:scale(1.1)}
+.frag-edge{position:absolute;inset:0;
+  background:radial-gradient(ellipse at center,transparent 50%,rgba(250,250,248,0.85) 100%)}
 
-/* STAGE */
-#stage {
-  position: fixed; inset: 0;
-  background: var(--ink);
-}
+/* ── MASK SHAPES ── */
+.mask-para{clip-path:polygon(8% 0%,100% 0%,92% 100%,0% 100%)}
+.mask-oval{border-radius:50%}
+.mask-rect{border-radius:2px}
+.mask-diag{clip-path:polygon(0% 0%,100% 0%,100% 85%,15% 100%)}
+.mask-diag2{clip-path:polygon(0% 15%,85% 0%,100% 100%,0% 100%)}
+.mask-tall{clip-path:polygon(5% 0%,95% 0%,100% 100%,0% 100%)}
 
-/* SCENE LAYER */
-.sc {
-  position: absolute; inset: 0;
-  opacity: 0;
-  will-change: opacity, transform;
-}
+/* ── LOGO LETTERS ── */
+#logo-reveal{position:fixed;inset:0;z-index:500;pointer-events:none;
+  display:flex;align-items:center;justify-content:center;gap:0}
+.ll{font-family:'Playfair Display',serif;font-size:clamp(3.5rem,10vw,7.5rem);
+  font-weight:400;color:#080808;letter-spacing:0.08em;opacity:0;
+  will-change:transform,opacity;display:inline-block}
 
-/* IMAGE LAYER */
-.img-layer {
-  position: absolute; inset: -8%;
-  background-size: cover;
-  background-position: center;
-  background-repeat: no-repeat;
-  will-change: transform;
-}
+/* ── CAPTION TEXT ── */
+.cap{position:fixed;z-index:400;pointer-events:none;opacity:0;
+  font-family:'Playfair Display',serif;font-style:italic;
+  color:rgba(240,236,227,0.75);line-height:1.2;will-change:transform,opacity}
+.cap-sm{font-family:'Karla',sans-serif;font-style:normal;
+  font-size:0.4rem;letter-spacing:0.35em;text-transform:uppercase;
+  color:rgba(240,236,227,0.5);font-style:normal}
 
-/* OVERLAYS */
-.vig-b { position:absolute;inset:0;background:linear-gradient(to top, rgba(8,8,8,0.88) 0%, rgba(8,8,8,0.2) 45%, transparent 70%); }
-.vig-t { position:absolute;inset:0;background:linear-gradient(to bottom, rgba(8,8,8,0.6) 0%, transparent 40%); }
-.vig-l { position:absolute;inset:0;background:linear-gradient(to right, rgba(8,8,8,0.85) 0%, transparent 55%); }
-.vig-r { position:absolute;inset:0;background:linear-gradient(to left, rgba(8,8,8,0.85) 0%, transparent 55%); }
-.vig-c { position:absolute;inset:0;background:radial-gradient(ellipse at center, transparent 30%, rgba(8,8,8,0.75) 100%); }
-.vig-full { position:absolute;inset:0;background:rgba(8,8,8,0.45); }
+/* ── DARK VIGNETTE OVERLAY ── */
+#darkvig{position:fixed;inset:0;z-index:350;pointer-events:none;opacity:0;
+  background:radial-gradient(ellipse at center,transparent 20%,rgba(8,8,8,0.75) 100%);
+  transition:opacity 3s ease}
 
-/* TEXT ELEMENTS */
-.txt { position: absolute; }
-
-.headline {
-  font-family: var(--serif);
-  color: var(--cream);
-  font-weight: 400;
-  line-height: 0.9;
-  letter-spacing: -0.03em;
-}
-
-.label {
-  font-family: var(--sans);
-  font-size: 0.44rem;
-  letter-spacing: 0.32em;
-  text-transform: uppercase;
-  color: rgba(240,236,227,0.4);
-}
-
-.eyebrow {
-  font-family: var(--sans);
-  font-size: 0.4rem;
-  letter-spacing: 0.38em;
-  text-transform: uppercase;
-  color: rgba(240,236,227,0.25);
-}
-
-/* DECORATIVE LINE */
-.dline {
-  position: absolute;
-  background: rgba(240,236,227,0.15);
-}
-
-/* GRAIN OVERLAY */
-#grain {
-  position: fixed; inset:0; z-index:400;
-  pointer-events: none;
-  opacity: 0.035;
-  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E");
-  background-size: 180px;
-  mix-blend-mode: overlay;
-}
-
-/* PROGRESS BAR */
-#pbar {
-  position: fixed; bottom:0; left:0;
-  height: 1px;
-  background: linear-gradient(to right, transparent, rgba(240,236,227,0.5), transparent);
-  width: 0;
-  z-index: 500;
-  transition: width 0.1s linear;
-}
-
-/* CHAPTER INDICATOR */
-#chap {
-  position: fixed; bottom: 1.8rem; right: 2rem;
-  z-index: 500;
-  font-family: var(--sans);
-  font-size: 0.4rem;
-  letter-spacing: 0.3em;
-  text-transform: uppercase;
-  color: rgba(240,236,227,0.15);
-  transition: opacity 0.5s;
-}
-
-/* LETTERBOX BARS */
-#lb-top, #lb-bot {
-  position: fixed; left:0; right:0;
-  background: var(--ink);
-  z-index: 450;
-  transition: height 0.8s cubic-bezier(0.16,1,0.3,1);
-}
-#lb-top { top:0; height:0; }
-#lb-bot { bottom:0; height:0; }
-
-/* FLASH */
-#flash {
-  position: fixed; inset:0; z-index: 460;
-  background: var(--cream);
-  opacity: 0;
-  pointer-events: none;
-}
-
-/* SPLIT SCREEN */
-.split {
-  position: absolute; inset:0;
-  display: grid;
-  grid-template-columns: 55fr 45fr;
-}
-.split-half { position: relative; overflow: hidden; }
-
-/* TITLE CARD (end) */
-#title-card {
-  position: absolute; inset:0;
-  display: flex; flex-direction: column;
-  align-items: center; justify-content: center;
-  opacity: 0;
-}
-.tc-line {
-  width: 0; height: 1px;
-  background: rgba(240,236,227,0.2);
-  transition: width 1s ease;
-  margin: 0.6rem 0;
-}
-.tc-name {
-  font-family: var(--serif);
-  font-size: clamp(2rem,5.5vw,4rem);
-  color: var(--cream);
-  letter-spacing: 0.22em;
-  font-weight: 400;
-  opacity: 0;
-  transform: translateY(10px);
-  transition: all 1s ease;
-}
-.tc-sub {
-  font-family: var(--sans);
-  font-size: 0.44rem;
-  letter-spacing: 0.42em;
-  text-transform: uppercase;
-  color: rgba(240,236,227,0.2);
-  opacity: 0;
-  transition: opacity 0.8s ease 0.6s;
-}
-
-/* MARQUEE for S8 */
-.marquee-wrap {
-  position: absolute; bottom: 0; left:0; right:0;
-  overflow: hidden;
-  padding: 0.8rem 0;
-  border-top: 1px solid rgba(240,236,227,0.06);
-}
-.marquee-track {
-  display: flex; gap: 4rem;
-  width: max-content;
-  animation: marquee 12s linear infinite;
-}
-.marquee-item {
-  font-family: var(--sans);
-  font-size: 0.44rem;
-  letter-spacing: 0.28em;
-  text-transform: uppercase;
-  color: rgba(240,236,227,0.18);
-  white-space: nowrap;
-}
-@keyframes marquee { from { transform: translateX(0); } to { transform: translateX(-50%); } }
-
-/* ANIMATIONS */
-@keyframes kenBurnsIn { from { transform: scale(1.12) translateX(1%); } to { transform: scale(1.0) translateX(0%); } }
-@keyframes kenBurnsUp { from { transform: scale(1.1) translateY(2%); } to { transform: scale(1.02) translateY(-1%); } }
-@keyframes kenBurnsRight { from { transform: scale(1.08) translateX(-2%); } to { transform: scale(1.01) translateX(1%); } }
-@keyframes kenBurnsLeft { from { transform: scale(1.1) translateX(3%); } to { transform: scale(1.02) translateX(-1%); } }
-@keyframes kenBurnsZoom { from { transform: scale(1.0); } to { transform: scale(1.07); } }
-@keyframes drift { from { transform: scale(1.05) translate(0,0); } to { transform: scale(1.08) translate(-1%,-0.5%); } }
-
-@keyframes fadeUp { from { opacity:0; transform: translateY(20px); } to { opacity:1; transform: translateY(0); } }
-@keyframes fadeIn { from { opacity:0; } to { opacity:1; } }
-@keyframes slideRight { from { transform: translateX(-30px); opacity:0; } to { transform: translateX(0); opacity:1; } }
-@keyframes slideLeft { from { transform: translateX(30px); opacity:0; } to { transform: translateX(0); opacity:1; } }
-@keyframes scaleIn { from { transform: scale(0.88); opacity:0; } to { transform: scale(1); opacity:1; } }
-@keyframes expandW { from { width:0; } to { width: 100%; } }
-@keyframes expandH { from { height:0; } to { height: 100%; } }
-
-/* GITHUB BASE URL for images */
+/* ── PROGRESS ── */
+#pbar{position:fixed;bottom:0;left:0;z-index:999;height:1px;width:0;
+  background:linear-gradient(to right,transparent,rgba(8,8,8,0.25),transparent);
+  transition:width 0.3s linear}
 </style>
 </head>
 <body>
 
-<div id="cur"></div>
+<div id="canvas"></div>
+<div id="vig"></div>
+<div id="darkvig"></div>
 <div id="grain"></div>
-<div id="lb-top"></div>
-<div id="lb-bot"></div>
-<div id="flash"></div>
+<div id="streak"></div>
+<div id="leak"></div>
 
-<nav>
-  <div class="logo">ajchapa</div>
-  <div class="nav-links">
-    <a href="https://instagram.com/ajchapa" target="_blank">Instagram</a>
-    <a href="https://linkedin.com/in/ajchapa" target="_blank">LinkedIn</a>
+<div id="nav">
+  <div id="logo">ajchapa</div>
+  <div>
+    <a class="nl" href="https://instagram.com/ajchapa" target="_blank">Instagram</a>
+    <a class="nl" href="https://linkedin.com/in/ajchapa" target="_blank">LinkedIn</a>
   </div>
-</nav>
+</div>
 
-<div id="stage">
-
-  <!-- S1: OPEN — Magazine spread ani1 / slow reveal -->
-  <div class="sc" id="s1">
-    <div class="img-layer" id="s1img" style="background-image:url('https://raw.githubusercontent.com/AJChapagain/AJChapagain.github.io/main/ani1.png');"></div>
-    <div class="vig-full"></div>
-    <div class="vig-b"></div>
-    <div class="txt" style="bottom:3rem;left:2.2rem;">
-      <div class="eyebrow" id="s1ey" style="opacity:0;margin-bottom:0.6rem;">editorial — vol. i</div>
-      <div class="headline" id="s1h" style="font-size:clamp(3rem,8vw,5.5rem);opacity:0;">
-        A world<br>in motion.
-      </div>
-    </div>
-    <div class="dline" id="s1ln" style="right:2.2rem;top:50%;transform:translateY(-50%);width:1px;height:0;"></div>
-  </div>
-
-  <!-- S2: IDENTITY — T-shirt ani2, close crop, fabric texture alive -->
-  <div class="sc" id="s2">
-    <div class="img-layer" id="s2img" style="background-image:url('https://raw.githubusercontent.com/AJChapagain/AJChapagain.github.io/main/ani2.png');background-position:center 40%;"></div>
-    <div class="vig-c"></div>
-    <div class="vig-b"></div>
-    <div class="txt" style="bottom:2.8rem;left:2.2rem;">
-      <div class="label" id="s2lb" style="opacity:0;">the uniform</div>
-    </div>
-    <div class="txt" style="top:50%;left:50%;transform:translate(-50%,-50%);">
-      <div class="headline" id="s2h" style="font-size:clamp(1rem,2.5vw,1.8rem);text-align:center;letter-spacing:0.18em;opacity:0;">AJCHAPA</div>
-    </div>
-  </div>
-
-  <!-- S3: WORLD — Grid mosaic ani3 -->
-  <div class="sc" id="s3">
-    <div class="img-layer" id="s3img" style="background-image:url('https://raw.githubusercontent.com/AJChapagain/AJChapagain.github.io/main/ani3.png');"></div>
-    <div class="vig-t"></div>
-    <div class="vig-b"></div>
-    <div class="txt" style="bottom:2.8rem;right:2.2rem;text-align:right;">
-      <div class="headline" id="s3h" style="font-size:clamp(2rem,5.5vw,4rem);opacity:0;">Every<br>frame.</div>
-    </div>
-  </div>
-
-  <!-- S4: DREAMLIKE — Balloon ani4, sky, floating -->
-  <div class="sc" id="s4">
-    <div class="img-layer" id="s4img" style="background-image:url('https://raw.githubusercontent.com/AJChapagain/AJChapagain.github.io/main/ani4.png');background-position:center 30%;"></div>
-    <div class="vig-b"></div>
-    <div style="position:absolute;inset:0;background:linear-gradient(180deg,rgba(8,8,8,0.15) 0%,transparent 50%);"></div>
-    <div class="txt" style="top:50%;left:2.2rem;transform:translateY(-50%);">
-      <div class="headline" id="s4h" style="font-size:clamp(3.5rem,10vw,7rem);opacity:0;line-height:0.88;">Let<br>go.</div>
-    </div>
-    <div class="txt" style="bottom:2.5rem;left:2.2rem;">
-      <div class="eyebrow" id="s4ey" style="opacity:0;">somewhere over everything</div>
-    </div>
-  </div>
-
-  <!-- S5: LUXURY DETAIL — Receipt ani5, macro -->
-  <div class="sc" id="s5">
-    <div class="img-layer" id="s5img" style="background-image:url('https://raw.githubusercontent.com/AJChapagain/AJChapagain.github.io/main/ani5.png');background-position:center;"></div>
-    <div class="vig-c"></div>
-    <div class="vig-l"></div>
-    <div class="txt" style="left:2.2rem;top:50%;transform:translateY(-50%);">
-      <div class="label" id="s5lb" style="opacity:0;margin-bottom:0.5rem;">the details matter</div>
-      <div class="headline" id="s5h" style="font-size:clamp(2rem,5vw,3.5rem);opacity:0;">Luxury<br>is quiet.</div>
-    </div>
-  </div>
-
-  <!-- S6: SPLIT — ani6 (alley walk) left / personal photo right -->
-  <div class="sc" id="s6">
-    <div class="split">
-      <div class="split-half">
-        <div class="img-layer" id="s6imgL" style="background-image:url('https://raw.githubusercontent.com/AJChapagain/AJChapagain.github.io/main/ani6.png');background-position:center;inset:-5%;"></div>
-        <div class="vig-r"></div>
-      </div>
-      <div class="split-half" style="background:#0c0b09;display:flex;align-items:flex-end;padding:2.5rem 2rem;">
-        <div>
-          <div class="label" id="s6lb" style="opacity:0;margin-bottom:0.7rem;">ajchapa — 2024</div>
-          <div class="headline" id="s6h" style="font-size:clamp(2.2rem,6vw,4.5rem);opacity:0;">Walk<br>your<br>own<br>way.</div>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <!-- S7: URBAN NIGHT — City billboard ani7 -->
-  <div class="sc" id="s7">
-    <div class="img-layer" id="s7img" style="background-image:url('https://raw.githubusercontent.com/AJChapagain/AJChapagain.github.io/main/ani7.png');"></div>
-    <div class="vig-b"></div>
-    <div class="vig-t"></div>
-    <div class="txt" style="bottom:3rem;left:2.2rem;">
-      <div class="eyebrow" id="s7ey" style="opacity:0;margin-bottom:0.5rem;">the city knows</div>
-      <div class="headline" id="s7h" style="font-size:clamp(2rem,5.5vw,4rem);opacity:0;">Everywhere<br>at once.</div>
-    </div>
-  </div>
-
-  <!-- S8: PRESENCE — Instagram/social ani8, MARQUEE scroll -->
-  <div class="sc" id="s8">
-    <div class="img-layer" id="s8img" style="background-image:url('https://raw.githubusercontent.com/AJChapagain/AJChapagain.github.io/main/ani8.PNG');background-position:center top;"></div>
-    <div class="vig-full" style="background:rgba(8,8,8,0.55);"></div>
-    <div class="vig-l"></div>
-    <div class="txt" style="left:2.2rem;top:50%;transform:translateY(-50%);">
-      <div class="label" id="s8lb" style="opacity:0;margin-bottom:0.7rem;">the digital self</div>
-      <div class="headline" id="s8h" style="font-size:clamp(2.5rem,7vw,5rem);opacity:0;">Scroll<br>worthy.</div>
-    </div>
-    <div class="marquee-wrap" id="s8mq" style="opacity:0;">
-      <div class="marquee-track">
-        <span class="marquee-item">ajchapa</span>
-        <span class="marquee-item">·</span>
-        <span class="marquee-item">student</span>
-        <span class="marquee-item">·</span>
-        <span class="marquee-item">explorer</span>
-        <span class="marquee-item">·</span>
-        <span class="marquee-item">creator</span>
-        <span class="marquee-item">·</span>
-        <span class="marquee-item">ajchapa</span>
-        <span class="marquee-item">·</span>
-        <span class="marquee-item">student</span>
-        <span class="marquee-item">·</span>
-        <span class="marquee-item">explorer</span>
-        <span class="marquee-item">·</span>
-        <span class="marquee-item">creator</span>
-        <span class="marquee-item">·</span>
-        <span class="marquee-item">ajchapa</span>
-        <span class="marquee-item">·</span>
-        <span class="marquee-item">student</span>
-        <span class="marquee-item">·</span>
-        <span class="marquee-item">explorer</span>
-        <span class="marquee-item">·</span>
-        <span class="marquee-item">creator</span>
-        <span class="marquee-item">·</span>
-      </div>
-    </div>
-  </div>
-
-  <!-- S9: BUS STOP — ani9, city presence -->
-  <div class="sc" id="s9">
-    <div class="img-layer" id="s9img" style="background-image:url('https://raw.githubusercontent.com/AJChapagain/AJChapagain.github.io/main/ani9.png');"></div>
-    <div class="vig-b"></div>
-    <div class="txt" style="bottom:3rem;right:2.2rem;text-align:right;">
-      <div class="headline" id="s9h" style="font-size:clamp(2rem,5vw,3.5rem);opacity:0;">Seen<br>everywhere.</div>
-    </div>
-    <div class="txt" style="bottom:3rem;left:2.2rem;">
-      <div class="eyebrow" id="s9ey" style="opacity:0;">out in the world</div>
-    </div>
-  </div>
-
-  <!-- S10: INTERIOR — Bus interior ani10, commuters -->
-  <div class="sc" id="s10">
-    <div class="img-layer" id="s10img" style="background-image:url('https://raw.githubusercontent.com/AJChapagain/AJChapagain.github.io/main/ani10.png');"></div>
-    <div class="vig-c"></div>
-    <div class="vig-b"></div>
-    <div class="txt" style="top:50%;left:2.2rem;transform:translateY(-50%);">
-      <div class="headline" id="s10h" style="font-size:clamp(2.5rem,7vw,5rem);opacity:0;">Moving<br>through<br>the world.</div>
-    </div>
-  </div>
-
-  <!-- S11: COLLAB — Hoodie on beach ani11, golden hour -->
-  <div class="sc" id="s11">
-    <div class="img-layer" id="s11img" style="background-image:url('https://raw.githubusercontent.com/AJChapagain/AJChapagain.github.io/main/ani11.png');background-position:center 35%;"></div>
-    <div class="vig-b"></div>
-    <div class="txt" style="bottom:3rem;left:2.2rem;">
-      <div class="eyebrow" id="s11ey" style="opacity:0;margin-bottom:0.5rem;">ajchapa × pixiste</div>
-      <div class="headline" id="s11h" style="font-size:clamp(2.5rem,7vw,5rem);opacity:0;">Built to<br>last.</div>
-    </div>
-  </div>
-
-  <!-- S12: MOSAIC — Campaign overview ani12 -->
-  <div class="sc" id="s12">
-    <div class="img-layer" id="s12img" style="background-image:url('https://raw.githubusercontent.com/AJChapagain/AJChapagain.github.io/main/ani12.png');"></div>
-    <div class="vig-t"></div>
-    <div class="vig-b"></div>
-    <div class="txt" style="top:50%;right:2.2rem;transform:translateY(-50%);text-align:right;">
-      <div class="headline" id="s12h" style="font-size:clamp(2.5rem,7vw,5.5rem);opacity:0;">The<br>collection.</div>
-    </div>
-  </div>
-
-  <!-- S13: PERSONAL — Village photo1 -->
-  <div class="sc" id="s13">
-    <div class="img-layer" id="s13img" style="background-image:url('https://raw.githubusercontent.com/AJChapagain/AJChapagain.github.io/main/photo1.jpg');background-position:center;"></div>
-    <div class="vig-b"></div>
-    <div class="vig-l"></div>
-    <div class="txt" style="bottom:3rem;left:2.2rem;">
-      <div class="label" id="s13lb" style="opacity:0;margin-bottom:0.5rem;">where it began</div>
-      <div class="headline" id="s13h" style="font-size:clamp(2rem,5.5vw,4rem);opacity:0;">Roots<br>run deep.</div>
-    </div>
-  </div>
-
-  <!-- S14: PERSONAL — Vegas photo6, energy -->
-  <div class="sc" id="s14">
-    <div class="img-layer" id="s14img" style="background-image:url('https://raw.githubusercontent.com/AJChapagain/AJChapagain.github.io/main/photo6.jpg');background-position:center;"></div>
-    <div class="vig-b"></div>
-    <div class="vig-c"></div>
-    <div class="txt" style="bottom:3rem;left:50%;transform:translateX(-50%);text-align:center;">
-      <div class="eyebrow" id="s14ey" style="opacity:0;margin-bottom:0.6rem;">las vegas — nv</div>
-      <div class="headline" id="s14h" style="font-size:clamp(2.5rem,7vw,5rem);opacity:0;text-align:center;">All in.</div>
-    </div>
-  </div>
-
-  <!-- S15: MOMENTUM — Pixiste blazer pixi1 + quick cut -->
-  <div class="sc" id="s15">
-    <div class="img-layer" id="s15img" style="background-image:url('https://raw.githubusercontent.com/AJChapagain/AJChapagain.github.io/main/pixi1.png');background-position:center;"></div>
-    <div class="vig-c"></div>
-    <div class="vig-b"></div>
-    <div class="txt" style="bottom:3rem;right:2.2rem;text-align:right;">
-      <div class="eyebrow" id="s15ey" style="opacity:0;margin-bottom:0.5rem;">pixiste — crafted</div>
-      <div class="headline" id="s15h" style="font-size:clamp(2rem,5.5vw,4rem);opacity:0;">Wear it<br>well.</div>
-    </div>
-  </div>
-
-  <!-- S16: FINALE — Title card -->
-  <div class="sc" id="s16" style="background:var(--ink);">
-    <div id="title-card">
-      <div class="tc-line" id="tc-ln1"></div>
-      <div class="tc-name" id="tc-name">ajchapa</div>
-      <div class="tc-sub" id="tc-sub">student · explorer · everything</div>
-      <div class="tc-line" id="tc-ln2"></div>
-    </div>
-  </div>
-
+<div id="logo-reveal">
+  <span class="ll" id="la">A</span>
+  <span class="ll" id="lj">J</span>
+  <span class="ll" id="lc">C</span>
+  <span class="ll" id="lh">H</span>
+  <span class="ll" id="lap">A</span>
+  <span class="ll" id="lp">P</span>
+  <span class="ll" id="la2">A</span>
 </div>
 
 <div id="pbar"></div>
-<div id="chap"></div>
 
 <script>
-/* ─── SETUP ─── */
 const BASE = 'https://raw.githubusercontent.com/AJChapagain/AJChapagain.github.io/main/';
+const IMGS = {
+  ani1:'ani1.png', ani2:'ani2.png', ani3:'ani3.png', ani4:'ani4.png',
+  ani5:'ani5.png', ani6:'ani6.png', ani7:'ani7.png', ani8:'ani8.PNG',
+  ani9:'ani9.png', ani10:'ani10.png', ani11:'ani11.png', ani12:'ani12.png',
+  p1:'photo1.jpg', p2:'photo2.jpg', p3:'photo3.jpg', p4:'photo4.jpg',
+  p6:'photo6.jpg', px1:'pixi1.png', px2:'pixi2.png'
+};
+
+// Cache of loaded image URLs
+const loaded = {};
+// Queue: only preload next 2 scenes ahead
+const preloadQueue = [];
+let preloading = false;
+
+function preloadImg(key) {
+  return new Promise(res => {
+    if (loaded[key]) { res(loaded[key]); return; }
+    const url = BASE + IMGS[key];
+    const img = new Image();
+    img.onload = () => { loaded[key] = url; res(url); };
+    img.onerror = () => { loaded[key] = url; res(url); }; // proceed even on error
+    img.src = url;
+  });
+}
+
+// Preload a batch without blocking
+function preloadBatch(keys) {
+  keys.forEach(k => { if (!loaded[k]) preloadImg(k); });
+}
+
 const $ = id => document.getElementById(id);
 const wait = ms => new Promise(r => setTimeout(r, ms));
 const E1 = 'cubic-bezier(0.16,1,0.3,1)';
 const E2 = 'cubic-bezier(0.4,0,0.2,1)';
-const TOTAL = 16;
 
-/* cursor */
-document.addEventListener('mousemove', e => {
-  const c = $('cur');
-  c.style.left = e.clientX + 'px';
-  c.style.top = e.clientY + 'px';
-});
-
-/* flash */
-function flash(dur=80) {
-  const f = $('flash');
-  f.style.transition = 'none';
-  f.style.opacity = '0.08';
-  setTimeout(() => { f.style.transition = `opacity ${dur*3}ms ease`; f.style.opacity = '0'; }, dur);
+let fragCount = 0;
+function makeFrag({key, x, y, w, h, rot=0, mask='mask-rect', zIndex=100, edge=true}) {
+  const id = 'f'+(++fragCount);
+  const div = document.createElement('div');
+  div.id = id;
+  div.className = 'frag '+mask;
+  div.style.cssText = `left:${x}%;top:${y}%;width:${w}%;height:${h}%;
+    transform:rotate(${rot}deg);z-index:${zIndex}`;
+  const inner = document.createElement('div');
+  inner.className = 'frag-img';
+  if (loaded[key]) {
+    inner.style.backgroundImage = `url(${loaded[key]})`;
+  } else {
+    // load on demand
+    preloadImg(key).then(url => { inner.style.backgroundImage = `url(${url})`; });
+  }
+  div.appendChild(inner);
+  if (edge) {
+    const e = document.createElement('div'); e.className='frag-edge';
+    div.appendChild(e);
+  }
+  document.body.appendChild(div);
+  return {div, inner, remove: ()=>{ try{document.body.removeChild(div);}catch(e){} }};
 }
 
-/* letterbox */
-function letterbox(on) {
-  const h = on ? '3.5vh' : '0';
-  $('lb-top').style.height = h;
-  $('lb-bot').style.height = h;
-}
-
-/* progress */
-function prog(n) {
-  $('pbar').style.width = ((n/TOTAL)*100) + '%';
-}
-
-/* chapter */
-function chap(txt) {
-  const c = $('chap');
-  c.style.opacity = '0';
-  setTimeout(() => { c.textContent = txt; c.style.opacity = '1'; }, 300);
-}
-
-/* show scene */
-function showSc(id) {
-  const el = $(id);
-  el.style.opacity = '0';
-  el.style.display = 'block';
-  return new Promise(r => requestAnimationFrame(() => {
-    requestAnimationFrame(() => {
-      el.style.transition = 'opacity 0.55s ease';
+function fadeIn(el, dur=600, delay=0) {
+  return new Promise(res => {
+    setTimeout(() => {
+      el.style.transition = `opacity ${dur}ms ease`;
       el.style.opacity = '1';
-      r();
-    });
-  }));
+      setTimeout(res, dur);
+    }, delay);
+  });
+}
+function fadeOut(el, dur=600, delay=0) {
+  return new Promise(res => {
+    setTimeout(() => {
+      el.style.transition = `opacity ${dur}ms ease`;
+      el.style.opacity = '0';
+      setTimeout(res, dur);
+    }, delay);
+  });
+}
+function setTransform(el, tx, dur=2000, ease=E2) {
+  el.style.transition = `transform ${dur}ms ${ease}`;
+  el.style.transform = tx;
 }
 
-/* hide scene */
-function hideSc(id, dur=400) {
-  const el = $(id);
-  el.style.transition = `opacity ${dur}ms ease`;
-  el.style.opacity = '0';
-  return wait(dur).then(() => { el.style.display = 'none'; });
+// Background canvas color
+function setBg(color, dur=3000) {
+  $('canvas').style.transition = `background ${dur}ms ease`;
+  $('canvas').style.background = color;
 }
 
-/* animate image with ken burns */
-function kb(el, type='in', dur=3000) {
-  const anims = {
-    in: `kenBurnsIn ${dur}ms ${E2} forwards`,
-    up: `kenBurnsUp ${dur}ms ${E2} forwards`,
-    right: `kenBurnsRight ${dur}ms ${E2} forwards`,
-    left: `kenBurnsLeft ${dur}ms ${E2} forwards`,
-    zoom: `kenBurnsZoom ${dur}ms ${E2} forwards`,
-    drift: `drift ${dur}ms ${E2} forwards`,
-  };
-  el.style.animation = anims[type] || anims['in'];
+// Logo color (adapts to bg)
+function setLogoColor(dark) {
+  $('logo').style.color = dark ? 'rgba(240,236,227,0.3)' : 'rgba(8,8,8,0.3)';
+  document.querySelectorAll('.nl').forEach(a => {
+    a.style.color = dark ? 'rgba(240,236,227,0.2)' : 'rgba(8,8,8,0.2)';
+  });
 }
 
-/* animate text */
-function animTxt(el, type='fadeUp', delay=0, dur=600) {
-  if (!el) return;
-  el.style.opacity = '0';
-  setTimeout(() => {
-    el.style.animation = `${type} ${dur}ms ${E1} forwards`;
-  }, delay);
+// Vignette darkness
+function setVig(opacity, dur=3000) {
+  $('darkvig').style.transition = `opacity ${dur}ms ease`;
+  $('darkvig').style.opacity = opacity;
 }
 
-/* ─── SCENES ─── */
-
-async function s1() {
-  prog(1); chap('i. editorial');
-  letterbox(true);
-  await showSc('s1');
-  kb($('s1img'), 'in', 2800);
-  animTxt($('s1ey'), 'fadeIn', 200, 700);
-  animTxt($('s1h'), 'fadeUp', 450, 750);
-  const ln = $('s1ln');
-  setTimeout(() => { ln.style.transition = 'height 1s ease 0.3s'; ln.style.height = '35%'; }, 300);
-  await wait(2400);
-  flash();
-  await hideSc('s1', 300);
+// Progress bar
+let progPct = 0;
+function setProgress(pct) {
+  $('pbar').style.width = pct + '%';
 }
 
-async function s2() {
-  prog(2); chap('ii. identity');
-  await showSc('s2');
-  kb($('s2img'), 'zoom', 2600);
-  animTxt($('s2h'), 'scaleIn', 300, 600);
-  animTxt($('s2lb'), 'fadeIn', 700, 500);
-  await wait(2200);
-  flash(60);
-  await hideSc('s2', 280);
+// Light streak flash
+function streak() {
+  const s = $('streak');
+  s.style.transition = 'none'; s.style.opacity = '0';
+  requestAnimationFrame(() => {
+    s.style.transition = 'opacity 80ms ease'; s.style.opacity = '0.9';
+    setTimeout(() => { s.style.transition = 'opacity 400ms ease'; s.style.opacity = '0'; }, 80);
+  });
 }
 
-async function s3() {
-  prog(3); chap('iii. the grid');
-  await showSc('s3');
-  kb($('s3img'), 'left', 2700);
-  animTxt($('s3h'), 'slideLeft', 350, 650);
-  await wait(2300);
-  flash();
-  await hideSc('s3', 300);
+// Amber light leak
+function lightLeak(show) {
+  const l = $('leak');
+  l.style.transition = 'opacity 1.5s ease';
+  l.style.opacity = show ? '1' : '0';
 }
 
-async function s4() {
-  prog(4); chap('iv. freedom');
-  letterbox(false);
-  await showSc('s4');
-  kb($('s4img'), 'up', 3000);
-  animTxt($('s4h'), 'slideRight', 200, 700);
-  animTxt($('s4ey'), 'fadeIn', 800, 600);
-  await wait(2600);
-  flash(50);
-  await hideSc('s4', 300);
+// Caption helper
+function makeCaption({text, x, y, size='1.1rem', align='left', cls='cap', delay=0, dur=800}) {
+  const d = document.createElement('div');
+  d.className = cls;
+  d.style.cssText = `left:${x}%;bottom:${y}%;font-size:${size};text-align:${align}`;
+  d.innerHTML = text;
+  document.body.appendChild(d);
+  fadeIn(d, dur, delay);
+  return {el:d, remove:()=>{ try{document.body.removeChild(d);}catch(e){}; }};
 }
 
-async function s5() {
-  prog(5); chap('v. detail');
-  letterbox(true);
-  await showSc('s5');
-  kb($('s5img'), 'zoom', 2800);
-  animTxt($('s5lb'), 'fadeIn', 200, 500);
-  animTxt($('s5h'), 'fadeUp', 500, 700);
-  await wait(2400);
-  flash();
-  await hideSc('s5', 300);
+// ─── LOGO REVEAL ──────────────────────────────────────────────
+async function logoReveal() {
+  const letters = ['la','lj','lc','lh','lap','lp','la2'];
+  const offsets = [[-18,-12],[12,-8],[-8,15],[20,-5],[-15,10],[8,-18],[-10,8]];
+  letters.forEach((id,i) => {
+    const el = $(id);
+    const [dx,dy] = offsets[i];
+    el.style.transform = `translate(${dx}px,${dy}px)`;
+    el.style.opacity = '0';
+  });
+  // stagger letters in
+  for (let i=0; i<letters.length; i++) {
+    const el = $(letters[i]);
+    const delay = i * 80;
+    setTimeout(() => {
+      el.style.transition = `all 900ms ${E1}`;
+      el.style.transform = 'translate(0,0)';
+      el.style.opacity = '1';
+    }, delay);
+  }
+  await wait(1100);
+  // hold then dissolve
+  await wait(400);
+  letters.forEach((id,i) => {
+    const el = $(id);
+    const [dx,dy] = offsets[i];
+    setTimeout(() => {
+      el.style.transition = `all 1000ms ease`;
+      el.style.transform = `translate(${dx*0.4}px,${dy*0.4}px)`;
+      el.style.opacity = '0';
+    }, i * 60);
+  });
+  await wait(900);
 }
 
-async function s6() {
-  prog(6); chap('vi. direction');
-  letterbox(false);
-  await showSc('s6');
-  kb($('s6imgL'), 'right', 2800);
-  animTxt($('s6lb'), 'fadeIn', 300, 500);
-  animTxt($('s6h'), 'fadeUp', 500, 750);
-  await wait(2500);
-  flash(70);
-  await hideSc('s6', 320);
-}
+// ─── MAIN SEQUENCE ────────────────────────────────────────────
+async function run() {
+  setProgress(0);
 
-async function s7() {
-  prog(7); chap('vii. the city');
-  await showSc('s7');
-  kb($('s7img'), 'drift', 2700);
-  animTxt($('s7ey'), 'fadeIn', 200, 500);
-  animTxt($('s7h'), 'slideRight', 450, 700);
-  await wait(2400);
-  flash(55);
-  await hideSc('s7', 280);
-}
+  // Preload first 3 scenes immediately
+  preloadBatch(['ani1','ani2','p1']);
 
-async function s8() {
-  prog(8); chap('viii. presence');
-  letterbox(true);
-  await showSc('s8');
-  kb($('s8img'), 'up', 2600);
-  animTxt($('s8lb'), 'fadeIn', 200, 500);
-  animTxt($('s8h'), 'slideRight', 400, 700);
-  setTimeout(() => {
-    const mq = $('s8mq');
-    mq.style.transition = 'opacity 0.6s ease';
-    mq.style.opacity = '1';
-  }, 600);
-  await wait(2300);
-  flash();
-  await hideSc('s8', 300);
-}
+  // ── ACT 1: WHITE / IDENTITY (0–6s) ──────────────────────────
+  setBg('#fafaf8');
+  setVig(0);
+  setLogoColor(false);
 
-async function s9() {
-  prog(9); chap('ix. everywhere');
-  letterbox(false);
-  await showSc('s9');
-  kb($('s9img'), 'in', 2800);
-  animTxt($('s9ey'), 'fadeIn', 200, 500);
-  animTxt($('s9h'), 'slideLeft', 400, 700);
-  await wait(2400);
-  flash(60);
-  await hideSc('s9', 300);
-}
+  // 0.0 – 2.0s: Logo moment
+  await logoReveal();
+  setProgress(8);
 
-async function s10() {
-  prog(10); chap('x. in motion');
-  await showSc('s10');
-  kb($('s10img'), 'zoom', 2700);
-  animTxt($('s10h'), 'fadeUp', 350, 800);
-  await wait(2300);
-  flash();
-  await hideSc('s10', 280);
-}
+  // Start preloading next batch while we animate
+  preloadBatch(['ani6','ani4','ani7']);
 
-async function s11() {
-  prog(11); chap('xi. collaboration');
-  letterbox(true);
-  await showSc('s11');
-  kb($('s11img'), 'up', 3000);
-  animTxt($('s11ey'), 'fadeIn', 300, 600);
-  animTxt($('s11h'), 'slideRight', 550, 750);
-  await wait(2600);
-  flash(80);
-  await hideSc('s11', 320);
-}
+  // 1.8 – 4.5s: ani1 slides in, diagonal mask, upper area
+  const f1 = makeFrag({key:'ani1', x:5, y:5, w:55, h:70, rot:5, mask:'mask-para', zIndex:110});
+  f1.div.style.transform = `rotate(5deg) translateX(-60px) translateY(30px)`;
+  await wait(100);
+  f1.div.style.transition = `opacity 800ms ease, transform 1400ms ${E1}`;
+  f1.div.style.opacity = '0.9';
+  f1.div.style.transform = 'rotate(5deg) translateX(0) translateY(0)';
+  setTransform(f1.inner, 'scale(1.06) translateY(-1%)', 6000, E2);
+  await wait(600);
+  setProgress(16);
 
-async function s12() {
-  prog(12); chap('xii. the collection');
-  letterbox(false);
-  await showSc('s12');
-  kb($('s12img'), 'left', 2700);
-  animTxt($('s12h'), 'slideLeft', 350, 700);
-  await wait(2300);
-  flash(55);
-  await hideSc('s12', 280);
-}
+  // 2.2s: ani2 from left, portrait, right side
+  const f2 = makeFrag({key:'ani2', x:60, y:8, w:34, h:78, rot:-4, mask:'mask-tall', zIndex:120});
+  f2.div.style.transform = 'rotate(-4deg) translateX(-80px)';
+  await wait(100);
+  f2.div.style.transition = `opacity 700ms ease, transform 1200ms ${E1}`;
+  f2.div.style.opacity = '0.85';
+  f2.div.style.transform = 'rotate(-4deg) translateX(0)';
+  setTransform(f2.inner, 'scale(1.04)', 5000, E2);
+  await wait(400);
 
-async function s13() {
-  prog(13); chap('xiii. origins');
-  await showSc('s13');
-  kb($('s13img'), 'drift', 2800);
-  animTxt($('s13lb'), 'fadeIn', 200, 500);
-  animTxt($('s13h'), 'fadeUp', 500, 750);
-  await wait(2400);
-  flash();
-  await hideSc('s13', 300);
-}
+  // 3.0s: p1 village — small, bottom-left, memory fragment
+  await wait(200);
+  const f3 = makeFrag({key:'p1', x:3, y:62, w:28, h:32, rot:-6, mask:'mask-oval', zIndex:130});
+  f3.div.style.opacity = '0';
+  await wait(50);
+  f3.div.style.transition = 'opacity 1000ms ease';
+  f3.div.style.opacity = '0.75';
+  setTransform(f3.div, 'rotate(-6deg) translateY(-18px)', 4000, 'ease');
+  await wait(800);
+  setProgress(25);
 
-async function s14() {
-  prog(14); chap('xiv. all in');
-  letterbox(true);
-  await showSc('s14');
-  kb($('s14img'), 'zoom', 2800);
-  animTxt($('s14ey'), 'fadeIn', 200, 500);
-  animTxt($('s14h'), 'scaleIn', 450, 800);
-  await wait(2400);
-  flash(90);
-  await hideSc('s14', 350);
-}
-
-async function s15() {
-  prog(15); chap('xv. craft');
-  letterbox(false);
-  await showSc('s15');
-  kb($('s15img'), 'in', 2700);
-  animTxt($('s15ey'), 'fadeIn', 200, 500);
-  animTxt($('s15h'), 'slideLeft', 450, 700);
-  await wait(2300);
-  flash(60);
-  await hideSc('s15', 300);
-}
-
-async function s16() {
-  prog(16); chap('');
-  letterbox(true);
-  await showSc('s16');
-  const tc = $('title-card');
-  tc.style.transition = 'opacity 1s ease';
-  tc.style.opacity = '1';
-
-  await wait(300);
-  $('tc-ln1').style.width = '140px';
-  $('tc-ln2').style.width = '140px';
+  // 3.8s: Light streak
+  streak();
+  setBg('#f5ead8', 2500);
   await wait(600);
 
-  const nm = $('tc-name');
-  nm.style.transition = 'all 1s ease';
-  nm.style.opacity = '1';
-  nm.style.transform = 'translateY(0)';
+  // ── ACT 2: WARM CREAM (5–12s) ───────────────────────────────
+  preloadBatch(['ani9','ani10','ani11']);
+
+  // 4.5s: ani6 rises from bottom, large, dominant
+  const f6 = makeFrag({key:'ani6', x:10, y:15, w:70, h:80, rot:0, mask:'mask-rect', zIndex:115});
+  f6.div.style.transform = 'translateY(80px)';
+  f6.div.style.opacity = '0';
+  await wait(100);
+  f6.div.style.transition = `opacity 1000ms ease, transform 1600ms ${E1}`;
+  f6.div.style.opacity = '0.88';
+  f6.div.style.transform = 'translateY(0)';
+  // slow upward pan within
+  setTransform(f6.inner, 'scale(1.08) translateY(-3%)', 7000, 'linear');
   await wait(500);
 
-  $('tc-sub').style.opacity = '1';
-  await wait(2200);
-  await hideSc('s16', 600);
-}
+  // fade out f1, f3 while f6 takes over
+  fadeOut(f1.div, 1200, 300);
+  fadeOut(f3.div, 800, 100);
+  await wait(600);
+  setProgress(35);
 
-/* ─── RESET ─── */
-function reset() {
-  for (let i=1; i<=TOTAL; i++) {
-    const el = $('s'+i);
-    if (!el) continue;
+  // 5.5s: ani7 city — top-right, blurry entry
+  const f7 = makeFrag({key:'ani7', x:62, y:3, w:36, h:42, rot:5, mask:'mask-diag', zIndex:125});
+  f7.inner.style.filter = 'blur(10px)';
+  await wait(100);
+  f7.div.style.transition = 'opacity 600ms ease';
+  f7.div.style.opacity = '0.7';
+  setTimeout(() => { f7.inner.style.transition='filter 800ms ease'; f7.inner.style.filter='blur(0px)'; }, 200);
+  await wait(1000);
+
+  // 6.5s: ani4 balloon expands, dreamy
+  const f4 = makeFrag({key:'ani4', x:15, y:10, w:70, h:75, rot:0, mask:'mask-rect', zIndex:108});
+  f4.div.style.opacity = '0';
+  f4.inner.style.transform = 'scale(1.25)';
+  await wait(100);
+  f4.div.style.transition = 'opacity 1500ms ease';
+  f4.div.style.opacity = '0.82';
+  f4.inner.style.transition = `transform 8000ms ${E2}`;
+  f4.inner.style.transform = 'scale(1.0) translateY(-2%)';
+  await wait(500);
+  setProgress(45);
+
+  // "Let go." caption
+  const cap1 = makeCaption({text:'Let go.', x:6, y:8, size:'clamp(1.4rem,3.5vw,2.2rem)', delay:400, dur:900});
+  await wait(2000);
+  fadeOut(cap1.el, 800);
+  await wait(300);
+  setTimeout(()=>cap1.remove(), 1200);
+
+  // fade f6, f7 while f4 holds
+  fadeOut(f6.div, 1500, 0);
+  fadeOut(f7.div, 800, 0);
+  await wait(600);
+  setProgress(54);
+
+  // ── ACT 3: GOLDEN / DRAMATIC (12–20s) ───────────────────────
+  setBg('#e8d5b8', 3000);
+  preloadBatch(['p6','p3','px1','px2']);
+
+  // 9.0s: ani3 mosaic — broken mirror entry
+  const f3m = makeFrag({key:'ani3', x:0, y:0, w:100, h:50, rot:0, mask:'mask-rect', zIndex:105, edge:false});
+  const f3m2 = makeFrag({key:'ani3', x:0, y:50, w:100, h:50, rot:0, mask:'mask-rect', zIndex:105, edge:false});
+  f3m.inner.style.backgroundPosition = 'center top';
+  f3m2.inner.style.backgroundPosition = 'center bottom';
+  f3m.div.style.transform = 'translateX(-30px)';
+  f3m2.div.style.transform = 'translateX(30px)';
+  await wait(100);
+  f3m.div.style.transition = `opacity 600ms ease, transform 600ms ${E1}`;
+  f3m2.div.style.transition = `opacity 600ms ease, transform 600ms ${E1}`;
+  f3m.div.style.opacity = '0.6'; f3m.div.style.transform = 'translateX(0)';
+  f3m2.div.style.opacity = '0.6'; f3m2.div.style.transform = 'translateX(0)';
+  await wait(700);
+  // reassemble: fade both, show as bg texture
+  fadeOut(f3m.div, 1000);
+  fadeOut(f3m2.div, 1000);
+  await wait(400);
+  setTimeout(()=>{f3m.remove();f3m2.remove();}, 1200);
+  setProgress(62);
+
+  // 10.5s: pixi1 blazer — rises large, confident
+  lightLeak(true);
+  const fpx1 = makeFrag({key:'px1', x:8, y:5, w:60, h:88, rot:2, mask:'mask-tall', zIndex:120});
+  fpx1.div.style.transform = 'rotate(2deg) translateY(60px)';
+  await wait(100);
+  fpx1.div.style.transition = `opacity 1000ms ease, transform 1800ms ${E1}`;
+  fpx1.div.style.opacity = '0.92';
+  fpx1.div.style.transform = 'rotate(0deg) translateY(0)';
+  setTransform(fpx1.inner, 'scale(1.05)', 5000, E2);
+  await wait(600);
+
+  // brand whisper reappears
+  $('logo').style.color = 'rgba(240,236,227,0.25)';
+  document.querySelectorAll('.nl').forEach(a => { a.style.color='rgba(240,236,227,0.15)'; });
+
+  // p4 orientation — small, drifts down
+  const fp4 = makeFrag({key:'p4', x:68, y:5, w:28, h:40, rot:-8, mask:'mask-oval', zIndex:125});
+  await wait(100);
+  fp4.div.style.transition = 'opacity 800ms ease';
+  fp4.div.style.opacity = '0.7';
+  setTransform(fp4.div, 'rotate(-8deg) translateY(25px)', 3500, 'ease');
+  await wait(500);
+  setProgress(70);
+
+  // 11.5s: ani7+ani9 city pulse, side by side drifting
+  const f7b = makeFrag({key:'ani7', x:0, y:15, w:40, h:65, rot:0, mask:'mask-rect', zIndex:130});
+  const f9 = makeFrag({key:'ani9', x:58, y:20, w:38, h:60, rot:3, mask:'mask-rect', zIndex:130});
+  await wait(50);
+  f7b.div.style.transition = `opacity 700ms ease, transform 1200ms ${E1}`;
+  f7b.div.style.opacity = '0.8'; 
+  f9.div.style.transition = `opacity 700ms ease, transform 1200ms ${E1}`;
+  f9.div.style.opacity = '0.8';
+  setTransform(f9.inner, 'scale(1.06)', 4000, E2);
+  await wait(1000);
+
+  // fade p4, f7b
+  fadeOut(fp4.div, 600);
+  await wait(400);
+  fadeOut(f7b.div, 1000);
+  fadeOut(fpx1.div, 1500, 200);
+  await wait(500);
+  setTimeout(()=>{fp4.remove();f7b.remove();}, 1000);
+  setProgress(76);
+
+  // ── ACT 4: DARK (18–24s) ────────────────────────────────────
+  setBg('#1a1510', 3500);
+  setVig(0.6, 2500);
+  setLogoColor(true);
+  lightLeak(false);
+  preloadBatch(['ani11','ani12','p2']);
+
+  // 13s: ani10 bus interior — slides from right
+  const f10 = makeFrag({key:'ani10', x:30, y:8, w:65, h:82, rot:0, mask:'mask-rect', zIndex:115});
+  f10.div.style.transform = 'translateX(80px)';
+  await wait(100);
+  f10.div.style.transition = `opacity 900ms ease, transform 1500ms ${E1}`;
+  f10.div.style.opacity = '0.85';
+  f10.div.style.transform = 'translateX(0)';
+  // slow pan left within
+  setTransform(f10.inner, 'scale(1.07) translateX(-3%)', 6000, 'linear');
+
+  // amber light leak
+  lightLeak(true);
+  streak();
+  await wait(1000);
+  fadeOut(f9.div, 1000);
+  setTimeout(()=>f9.remove(), 1200);
+  setProgress(82);
+
+  // 14.5s: ani11 beach hoodie — diagonal wipe from upper-right
+  await wait(600);
+  const f11 = makeFrag({key:'ani11', x:12, y:5, w:72, h:85, rot:0, mask:'mask-diag2', zIndex:120});
+  f11.div.style.clipPath = 'polygon(100% 0%,100% 0%,100% 100%,100% 100%)';
+  await wait(100);
+  f11.div.style.transition = 'opacity 800ms ease, clip-path 1000ms ease';
+  f11.div.style.opacity = '0.9';
+  f11.div.style.clipPath = 'polygon(0% 15%,85% 0%,100% 100%,0% 100%)';
+  setTransform(f11.inner, 'scale(1.04)', 5000, E2);
+
+  // caption
+  await wait(600);
+  const cap2 = makeCaption({text:'ajchapa × pixiste', x:5, y:6, size:'0.4rem', cls:'cap cap-sm', delay:200, dur:700});
+  await wait(1800);
+  fadeOut(cap2.el, 600);
+  setTimeout(()=>cap2.remove(),800);
+  fadeOut(f10.div, 1200);
+  setTimeout(()=>f10.remove(),1400);
+  setProgress(87);
+
+  // 16s: p6 vegas + p2 clothing — dual layered
+  await wait(300);
+  const fp6 = makeFrag({key:'p6', x:5, y:8, w:58, h:78, rot:0, mask:'mask-rect', zIndex:125});
+  const fp2 = makeFrag({key:'p2', x:66, y:5, w:28, h:38, rot:4, mask:'mask-oval', zIndex:130});
+  await wait(100);
+  fp6.div.style.transition = `opacity 900ms ease, transform 1400ms ${E1}`;
+  fp6.div.style.opacity = '0.88'; 
+  fp6.div.style.transform = 'translateY(0)';
+  fp2.div.style.transition = 'opacity 700ms ease';
+  fp2.div.style.opacity = '0.65';
+  setTransform(fp6.inner, 'scale(1.06)', 5000, E2);
+  setTransform(fp2.div, 'rotate(4deg) translateY(20px)', 3000, 'ease');
+  await wait(1200);
+  setProgress(91);
+
+  // Fragment storm — rapid flashes
+  // p3, px2, ani8
+  const frags_storm = [
+    {key:'p3', x:20, y:30, w:30, h:35, rot:-10, mask:'mask-oval'},
+    {key:'px2', x:60, y:10, w:32, h:70, rot:6, mask:'mask-tall'},
+    {key:'ani8', x:25, y:15, w:40, h:55, rot:-3, mask:'mask-rect'},
+  ];
+  for (let i=0; i<frags_storm.length; i++) {
+    const cfg = frags_storm[i];
+    const f = makeFrag({...cfg, zIndex:140});
+    await wait(50);
+    f.div.style.transition = 'opacity 300ms ease';
+    f.div.style.opacity = '0.7';
+    await wait(550);
+    fadeOut(f.div, 350);
+    setTimeout(()=>f.remove(),500);
+    if (i===0) { streak(); }
+  }
+  setProgress(94);
+
+  // Fade storm scene
+  fadeOut(fp6.div, 1000); fadeOut(fp2.div, 800); fadeOut(f11.div, 1200); fadeOut(f4.div, 800);
+  setTimeout(()=>{fp6.remove();fp2.remove();f11.remove();f4.remove();},1400);
+  await wait(400);
+
+  // ── ACT 5: EXHALE / RETURN (24–30s) ─────────────────────────
+  setBg('#f5f2ec', 3500);
+  setVig(0, 3000);
+  lightLeak(false);
+  setLogoColor(false);
+  await wait(600);
+  setProgress(96);
+
+  // ani4 returns — slow, full, reverse zoom
+  const f4b = makeFrag({key:'ani4', x:5, y:5, w:90, h:88, rot:0, mask:'mask-rect', zIndex:110});
+  f4b.inner.style.transform = 'scale(1.08)';
+  await wait(100);
+  f4b.div.style.transition = 'opacity 1800ms ease';
+  f4b.div.style.opacity = '0.75';
+  f4b.inner.style.transition = `transform 7000ms ${E2}`;
+  f4b.inner.style.transform = 'scale(1.0) translateY(1%)';
+  await wait(800);
+
+  // ani11 ghost — translucent overlay
+  const f11b = makeFrag({key:'ani11', x:0, y:0, w:100, h:100, rot:0, mask:'mask-rect', zIndex:108, edge:false});
+  await wait(100);
+  f11b.div.style.transition = 'opacity 2000ms ease';
+  f11b.div.style.opacity = '0.22';
+
+  // "a world in motion." caption
+  const cap3 = makeCaption({text:'a world in motion.', x:6, y:8, size:'clamp(1rem,2.5vw,1.6rem)', delay:800, dur:1200});
+  await wait(1500);
+  setProgress(99);
+
+  // Final logo return
+  const letters2 = ['la','lj','lc','lh','lap','lp','la2'];
+  const offsets2 = [[-18,-12],[12,-8],[-8,15],[20,-5],[-15,10],[8,-18],[-10,8]];
+  letters2.forEach((id,i) => {
+    const el = $(id);
+    const [dx,dy] = offsets2[i];
     el.style.transition = 'none';
+    el.style.transform = `translate(${dx}px,${dy}px)`;
     el.style.opacity = '0';
-    el.style.display = 'none';
-  }
-  ['s1img','s2img','s3img','s4img','s5img','s6imgL','s7img','s8img','s9img','s10img','s11img','s12img','s13img','s14img','s15img'].forEach(id => {
-    const el = $(id); if (el) el.style.animation = 'none';
+    el.style.fontSize = 'clamp(2rem,5.5vw,4.5rem)';
+    el.style.color = 'rgba(8,8,8,0.55)';
   });
-  const allTxt = ['s1ey','s1h','s2h','s2lb','s3h','s4h','s4ey','s5lb','s5h','s6lb','s6h','s7ey','s7h','s8lb','s8h','s9h','s9ey','s10h','s11ey','s11h','s12h','s13lb','s13h','s14ey','s14h','s15ey','s15h'];
-  allTxt.forEach(id => { const el=$(id); if(el){el.style.animation='none';el.style.opacity='0';} });
-  $('s1ln').style.transition='none'; $('s1ln').style.height='0';
-  $('s8mq').style.opacity='0';
-  const tc=$('title-card'); if(tc){tc.style.opacity='0';}
-  const nm=$('tc-name'); if(nm){nm.style.opacity='0';nm.style.transform='translateY(10px)';}
-  const sub=$('tc-sub'); if(sub){sub.style.opacity='0';}
-  const ln1=$('tc-ln1'); if(ln1){ln1.style.width='0';}
-  const ln2=$('tc-ln2'); if(ln2){ln2.style.width='0';}
-  $('pbar').style.width='0';
-  $('chap').textContent='';
-}
+  await wait(200);
+  letters2.forEach((id,i) => {
+    const el = $(id);
+    setTimeout(() => {
+      el.style.transition = `all 1100ms ${E1}`;
+      el.style.transform = 'translate(0,0)';
+      el.style.opacity = '1';
+    }, i*90+300);
+  });
+  await wait(2500);
 
-/* ─── RUN ─── */
-async function run() {
-  const scenes = [s1,s2,s3,s4,s5,s6,s7,s8,s9,s10,s11,s12,s13,s14,s15,s16];
-  for (const fn of scenes) {
-    await fn();
-    await wait(40);
-  }
-  reset();
-  await wait(500);
+  // dissolve everything for loop
+  fadeOut(cap3.el, 1000);
+  fadeOut(f4b.div, 1500);
+  fadeOut(f11b.div, 1000);
+  letters2.forEach((id,i) => {
+    const el = $(id);
+    const [dx,dy] = offsets2[i];
+    setTimeout(() => {
+      el.style.transition = 'all 1000ms ease';
+      el.style.transform = `translate(${dx*0.3}px,${dy*0.3}px)`;
+      el.style.opacity = '0';
+      el.style.fontSize = '';
+      el.style.color = '#080808';
+    }, i*55);
+  });
+  await wait(1200);
+  setTimeout(()=>{f4b.remove();f11b.remove();cap3.remove();},1500);
+  setProgress(0);
+
+  // clean up any remaining frags
+  document.querySelectorAll('.frag').forEach(el => { try{document.body.removeChild(el);}catch(e){} });
+  await wait(400);
   run();
 }
 
-/* ─── AUTO START ─── */
-window.addEventListener('load', () => {
-  // Preload key images
-  const imgs = ['ani1.png','ani2.png','ani3.png','ani4.png','ani5.png','ani6.png','ani7.png','ani8.PNG','ani9.png','ani10.png','ani11.png','ani12.png','photo1.jpg','photo6.jpg','pixi1.png'];
-  imgs.forEach(src => { const img = new Image(); img.src = BASE + src; });
-
-  // Start immediately
-  setTimeout(() => {
-    $('lb-top').style.transition = 'height 0.8s cubic-bezier(0.16,1,0.3,1)';
-    $('lb-bot').style.transition = 'height 0.8s cubic-bezier(0.16,1,0.3,1)';
+// Start on load — no waiting
+window.addEventListener('DOMContentLoaded', () => {
+  // Preload only the very first 2 images, then start
+  Promise.all([preloadImg('ani1'), preloadImg('ani2')]).then(() => {
     run();
-  }, 300);
+  });
+  // Preload rest lazily after a short delay
+  setTimeout(() => preloadBatch(['p1','ani6','ani4','ani7']), 1500);
+  setTimeout(() => preloadBatch(['ani9','ani10','ani11','ani3']), 4000);
+  setTimeout(() => preloadBatch(['px1','px2','p6','p2','p3','ani8','ani12','p4']), 8000);
 });
 </script>
 </body>
