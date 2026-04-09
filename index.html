@@ -1,833 +1,849 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>AJChapa</title>
-  <link rel="icon" type="image/png" href="favicon.png">
-  <link rel="preconnect" href="https://fonts.googleapis.com" />
-  <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=DM+Mono:wght@300;400&display=swap" rel="stylesheet" />
-  <style>
-    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
-    html, body { height: 100%; overflow: hidden; }
-    body {
-      background: #020308;
-      font-family: 'DM Mono', monospace;
-      color: #e8eaf0;
-      cursor: none;
-      user-select: none;
-      -webkit-tap-highlight-color: transparent;
-    }
-    @media(hover:none){ body { cursor: auto; } }
-    #custom-cursor {
-      position: fixed; width: 5px; height: 5px; border-radius: 50%;
-      pointer-events: none; z-index: 999999; transform: translate(-50%,-50%);
-      background: rgba(255,100,60,0.85); box-shadow: 0 0 8px rgba(255,60,20,0.7);
-    }
-    .fx-scan {
-      position: fixed; inset: 0; pointer-events: none; z-index: 99998;
-      background: repeating-linear-gradient(0deg,transparent,transparent 2px,rgba(0,0,0,0.07) 2px,rgba(0,0,0,0.07) 4px);
-    }
-    .fx-vig {
-      position: fixed; inset: 0; pointer-events: none; z-index: 99997;
-      background: radial-gradient(ellipse at center, transparent 25%, rgba(0,0,0,0.88) 100%);
-    }
-    .fx-noise {
-      position: fixed; inset: 0; opacity: 0.028; pointer-events: none; z-index: 99996;
-      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
-      background-repeat: repeat; background-size: 128px;
-    }
-    #collapse-overlay {
-      position: fixed; inset: 0; z-index: 99994;
-      pointer-events: none; opacity: 0;
-      background: radial-gradient(ellipse at center, rgba(60,0,0,0.0) 0%, rgba(0,0,0,0) 25%, rgba(0,0,0,1) 100%);
-    }
-    #hero-canvas {
-      position: fixed; inset: 0; width: 100%; height: 100%;
-      z-index: 30; pointer-events: none;
-    }
-    #star-nav {
-      position: fixed; top: 0; left: 0; z-index: 25;
-      opacity: 0; pointer-events: none;
-      transition: opacity 0.5s cubic-bezier(0.16,1,0.3,1);
-    }
-    #star-nav.docked { opacity: 1; pointer-events: all; }
-    #star-btn {
-      display: block; position: relative;
-      width: 180px; height: 180px;
-      background: none; border: none; padding: 0; cursor: none;
-    }
-    @media(hover:none){ #star-btn { cursor: pointer; } }
-    #star-canvas { display: block; }
-    #star-hitarea {
-      position: absolute; top: 58px; left: 58px;
-      width: 64px; height: 64px; border-radius: 50%; z-index: 10;
-    }
-    #stage-landing { position: fixed; inset: 0; z-index: 10; }
-    #starfield { position: absolute; inset: 0; width: 100%; height: 100%; z-index: 0; }
-    .nebula {
-      position: absolute; inset: 0; z-index: 1; pointer-events: none;
-      background:
-        radial-gradient(ellipse 60% 40% at 25% 70%, rgba(40,5,5,0.16) 0%, transparent 65%),
-        radial-gradient(ellipse 50% 50% at 80% 30%, rgba(30,5,5,0.12) 0%, transparent 65%),
-        radial-gradient(ellipse 40% 40% at 50% 50%, rgba(20,5,5,0.1) 0%, transparent 70%);
-      animation: pulseNeb 20s infinite alternate ease-in-out;
-    }
-    @keyframes pulseNeb { 0%{opacity:.8;transform:scale(1)} 100%{opacity:1;transform:scale(1.05)} }
-    @keyframes fadeDown { from{opacity:0;transform:translateY(-15px)} to{opacity:1;transform:translateY(0)} }
-    @keyframes fadeUp   { from{opacity:0;transform:translateY(15px)}  to{opacity:1;transform:translateY(0)} }
-    .top-header {
-      position: absolute; top: 3rem; left: 50%; transform: translateX(-50%);
-      z-index: 10; display: flex; flex-direction: column; align-items: center; pointer-events: none;
-      transition: opacity 0.8s ease, transform 0.8s ease;
-    }
-    .site-name {
-      font-family: 'Cormorant Garamond', serif; font-weight: 300;
-      font-size: clamp(1.5rem, 4vw, 2.5rem); letter-spacing: 0.28em;
-      text-transform: uppercase; color: #eef0f8; text-align: center; white-space: nowrap;
-      opacity: 0; animation: fadeDown 1.4s cubic-bezier(0.16,1,0.3,1) 0.3s forwards;
-      text-shadow: 0 0 40px rgba(255,60,20,0.08);
-    }
-    .site-name::after {
-      content:''; display:block; width:60%; height:1px;
-      background: linear-gradient(90deg, transparent, rgba(160,30,10,0.35), transparent);
-      margin: 0.5rem auto 0;
-    }
-    .bottom-nav {
-      position: absolute; bottom: 3.5rem; left: 0; width: 100%;
-      z-index: 10; display: flex; align-items: center; justify-content: center; gap: 0 2rem;
-      opacity: 0; animation: fadeUp 1.4s cubic-bezier(0.16,1,0.3,1) 0.6s forwards;
-      transition: opacity 0.8s ease, transform 0.8s ease;
-    }
-    .link-item {
-      display: flex; align-items: center; gap: 0.36rem; text-decoration: none; color: #8892b0;
-      font-size: 0.65rem; letter-spacing: 0.2em; text-transform: uppercase;
-      transition: color 0.3s; position: relative; white-space: nowrap; cursor: none;
-    }
-    .link-item:hover { color: #e0e6ff; }
-    .link-item svg { width: 12px; height: 12px; opacity: 0.7; transition: opacity 0.3s; }
-    .link-item:hover svg { opacity: 0.9; }
-    .link-item::after {
-      content:''; position:absolute; bottom:-4px; left:0; width:0; height:1px;
-      background: rgba(180,40,20,0.5); transition: width 0.3s;
-    }
-    .link-item:hover::after { width:100%; }
-    .link-divider { width:1px; height:10px; background:#2a2f4a; }
-    body.collapsing .top-header { opacity: 0; transform: translateX(-50%) scale(0.9); }
-    body.collapsing .bottom-nav { opacity: 0; transform: translateY(16px); }
-    body.collapsing #star-nav   { opacity: 0 !important; transition: opacity 0.4s ease; }
-    @media(max-width:768px){
-      #custom-cursor { display: none; }
-      .site-name { font-size: 1.5rem; letter-spacing: 0.18em; }
-      .top-header { top: 2.2rem; }
-      .bottom-nav { bottom: 2rem; gap: 0 1.2rem; flex-wrap: wrap; justify-content: center; padding: 0 1rem; }
-      .link-item { font-size: 0.58rem; letter-spacing: 0.12em; gap: 0.28rem; cursor: pointer; }
-      .link-item svg { width: 10px; height: 10px; }
-      .link-divider { display: none; }
-    }
-    @media(max-width:390px){
-      .site-name { font-size: 1.1rem; letter-spacing: 0.1em; }
-      .link-item { font-size: 0.48rem; }
-    }
-  </style>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>ajchapa</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=Karla:wght@300;400&display=swap');
+
+*, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
+
+:root {
+  --cream: #f0ece3;
+  --ink: #080808;
+  --muted: #2a2322;
+  --ghost: rgba(240,236,227,0.06);
+  --serif: 'Playfair Display', Georgia, serif;
+  --sans: 'Karla', Helvetica, sans-serif;
+}
+
+html, body {
+  width:100%; height:100%;
+  background: var(--ink);
+  overflow: hidden;
+  cursor: none;
+}
+
+/* CUSTOM CURSOR */
+#cur {
+  position: fixed; z-index: 9999;
+  width: 6px; height: 6px;
+  background: var(--cream);
+  border-radius: 50%;
+  pointer-events: none;
+  transform: translate(-50%,-50%);
+  transition: opacity 0.3s;
+  mix-blend-mode: difference;
+}
+
+/* NAV */
+nav {
+  position: fixed; top:0; left:0; right:0; z-index:500;
+  display: flex; justify-content: space-between; align-items: center;
+  padding: 1.4rem 2rem;
+  pointer-events: none;
+}
+nav > * { pointer-events: auto; }
+
+.logo {
+  font-family: var(--serif);
+  font-size: 0.72rem;
+  color: var(--cream);
+  letter-spacing: 0.22em;
+  font-weight: 400;
+  opacity: 0.6;
+  text-transform: uppercase;
+  transition: opacity 0.3s;
+}
+.logo:hover { opacity: 1; }
+
+.nav-links {
+  display: flex; gap: 1.8rem;
+}
+.nav-links a {
+  font-family: var(--sans);
+  font-size: 0.48rem;
+  color: rgba(240,236,227,0.3);
+  text-decoration: none;
+  letter-spacing: 0.3em;
+  text-transform: uppercase;
+  transition: color 0.3s;
+}
+.nav-links a:hover { color: var(--cream); }
+
+/* STAGE */
+#stage {
+  position: fixed; inset: 0;
+  background: var(--ink);
+}
+
+/* SCENE LAYER */
+.sc {
+  position: absolute; inset: 0;
+  opacity: 0;
+  will-change: opacity, transform;
+}
+
+/* IMAGE LAYER */
+.img-layer {
+  position: absolute; inset: -8%;
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  will-change: transform;
+}
+
+/* OVERLAYS */
+.vig-b { position:absolute;inset:0;background:linear-gradient(to top, rgba(8,8,8,0.88) 0%, rgba(8,8,8,0.2) 45%, transparent 70%); }
+.vig-t { position:absolute;inset:0;background:linear-gradient(to bottom, rgba(8,8,8,0.6) 0%, transparent 40%); }
+.vig-l { position:absolute;inset:0;background:linear-gradient(to right, rgba(8,8,8,0.85) 0%, transparent 55%); }
+.vig-r { position:absolute;inset:0;background:linear-gradient(to left, rgba(8,8,8,0.85) 0%, transparent 55%); }
+.vig-c { position:absolute;inset:0;background:radial-gradient(ellipse at center, transparent 30%, rgba(8,8,8,0.75) 100%); }
+.vig-full { position:absolute;inset:0;background:rgba(8,8,8,0.45); }
+
+/* TEXT ELEMENTS */
+.txt { position: absolute; }
+
+.headline {
+  font-family: var(--serif);
+  color: var(--cream);
+  font-weight: 400;
+  line-height: 0.9;
+  letter-spacing: -0.03em;
+}
+
+.label {
+  font-family: var(--sans);
+  font-size: 0.44rem;
+  letter-spacing: 0.32em;
+  text-transform: uppercase;
+  color: rgba(240,236,227,0.4);
+}
+
+.eyebrow {
+  font-family: var(--sans);
+  font-size: 0.4rem;
+  letter-spacing: 0.38em;
+  text-transform: uppercase;
+  color: rgba(240,236,227,0.25);
+}
+
+/* DECORATIVE LINE */
+.dline {
+  position: absolute;
+  background: rgba(240,236,227,0.15);
+}
+
+/* GRAIN OVERLAY */
+#grain {
+  position: fixed; inset:0; z-index:400;
+  pointer-events: none;
+  opacity: 0.035;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E");
+  background-size: 180px;
+  mix-blend-mode: overlay;
+}
+
+/* PROGRESS BAR */
+#pbar {
+  position: fixed; bottom:0; left:0;
+  height: 1px;
+  background: linear-gradient(to right, transparent, rgba(240,236,227,0.5), transparent);
+  width: 0;
+  z-index: 500;
+  transition: width 0.1s linear;
+}
+
+/* CHAPTER INDICATOR */
+#chap {
+  position: fixed; bottom: 1.8rem; right: 2rem;
+  z-index: 500;
+  font-family: var(--sans);
+  font-size: 0.4rem;
+  letter-spacing: 0.3em;
+  text-transform: uppercase;
+  color: rgba(240,236,227,0.15);
+  transition: opacity 0.5s;
+}
+
+/* LETTERBOX BARS */
+#lb-top, #lb-bot {
+  position: fixed; left:0; right:0;
+  background: var(--ink);
+  z-index: 450;
+  transition: height 0.8s cubic-bezier(0.16,1,0.3,1);
+}
+#lb-top { top:0; height:0; }
+#lb-bot { bottom:0; height:0; }
+
+/* FLASH */
+#flash {
+  position: fixed; inset:0; z-index: 460;
+  background: var(--cream);
+  opacity: 0;
+  pointer-events: none;
+}
+
+/* SPLIT SCREEN */
+.split {
+  position: absolute; inset:0;
+  display: grid;
+  grid-template-columns: 55fr 45fr;
+}
+.split-half { position: relative; overflow: hidden; }
+
+/* TITLE CARD (end) */
+#title-card {
+  position: absolute; inset:0;
+  display: flex; flex-direction: column;
+  align-items: center; justify-content: center;
+  opacity: 0;
+}
+.tc-line {
+  width: 0; height: 1px;
+  background: rgba(240,236,227,0.2);
+  transition: width 1s ease;
+  margin: 0.6rem 0;
+}
+.tc-name {
+  font-family: var(--serif);
+  font-size: clamp(2rem,5.5vw,4rem);
+  color: var(--cream);
+  letter-spacing: 0.22em;
+  font-weight: 400;
+  opacity: 0;
+  transform: translateY(10px);
+  transition: all 1s ease;
+}
+.tc-sub {
+  font-family: var(--sans);
+  font-size: 0.44rem;
+  letter-spacing: 0.42em;
+  text-transform: uppercase;
+  color: rgba(240,236,227,0.2);
+  opacity: 0;
+  transition: opacity 0.8s ease 0.6s;
+}
+
+/* MARQUEE for S8 */
+.marquee-wrap {
+  position: absolute; bottom: 0; left:0; right:0;
+  overflow: hidden;
+  padding: 0.8rem 0;
+  border-top: 1px solid rgba(240,236,227,0.06);
+}
+.marquee-track {
+  display: flex; gap: 4rem;
+  width: max-content;
+  animation: marquee 12s linear infinite;
+}
+.marquee-item {
+  font-family: var(--sans);
+  font-size: 0.44rem;
+  letter-spacing: 0.28em;
+  text-transform: uppercase;
+  color: rgba(240,236,227,0.18);
+  white-space: nowrap;
+}
+@keyframes marquee { from { transform: translateX(0); } to { transform: translateX(-50%); } }
+
+/* ANIMATIONS */
+@keyframes kenBurnsIn { from { transform: scale(1.12) translateX(1%); } to { transform: scale(1.0) translateX(0%); } }
+@keyframes kenBurnsUp { from { transform: scale(1.1) translateY(2%); } to { transform: scale(1.02) translateY(-1%); } }
+@keyframes kenBurnsRight { from { transform: scale(1.08) translateX(-2%); } to { transform: scale(1.01) translateX(1%); } }
+@keyframes kenBurnsLeft { from { transform: scale(1.1) translateX(3%); } to { transform: scale(1.02) translateX(-1%); } }
+@keyframes kenBurnsZoom { from { transform: scale(1.0); } to { transform: scale(1.07); } }
+@keyframes drift { from { transform: scale(1.05) translate(0,0); } to { transform: scale(1.08) translate(-1%,-0.5%); } }
+
+@keyframes fadeUp { from { opacity:0; transform: translateY(20px); } to { opacity:1; transform: translateY(0); } }
+@keyframes fadeIn { from { opacity:0; } to { opacity:1; } }
+@keyframes slideRight { from { transform: translateX(-30px); opacity:0; } to { transform: translateX(0); opacity:1; } }
+@keyframes slideLeft { from { transform: translateX(30px); opacity:0; } to { transform: translateX(0); opacity:1; } }
+@keyframes scaleIn { from { transform: scale(0.88); opacity:0; } to { transform: scale(1); opacity:1; } }
+@keyframes expandW { from { width:0; } to { width: 100%; } }
+@keyframes expandH { from { height:0; } to { height: 100%; } }
+
+/* GITHUB BASE URL for images */
+</style>
 </head>
 <body>
-<div id="custom-cursor"></div>
-<div class="fx-scan"></div>
-<div class="fx-vig"></div>
-<div class="fx-noise"></div>
-<div id="collapse-overlay"></div>
-<canvas id="hero-canvas"></canvas>
-<div id="star-nav">
-  <button id="star-btn" aria-label="Go to archive">
-    <canvas id="star-canvas" width="180" height="180"></canvas>
-    <div id="star-hitarea"></div>
-  </button>
+
+<div id="cur"></div>
+<div id="grain"></div>
+<div id="lb-top"></div>
+<div id="lb-bot"></div>
+<div id="flash"></div>
+
+<nav>
+  <div class="logo">ajchapa</div>
+  <div class="nav-links">
+    <a href="https://instagram.com/ajchapa" target="_blank">Instagram</a>
+    <a href="https://linkedin.com/in/ajchapa" target="_blank">LinkedIn</a>
+  </div>
+</nav>
+
+<div id="stage">
+
+  <!-- S1: OPEN — Magazine spread ani1 / slow reveal -->
+  <div class="sc" id="s1">
+    <div class="img-layer" id="s1img" style="background-image:url('https://raw.githubusercontent.com/AJChapagain/AJChapagain.github.io/main/ani1.png');"></div>
+    <div class="vig-full"></div>
+    <div class="vig-b"></div>
+    <div class="txt" style="bottom:3rem;left:2.2rem;">
+      <div class="eyebrow" id="s1ey" style="opacity:0;margin-bottom:0.6rem;">editorial — vol. i</div>
+      <div class="headline" id="s1h" style="font-size:clamp(3rem,8vw,5.5rem);opacity:0;">
+        A world<br>in motion.
+      </div>
+    </div>
+    <div class="dline" id="s1ln" style="right:2.2rem;top:50%;transform:translateY(-50%);width:1px;height:0;"></div>
+  </div>
+
+  <!-- S2: IDENTITY — T-shirt ani2, close crop, fabric texture alive -->
+  <div class="sc" id="s2">
+    <div class="img-layer" id="s2img" style="background-image:url('https://raw.githubusercontent.com/AJChapagain/AJChapagain.github.io/main/ani2.png');background-position:center 40%;"></div>
+    <div class="vig-c"></div>
+    <div class="vig-b"></div>
+    <div class="txt" style="bottom:2.8rem;left:2.2rem;">
+      <div class="label" id="s2lb" style="opacity:0;">the uniform</div>
+    </div>
+    <div class="txt" style="top:50%;left:50%;transform:translate(-50%,-50%);">
+      <div class="headline" id="s2h" style="font-size:clamp(1rem,2.5vw,1.8rem);text-align:center;letter-spacing:0.18em;opacity:0;">AJCHAPA</div>
+    </div>
+  </div>
+
+  <!-- S3: WORLD — Grid mosaic ani3 -->
+  <div class="sc" id="s3">
+    <div class="img-layer" id="s3img" style="background-image:url('https://raw.githubusercontent.com/AJChapagain/AJChapagain.github.io/main/ani3.png');"></div>
+    <div class="vig-t"></div>
+    <div class="vig-b"></div>
+    <div class="txt" style="bottom:2.8rem;right:2.2rem;text-align:right;">
+      <div class="headline" id="s3h" style="font-size:clamp(2rem,5.5vw,4rem);opacity:0;">Every<br>frame.</div>
+    </div>
+  </div>
+
+  <!-- S4: DREAMLIKE — Balloon ani4, sky, floating -->
+  <div class="sc" id="s4">
+    <div class="img-layer" id="s4img" style="background-image:url('https://raw.githubusercontent.com/AJChapagain/AJChapagain.github.io/main/ani4.png');background-position:center 30%;"></div>
+    <div class="vig-b"></div>
+    <div style="position:absolute;inset:0;background:linear-gradient(180deg,rgba(8,8,8,0.15) 0%,transparent 50%);"></div>
+    <div class="txt" style="top:50%;left:2.2rem;transform:translateY(-50%);">
+      <div class="headline" id="s4h" style="font-size:clamp(3.5rem,10vw,7rem);opacity:0;line-height:0.88;">Let<br>go.</div>
+    </div>
+    <div class="txt" style="bottom:2.5rem;left:2.2rem;">
+      <div class="eyebrow" id="s4ey" style="opacity:0;">somewhere over everything</div>
+    </div>
+  </div>
+
+  <!-- S5: LUXURY DETAIL — Receipt ani5, macro -->
+  <div class="sc" id="s5">
+    <div class="img-layer" id="s5img" style="background-image:url('https://raw.githubusercontent.com/AJChapagain/AJChapagain.github.io/main/ani5.png');background-position:center;"></div>
+    <div class="vig-c"></div>
+    <div class="vig-l"></div>
+    <div class="txt" style="left:2.2rem;top:50%;transform:translateY(-50%);">
+      <div class="label" id="s5lb" style="opacity:0;margin-bottom:0.5rem;">the details matter</div>
+      <div class="headline" id="s5h" style="font-size:clamp(2rem,5vw,3.5rem);opacity:0;">Luxury<br>is quiet.</div>
+    </div>
+  </div>
+
+  <!-- S6: SPLIT — ani6 (alley walk) left / personal photo right -->
+  <div class="sc" id="s6">
+    <div class="split">
+      <div class="split-half">
+        <div class="img-layer" id="s6imgL" style="background-image:url('https://raw.githubusercontent.com/AJChapagain/AJChapagain.github.io/main/ani6.png');background-position:center;inset:-5%;"></div>
+        <div class="vig-r"></div>
+      </div>
+      <div class="split-half" style="background:#0c0b09;display:flex;align-items:flex-end;padding:2.5rem 2rem;">
+        <div>
+          <div class="label" id="s6lb" style="opacity:0;margin-bottom:0.7rem;">ajchapa — 2024</div>
+          <div class="headline" id="s6h" style="font-size:clamp(2.2rem,6vw,4.5rem);opacity:0;">Walk<br>your<br>own<br>way.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- S7: URBAN NIGHT — City billboard ani7 -->
+  <div class="sc" id="s7">
+    <div class="img-layer" id="s7img" style="background-image:url('https://raw.githubusercontent.com/AJChapagain/AJChapagain.github.io/main/ani7.png');"></div>
+    <div class="vig-b"></div>
+    <div class="vig-t"></div>
+    <div class="txt" style="bottom:3rem;left:2.2rem;">
+      <div class="eyebrow" id="s7ey" style="opacity:0;margin-bottom:0.5rem;">the city knows</div>
+      <div class="headline" id="s7h" style="font-size:clamp(2rem,5.5vw,4rem);opacity:0;">Everywhere<br>at once.</div>
+    </div>
+  </div>
+
+  <!-- S8: PRESENCE — Instagram/social ani8, MARQUEE scroll -->
+  <div class="sc" id="s8">
+    <div class="img-layer" id="s8img" style="background-image:url('https://raw.githubusercontent.com/AJChapagain/AJChapagain.github.io/main/ani8.PNG');background-position:center top;"></div>
+    <div class="vig-full" style="background:rgba(8,8,8,0.55);"></div>
+    <div class="vig-l"></div>
+    <div class="txt" style="left:2.2rem;top:50%;transform:translateY(-50%);">
+      <div class="label" id="s8lb" style="opacity:0;margin-bottom:0.7rem;">the digital self</div>
+      <div class="headline" id="s8h" style="font-size:clamp(2.5rem,7vw,5rem);opacity:0;">Scroll<br>worthy.</div>
+    </div>
+    <div class="marquee-wrap" id="s8mq" style="opacity:0;">
+      <div class="marquee-track">
+        <span class="marquee-item">ajchapa</span>
+        <span class="marquee-item">·</span>
+        <span class="marquee-item">student</span>
+        <span class="marquee-item">·</span>
+        <span class="marquee-item">explorer</span>
+        <span class="marquee-item">·</span>
+        <span class="marquee-item">creator</span>
+        <span class="marquee-item">·</span>
+        <span class="marquee-item">ajchapa</span>
+        <span class="marquee-item">·</span>
+        <span class="marquee-item">student</span>
+        <span class="marquee-item">·</span>
+        <span class="marquee-item">explorer</span>
+        <span class="marquee-item">·</span>
+        <span class="marquee-item">creator</span>
+        <span class="marquee-item">·</span>
+        <span class="marquee-item">ajchapa</span>
+        <span class="marquee-item">·</span>
+        <span class="marquee-item">student</span>
+        <span class="marquee-item">·</span>
+        <span class="marquee-item">explorer</span>
+        <span class="marquee-item">·</span>
+        <span class="marquee-item">creator</span>
+        <span class="marquee-item">·</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- S9: BUS STOP — ani9, city presence -->
+  <div class="sc" id="s9">
+    <div class="img-layer" id="s9img" style="background-image:url('https://raw.githubusercontent.com/AJChapagain/AJChapagain.github.io/main/ani9.png');"></div>
+    <div class="vig-b"></div>
+    <div class="txt" style="bottom:3rem;right:2.2rem;text-align:right;">
+      <div class="headline" id="s9h" style="font-size:clamp(2rem,5vw,3.5rem);opacity:0;">Seen<br>everywhere.</div>
+    </div>
+    <div class="txt" style="bottom:3rem;left:2.2rem;">
+      <div class="eyebrow" id="s9ey" style="opacity:0;">out in the world</div>
+    </div>
+  </div>
+
+  <!-- S10: INTERIOR — Bus interior ani10, commuters -->
+  <div class="sc" id="s10">
+    <div class="img-layer" id="s10img" style="background-image:url('https://raw.githubusercontent.com/AJChapagain/AJChapagain.github.io/main/ani10.png');"></div>
+    <div class="vig-c"></div>
+    <div class="vig-b"></div>
+    <div class="txt" style="top:50%;left:2.2rem;transform:translateY(-50%);">
+      <div class="headline" id="s10h" style="font-size:clamp(2.5rem,7vw,5rem);opacity:0;">Moving<br>through<br>the world.</div>
+    </div>
+  </div>
+
+  <!-- S11: COLLAB — Hoodie on beach ani11, golden hour -->
+  <div class="sc" id="s11">
+    <div class="img-layer" id="s11img" style="background-image:url('https://raw.githubusercontent.com/AJChapagain/AJChapagain.github.io/main/ani11.png');background-position:center 35%;"></div>
+    <div class="vig-b"></div>
+    <div class="txt" style="bottom:3rem;left:2.2rem;">
+      <div class="eyebrow" id="s11ey" style="opacity:0;margin-bottom:0.5rem;">ajchapa × pixiste</div>
+      <div class="headline" id="s11h" style="font-size:clamp(2.5rem,7vw,5rem);opacity:0;">Built to<br>last.</div>
+    </div>
+  </div>
+
+  <!-- S12: MOSAIC — Campaign overview ani12 -->
+  <div class="sc" id="s12">
+    <div class="img-layer" id="s12img" style="background-image:url('https://raw.githubusercontent.com/AJChapagain/AJChapagain.github.io/main/ani12.png');"></div>
+    <div class="vig-t"></div>
+    <div class="vig-b"></div>
+    <div class="txt" style="top:50%;right:2.2rem;transform:translateY(-50%);text-align:right;">
+      <div class="headline" id="s12h" style="font-size:clamp(2.5rem,7vw,5.5rem);opacity:0;">The<br>collection.</div>
+    </div>
+  </div>
+
+  <!-- S13: PERSONAL — Village photo1 -->
+  <div class="sc" id="s13">
+    <div class="img-layer" id="s13img" style="background-image:url('https://raw.githubusercontent.com/AJChapagain/AJChapagain.github.io/main/photo1.jpg');background-position:center;"></div>
+    <div class="vig-b"></div>
+    <div class="vig-l"></div>
+    <div class="txt" style="bottom:3rem;left:2.2rem;">
+      <div class="label" id="s13lb" style="opacity:0;margin-bottom:0.5rem;">where it began</div>
+      <div class="headline" id="s13h" style="font-size:clamp(2rem,5.5vw,4rem);opacity:0;">Roots<br>run deep.</div>
+    </div>
+  </div>
+
+  <!-- S14: PERSONAL — Vegas photo6, energy -->
+  <div class="sc" id="s14">
+    <div class="img-layer" id="s14img" style="background-image:url('https://raw.githubusercontent.com/AJChapagain/AJChapagain.github.io/main/photo6.jpg');background-position:center;"></div>
+    <div class="vig-b"></div>
+    <div class="vig-c"></div>
+    <div class="txt" style="bottom:3rem;left:50%;transform:translateX(-50%);text-align:center;">
+      <div class="eyebrow" id="s14ey" style="opacity:0;margin-bottom:0.6rem;">las vegas — nv</div>
+      <div class="headline" id="s14h" style="font-size:clamp(2.5rem,7vw,5rem);opacity:0;text-align:center;">All in.</div>
+    </div>
+  </div>
+
+  <!-- S15: MOMENTUM — Pixiste blazer pixi1 + quick cut -->
+  <div class="sc" id="s15">
+    <div class="img-layer" id="s15img" style="background-image:url('https://raw.githubusercontent.com/AJChapagain/AJChapagain.github.io/main/pixi1.png');background-position:center;"></div>
+    <div class="vig-c"></div>
+    <div class="vig-b"></div>
+    <div class="txt" style="bottom:3rem;right:2.2rem;text-align:right;">
+      <div class="eyebrow" id="s15ey" style="opacity:0;margin-bottom:0.5rem;">pixiste — crafted</div>
+      <div class="headline" id="s15h" style="font-size:clamp(2rem,5.5vw,4rem);opacity:0;">Wear it<br>well.</div>
+    </div>
+  </div>
+
+  <!-- S16: FINALE — Title card -->
+  <div class="sc" id="s16" style="background:var(--ink);">
+    <div id="title-card">
+      <div class="tc-line" id="tc-ln1"></div>
+      <div class="tc-name" id="tc-name">ajchapa</div>
+      <div class="tc-sub" id="tc-sub">student · explorer · everything</div>
+      <div class="tc-line" id="tc-ln2"></div>
+    </div>
+  </div>
+
 </div>
-<div id="stage-landing">
-  <canvas id="starfield"></canvas>
-  <div class="nebula"></div>
-  <header class="top-header">
-    <h1 class="site-name">AJChapa</h1>
-  </header>
-  <nav class="bottom-nav">
-    <a class="link-item" href="https://www.linkedin.com/in/aj-chapagain" target="_blank" rel="noopener">
-      <svg viewBox="0 0 24 24" fill="currentColor"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 01-2.063-2.065 2.064 2.064 0 112.063 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/></svg>
-      LinkedIn
-    </a>
-    <div class="link-divider"></div>
-    <a class="link-item" href="https://www.instagram.com/aapplejuce/" target="_blank" rel="noopener">
-      <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zM12 0C8.741 0 8.333.014 7.053.072 2.695.272.273 2.69.073 7.052.014 8.333 0 8.741 0 12c0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98C8.333 23.986 8.741 24 12 24c3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98C15.668.014 15.259 0 12 0zm0 5.838a6.162 6.162 0 100 12.324 6.162 6.162 0 000-12.324zM12 16a4 4 0 110-8 4 4 0 010 8zm6.406-11.845a1.44 1.44 0 100 2.881 1.44 1.44 0 000-2.881z"/></svg>
-      Instagram
-    </a>
-    <div class="link-divider"></div>
-    <a class="link-item" href="https://steamcommunity.com/profiles/76561198343184351/" target="_blank" rel="noopener">
-      <svg viewBox="0 0 24 24" fill="currentColor"><path d="M11.979 0C5.678 0 .511 4.86.022 11.037l6.432 2.658c.545-.371 1.203-.59 1.912-.59.063 0 .125.004.188.006l2.861-4.142V8.91c0-2.495 2.028-4.524 4.524-4.524 2.494 0 4.524 2.031 4.524 4.527s-2.03 4.525-4.524 4.525h-.105l-4.076 2.911c0 .052.004.105.004.159 0 1.875-1.515 3.396-3.39 3.396-1.635 0-3.016-1.173-3.331-2.727L.436 15.27C1.862 20.307 6.486 24 11.979 24c6.627 0 11.999-5.373 11.999-12S18.605 0 11.979 0zM7.54 18.21l-1.473-.61c.262.543.714.999 1.314 1.25 1.297.539 2.793-.076 3.332-1.375.263-.63.264-1.319.005-1.949s-.75-1.121-1.377-1.383c-.624-.26-1.29-.249-1.878-.03l1.523.63c.956.4 1.409 1.5 1.009 2.455-.397.957-1.497 1.41-2.454 1.012H7.54zm11.415-9.303c0-1.662-1.353-3.015-3.015-3.015-1.665 0-3.015 1.353-3.015 3.015 0 1.665 1.35 3.015 3.015 3.015 1.663 0 3.015-1.35 3.015-3.015zm-5.273.012c0-1.252 1.013-2.266 2.265-2.266 1.249 0 2.266 1.014 2.266 2.266 0 1.251-1.017 2.265-2.266 2.265-1.253 0-2.265-1.014-2.265-2.265z"/></svg>
-      Steam
-    </a>
-  </nav>
-</div>
+
+<div id="pbar"></div>
+<div id="chap"></div>
 
 <script>
-// ── CURSOR ─────────────────────────────────────────────────────────────────────
-const cur = document.getElementById('custom-cursor');
-window.addEventListener('mousemove', e => {
-  cur.style.left = e.clientX + 'px';
-  cur.style.top  = e.clientY + 'px';
+/* ─── SETUP ─── */
+const BASE = 'https://raw.githubusercontent.com/AJChapagain/AJChapagain.github.io/main/';
+const $ = id => document.getElementById(id);
+const wait = ms => new Promise(r => setTimeout(r, ms));
+const E1 = 'cubic-bezier(0.16,1,0.3,1)';
+const E2 = 'cubic-bezier(0.4,0,0.2,1)';
+const TOTAL = 16;
+
+/* cursor */
+document.addEventListener('mousemove', e => {
+  const c = $('cur');
+  c.style.left = e.clientX + 'px';
+  c.style.top = e.clientY + 'px';
 });
 
-// ═══════════════════════════════════════════════════════════════════════════════
-// SHARED UTILITIES
-// ═══════════════════════════════════════════════════════════════════════════════
-function easeInOutCubic(x) {
-  return x < 0.5 ? 4*x*x*x : 1 - Math.pow(-2*x+2,3)/2;
+/* flash */
+function flash(dur=80) {
+  const f = $('flash');
+  f.style.transition = 'none';
+  f.style.opacity = '0.08';
+  setTimeout(() => { f.style.transition = `opacity ${dur*3}ms ease`; f.style.opacity = '0'; }, dur);
 }
 
-// Jagged lightning from (x1,y1) to (x2,y2)
-function drawLightning(ctx, x1, y1, x2, y2, segs, spread, color, lineW, alpha) {
-  const pts = [[x1,y1]];
-  for (let i = 1; i < segs; i++) {
-    const lt  = i/segs;
-    const bx  = x1+(x2-x1)*lt, by = y1+(y2-y1)*lt;
-    const nx  = -(y2-y1), ny = (x2-x1);
-    const len = Math.sqrt(nx*nx+ny*ny)||1;
-    const jitter = (Math.random()-0.5)*2*spread*(1-Math.abs(lt-0.5)*1.5);
-    pts.push([bx+(nx/len)*jitter, by+(ny/len)*jitter]);
-  }
-  pts.push([x2,y2]);
-  ctx.save();
-  ctx.globalAlpha = alpha;
-  ctx.strokeStyle = color;
-  ctx.lineWidth   = lineW;
-  ctx.lineCap     = 'round';
-  ctx.lineJoin    = 'round';
-  ctx.shadowBlur  = 14;
-  ctx.shadowColor = color;
-  ctx.beginPath();
-  ctx.moveTo(pts[0][0],pts[0][1]);
-  for (let i=1;i<pts.length;i++) ctx.lineTo(pts[i][0],pts[i][1]);
-  ctx.stroke();
-  ctx.restore();
+/* letterbox */
+function letterbox(on) {
+  const h = on ? '3.5vh' : '0';
+  $('lb-top').style.height = h;
+  $('lb-bot').style.height = h;
 }
 
-// ═══════════════════════════════════════════════════════════════════════════════
-// DOCKED STAR
-// All the good stuff: orbit particles, breathing, mouse pull,
-// pulsing "click me" invitation rings, black lightning after dock
-// ═══════════════════════════════════════════════════════════════════════════════
-const cv  = document.getElementById('star-canvas');
-const ctx = cv.getContext('2d');
-const CX  = 90, CY = 90;
-let starLoopRunning = false;
-let isCollapsing    = false;
-
-// Mouse gravitational pull
-let mouse = { x:-999, y:-999 };
-window.addEventListener('mousemove', e => { mouse.x=e.clientX; mouse.y=e.clientY; });
-
-// Orbit particles
-const orbitParticles = Array.from({length:14},(_,i)=>({
-  angle:  (i/14)*Math.PI*2+Math.random()*0.5,
-  radius: 28+Math.random()*14,
-  speed:  0.009+Math.random()*0.015,
-  size:   0.6+Math.random()*1.0,
-  alpha:  0.3+Math.random()*0.4
-}));
-
-// Organic noise seeds for star shape
-const noiseSeed = Array.from({length:10},()=>(Math.random()-0.5)*0.7);
-
-// Black lightning state
-let blackLightnings = [], blackLightTimer = 0;
-const BL_DURATION = 130;
-
-function spawnBlackLightnings(cx, cy) {
-  blackLightnings = Array.from({length:9},(_,i)=>{
-    const angle = (i/9)*Math.PI*2+Math.random()*0.5;
-    return { angle, baseLen: 32+Math.random()*50 };
-  });
-  blackLightTimer = BL_DURATION;
+/* progress */
+function prog(n) {
+  $('pbar').style.width = ((n/TOTAL)*100) + '%';
 }
 
-function drawDockedStar() {
-  const t       = performance.now()*0.001;
-  const breathe = 1+Math.sin(t*1.8)*0.07;
+/* chapter */
+function chap(txt) {
+  const c = $('chap');
+  c.style.opacity = '0';
+  setTimeout(() => { c.textContent = txt; c.style.opacity = '1'; }, 300);
+}
 
-  // Mouse pull — star-nav top-left corner; canvas center in page ≈ (66,66)
-  const starPX = 66, starPY = 66;
-  const mdx   = mouse.x - starPX, mdy = mouse.y - starPY;
-  const mDist = Math.sqrt(mdx*mdx+mdy*mdy)||1;
-  const pull  = Math.min(9,180/(mDist+1));
-  const CX2   = CX + (mdx/mDist)*pull*0.55;
-  const CY2   = CY + (mdy/mDist)*pull*0.55;
-  const glowB = Math.max(0,1-mDist/200);
-  const hoverS = 1+glowB*0.12;
-
-  ctx.clearRect(0,0,180,180);
-  ctx.save();
-  ctx.translate(CX,CY); ctx.scale(hoverS,hoverS); ctx.translate(-CX,-CY);
-
-  // ── Ambient glow ───────────────────────────────────────────────────────────
-  const g1 = ctx.createRadialGradient(CX2,CY2,0, CX2,CY2, 52*breathe+22*glowB);
-  g1.addColorStop(0,  `rgba(255,255,255,${0.18+glowB*0.22})`);
-  g1.addColorStop(0.4,`rgba(255,240,200,${0.07+glowB*0.12})`);
-  g1.addColorStop(1,  'rgba(255,200,120,0)');
-  ctx.beginPath(); ctx.arc(CX2,CY2,52*breathe+22*glowB,0,Math.PI*2);
-  ctx.fillStyle=g1; ctx.fill();
-
-  // ── CLICK INVITATION — three staggered pulsing rings ──────────────────────
-  for (let ring=0;ring<3;ring++) {
-    const phase = ((t*0.6+ring*0.5)%1);
-    const rR    = 34+phase*30;
-    const rA    = (1-phase)*(0.20+glowB*0.12);
-    ctx.beginPath(); ctx.arc(CX2,CY2,rR,0,Math.PI*2);
-    ctx.strokeStyle = `rgba(255,195,100,${rA})`;
-    ctx.lineWidth   = 1.3; ctx.stroke();
-  }
-
-  // ── Orbit particles ─────────────────────────────────────────────────────────
-  orbitParticles.forEach(p=>{
-    p.angle+=p.speed;
-    const px=CX2+Math.cos(p.angle)*p.radius*breathe;
-    const py=CY2+Math.sin(p.angle)*p.radius*breathe*0.72;
-    const tw=0.5+0.5*Math.sin(t*3+p.angle*4);
-    ctx.beginPath(); ctx.arc(px,py,p.size,0,Math.PI*2);
-    ctx.fillStyle=`rgba(255,210,140,${p.alpha*tw})`; ctx.fill();
-  });
-
-  // ── Lens flare streaks ──────────────────────────────────────────────────────
-  ctx.save();
-  ctx.globalAlpha = 0.22+glowB*0.15;
-  const fL=26+breathe*4;
-  ctx.strokeStyle='rgba(255,255,255,0.55)'; ctx.lineWidth=0.6;
-  ctx.beginPath(); ctx.moveTo(CX2-fL,CY2); ctx.lineTo(CX2+fL,CY2); ctx.stroke();
-  ctx.beginPath(); ctx.moveTo(CX2,CY2-fL); ctx.lineTo(CX2,CY2+fL); ctx.stroke();
-  ctx.globalAlpha=0.10+glowB*0.08;
-  const dL=fL*0.5;
-  ctx.beginPath(); ctx.moveTo(CX2-dL,CY2-dL); ctx.lineTo(CX2+dL,CY2+dL); ctx.stroke();
-  ctx.beginPath(); ctx.moveTo(CX2+dL,CY2-dL); ctx.lineTo(CX2-dL,CY2+dL); ctx.stroke();
-  ctx.restore();
-
-  // ── Star shape: slow spin + organic noise ─────────────────────────────────
-  const oR=28*breathe, iR=11.2*breathe;
-  const sa=-Math.PI/2 + t*0.18;
-  ctx.beginPath();
-  for (let i=0;i<10;i++) {
-    const noise=noiseSeed[i]*(0.5+0.5*Math.sin(t*0.7+i));
-    const r=(i%2===0?oR:iR)+noise;
-    const ang=sa+(i*Math.PI)/5;
-    const px=CX2+Math.cos(ang)*r, py=CY2+Math.sin(ang)*r;
-    i===0?ctx.moveTo(px,py):ctx.lineTo(px,py);
-  }
-  ctx.closePath();
-  const sf=ctx.createRadialGradient(CX2,CY2-4,0,CX2,CY2,oR);
-  sf.addColorStop(0,'rgba(255,255,255,1)');
-  sf.addColorStop(0.55,'rgba(255,250,240,0.97)');
-  sf.addColorStop(1,'rgba(240,235,255,0.85)');
-  ctx.fillStyle=sf; ctx.strokeStyle='rgba(255,255,255,0.95)';
-  ctx.lineWidth=1; ctx.lineJoin='miter'; ctx.miterLimit=10;
-  ctx.fill(); ctx.stroke();
-
-  // ── BLACK LIGHTNING tendrils after docking ─────────────────────────────────
-  if (blackLightTimer>0) {
-    blackLightTimer--;
-    const lifeR = blackLightTimer/BL_DURATION;
-    blackLightnings.forEach(bl=>{
-      if (Math.random()<0.25) return; // flicker
-      const jAng = bl.angle+(Math.random()-0.5)*0.6;
-      const jLen = bl.baseLen*(0.5+Math.random()*0.8)*lifeR;
-      const ex = CX2+Math.cos(jAng)*jLen, ey = CY2+Math.sin(jAng)*jLen;
-      // White-hot core bolt
-      drawLightning(ctx,CX2,CY2,ex,ey, 5+Math.floor(Math.random()*4), 14*lifeR,
-        `rgba(255,255,255,${lifeR*0.85})`, 1+Math.random()*1.2, lifeR*0.9);
-      // Dark purple/black corona — the "black lightning" look
-      drawLightning(ctx,CX2,CY2,ex,ey, 4+Math.floor(Math.random()*3), 18*lifeR,
-        `rgba(30,0,60,${lifeR*0.8})`, 3.5+Math.random()*2, lifeR*0.6);
+/* show scene */
+function showSc(id) {
+  const el = $(id);
+  el.style.opacity = '0';
+  el.style.display = 'block';
+  return new Promise(r => requestAnimationFrame(() => {
+    requestAnimationFrame(() => {
+      el.style.transition = 'opacity 0.55s ease';
+      el.style.opacity = '1';
+      r();
     });
+  }));
+}
+
+/* hide scene */
+function hideSc(id, dur=400) {
+  const el = $(id);
+  el.style.transition = `opacity ${dur}ms ease`;
+  el.style.opacity = '0';
+  return wait(dur).then(() => { el.style.display = 'none'; });
+}
+
+/* animate image with ken burns */
+function kb(el, type='in', dur=3000) {
+  const anims = {
+    in: `kenBurnsIn ${dur}ms ${E2} forwards`,
+    up: `kenBurnsUp ${dur}ms ${E2} forwards`,
+    right: `kenBurnsRight ${dur}ms ${E2} forwards`,
+    left: `kenBurnsLeft ${dur}ms ${E2} forwards`,
+    zoom: `kenBurnsZoom ${dur}ms ${E2} forwards`,
+    drift: `drift ${dur}ms ${E2} forwards`,
+  };
+  el.style.animation = anims[type] || anims['in'];
+}
+
+/* animate text */
+function animTxt(el, type='fadeUp', delay=0, dur=600) {
+  if (!el) return;
+  el.style.opacity = '0';
+  setTimeout(() => {
+    el.style.animation = `${type} ${dur}ms ${E1} forwards`;
+  }, delay);
+}
+
+/* ─── SCENES ─── */
+
+async function s1() {
+  prog(1); chap('i. editorial');
+  letterbox(true);
+  await showSc('s1');
+  kb($('s1img'), 'in', 2800);
+  animTxt($('s1ey'), 'fadeIn', 200, 700);
+  animTxt($('s1h'), 'fadeUp', 450, 750);
+  const ln = $('s1ln');
+  setTimeout(() => { ln.style.transition = 'height 1s ease 0.3s'; ln.style.height = '35%'; }, 300);
+  await wait(2400);
+  flash();
+  await hideSc('s1', 300);
+}
+
+async function s2() {
+  prog(2); chap('ii. identity');
+  await showSc('s2');
+  kb($('s2img'), 'zoom', 2600);
+  animTxt($('s2h'), 'scaleIn', 300, 600);
+  animTxt($('s2lb'), 'fadeIn', 700, 500);
+  await wait(2200);
+  flash(60);
+  await hideSc('s2', 280);
+}
+
+async function s3() {
+  prog(3); chap('iii. the grid');
+  await showSc('s3');
+  kb($('s3img'), 'left', 2700);
+  animTxt($('s3h'), 'slideLeft', 350, 650);
+  await wait(2300);
+  flash();
+  await hideSc('s3', 300);
+}
+
+async function s4() {
+  prog(4); chap('iv. freedom');
+  letterbox(false);
+  await showSc('s4');
+  kb($('s4img'), 'up', 3000);
+  animTxt($('s4h'), 'slideRight', 200, 700);
+  animTxt($('s4ey'), 'fadeIn', 800, 600);
+  await wait(2600);
+  flash(50);
+  await hideSc('s4', 300);
+}
+
+async function s5() {
+  prog(5); chap('v. detail');
+  letterbox(true);
+  await showSc('s5');
+  kb($('s5img'), 'zoom', 2800);
+  animTxt($('s5lb'), 'fadeIn', 200, 500);
+  animTxt($('s5h'), 'fadeUp', 500, 700);
+  await wait(2400);
+  flash();
+  await hideSc('s5', 300);
+}
+
+async function s6() {
+  prog(6); chap('vi. direction');
+  letterbox(false);
+  await showSc('s6');
+  kb($('s6imgL'), 'right', 2800);
+  animTxt($('s6lb'), 'fadeIn', 300, 500);
+  animTxt($('s6h'), 'fadeUp', 500, 750);
+  await wait(2500);
+  flash(70);
+  await hideSc('s6', 320);
+}
+
+async function s7() {
+  prog(7); chap('vii. the city');
+  await showSc('s7');
+  kb($('s7img'), 'drift', 2700);
+  animTxt($('s7ey'), 'fadeIn', 200, 500);
+  animTxt($('s7h'), 'slideRight', 450, 700);
+  await wait(2400);
+  flash(55);
+  await hideSc('s7', 280);
+}
+
+async function s8() {
+  prog(8); chap('viii. presence');
+  letterbox(true);
+  await showSc('s8');
+  kb($('s8img'), 'up', 2600);
+  animTxt($('s8lb'), 'fadeIn', 200, 500);
+  animTxt($('s8h'), 'slideRight', 400, 700);
+  setTimeout(() => {
+    const mq = $('s8mq');
+    mq.style.transition = 'opacity 0.6s ease';
+    mq.style.opacity = '1';
+  }, 600);
+  await wait(2300);
+  flash();
+  await hideSc('s8', 300);
+}
+
+async function s9() {
+  prog(9); chap('ix. everywhere');
+  letterbox(false);
+  await showSc('s9');
+  kb($('s9img'), 'in', 2800);
+  animTxt($('s9ey'), 'fadeIn', 200, 500);
+  animTxt($('s9h'), 'slideLeft', 400, 700);
+  await wait(2400);
+  flash(60);
+  await hideSc('s9', 300);
+}
+
+async function s10() {
+  prog(10); chap('x. in motion');
+  await showSc('s10');
+  kb($('s10img'), 'zoom', 2700);
+  animTxt($('s10h'), 'fadeUp', 350, 800);
+  await wait(2300);
+  flash();
+  await hideSc('s10', 280);
+}
+
+async function s11() {
+  prog(11); chap('xi. collaboration');
+  letterbox(true);
+  await showSc('s11');
+  kb($('s11img'), 'up', 3000);
+  animTxt($('s11ey'), 'fadeIn', 300, 600);
+  animTxt($('s11h'), 'slideRight', 550, 750);
+  await wait(2600);
+  flash(80);
+  await hideSc('s11', 320);
+}
+
+async function s12() {
+  prog(12); chap('xii. the collection');
+  letterbox(false);
+  await showSc('s12');
+  kb($('s12img'), 'left', 2700);
+  animTxt($('s12h'), 'slideLeft', 350, 700);
+  await wait(2300);
+  flash(55);
+  await hideSc('s12', 280);
+}
+
+async function s13() {
+  prog(13); chap('xiii. origins');
+  await showSc('s13');
+  kb($('s13img'), 'drift', 2800);
+  animTxt($('s13lb'), 'fadeIn', 200, 500);
+  animTxt($('s13h'), 'fadeUp', 500, 750);
+  await wait(2400);
+  flash();
+  await hideSc('s13', 300);
+}
+
+async function s14() {
+  prog(14); chap('xiv. all in');
+  letterbox(true);
+  await showSc('s14');
+  kb($('s14img'), 'zoom', 2800);
+  animTxt($('s14ey'), 'fadeIn', 200, 500);
+  animTxt($('s14h'), 'scaleIn', 450, 800);
+  await wait(2400);
+  flash(90);
+  await hideSc('s14', 350);
+}
+
+async function s15() {
+  prog(15); chap('xv. craft');
+  letterbox(false);
+  await showSc('s15');
+  kb($('s15img'), 'in', 2700);
+  animTxt($('s15ey'), 'fadeIn', 200, 500);
+  animTxt($('s15h'), 'slideLeft', 450, 700);
+  await wait(2300);
+  flash(60);
+  await hideSc('s15', 300);
+}
+
+async function s16() {
+  prog(16); chap('');
+  letterbox(true);
+  await showSc('s16');
+  const tc = $('title-card');
+  tc.style.transition = 'opacity 1s ease';
+  tc.style.opacity = '1';
+
+  await wait(300);
+  $('tc-ln1').style.width = '140px';
+  $('tc-ln2').style.width = '140px';
+  await wait(600);
+
+  const nm = $('tc-name');
+  nm.style.transition = 'all 1s ease';
+  nm.style.opacity = '1';
+  nm.style.transform = 'translateY(0)';
+  await wait(500);
+
+  $('tc-sub').style.opacity = '1';
+  await wait(2200);
+  await hideSc('s16', 600);
+}
+
+/* ─── RESET ─── */
+function reset() {
+  for (let i=1; i<=TOTAL; i++) {
+    const el = $('s'+i);
+    if (!el) continue;
+    el.style.transition = 'none';
+    el.style.opacity = '0';
+    el.style.display = 'none';
   }
-
-  ctx.restore();
-
-  // Drop shadow
-  const gs1=0.3+glowB*0.4, gs2=0.6+glowB*0.3;
-  cv.style.filter=[
-    'drop-shadow(0 0 3px rgba(255,255,255,1))',
-    `drop-shadow(0 0 ${8+glowB*10}px rgba(220,235,255,${gs2}))`,
-    `drop-shadow(0 0 ${20+glowB*20}px rgba(200,220,255,${gs1}))`,
-    'drop-shadow(0 0 40px rgba(180,210,255,0.25))'
-  ].join(' ');
-
-  // Gentle wobble
-  cv.style.transform=`rotate(${Math.sin(t*0.8)*1.8}deg)`;
+  ['s1img','s2img','s3img','s4img','s5img','s6imgL','s7img','s8img','s9img','s10img','s11img','s12img','s13img','s14img','s15img'].forEach(id => {
+    const el = $(id); if (el) el.style.animation = 'none';
+  });
+  const allTxt = ['s1ey','s1h','s2h','s2lb','s3h','s4h','s4ey','s5lb','s5h','s6lb','s6h','s7ey','s7h','s8lb','s8h','s9h','s9ey','s10h','s11ey','s11h','s12h','s13lb','s13h','s14ey','s14h','s15ey','s15h'];
+  allTxt.forEach(id => { const el=$(id); if(el){el.style.animation='none';el.style.opacity='0';} });
+  $('s1ln').style.transition='none'; $('s1ln').style.height='0';
+  $('s8mq').style.opacity='0';
+  const tc=$('title-card'); if(tc){tc.style.opacity='0';}
+  const nm=$('tc-name'); if(nm){nm.style.opacity='0';nm.style.transform='translateY(10px)';}
+  const sub=$('tc-sub'); if(sub){sub.style.opacity='0';}
+  const ln1=$('tc-ln1'); if(ln1){ln1.style.width='0';}
+  const ln2=$('tc-ln2'); if(ln2){ln2.style.width='0';}
+  $('pbar').style.width='0';
+  $('chap').textContent='';
 }
 
-function runDockedStarLoop() {
-  drawDockedStar();
-  requestAnimationFrame(runDockedStarLoop);
-}
-
-// ═══════════════════════════════════════════════════════════════════════════════
-// HERO INTRO
-// Phase 1 PLASMA   — arcs crackle from across the text toward the forge point
-// Phase 2 CONDENSE — supernova flash, star crystallises
-// Phase 3 FLIGHT   — bezier sweep across screen with lightning spewing from it
-// Phase 4 DOCK     — impact, black lightning burst, invitation rings activate
-// ═══════════════════════════════════════════════════════════════════════════════
-const heroCv  = document.getElementById('hero-canvas');
-const heroCtx = heroCv.getContext('2d');
-let hW, hH;
-function heroResize(){ hW=heroCv.width=window.innerWidth; hH=heroCv.height=window.innerHeight; }
-heroResize();
-
-function getNameRect(){
-  const el=document.querySelector('.site-name');
-  if(el){ return el.getBoundingClientRect(); }
-  return {left:hW/2-100,right:hW/2+100,top:hH*0.12,bottom:hH*0.12+44,width:200,height:44};
-}
-function getDockTarget(){ return {x:66,y:66}; }
-
-const heroNoiseSeed = Array.from({length:10},()=>(Math.random()-0.5)*0.6);
-let plasmaAnchors   = [];
-
-const Intro = {
-  phase:'plasma', t:0,
-  matX:0, matY:0, x:0, y:0,
-  trail:[], maxTrail:65, sparks:[],
-  bolts:[],
-  p0:{x:0,y:0},p1:{x:0,y:0},p2:{x:0,y:0},p3:{x:0,y:0},p4:{x:0,y:0},
-
-  init(){
-    const r = getNameRect();
-    this.matX = r.right + 20;
-    this.matY = r.top + r.height*0.5;
-    this.x = this.matX; this.y = this.matY;
-    this.phase='plasma'; this.t=0;
-    this.trail=[]; this.sparks=[]; this.bolts=[];
-
-    // 8 plasma anchors spread across the text
-    plasmaAnchors=[];
-    for(let i=0;i<8;i++){
-      plasmaAnchors.push({
-        x: r.left+(i/7)*r.width,
-        y: r.top+r.height*0.5+(Math.random()-0.5)*r.height*0.65
-      });
-    }
-
-    // 4th-order Bezier: massive screen sweep
-    this.p0={x:this.matX,y:this.matY};
-    this.p1={x:hW+260,y:-180};
-    this.p2={x:hW-40,y:hH+260};
-    this.p3={x:-180,y:hH-80};
-    this.p4=getDockTarget();
-  },
-
-  update(){
-    this.t++;
-    if(this.phase==='plasma'){
-      if(this.t>=105){ this.phase='condense'; this.t=0; }
-      return;
-    }
-    if(this.phase==='condense'){
-      if(this.t>=38){ this.phase='flight'; this.t=0; }
-      return;
-    }
-    if(this.phase==='flight'){
-      const fl=235;
-      let prog=this.t/fl;
-      if(prog>=1){ prog=1; this.phase='done'; this.onDocked(); return; }
-
-      const eT=easeInOutCubic(prog), u=1-eT;
-      this.x=Math.pow(u,4)*this.p0.x+4*Math.pow(u,3)*eT*this.p1.x+6*Math.pow(u,2)*eT*eT*this.p2.x+4*u*Math.pow(eT,3)*this.p3.x+Math.pow(eT,4)*this.p4.x;
-      this.y=Math.pow(u,4)*this.p0.y+4*Math.pow(u,3)*eT*this.p1.y+6*Math.pow(u,2)*eT*eT*this.p2.y+4*u*Math.pow(eT,3)*this.p3.y+Math.pow(eT,4)*this.p4.y;
-
-      this.trail.push({x:this.x,y:this.y});
-      if(this.trail.length>this.maxTrail) this.trail.shift();
-
-      const speed=this.trail.length>1
-        ?Math.hypot(this.x-this.trail[this.trail.length-2].x, this.y-this.trail[this.trail.length-2].y):0;
-
-      // Lightning bolts during flight
-      if(speed>4 && Math.random()<0.6){
-        const tPick=this.trail[Math.floor(Math.random()*Math.max(1,this.trail.length*0.45))];
-        this.bolts.push({
-          x1:this.x,y1:this.y,
-          x2:tPick.x+(Math.random()-0.5)*70,
-          y2:tPick.y+(Math.random()-0.5)*70,
-          life:1, decay:0.18+Math.random()*0.25
-        });
-      }
-      // Wild sideways bolts
-      if(speed>5 && Math.random()<0.35){
-        const a=Math.random()*Math.PI*2, d=35+Math.random()*90;
-        this.bolts.push({x1:this.x,y1:this.y,x2:this.x+Math.cos(a)*d,y2:this.y+Math.sin(a)*d,life:1,decay:0.24+Math.random()*0.3});
-      }
-
-      // Ember sparks
-      if(Math.random()<0.7){
-        this.sparks.push({x:this.x+(Math.random()-0.5)*10,y:this.y+(Math.random()-0.5)*10,vx:(Math.random()-0.5)*2,vy:(Math.random()-0.5)*2,life:1,decay:0.018+Math.random()*0.025,size:Math.random()*2.5+0.6});
-      }
-
-      for(let i=this.bolts.length-1;i>=0;i--){ this.bolts[i].life-=this.bolts[i].decay; if(this.bolts[i].life<=0) this.bolts.splice(i,1); }
-      for(let i=this.sparks.length-1;i>=0;i--){ const s=this.sparks[i]; s.x+=s.vx;s.y+=s.vy;s.life-=s.decay; if(s.life<=0) this.sparks.splice(i,1); }
-    }
-  },
-
-  draw(){
-    heroCtx.clearRect(0,0,hW,hH);
-    if(this.phase==='done') return;
-    const t=performance.now()*0.001;
-
-    // ── PLASMA ──────────────────────────────────────────────────────────────────
-    if(this.phase==='plasma'){
-      const prog=this.t/105;
-      heroCtx.lineCap='round';
-
-      plasmaAnchors.forEach(a=>{
-        const span=plasmaAnchors[plasmaAnchors.length-1].x-plasmaAnchors[0].x||1;
-        const localP=Math.max(0,prog*1.45-(a.x-plasmaAnchors[0].x)/span*0.38);
-        if(localP<=0||Math.random()>localP+0.08) return;
-
-        // Build jagged arc segments from anchor → forge
-        const segs=5, pts=[[a.x,a.y]];
-        for(let i=1;i<segs;i++){
-          const lt=i/segs;
-          const bx=a.x+(this.matX-a.x)*lt, by=a.y+(this.matY-a.y)*lt;
-          const jitter=(1-localP)*38*(1-Math.abs(lt-0.5)*1.2);
-          pts.push([bx+(Math.random()-0.5)*jitter*2, by+(Math.random()-0.5)*jitter]);
-        }
-        pts.push([this.matX,this.matY]);
-
-        // Outer glow arc
-        heroCtx.save();
-        heroCtx.globalAlpha=Math.random()*0.4*localP;
-        heroCtx.strokeStyle=`rgba(255,${100+Math.floor(Math.random()*130)},30,1)`;
-        heroCtx.lineWidth=Math.random()*5+2;
-        heroCtx.shadowBlur=20; heroCtx.shadowColor='#ff5500';
-        heroCtx.beginPath(); heroCtx.moveTo(pts[0][0],pts[0][1]);
-        for(let i=1;i<pts.length;i++) heroCtx.lineTo(pts[i][0],pts[i][1]);
-        heroCtx.stroke(); heroCtx.restore();
-
-        // Bright core arc
-        heroCtx.save();
-        heroCtx.globalAlpha=Math.random()*0.85*localP;
-        heroCtx.strokeStyle=`rgba(255,${200+Math.floor(Math.random()*55)},120,1)`;
-        heroCtx.lineWidth=Math.random()*1.5+0.4;
-        heroCtx.beginPath(); heroCtx.moveTo(pts[0][0],pts[0][1]);
-        for(let i=1;i<pts.length;i++) heroCtx.lineTo(pts[i][0],pts[i][1]);
-        heroCtx.stroke(); heroCtx.restore();
-      });
-
-      // Growing energy ball at forge point
-      const bR=prog*20+Math.random()*6;
-      heroCtx.save();
-      heroCtx.beginPath(); heroCtx.arc(this.matX,this.matY,bR,0,Math.PI*2);
-      heroCtx.fillStyle='#fff'; heroCtx.globalAlpha=0.65+prog*0.35;
-      heroCtx.shadowBlur=28+prog*22; heroCtx.shadowColor='#ff5500';
-      heroCtx.fill(); heroCtx.restore();
-
-      // Star emerges near end of plasma
-      if(prog>0.62){
-        const sA=(prog-0.62)/0.38;
-        this._drawStar(this.matX,this.matY,7*sA,2.8*sA,t*0.5,sA,false);
-      }
-      return;
-    }
-
-    // ── CONDENSE ────────────────────────────────────────────────────────────────
-    if(this.phase==='condense'){
-      const prog=this.t/38;
-      const fB=Math.pow(1-prog,1.6);
-      const fR=40+(1-prog)*135;
-      const fl=heroCtx.createRadialGradient(this.matX,this.matY,0,this.matX,this.matY,fR);
-      fl.addColorStop(0,`rgba(255,255,255,${fB})`);
-      fl.addColorStop(0.15,`rgba(255,220,160,${fB*0.85})`);
-      fl.addColorStop(0.55,`rgba(255,100,30,${fB*0.35})`);
-      fl.addColorStop(1,'rgba(255,30,0,0)');
-      heroCtx.beginPath(); heroCtx.arc(this.matX,this.matY,fR,0,Math.PI*2);
-      heroCtx.fillStyle=fl; heroCtx.fill();
-
-      // Cross flare at peak
-      if(prog<0.45){
-        heroCtx.save(); heroCtx.globalAlpha=(1-prog*2.2)*0.85;
-        const cfL=70+(1-prog)*40;
-        heroCtx.strokeStyle='rgba(255,255,255,0.75)'; heroCtx.lineWidth=1.2;
-        heroCtx.beginPath(); heroCtx.moveTo(this.matX-cfL,this.matY); heroCtx.lineTo(this.matX+cfL,this.matY); heroCtx.stroke();
-        heroCtx.beginPath(); heroCtx.moveTo(this.matX,this.matY-cfL*0.7); heroCtx.lineTo(this.matX,this.matY+cfL*0.7); heroCtx.stroke();
-        heroCtx.restore();
-      }
-
-      // Burst lightning from the flash point
-      if(prog<0.65 && Math.random()<0.75){
-        const ang=Math.random()*Math.PI*2, len=25+Math.random()*65*(1-prog);
-        drawLightning(heroCtx,this.matX,this.matY,
-          this.matX+Math.cos(ang)*len,this.matY+Math.sin(ang)*len,
-          5,22*(1-prog),`rgba(255,${150+Math.floor(Math.random()*100)},60,1)`,
-          1.2+Math.random()*2,(1-prog)*0.9);
-      }
-
-      this._drawStar(this.matX,this.matY,7,2.8,t*0.6,Math.min(1,prog*2.4),true);
-      return;
-    }
-
-    // ── FLIGHT ──────────────────────────────────────────────────────────────────
-
-    // Comet tail
-    if(this.trail.length>1){
-      heroCtx.save();
-      for(let j=1;j<this.trail.length;j++){
-        const frac=j/this.trail.length;
-        const p0=this.trail[j-1],p1=this.trail[j];
-        heroCtx.beginPath(); heroCtx.moveTo(p0.x,p0.y); heroCtx.lineTo(p1.x,p1.y);
-        heroCtx.strokeStyle=`rgba(255,${Math.round(100+frac*120)},${Math.round(20+frac*90)},${frac*0.85})`;
-        heroCtx.lineWidth=frac*7; heroCtx.lineCap='round'; heroCtx.stroke();
-      }
-      heroCtx.restore();
-    }
-
-    // Lightning bolts spewing during flight
-    for(const b of this.bolts){
-      drawLightning(heroCtx,b.x1,b.y1,b.x2,b.y2, 5+Math.floor(Math.random()*4),20*b.life, `rgba(255,200,80,${b.life*0.65})`,2.5,b.life*0.7);
-      drawLightning(heroCtx,b.x1,b.y1,b.x2,b.y2, 4+Math.floor(Math.random()*3),10*b.life, `rgba(255,255,255,${b.life})`,0.9,b.life);
-    }
-
-    // Ember sparks
-    for(const s of this.sparks){
-      heroCtx.beginPath(); heroCtx.arc(s.x,s.y,s.size,0,Math.PI*2);
-      heroCtx.fillStyle=`rgba(255,190,90,${s.life})`; heroCtx.fill();
-    }
-
-    // The star — fast spin during flight
-    this._drawStar(this.x,this.y,7,2.8,t*1.1,1,true);
-  },
-
-  _drawStar(x,y,oR,iR,spin,alpha,flare){
-    const sa=-Math.PI/2+spin;
-
-    // Bloom glow
-    const bloom=heroCtx.createRadialGradient(x,y,0,x,y,oR*4);
-    bloom.addColorStop(0,`rgba(255,255,255,${0.5*alpha})`);
-    bloom.addColorStop(0.4,`rgba(255,210,150,${0.2*alpha})`);
-    bloom.addColorStop(1,'rgba(255,80,30,0)');
-    heroCtx.beginPath(); heroCtx.arc(x,y,oR*4,0,Math.PI*2);
-    heroCtx.fillStyle=bloom; heroCtx.fill();
-
-    // Lens flare cross
-    if(flare){
-      heroCtx.save(); heroCtx.globalAlpha=0.28*alpha;
-      const fL=24+oR;
-      heroCtx.strokeStyle='rgba(255,255,255,0.65)'; heroCtx.lineWidth=0.7;
-      heroCtx.beginPath(); heroCtx.moveTo(x-fL,y); heroCtx.lineTo(x+fL,y); heroCtx.stroke();
-      heroCtx.beginPath(); heroCtx.moveTo(x,y-fL); heroCtx.lineTo(x,y+fL); heroCtx.stroke();
-      heroCtx.restore();
-    }
-
-    // Star body with organic noise
-    const nt=performance.now()*0.001;
-    heroCtx.beginPath();
-    for(let i=0;i<10;i++){
-      const noise=heroNoiseSeed[i]*(0.5+0.5*Math.sin(nt*0.9+i));
-      const r=(i%2===0?oR:iR)+noise*alpha;
-      const ang=sa+(i*Math.PI)/5;
-      const px=x+Math.cos(ang)*r, py=y+Math.sin(ang)*r;
-      i===0?heroCtx.moveTo(px,py):heroCtx.lineTo(px,py);
-    }
-    heroCtx.closePath();
-    heroCtx.fillStyle=`rgba(255,255,255,${alpha})`;
-    heroCtx.strokeStyle=`rgba(255,255,255,${0.9*alpha})`;
-    heroCtx.lineWidth=0.8; heroCtx.lineJoin='miter'; heroCtx.miterLimit=10;
-    heroCtx.shadowBlur=20; heroCtx.shadowColor='rgba(255,180,80,0.8)';
-    heroCtx.fill(); heroCtx.stroke(); heroCtx.shadowBlur=0;
-  },
-
-  onDocked(){
-    heroCv.style.opacity='0';
-    heroCv.style.transition='opacity 0.5s ease';
-    document.getElementById('star-nav').classList.add('docked');
-
-    // Trigger black lightning crackle at dock
-    spawnBlackLightnings(CX,CY);
-
-    // Arrival impact snap
-    cv.style.transition='none';
-    cv.style.transform='rotate(0deg) scale(1.6)';
-    setTimeout(()=>{
-      cv.style.transition='transform 0.45s cubic-bezier(0.16,1,0.3,1)';
-      cv.style.transform='rotate(0deg) scale(1)';
-      setTimeout(()=>{ cv.style.transition=''; },500);
-    },60);
-
-    if(!starLoopRunning){ starLoopRunning=true; runDockedStarLoop(); }
+/* ─── RUN ─── */
+async function run() {
+  const scenes = [s1,s2,s3,s4,s5,s6,s7,s8,s9,s10,s11,s12,s13,s14,s15,s16];
+  for (const fn of scenes) {
+    await fn();
+    await wait(40);
   }
-};
-
-function heroLoop(){
-  Intro.update(); Intro.draw();
-  if(Intro.phase!=='done') requestAnimationFrame(heroLoop);
+  reset();
+  await wait(500);
+  run();
 }
 
-// Wait for site name to fully fade in
-setTimeout(()=>{ Intro.init(); requestAnimationFrame(heroLoop); },1200);
+/* ─── AUTO START ─── */
+window.addEventListener('load', () => {
+  // Preload key images
+  const imgs = ['ani1.png','ani2.png','ani3.png','ani4.png','ani5.png','ani6.png','ani7.png','ani8.PNG','ani9.png','ani10.png','ani11.png','ani12.png','photo1.jpg','photo6.jpg','pixi1.png'];
+  imgs.forEach(src => { const img = new Image(); img.src = BASE + src; });
 
-// ── CLICK → collapse → archive.html ──────────────────────────────────────────
-const starBtn = document.getElementById('star-btn');
-const overlay = document.getElementById('collapse-overlay');
-
-starBtn.addEventListener('click', startCollapse);
-starBtn.addEventListener('keydown', e=>{ if(e.key==='Enter'||e.key===' ') startCollapse(); });
-
-function startCollapse(){
-  if(isCollapsing) return;
-  isCollapsing=true;
-  document.body.classList.add('collapsing');
-  window._bhCollapse=true;
-  window._bhCollapseStart=performance.now();
-  let ov=0;
-  const fadeOv=setInterval(()=>{
-    ov=Math.min(1,ov+0.016);
-    overlay.style.opacity=ov;
-    if(ov>=1) clearInterval(fadeOv);
-  },16);
-  setTimeout(()=>{ window.location.href='archive.html'; },2300);
-}
-
-// ═══════════════════════════════════════════════════════════════════════════════
-// STARFIELD + BLACK HOLE — UNCHANGED
-// ═══════════════════════════════════════════════════════════════════════════════
-function rand(a,b){ return a+Math.random()*(b-a); }
-const isMobile = window.innerWidth < 768;
-const vCv  = document.getElementById('starfield');
-const vCtx = vCv.getContext('2d');
-let vW, vH, vStars=[], vShoot=[], vDust=[];
-const BH = {rx:.5, ry:.5};
-let bhX, bhY, bhPulse=0, vFr=0, vNextS;
-const BH_BASE_R=28;
-let bhR=BH_BASE_R, gravMult=1, collapseProgress=0;
-const STAR_COUNT=isMobile?100:130, S_MIN=isMobile?60:40, S_MAX=isMobile?160:110;
-const GRAVITY_RADIUS=isMobile?220:300, MAX_TRAIL=isMobile?10:18;
-const SCOLS=[{h:220,s:80,l:88},{h:200,s:40,l:96},{h:55,s:20,l:95},{h:30,s:65,l:82},{h:10,s:75,l:77}];
-const MT=[{h:15,s:90,l:70,w:[1.2,2],len:[100,220]},{h:195,s:80,l:85,w:[1,1.8],len:[120,250]},{h:210,s:20,l:96,w:[.8,1.5],len:[80,150]}];
-function vResize(){
-  vW=vCv.width=window.innerWidth; vH=vCv.height=window.innerHeight;
-  bhX=vW*BH.rx; bhY=vH*BH.ry;
-}
-function spawnStar(){
-  const e=Math.floor(rand(0,4)); let x,y;
-  if(e===0){x=rand(0,vW);y=-20;}else if(e===1){x=vW+20;y=rand(0,vH);}
-  else if(e===2){x=rand(0,vW);y=vH+20;}else{x=-20;y=rand(0,vH);}
-  const c=SCOLS[Math.floor(Math.random()*SCOLS.length)]; const ib=Math.random()>.84;
-  return{x,y,vx:0,vy:0,r:ib?rand(.8,1.4):rand(.3,.7),baseOpacity:ib?rand(.5,.9):rand(.1,.4),
-    twinkleSpeed:rand(.002,.01),twinkleOffset:rand(0,Math.PI*2),h:c.h,s:c.s,l:c.l,trail:[],isBright:ib};
-}
-function initStars(){
-  vStars=[];vShoot=[];vDust=[];
-  for(let i=0;i<STAR_COUNT;i++){const s=spawnStar();s.x=rand(0,vW);s.y=rand(0,vH);vStars.push(s);}
-  vNextS=rand(S_MIN,S_MAX);
-}
-function drawBH(){
-  bhPulse+=0.018; const pulse=Math.sin(bhPulse);
-  if(window._bhCollapse){
-    const el=performance.now()-window._bhCollapseStart;
-    collapseProgress=Math.min(1,el/2000);
-    bhR=BH_BASE_R+collapseProgress*110; gravMult=1+collapseProgress*24;
-  }
-  const wellR=bhR*(14+collapseProgress*5);
-  const well=vCtx.createRadialGradient(bhX,bhY,bhR*.8,bhX,bhY,wellR);
-  well.addColorStop(0,'rgba(0,0,0,1)');well.addColorStop(0.18,'rgba(1,2,6,0.96)');
-  well.addColorStop(0.4,'rgba(2,4,10,0.7)');well.addColorStop(0.7,'rgba(3,5,14,0.3)');
-  well.addColorStop(1,'rgba(0,0,0,0)');
-  vCtx.beginPath();vCtx.arc(bhX,bhY,wellR,0,Math.PI*2);vCtx.fillStyle=well;vCtx.fill();
-  vCtx.save();vCtx.translate(bhX,bhY);vCtx.scale(1,0.28);
-  const diskR=bhR*2.8+pulse*2;
-  const da=Math.min(1,0.55+collapseProgress*0.8);
-  const disk=vCtx.createRadialGradient(0,0,bhR*1.05,0,0,diskR);
-  disk.addColorStop(0,'rgba(255,240,200,0)');disk.addColorStop(0.2,`rgba(255,200,120,${da})`);
-  disk.addColorStop(0.5,`rgba(255,140,60,${da*.7})`);disk.addColorStop(0.8,'rgba(180,80,20,0.18)');
-  disk.addColorStop(1,'rgba(0,0,0,0)');
-  vCtx.beginPath();vCtx.arc(0,0,diskR,0,Math.PI*2);vCtx.fillStyle=disk;vCtx.fill();vCtx.restore();
-  vCtx.beginPath();vCtx.arc(bhX,bhY,bhR*1.5,0,Math.PI*2);
-  vCtx.strokeStyle=`rgba(255,210,140,${0.25+pulse*.12+collapseProgress*.4})`;
-  vCtx.lineWidth=1+collapseProgress*3;vCtx.stroke();
-  vCtx.beginPath();vCtx.arc(bhX,bhY,bhR*1.15,0,Math.PI*2);
-  vCtx.strokeStyle=`rgba(255,180,80,${0.15+pulse*.08+collapseProgress*.3})`;
-  vCtx.lineWidth=2.5+collapseProgress*6;vCtx.stroke();
-  vCtx.beginPath();vCtx.arc(bhX,bhY,bhR,0,Math.PI*2);vCtx.fillStyle='#000';vCtx.fill();
-}
-function mkShoot(){
-  const t=MT[Math.floor(Math.random()*MT.length)];const ss=Math.floor(rand(0,4));
-  let sx,sy,tx,ty;
-  if(ss===0){sx=rand(0,vW);sy=-20;tx=rand(0,vW);ty=vH+20;}
-  else if(ss===1){sx=vW+20;sy=rand(0,vH);tx=-20;ty=rand(0,vH);}
-  else if(ss===2){sx=rand(0,vW);sy=vH+20;tx=rand(0,vW);ty=-20;}
-  else{sx=-20;sy=rand(0,vH);tx=vW+20;ty=rand(0,vH);}
-  const ang=Math.atan2(ty-sy,tx-sx),spd=rand(28,50);
-  return{x:sx,y:sy,vx:Math.cos(ang)*spd,vy:Math.sin(ang)*spd,
-    len:rand(t.len[0],t.len[1]),alpha:1,fade:rand(.015,.03),width:rand(t.w[0],t.w[1]),h:t.h,s:t.s,l:t.l};
-}
-function vLoop(){
-  vCtx.clearRect(0,0,vW,vH); vFr++; drawBH();
-  if(vFr>=vNextS){vShoot.push(mkShoot());if(!isMobile&&Math.random()<.4)vShoot.push(mkShoot());vNextS=vFr+rand(S_MIN,S_MAX);}
-  if(window._bhCollapse&&vFr%5===0)vShoot.push(mkShoot());
-  vShoot=vShoot.filter(s=>s.alpha>0&&s.x>-500&&s.x<vW+500&&s.y>-500&&s.y<vH+500);
-  for(const s of vShoot){
-    vCtx.save();
-    const tx2=s.x-s.vx*(s.len/20),ty2=s.y-s.vy*(s.len/20);
-    const g=vCtx.createLinearGradient(s.x,s.y,tx2,ty2);
-    g.addColorStop(0,`hsla(0,0%,100%,${s.alpha})`);g.addColorStop(.1,`hsla(${s.h},${s.s}%,${s.l}%,${s.alpha*.9})`);
-    g.addColorStop(1,`hsla(${s.h},${s.s}%,${s.l}%,0)`);
-    vCtx.beginPath();vCtx.moveTo(s.x,s.y);vCtx.lineTo(tx2,ty2);
-    vCtx.strokeStyle=g;vCtx.lineWidth=s.width;vCtx.lineCap='round';vCtx.stroke();
-    if(Math.random()<.04)vDust.push({x:s.x,y:s.y,vx:s.vx*.05+rand(-1,1),vy:s.vy*.05+rand(-1,1),
-      alpha:s.alpha*.8,decay:rand(.02,.06),size:rand(.5,2),h:s.h,s:s.s,l:s.l});
-    vCtx.restore();
-    const dx=bhX-s.x,dy=bhY-s.y,dist=Math.sqrt(dx*dx+dy*dy);
-    s.vx+=(dx/dist)*(.9*gravMult);s.vy+=(dy/dist)*(.9*gravMult);
-    s.x+=s.vx;s.y+=s.vy;s.alpha-=s.fade*(window._bhCollapse?2.5:1);
-  }
-  vDust=vDust.filter(p=>p.alpha>0);
-  for(const p of vDust){
-    vCtx.beginPath();vCtx.arc(p.x,p.y,p.size,0,Math.PI*2);
-    vCtx.fillStyle=`hsla(${p.h},${p.s}%,${p.l}%,${p.alpha})`;vCtx.fill();
-    p.x+=p.vx;p.y+=p.vy;p.alpha-=p.decay;
-  }
-  for(let i=vStars.length-1;i>=0;i--){
-    const s=vStars[i];
-    const dx=bhX-s.x,dy=bhY-s.y,dist=Math.sqrt(dx*dx+dy*dy);
-    if(dist<bhR){vStars[i]=spawnStar();continue;}
-    const gp=(.001+(220/(dist+40))*.022)*gravMult;
-    s.vx+=(dx/dist)*gp;s.vy+=(dy/dist)*gp;
-    const sp=Math.sqrt(s.vx*s.vx+s.vy*s.vy);
-    const maxSpd=(0.25+(1100/(dist+8))*2.4)*(window._bhCollapse?4+collapseProgress*9:1);
-    if(sp>maxSpd){s.vx=(s.vx/sp)*maxSpd;s.vy=(s.vy/sp)*maxSpd;}
-    const trailR=window._bhCollapse?vW:GRAVITY_RADIUS;
-    if(dist<trailR){s.trail.push({x:s.x,y:s.y});if(s.trail.length>MAX_TRAIL)s.trail.shift();}
-    else if(s.trail.length)s.trail.shift();
-    s.x+=s.vx;s.y+=s.vy;
-    const tw=Math.sin(vFr*s.twinkleSpeed+s.twinkleOffset);
-    const a=Math.max(.01,s.baseOpacity+tw*s.baseOpacity*.4);
-    if(s.trail.length>1){
-      vCtx.save();
-      for(let j=1;j<s.trail.length;j++){
-        const ta=(j/s.trail.length)*.3;
-        vCtx.beginPath();vCtx.moveTo(s.trail[j-1].x,s.trail[j-1].y);
-        vCtx.lineTo(s.trail[j].x,s.trail[j].y);
-        vCtx.strokeStyle=`hsla(${s.h},${s.s}%,${s.l}%,${ta})`;
-        vCtx.lineWidth=s.r*.5;vCtx.lineCap='round';vCtx.stroke();
-      }vCtx.restore();
-    }
-    vCtx.beginPath();vCtx.arc(s.x,s.y,s.r,0,Math.PI*2);
-    vCtx.fillStyle=`hsla(${s.h},${s.s}%,${s.l}%,${a})`;vCtx.fill();
-    if(s.isBright&&a>.4){
-      const gg=vCtx.createRadialGradient(s.x,s.y,0,s.x,s.y,s.r*4.5);
-      gg.addColorStop(0,`hsla(${s.h},${s.s}%,${s.l}%,${a*.35})`);
-      gg.addColorStop(1,`hsla(${s.h},${s.s}%,${s.l}%,0)`);
-      vCtx.beginPath();vCtx.arc(s.x,s.y,s.r*4.5,0,Math.PI*2);
-      vCtx.fillStyle=gg;vCtx.fill();
-    }
-  }
-  requestAnimationFrame(vLoop);
-}
-window.addEventListener('resize',()=>{ vResize();initStars();heroResize(); });
-vResize();initStars();vLoop();
+  // Start immediately
+  setTimeout(() => {
+    $('lb-top').style.transition = 'height 0.8s cubic-bezier(0.16,1,0.3,1)';
+    $('lb-bot').style.transition = 'height 0.8s cubic-bezier(0.16,1,0.3,1)';
+    run();
+  }, 300);
+});
 </script>
 </body>
 </html>
