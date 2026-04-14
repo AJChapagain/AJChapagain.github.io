@@ -32,10 +32,10 @@
     a { color: inherit; text-decoration: none; }
 
     #page {
-      min-height: 100vh;
+      height: 100dvh; /* Dynamic viewport height handles mobile browsers perfectly */
       display: flex;
       flex-direction: column;
-      overflow-x: hidden; /* Prevents horizontal scroll on mobile */
+      overflow: hidden; /* Locks the scroll completely */
     }
 
     /* NAV */
@@ -181,13 +181,39 @@
     @media (max-width: 700px) {
       #hero { 
         grid-template-columns: 1fr; 
-        gap: 32px;
+        gap: 16px;
+        padding-bottom: 16px;
       }
+      
+      #body { 
+        padding: 16px 16px 0;
+        justify-content: center;
+      }
+      
       #right { 
-        order: -1; /* Pushes the canvas to the top of the screen above the links */
-        margin-bottom: 20px;
+        order: -1; 
+        margin-bottom: 0;
+        height: 38vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
       }
-      #body { padding: 32px 16px 0; }
+
+      #particle-canvas {
+        max-height: 100%;
+        max-width: 100%;
+        object-fit: contain;
+      }
+
+      #name {
+        margin-bottom: 16px;
+        text-align: center;
+      }
+
+      .link-row {
+        padding: 10px 0;
+      }
+      
       #nav  { padding: 0 16px; }
     }
   </style>
