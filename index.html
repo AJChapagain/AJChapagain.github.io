@@ -32,11 +32,11 @@
     a { color: inherit; text-decoration: none; }
 
     #page {
-      height: 100vh; /* Fallback for older browsers */
-      height: 100dvh; /* Dynamic viewport height handles mobile browsers perfectly */
+      height: 100vh; 
+      height: 100dvh; 
       display: flex;
       flex-direction: column;
-      overflow: hidden; /* Locks the scroll completely */
+      overflow: hidden; 
     }
 
     /* NAV */
@@ -56,6 +56,7 @@
       display: flex;
       flex-direction: column;
       padding: 48px 24px 0;
+      min-height: 0; /* Prevents flex children from blowing out the container height */
     }
 
     #hero {
@@ -65,6 +66,7 @@
       gap: 48px;
       padding-bottom: 48px;
       align-items: center;
+      min-height: 0;
     }
 
     #left {
@@ -109,7 +111,7 @@
       color: var(--text-main);
     }
     .link-row:last-child:hover .link-arrow {
-      transform: translate(4px, 0px); /* Archive arrow moves straight right */
+      transform: translate(4px, 0px); 
     }
 
     .link-left  { display: flex; align-items: center; gap: 14px; }
@@ -130,12 +132,15 @@
       align-items: center;
       justify-content: center;
       width: 100%;
+      height: 100%; /* Take up remaining space */
+      min-height: 0; /* Crucial to let the canvas shrink so the ticker survives */
     }
 
     #particle-canvas { 
       display: block; 
       max-width: 100%; 
-      height: auto;
+      max-height: 100%; /* Forces canvas to shrink if container is too short */
+      object-fit: contain;
     }
 
     #ticker {
@@ -180,39 +185,32 @@
     @media (max-width: 700px) {
       #hero { 
         grid-template-columns: 1fr; 
-        gap: 12px; /* Super tight gap to pull things up */
+        gap: 12px; 
         padding-bottom: 0px;
       }
       
       #body { 
         padding: 16px 16px 0;
-        justify-content: space-evenly; /* Distributes remaining space fairly so the ticker stays up */
+        justify-content: space-evenly; 
       }
       
       #right { 
         order: -1; 
         margin-bottom: 0;
-        height: 28vh; /* Shorter container to pull the guy up and save space */
+        height: 28vh; 
         display: flex;
         align-items: center;
         justify-content: center;
       }
 
-      #particle-canvas {
-        max-height: 100%;
-        max-width: 100%;
-        object-fit: contain;
-      }
-
       #name {
-        /* Adjusted scaling so "ajchapa" fits cleanly on one line */
         font-size: clamp(40px, 15vw, 64px); 
         margin-bottom: 12px;
         text-align: center;
       }
 
       .link-row {
-        padding: 10px 0; /* Tightened links to guarantee the archive shows */
+        padding: 10px 0; 
       }
       
       #nav  { padding: 0 16px; }
@@ -349,21 +347,22 @@
     const canvas = document.getElementById('particle-canvas');
     const ctx    = canvas.getContext('2d');
 
-    const W = 400;
-    const H = 500;
+    // A slight 1.15x scale, not massive
+    const W = 460; 
+    const H = 575; 
     canvas.width  = W;
     canvas.height = H;
 
-    const SPACING       = 5;    
-    const RADIUS        = 1.1;  
+    const SPACING       = 6;   
+    const RADIUS        = 1.3;  
     const BEAT_INTERVAL = 1.2;  
 
     let particles = [];
     let time      = 0;
     let lastTs    = null;
 
-    const heartCX = W / 2 - 25; 
-    const heartCY = H / 2 + 10;
+    const heartCX = W / 2 - 29; 
+    const heartCY = H / 2 + 12;
 
     function createProceduralHuman() {
       const off  = document.createElement('canvas');
@@ -372,6 +371,11 @@
       const octx = off.getContext('2d');
 
       octx.fillStyle = '#000000'; 
+
+      // Scale the procedural path drawing up slightly
+      octx.translate(W / 2, H / 2);
+      octx.scale(1.15, 1.15);
+      octx.translate(-W / 2, -H / 2);
 
       octx.beginPath();
       octx.arc(W / 2, H / 2 - 100, 35, 0, Math.PI * 2);
@@ -405,7 +409,7 @@
             const dy = y - heartCY;
             const dist = Math.sqrt(dx * dx + dy * dy);
             
-            const isHeart = dist < 22;
+            const isHeart = dist < 25;
 
             particles.push({
               ox: x, 
@@ -449,15 +453,15 @@
       particles.forEach(p => {
         if (p.isHeart) return; 
 
-        const driftX = Math.sin(time * p.driftSpeed + p.phaseX) * 1.5;
-        const driftY = Math.cos(time * p.driftSpeed + p.phaseY) * 1.5;
+        const driftX = Math.sin(time * p.driftSpeed + p.phaseX) * 1.7;
+        const driftY = Math.cos(time * p.driftSpeed + p.phaseY) * 1.7;
 
         let pushX = 0, pushY = 0;
         if (beat > 0) {
-          const force = Math.max(0, 1 - (p.distToHeart / 150)); 
+          const force = Math.max(0, 1 - (p.distToHeart / 175)); 
           const dx = p.ox - heartCX;
           const dy = p.oy - heartCY;
-          const pushAmount = beat * force * 3.5;
+          const pushAmount = beat * force * 4.0;
           pushX = (dx / p.distToHeart) * pushAmount;
           pushY = (dy / p.distToHeart) * pushAmount;
         }
@@ -480,12 +484,12 @@
 
         const dx = p.ox - heartCX;
         const dy = p.oy - heartCY;
-        const expand = beat * 4.0; 
+        const expand = beat * 4.6; 
         
         p.x = p.ox + (dx / p.distToHeart) * expand;
         p.y = p.oy + (dy / p.distToHeart) * expand;
 
-        const currentRadius = RADIUS + (beat * 0.8);
+        const currentRadius = RADIUS + (beat * 0.9); 
         ctx.moveTo(p.x + currentRadius, p.y);
         ctx.arc(p.x, p.y, currentRadius, 0, Math.PI * 2);
       });
