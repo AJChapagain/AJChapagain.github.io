@@ -32,6 +32,7 @@
     a { color: inherit; text-decoration: none; }
 
     #page {
+      height: 100vh; /* Fallback for older browsers */
       height: 100dvh; /* Dynamic viewport height handles mobile browsers perfectly */
       display: flex;
       flex-direction: column;
@@ -116,7 +117,6 @@
     .link-name  { font-size: 13px; font-weight: 700; letter-spacing: 0.02em; }
     .link-handle{ font-size: 12px; color: var(--text-muted); font-family: var(--mono); }
     
-    /* Using SVGs so we remove text styling constraints */
     .link-arrow { 
       display: flex;
       align-items: center;
@@ -134,7 +134,7 @@
 
     #particle-canvas { 
       display: block; 
-      max-width: 100%; /* Ensures it scales down on mobile */
+      max-width: 100%; 
       height: auto;
     }
 
@@ -154,7 +154,6 @@
       animation: scroll 32s linear infinite;
     }
 
-    /* Ticker is now stark black and bold */
     .tick { 
       font-size: 12px; 
       font-family: var(--mono); 
@@ -181,19 +180,19 @@
     @media (max-width: 700px) {
       #hero { 
         grid-template-columns: 1fr; 
-        gap: 16px;
-        padding-bottom: 16px;
+        gap: 12px; /* Super tight gap to pull things up */
+        padding-bottom: 0px;
       }
       
       #body { 
         padding: 16px 16px 0;
-        justify-content: center;
+        justify-content: space-evenly; /* Distributes remaining space fairly so the ticker stays up */
       }
       
       #right { 
         order: -1; 
         margin-bottom: 0;
-        height: 38vh;
+        height: 28vh; /* Shorter container to pull the guy up and save space */
         display: flex;
         align-items: center;
         justify-content: center;
@@ -206,12 +205,14 @@
       }
 
       #name {
-        margin-bottom: 16px;
+        /* Adjusted scaling so "ajchapa" fits cleanly on one line */
+        font-size: clamp(40px, 15vw, 64px); 
+        margin-bottom: 12px;
         text-align: center;
       }
 
       .link-row {
-        padding: 10px 0;
+        padding: 10px 0; /* Tightened links to guarantee the archive shows */
       }
       
       #nav  { padding: 0 16px; }
@@ -229,7 +230,7 @@
     <div id="hero">
 
       <div id="left">
-        <h1 id="name">aj<br>chapa</h1>
+        <h1 id="name">ajchapa</h1>
 
         <div id="links">
           <a class="link-row" href="https://www.instagram.com/aapplejuce/" target="_blank" rel="noopener">
