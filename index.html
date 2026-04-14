@@ -1,849 +1,430 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8"/>
-<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-<title>ajchapa</title>
-<style>
-@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=Karla:wght@300;400&display=swap');
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ajchapa</title>
+  <link rel="icon" type="image/png" href="favicon.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Mulish:wght@300;700&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      /* Reverted to stark, high-end white minimalism */
+      --bg:         #ffffff;
+      --border:     #ebebeb;
+      --text-main:  #000000;
+      --text-muted: #888888;
+      --font:       'Mulish', sans-serif;
+      --mono:       Menlo, Monaco, Consolas, monospace;
+    }
 
-*, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
 
-:root {
-  --cream: #f0ece3;
-  --ink: #080808;
-  --muted: #2a2322;
-  --ghost: rgba(240,236,227,0.06);
-  --serif: 'Playfair Display', Georgia, serif;
-  --sans: 'Karla', Helvetica, sans-serif;
-}
+    html, body {
+      height: 100%;
+      background: var(--bg);
+      color: var(--text-main);
+      font-family: var(--font);
+      font-size: 14px;
+      line-height: 1.45;
+      -webkit-font-smoothing: antialiased;
+    }
 
-html, body {
-  width:100%; height:100%;
-  background: var(--ink);
-  overflow: hidden;
-  cursor: none;
-}
+    a { color: inherit; text-decoration: none; }
 
-/* CUSTOM CURSOR */
-#cur {
-  position: fixed; z-index: 9999;
-  width: 6px; height: 6px;
-  background: var(--cream);
-  border-radius: 50%;
-  pointer-events: none;
-  transform: translate(-50%,-50%);
-  transition: opacity 0.3s;
-  mix-blend-mode: difference;
-}
+    #page {
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
 
-/* NAV */
-nav {
-  position: fixed; top:0; left:0; right:0; z-index:500;
-  display: flex; justify-content: space-between; align-items: center;
-  padding: 1.4rem 2rem;
-  pointer-events: none;
-}
-nav > * { pointer-events: auto; }
+    /* NAV */
+    #nav {
+      height: 52px;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: flex-end;
+      padding: 0 24px;
+      flex-shrink: 0;
+    }
+    #nav-time { font-size: 11px; color: var(--text-muted); font-family: var(--mono); }
 
-.logo {
-  font-family: var(--serif);
-  font-size: 0.72rem;
-  color: var(--cream);
-  letter-spacing: 0.22em;
-  font-weight: 400;
-  opacity: 0.6;
-  text-transform: uppercase;
-  transition: opacity 0.3s;
-}
-.logo:hover { opacity: 1; }
+    #body {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      padding: 48px 24px 0;
+    }
 
-.nav-links {
-  display: flex; gap: 1.8rem;
-}
-.nav-links a {
-  font-family: var(--sans);
-  font-size: 0.48rem;
-  color: rgba(240,236,227,0.3);
-  text-decoration: none;
-  letter-spacing: 0.3em;
-  text-transform: uppercase;
-  transition: color 0.3s;
-}
-.nav-links a:hover { color: var(--cream); }
+    #hero {
+      flex: 1;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 48px;
+      padding-bottom: 48px;
+      align-items: center;
+    }
 
-/* STAGE */
-#stage {
-  position: fixed; inset: 0;
-  background: var(--ink);
-}
+    #left {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+    }
 
-/* SCENE LAYER */
-.sc {
-  position: absolute; inset: 0;
-  opacity: 0;
-  will-change: opacity, transform;
-}
+    #name {
+      font-size: clamp(56px, 10vw, 96px);
+      font-weight: 300; 
+      line-height: 0.92;
+      letter-spacing: -0.05em;
+      color: var(--text-main);
+      margin-bottom: 40px;
+    }
 
-/* IMAGE LAYER */
-.img-layer {
-  position: absolute; inset: -8%;
-  background-size: cover;
-  background-position: center;
-  background-repeat: no-repeat;
-  will-change: transform;
-}
+    #links {
+      display: flex;
+      flex-direction: column;
+      border-top: 1px solid var(--border);
+    }
 
-/* OVERLAYS */
-.vig-b { position:absolute;inset:0;background:linear-gradient(to top, rgba(8,8,8,0.88) 0%, rgba(8,8,8,0.2) 45%, transparent 70%); }
-.vig-t { position:absolute;inset:0;background:linear-gradient(to bottom, rgba(8,8,8,0.6) 0%, transparent 40%); }
-.vig-l { position:absolute;inset:0;background:linear-gradient(to right, rgba(8,8,8,0.85) 0%, transparent 55%); }
-.vig-r { position:absolute;inset:0;background:linear-gradient(to left, rgba(8,8,8,0.85) 0%, transparent 55%); }
-.vig-c { position:absolute;inset:0;background:radial-gradient(ellipse at center, transparent 30%, rgba(8,8,8,0.75) 100%); }
-.vig-full { position:absolute;inset:0;background:rgba(8,8,8,0.45); }
+    .link-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 14px 0;
+      border-bottom: 1px solid var(--border);
+      text-decoration: none;
+      color: var(--text-main);
+      transition: padding 0.3s cubic-bezier(0.16, 1, 0.3, 1), background 0.3s;
+    }
+    .link-row:hover {
+      background: #f9f9f9;
+      padding-left: 12px;
+      padding-right: 12px;
+      margin: 0 -12px;
+    }
+    .link-row:hover .link-arrow {
+      transform: translate(3px, -3px);
+      color: var(--text-main);
+    }
 
-/* TEXT ELEMENTS */
-.txt { position: absolute; }
+    .link-left  { display: flex; align-items: center; gap: 14px; }
+    .link-index { font-size: 11px; font-family: var(--mono); color: #cccccc; width: 20px; }
+    .link-name  { font-size: 13px; font-weight: 700; letter-spacing: 0.02em; }
+    .link-handle{ font-size: 12px; color: var(--text-muted); font-family: var(--mono); }
+    .link-arrow { font-size: 13px; color: #cccccc; transition: transform 0.3s, color 0.3s; }
 
-.headline {
-  font-family: var(--serif);
-  color: var(--cream);
-  font-weight: 400;
-  line-height: 0.9;
-  letter-spacing: -0.03em;
-}
+    #right {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
 
-.label {
-  font-family: var(--sans);
-  font-size: 0.44rem;
-  letter-spacing: 0.32em;
-  text-transform: uppercase;
-  color: rgba(240,236,227,0.4);
-}
+    #particle-canvas { 
+      display: block; 
+    }
 
-.eyebrow {
-  font-family: var(--sans);
-  font-size: 0.4rem;
-  letter-spacing: 0.38em;
-  text-transform: uppercase;
-  color: rgba(240,236,227,0.25);
-}
+    #ticker {
+      height: 44px;
+      border-top: 1px solid var(--border);
+      overflow: hidden;
+      display: flex;
+      align-items: center;
+      flex-shrink: 0;
+      background: var(--bg);
+    }
 
-/* DECORATIVE LINE */
-.dline {
-  position: absolute;
-  background: rgba(240,236,227,0.15);
-}
+    #ticker-track {
+      display: flex;
+      white-space: nowrap;
+      animation: scroll 32s linear infinite;
+    }
 
-/* GRAIN OVERLAY */
-#grain {
-  position: fixed; inset:0; z-index:400;
-  pointer-events: none;
-  opacity: 0.035;
-  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E");
-  background-size: 180px;
-  mix-blend-mode: overlay;
-}
+    .tick     { font-size: 11px; font-family: var(--mono); color: var(--text-muted); padding: 0 28px; letter-spacing: 0.08em; text-transform: uppercase;}
+    .tick-dot { font-size: 11px; font-family: var(--mono); color: #e0e0e0; padding: 0 4px; }
 
-/* PROGRESS BAR */
-#pbar {
-  position: fixed; bottom:0; left:0;
-  height: 1px;
-  background: linear-gradient(to right, transparent, rgba(240,236,227,0.5), transparent);
-  width: 0;
-  z-index: 500;
-  transition: width 0.1s linear;
-}
+    @keyframes scroll {
+      0%   { transform: translateX(0); }
+      100% { transform: translateX(-50%); }
+    }
 
-/* CHAPTER INDICATOR */
-#chap {
-  position: fixed; bottom: 1.8rem; right: 2rem;
-  z-index: 500;
-  font-family: var(--sans);
-  font-size: 0.4rem;
-  letter-spacing: 0.3em;
-  text-transform: uppercase;
-  color: rgba(240,236,227,0.15);
-  transition: opacity 0.5s;
-}
-
-/* LETTERBOX BARS */
-#lb-top, #lb-bot {
-  position: fixed; left:0; right:0;
-  background: var(--ink);
-  z-index: 450;
-  transition: height 0.8s cubic-bezier(0.16,1,0.3,1);
-}
-#lb-top { top:0; height:0; }
-#lb-bot { bottom:0; height:0; }
-
-/* FLASH */
-#flash {
-  position: fixed; inset:0; z-index: 460;
-  background: var(--cream);
-  opacity: 0;
-  pointer-events: none;
-}
-
-/* SPLIT SCREEN */
-.split {
-  position: absolute; inset:0;
-  display: grid;
-  grid-template-columns: 55fr 45fr;
-}
-.split-half { position: relative; overflow: hidden; }
-
-/* TITLE CARD (end) */
-#title-card {
-  position: absolute; inset:0;
-  display: flex; flex-direction: column;
-  align-items: center; justify-content: center;
-  opacity: 0;
-}
-.tc-line {
-  width: 0; height: 1px;
-  background: rgba(240,236,227,0.2);
-  transition: width 1s ease;
-  margin: 0.6rem 0;
-}
-.tc-name {
-  font-family: var(--serif);
-  font-size: clamp(2rem,5.5vw,4rem);
-  color: var(--cream);
-  letter-spacing: 0.22em;
-  font-weight: 400;
-  opacity: 0;
-  transform: translateY(10px);
-  transition: all 1s ease;
-}
-.tc-sub {
-  font-family: var(--sans);
-  font-size: 0.44rem;
-  letter-spacing: 0.42em;
-  text-transform: uppercase;
-  color: rgba(240,236,227,0.2);
-  opacity: 0;
-  transition: opacity 0.8s ease 0.6s;
-}
-
-/* MARQUEE for S8 */
-.marquee-wrap {
-  position: absolute; bottom: 0; left:0; right:0;
-  overflow: hidden;
-  padding: 0.8rem 0;
-  border-top: 1px solid rgba(240,236,227,0.06);
-}
-.marquee-track {
-  display: flex; gap: 4rem;
-  width: max-content;
-  animation: marquee 12s linear infinite;
-}
-.marquee-item {
-  font-family: var(--sans);
-  font-size: 0.44rem;
-  letter-spacing: 0.28em;
-  text-transform: uppercase;
-  color: rgba(240,236,227,0.18);
-  white-space: nowrap;
-}
-@keyframes marquee { from { transform: translateX(0); } to { transform: translateX(-50%); } }
-
-/* ANIMATIONS */
-@keyframes kenBurnsIn { from { transform: scale(1.12) translateX(1%); } to { transform: scale(1.0) translateX(0%); } }
-@keyframes kenBurnsUp { from { transform: scale(1.1) translateY(2%); } to { transform: scale(1.02) translateY(-1%); } }
-@keyframes kenBurnsRight { from { transform: scale(1.08) translateX(-2%); } to { transform: scale(1.01) translateX(1%); } }
-@keyframes kenBurnsLeft { from { transform: scale(1.1) translateX(3%); } to { transform: scale(1.02) translateX(-1%); } }
-@keyframes kenBurnsZoom { from { transform: scale(1.0); } to { transform: scale(1.07); } }
-@keyframes drift { from { transform: scale(1.05) translate(0,0); } to { transform: scale(1.08) translate(-1%,-0.5%); } }
-
-@keyframes fadeUp { from { opacity:0; transform: translateY(20px); } to { opacity:1; transform: translateY(0); } }
-@keyframes fadeIn { from { opacity:0; } to { opacity:1; } }
-@keyframes slideRight { from { transform: translateX(-30px); opacity:0; } to { transform: translateX(0); opacity:1; } }
-@keyframes slideLeft { from { transform: translateX(30px); opacity:0; } to { transform: translateX(0); opacity:1; } }
-@keyframes scaleIn { from { transform: scale(0.88); opacity:0; } to { transform: scale(1); opacity:1; } }
-@keyframes expandW { from { width:0; } to { width: 100%; } }
-@keyframes expandH { from { height:0; } to { height: 100%; } }
-
-/* GITHUB BASE URL for images */
-</style>
+    @media (max-width: 700px) {
+      #hero { grid-template-columns: 1fr; }
+      #right { display: none; }
+      #body { padding: 32px 16px 0; }
+      #nav  { padding: 0 16px; }
+    }
+  </style>
 </head>
 <body>
+<div id="page">
 
-<div id="cur"></div>
-<div id="grain"></div>
-<div id="lb-top"></div>
-<div id="lb-bot"></div>
-<div id="flash"></div>
+  <nav id="nav">
+    <span id="nav-time">—</span>
+  </nav>
 
-<nav>
-  <div class="logo">ajchapa</div>
-  <div class="nav-links">
-    <a href="https://instagram.com/ajchapa" target="_blank">Instagram</a>
-    <a href="https://linkedin.com/in/ajchapa" target="_blank">LinkedIn</a>
-  </div>
-</nav>
+  <div id="body">
+    <div id="hero">
 
-<div id="stage">
+      <div id="left">
+        <h1 id="name">aj<br>chapa</h1>
 
-  <!-- S1: OPEN — Magazine spread ani1 / slow reveal -->
-  <div class="sc" id="s1">
-    <div class="img-layer" id="s1img" style="background-image:url('https://raw.githubusercontent.com/AJChapagain/AJChapagain.github.io/main/ani1.png');"></div>
-    <div class="vig-full"></div>
-    <div class="vig-b"></div>
-    <div class="txt" style="bottom:3rem;left:2.2rem;">
-      <div class="eyebrow" id="s1ey" style="opacity:0;margin-bottom:0.6rem;">editorial — vol. i</div>
-      <div class="headline" id="s1h" style="font-size:clamp(3rem,8vw,5.5rem);opacity:0;">
-        A world<br>in motion.
-      </div>
-    </div>
-    <div class="dline" id="s1ln" style="right:2.2rem;top:50%;transform:translateY(-50%);width:1px;height:0;"></div>
-  </div>
+        <div id="links">
+          <a class="link-row" href="https://www.instagram.com/aapplejuce/" target="_blank" rel="noopener">
+            <div class="link-left">
+              <span class="link-index">01</span>
+              <div>
+                <div class="link-name">instagram</div>
+                <div class="link-handle">@aapplejuce</div>
+              </div>
+            </div>
+            <span class="link-arrow">↗</span>
+          </a>
 
-  <!-- S2: IDENTITY — T-shirt ani2, close crop, fabric texture alive -->
-  <div class="sc" id="s2">
-    <div class="img-layer" id="s2img" style="background-image:url('https://raw.githubusercontent.com/AJChapagain/AJChapagain.github.io/main/ani2.png');background-position:center 40%;"></div>
-    <div class="vig-c"></div>
-    <div class="vig-b"></div>
-    <div class="txt" style="bottom:2.8rem;left:2.2rem;">
-      <div class="label" id="s2lb" style="opacity:0;">the uniform</div>
-    </div>
-    <div class="txt" style="top:50%;left:50%;transform:translate(-50%,-50%);">
-      <div class="headline" id="s2h" style="font-size:clamp(1rem,2.5vw,1.8rem);text-align:center;letter-spacing:0.18em;opacity:0;">AJCHAPA</div>
-    </div>
-  </div>
+          <a class="link-row" href="https://www.linkedin.com/in/aj-chapagain/" target="_blank" rel="noopener">
+            <div class="link-left">
+              <span class="link-index">02</span>
+              <div>
+                <div class="link-name">linkedin</div>
+                <div class="link-handle">/aj-chapagain</div>
+              </div>
+            </div>
+            <span class="link-arrow">↗</span>
+          </a>
 
-  <!-- S3: WORLD — Grid mosaic ani3 -->
-  <div class="sc" id="s3">
-    <div class="img-layer" id="s3img" style="background-image:url('https://raw.githubusercontent.com/AJChapagain/AJChapagain.github.io/main/ani3.png');"></div>
-    <div class="vig-t"></div>
-    <div class="vig-b"></div>
-    <div class="txt" style="bottom:2.8rem;right:2.2rem;text-align:right;">
-      <div class="headline" id="s3h" style="font-size:clamp(2rem,5.5vw,4rem);opacity:0;">Every<br>frame.</div>
-    </div>
-  </div>
+          <a class="link-row" href="https://steamcommunity.com/profiles/76561198343184351/" target="_blank" rel="noopener">
+            <div class="link-left">
+              <span class="link-index">03</span>
+              <div>
+                <div class="link-name">steam</div>
+                <div class="link-handle">profile</div>
+              </div>
+            </div>
+            <span class="link-arrow">↗</span>
+          </a>
 
-  <!-- S4: DREAMLIKE — Balloon ani4, sky, floating -->
-  <div class="sc" id="s4">
-    <div class="img-layer" id="s4img" style="background-image:url('https://raw.githubusercontent.com/AJChapagain/AJChapagain.github.io/main/ani4.png');background-position:center 30%;"></div>
-    <div class="vig-b"></div>
-    <div style="position:absolute;inset:0;background:linear-gradient(180deg,rgba(8,8,8,0.15) 0%,transparent 50%);"></div>
-    <div class="txt" style="top:50%;left:2.2rem;transform:translateY(-50%);">
-      <div class="headline" id="s4h" style="font-size:clamp(3.5rem,10vw,7rem);opacity:0;line-height:0.88;">Let<br>go.</div>
-    </div>
-    <div class="txt" style="bottom:2.5rem;left:2.2rem;">
-      <div class="eyebrow" id="s4ey" style="opacity:0;">somewhere over everything</div>
-    </div>
-  </div>
-
-  <!-- S5: LUXURY DETAIL — Receipt ani5, macro -->
-  <div class="sc" id="s5">
-    <div class="img-layer" id="s5img" style="background-image:url('https://raw.githubusercontent.com/AJChapagain/AJChapagain.github.io/main/ani5.png');background-position:center;"></div>
-    <div class="vig-c"></div>
-    <div class="vig-l"></div>
-    <div class="txt" style="left:2.2rem;top:50%;transform:translateY(-50%);">
-      <div class="label" id="s5lb" style="opacity:0;margin-bottom:0.5rem;">the details matter</div>
-      <div class="headline" id="s5h" style="font-size:clamp(2rem,5vw,3.5rem);opacity:0;">Luxury<br>is quiet.</div>
-    </div>
-  </div>
-
-  <!-- S6: SPLIT — ani6 (alley walk) left / personal photo right -->
-  <div class="sc" id="s6">
-    <div class="split">
-      <div class="split-half">
-        <div class="img-layer" id="s6imgL" style="background-image:url('https://raw.githubusercontent.com/AJChapagain/AJChapagain.github.io/main/ani6.png');background-position:center;inset:-5%;"></div>
-        <div class="vig-r"></div>
-      </div>
-      <div class="split-half" style="background:#0c0b09;display:flex;align-items:flex-end;padding:2.5rem 2rem;">
-        <div>
-          <div class="label" id="s6lb" style="opacity:0;margin-bottom:0.7rem;">ajchapa — 2024</div>
-          <div class="headline" id="s6h" style="font-size:clamp(2.2rem,6vw,4.5rem);opacity:0;">Walk<br>your<br>own<br>way.</div>
+          <a class="link-row" href="archive.html">
+            <div class="link-left">
+              <span class="link-index">04</span>
+              <div>
+                <div class="link-name">archive</div>
+                <div class="link-handle">5 frames</div>
+              </div>
+            </div>
+            <span class="link-arrow">→</span>
+          </a>
         </div>
       </div>
-    </div>
-  </div>
 
-  <!-- S7: URBAN NIGHT — City billboard ani7 -->
-  <div class="sc" id="s7">
-    <div class="img-layer" id="s7img" style="background-image:url('https://raw.githubusercontent.com/AJChapagain/AJChapagain.github.io/main/ani7.png');"></div>
-    <div class="vig-b"></div>
-    <div class="vig-t"></div>
-    <div class="txt" style="bottom:3rem;left:2.2rem;">
-      <div class="eyebrow" id="s7ey" style="opacity:0;margin-bottom:0.5rem;">the city knows</div>
-      <div class="headline" id="s7h" style="font-size:clamp(2rem,5.5vw,4rem);opacity:0;">Everywhere<br>at once.</div>
-    </div>
-  </div>
-
-  <!-- S8: PRESENCE — Instagram/social ani8, MARQUEE scroll -->
-  <div class="sc" id="s8">
-    <div class="img-layer" id="s8img" style="background-image:url('https://raw.githubusercontent.com/AJChapagain/AJChapagain.github.io/main/ani8.PNG');background-position:center top;"></div>
-    <div class="vig-full" style="background:rgba(8,8,8,0.55);"></div>
-    <div class="vig-l"></div>
-    <div class="txt" style="left:2.2rem;top:50%;transform:translateY(-50%);">
-      <div class="label" id="s8lb" style="opacity:0;margin-bottom:0.7rem;">the digital self</div>
-      <div class="headline" id="s8h" style="font-size:clamp(2.5rem,7vw,5rem);opacity:0;">Scroll<br>worthy.</div>
-    </div>
-    <div class="marquee-wrap" id="s8mq" style="opacity:0;">
-      <div class="marquee-track">
-        <span class="marquee-item">ajchapa</span>
-        <span class="marquee-item">·</span>
-        <span class="marquee-item">student</span>
-        <span class="marquee-item">·</span>
-        <span class="marquee-item">explorer</span>
-        <span class="marquee-item">·</span>
-        <span class="marquee-item">creator</span>
-        <span class="marquee-item">·</span>
-        <span class="marquee-item">ajchapa</span>
-        <span class="marquee-item">·</span>
-        <span class="marquee-item">student</span>
-        <span class="marquee-item">·</span>
-        <span class="marquee-item">explorer</span>
-        <span class="marquee-item">·</span>
-        <span class="marquee-item">creator</span>
-        <span class="marquee-item">·</span>
-        <span class="marquee-item">ajchapa</span>
-        <span class="marquee-item">·</span>
-        <span class="marquee-item">student</span>
-        <span class="marquee-item">·</span>
-        <span class="marquee-item">explorer</span>
-        <span class="marquee-item">·</span>
-        <span class="marquee-item">creator</span>
-        <span class="marquee-item">·</span>
+      <div id="right">
+        <canvas id="particle-canvas"></canvas>
       </div>
+
     </div>
   </div>
 
-  <!-- S9: BUS STOP — ani9, city presence -->
-  <div class="sc" id="s9">
-    <div class="img-layer" id="s9img" style="background-image:url('https://raw.githubusercontent.com/AJChapagain/AJChapagain.github.io/main/ani9.png');"></div>
-    <div class="vig-b"></div>
-    <div class="txt" style="bottom:3rem;right:2.2rem;text-align:right;">
-      <div class="headline" id="s9h" style="font-size:clamp(2rem,5vw,3.5rem);opacity:0;">Seen<br>everywhere.</div>
-    </div>
-    <div class="txt" style="bottom:3rem;left:2.2rem;">
-      <div class="eyebrow" id="s9ey" style="opacity:0;">out in the world</div>
-    </div>
-  </div>
-
-  <!-- S10: INTERIOR — Bus interior ani10, commuters -->
-  <div class="sc" id="s10">
-    <div class="img-layer" id="s10img" style="background-image:url('https://raw.githubusercontent.com/AJChapagain/AJChapagain.github.io/main/ani10.png');"></div>
-    <div class="vig-c"></div>
-    <div class="vig-b"></div>
-    <div class="txt" style="top:50%;left:2.2rem;transform:translateY(-50%);">
-      <div class="headline" id="s10h" style="font-size:clamp(2.5rem,7vw,5rem);opacity:0;">Moving<br>through<br>the world.</div>
-    </div>
-  </div>
-
-  <!-- S11: COLLAB — Hoodie on beach ani11, golden hour -->
-  <div class="sc" id="s11">
-    <div class="img-layer" id="s11img" style="background-image:url('https://raw.githubusercontent.com/AJChapagain/AJChapagain.github.io/main/ani11.png');background-position:center 35%;"></div>
-    <div class="vig-b"></div>
-    <div class="txt" style="bottom:3rem;left:2.2rem;">
-      <div class="eyebrow" id="s11ey" style="opacity:0;margin-bottom:0.5rem;">ajchapa × pixiste</div>
-      <div class="headline" id="s11h" style="font-size:clamp(2.5rem,7vw,5rem);opacity:0;">Built to<br>last.</div>
-    </div>
-  </div>
-
-  <!-- S12: MOSAIC — Campaign overview ani12 -->
-  <div class="sc" id="s12">
-    <div class="img-layer" id="s12img" style="background-image:url('https://raw.githubusercontent.com/AJChapagain/AJChapagain.github.io/main/ani12.png');"></div>
-    <div class="vig-t"></div>
-    <div class="vig-b"></div>
-    <div class="txt" style="top:50%;right:2.2rem;transform:translateY(-50%);text-align:right;">
-      <div class="headline" id="s12h" style="font-size:clamp(2.5rem,7vw,5.5rem);opacity:0;">The<br>collection.</div>
-    </div>
-  </div>
-
-  <!-- S13: PERSONAL — Village photo1 -->
-  <div class="sc" id="s13">
-    <div class="img-layer" id="s13img" style="background-image:url('https://raw.githubusercontent.com/AJChapagain/AJChapagain.github.io/main/photo1.jpg');background-position:center;"></div>
-    <div class="vig-b"></div>
-    <div class="vig-l"></div>
-    <div class="txt" style="bottom:3rem;left:2.2rem;">
-      <div class="label" id="s13lb" style="opacity:0;margin-bottom:0.5rem;">where it began</div>
-      <div class="headline" id="s13h" style="font-size:clamp(2rem,5.5vw,4rem);opacity:0;">Roots<br>run deep.</div>
-    </div>
-  </div>
-
-  <!-- S14: PERSONAL — Vegas photo6, energy -->
-  <div class="sc" id="s14">
-    <div class="img-layer" id="s14img" style="background-image:url('https://raw.githubusercontent.com/AJChapagain/AJChapagain.github.io/main/photo6.jpg');background-position:center;"></div>
-    <div class="vig-b"></div>
-    <div class="vig-c"></div>
-    <div class="txt" style="bottom:3rem;left:50%;transform:translateX(-50%);text-align:center;">
-      <div class="eyebrow" id="s14ey" style="opacity:0;margin-bottom:0.6rem;">las vegas — nv</div>
-      <div class="headline" id="s14h" style="font-size:clamp(2.5rem,7vw,5rem);opacity:0;text-align:center;">All in.</div>
-    </div>
-  </div>
-
-  <!-- S15: MOMENTUM — Pixiste blazer pixi1 + quick cut -->
-  <div class="sc" id="s15">
-    <div class="img-layer" id="s15img" style="background-image:url('https://raw.githubusercontent.com/AJChapagain/AJChapagain.github.io/main/pixi1.png');background-position:center;"></div>
-    <div class="vig-c"></div>
-    <div class="vig-b"></div>
-    <div class="txt" style="bottom:3rem;right:2.2rem;text-align:right;">
-      <div class="eyebrow" id="s15ey" style="opacity:0;margin-bottom:0.5rem;">pixiste — crafted</div>
-      <div class="headline" id="s15h" style="font-size:clamp(2rem,5.5vw,4rem);opacity:0;">Wear it<br>well.</div>
-    </div>
-  </div>
-
-  <!-- S16: FINALE — Title card -->
-  <div class="sc" id="s16" style="background:var(--ink);">
-    <div id="title-card">
-      <div class="tc-line" id="tc-ln1"></div>
-      <div class="tc-name" id="tc-name">ajchapa</div>
-      <div class="tc-sub" id="tc-sub">student · explorer · everything</div>
-      <div class="tc-line" id="tc-ln2"></div>
-    </div>
+  <div id="ticker">
+    <div id="ticker-track"></div>
   </div>
 
 </div>
 
-<div id="pbar"></div>
-<div id="chap"></div>
-
 <script>
-/* ─── SETUP ─── */
-const BASE = 'https://raw.githubusercontent.com/AJChapagain/AJChapagain.github.io/main/';
-const $ = id => document.getElementById(id);
-const wait = ms => new Promise(r => setTimeout(r, ms));
-const E1 = 'cubic-bezier(0.16,1,0.3,1)';
-const E2 = 'cubic-bezier(0.4,0,0.2,1)';
-const TOTAL = 16;
-
-/* cursor */
-document.addEventListener('mousemove', e => {
-  const c = $('cur');
-  c.style.left = e.clientX + 'px';
-  c.style.top = e.clientY + 'px';
-});
-
-/* flash */
-function flash(dur=80) {
-  const f = $('flash');
-  f.style.transition = 'none';
-  f.style.opacity = '0.08';
-  setTimeout(() => { f.style.transition = `opacity ${dur*3}ms ease`; f.style.opacity = '0'; }, dur);
-}
-
-/* letterbox */
-function letterbox(on) {
-  const h = on ? '3.5vh' : '0';
-  $('lb-top').style.height = h;
-  $('lb-bot').style.height = h;
-}
-
-/* progress */
-function prog(n) {
-  $('pbar').style.width = ((n/TOTAL)*100) + '%';
-}
-
-/* chapter */
-function chap(txt) {
-  const c = $('chap');
-  c.style.opacity = '0';
-  setTimeout(() => { c.textContent = txt; c.style.opacity = '1'; }, 300);
-}
-
-/* show scene */
-function showSc(id) {
-  const el = $(id);
-  el.style.opacity = '0';
-  el.style.display = 'block';
-  return new Promise(r => requestAnimationFrame(() => {
-    requestAnimationFrame(() => {
-      el.style.transition = 'opacity 0.55s ease';
-      el.style.opacity = '1';
-      r();
-    });
-  }));
-}
-
-/* hide scene */
-function hideSc(id, dur=400) {
-  const el = $(id);
-  el.style.transition = `opacity ${dur}ms ease`;
-  el.style.opacity = '0';
-  return wait(dur).then(() => { el.style.display = 'none'; });
-}
-
-/* animate image with ken burns */
-function kb(el, type='in', dur=3000) {
-  const anims = {
-    in: `kenBurnsIn ${dur}ms ${E2} forwards`,
-    up: `kenBurnsUp ${dur}ms ${E2} forwards`,
-    right: `kenBurnsRight ${dur}ms ${E2} forwards`,
-    left: `kenBurnsLeft ${dur}ms ${E2} forwards`,
-    zoom: `kenBurnsZoom ${dur}ms ${E2} forwards`,
-    drift: `drift ${dur}ms ${E2} forwards`,
-  };
-  el.style.animation = anims[type] || anims['in'];
-}
-
-/* animate text */
-function animTxt(el, type='fadeUp', delay=0, dur=600) {
-  if (!el) return;
-  el.style.opacity = '0';
-  setTimeout(() => {
-    el.style.animation = `${type} ${dur}ms ${E1} forwards`;
-  }, delay);
-}
-
-/* ─── SCENES ─── */
-
-async function s1() {
-  prog(1); chap('i. editorial');
-  letterbox(true);
-  await showSc('s1');
-  kb($('s1img'), 'in', 2800);
-  animTxt($('s1ey'), 'fadeIn', 200, 700);
-  animTxt($('s1h'), 'fadeUp', 450, 750);
-  const ln = $('s1ln');
-  setTimeout(() => { ln.style.transition = 'height 1s ease 0.3s'; ln.style.height = '35%'; }, 300);
-  await wait(2400);
-  flash();
-  await hideSc('s1', 300);
-}
-
-async function s2() {
-  prog(2); chap('ii. identity');
-  await showSc('s2');
-  kb($('s2img'), 'zoom', 2600);
-  animTxt($('s2h'), 'scaleIn', 300, 600);
-  animTxt($('s2lb'), 'fadeIn', 700, 500);
-  await wait(2200);
-  flash(60);
-  await hideSc('s2', 280);
-}
-
-async function s3() {
-  prog(3); chap('iii. the grid');
-  await showSc('s3');
-  kb($('s3img'), 'left', 2700);
-  animTxt($('s3h'), 'slideLeft', 350, 650);
-  await wait(2300);
-  flash();
-  await hideSc('s3', 300);
-}
-
-async function s4() {
-  prog(4); chap('iv. freedom');
-  letterbox(false);
-  await showSc('s4');
-  kb($('s4img'), 'up', 3000);
-  animTxt($('s4h'), 'slideRight', 200, 700);
-  animTxt($('s4ey'), 'fadeIn', 800, 600);
-  await wait(2600);
-  flash(50);
-  await hideSc('s4', 300);
-}
-
-async function s5() {
-  prog(5); chap('v. detail');
-  letterbox(true);
-  await showSc('s5');
-  kb($('s5img'), 'zoom', 2800);
-  animTxt($('s5lb'), 'fadeIn', 200, 500);
-  animTxt($('s5h'), 'fadeUp', 500, 700);
-  await wait(2400);
-  flash();
-  await hideSc('s5', 300);
-}
-
-async function s6() {
-  prog(6); chap('vi. direction');
-  letterbox(false);
-  await showSc('s6');
-  kb($('s6imgL'), 'right', 2800);
-  animTxt($('s6lb'), 'fadeIn', 300, 500);
-  animTxt($('s6h'), 'fadeUp', 500, 750);
-  await wait(2500);
-  flash(70);
-  await hideSc('s6', 320);
-}
-
-async function s7() {
-  prog(7); chap('vii. the city');
-  await showSc('s7');
-  kb($('s7img'), 'drift', 2700);
-  animTxt($('s7ey'), 'fadeIn', 200, 500);
-  animTxt($('s7h'), 'slideRight', 450, 700);
-  await wait(2400);
-  flash(55);
-  await hideSc('s7', 280);
-}
-
-async function s8() {
-  prog(8); chap('viii. presence');
-  letterbox(true);
-  await showSc('s8');
-  kb($('s8img'), 'up', 2600);
-  animTxt($('s8lb'), 'fadeIn', 200, 500);
-  animTxt($('s8h'), 'slideRight', 400, 700);
-  setTimeout(() => {
-    const mq = $('s8mq');
-    mq.style.transition = 'opacity 0.6s ease';
-    mq.style.opacity = '1';
-  }, 600);
-  await wait(2300);
-  flash();
-  await hideSc('s8', 300);
-}
-
-async function s9() {
-  prog(9); chap('ix. everywhere');
-  letterbox(false);
-  await showSc('s9');
-  kb($('s9img'), 'in', 2800);
-  animTxt($('s9ey'), 'fadeIn', 200, 500);
-  animTxt($('s9h'), 'slideLeft', 400, 700);
-  await wait(2400);
-  flash(60);
-  await hideSc('s9', 300);
-}
-
-async function s10() {
-  prog(10); chap('x. in motion');
-  await showSc('s10');
-  kb($('s10img'), 'zoom', 2700);
-  animTxt($('s10h'), 'fadeUp', 350, 800);
-  await wait(2300);
-  flash();
-  await hideSc('s10', 280);
-}
-
-async function s11() {
-  prog(11); chap('xi. collaboration');
-  letterbox(true);
-  await showSc('s11');
-  kb($('s11img'), 'up', 3000);
-  animTxt($('s11ey'), 'fadeIn', 300, 600);
-  animTxt($('s11h'), 'slideRight', 550, 750);
-  await wait(2600);
-  flash(80);
-  await hideSc('s11', 320);
-}
-
-async function s12() {
-  prog(12); chap('xii. the collection');
-  letterbox(false);
-  await showSc('s12');
-  kb($('s12img'), 'left', 2700);
-  animTxt($('s12h'), 'slideLeft', 350, 700);
-  await wait(2300);
-  flash(55);
-  await hideSc('s12', 280);
-}
-
-async function s13() {
-  prog(13); chap('xiii. origins');
-  await showSc('s13');
-  kb($('s13img'), 'drift', 2800);
-  animTxt($('s13lb'), 'fadeIn', 200, 500);
-  animTxt($('s13h'), 'fadeUp', 500, 750);
-  await wait(2400);
-  flash();
-  await hideSc('s13', 300);
-}
-
-async function s14() {
-  prog(14); chap('xiv. all in');
-  letterbox(true);
-  await showSc('s14');
-  kb($('s14img'), 'zoom', 2800);
-  animTxt($('s14ey'), 'fadeIn', 200, 500);
-  animTxt($('s14h'), 'scaleIn', 450, 800);
-  await wait(2400);
-  flash(90);
-  await hideSc('s14', 350);
-}
-
-async function s15() {
-  prog(15); chap('xv. craft');
-  letterbox(false);
-  await showSc('s15');
-  kb($('s15img'), 'in', 2700);
-  animTxt($('s15ey'), 'fadeIn', 200, 500);
-  animTxt($('s15h'), 'slideLeft', 450, 700);
-  await wait(2300);
-  flash(60);
-  await hideSc('s15', 300);
-}
-
-async function s16() {
-  prog(16); chap('');
-  letterbox(true);
-  await showSc('s16');
-  const tc = $('title-card');
-  tc.style.transition = 'opacity 1s ease';
-  tc.style.opacity = '1';
-
-  await wait(300);
-  $('tc-ln1').style.width = '140px';
-  $('tc-ln2').style.width = '140px';
-  await wait(600);
-
-  const nm = $('tc-name');
-  nm.style.transition = 'all 1s ease';
-  nm.style.opacity = '1';
-  nm.style.transform = 'translateY(0)';
-  await wait(500);
-
-  $('tc-sub').style.opacity = '1';
-  await wait(2200);
-  await hideSc('s16', 600);
-}
-
-/* ─── RESET ─── */
-function reset() {
-  for (let i=1; i<=TOTAL; i++) {
-    const el = $('s'+i);
-    if (!el) continue;
-    el.style.transition = 'none';
-    el.style.opacity = '0';
-    el.style.display = 'none';
+  /* ── CLOCK ── */
+  function tick() {
+    document.getElementById('nav-time').textContent =
+      new Date().toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: false });
   }
-  ['s1img','s2img','s3img','s4img','s5img','s6imgL','s7img','s8img','s9img','s10img','s11img','s12img','s13img','s14img','s15img'].forEach(id => {
-    const el = $(id); if (el) el.style.animation = 'none';
-  });
-  const allTxt = ['s1ey','s1h','s2h','s2lb','s3h','s4h','s4ey','s5lb','s5h','s6lb','s6h','s7ey','s7h','s8lb','s8h','s9h','s9ey','s10h','s11ey','s11h','s12h','s13lb','s13h','s14ey','s14h','s15ey','s15h'];
-  allTxt.forEach(id => { const el=$(id); if(el){el.style.animation='none';el.style.opacity='0';} });
-  $('s1ln').style.transition='none'; $('s1ln').style.height='0';
-  $('s8mq').style.opacity='0';
-  const tc=$('title-card'); if(tc){tc.style.opacity='0';}
-  const nm=$('tc-name'); if(nm){nm.style.opacity='0';nm.style.transform='translateY(10px)';}
-  const sub=$('tc-sub'); if(sub){sub.style.opacity='0';}
-  const ln1=$('tc-ln1'); if(ln1){ln1.style.width='0';}
-  const ln2=$('tc-ln2'); if(ln2){ln2.style.width='0';}
-  $('pbar').style.width='0';
-  $('chap').textContent='';
-}
+  tick();
+  setInterval(tick, 1000);
 
-/* ─── RUN ─── */
-async function run() {
-  const scenes = [s1,s2,s3,s4,s5,s6,s7,s8,s9,s10,s11,s12,s13,s14,s15,s16];
-  for (const fn of scenes) {
-    await fn();
-    await wait(40);
+  /* ── TICKER ── */
+  const statuses = [
+    { label: 'status',       value: () => 'online' },
+    { label: 'local time',   value: () => new Date().toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: false }) },
+    { label: 'location',     value: () => 'salt lake city' },
+    { label: 'system',       value: () => 'sentience protocol active' },
+    { label: 'uptime',       value: () => Math.floor((Date.now() - window._startTime) / 1000) + 's on page' },
+    { label: 'bpm',          value: () => '72' },
+    { label: 'signal',       value: () => '████████░░' },
+  ];
+  window._startTime = Date.now();
+
+  function buildTicker() {
+    const track = document.getElementById('ticker-track');
+    let html = '';
+    for (let pass = 0; pass < 2; pass++) {
+      statuses.forEach(s => {
+        html += `<span class="tick">${s.label} — ${s.value()}</span><span class="tick-dot">·</span>`;
+      });
+    }
+    track.innerHTML = html;
   }
-  reset();
-  await wait(500);
-  run();
-}
+  buildTicker();
+  setInterval(buildTicker, 10000);
 
-/* ─── AUTO START ─── */
-window.addEventListener('load', () => {
-  // Preload key images
-  const imgs = ['ani1.png','ani2.png','ani3.png','ani4.png','ani5.png','ani6.png','ani7.png','ani8.PNG','ani9.png','ani10.png','ani11.png','ani12.png','photo1.jpg','photo6.jpg','pixi1.png'];
-  imgs.forEach(src => { const img = new Image(); img.src = BASE + src; });
+  /* ── PROCEDURAL PARTICLE ENGINE ── */
+  (function () {
+    const canvas = document.getElementById('particle-canvas');
+    const ctx    = canvas.getContext('2d');
 
-  // Start immediately
-  setTimeout(() => {
-    $('lb-top').style.transition = 'height 0.8s cubic-bezier(0.16,1,0.3,1)';
-    $('lb-bot').style.transition = 'height 0.8s cubic-bezier(0.16,1,0.3,1)';
-    run();
-  }, 300);
-});
+    const W = 400;
+    const H = 500;
+    canvas.width  = W;
+    canvas.height = H;
+
+    const SPACING       = 5;    // Particle density
+    const RADIUS        = 1.1;  // Slightly thicker base particle size for visibility on white
+    const BEAT_INTERVAL = 1.2;  // Seconds for a full heartbeat cycle
+
+    let particles = [];
+    let time      = 0;
+    let lastTs    = null;
+
+    // Define Heart Location (Left side of the chest)
+    const heartCX = W / 2 - 25; 
+    const heartCY = H / 2 + 10;
+
+    // 1. Draw a procedural silhouette onto an invisible off-screen canvas
+    function createProceduralHuman() {
+      const off  = document.createElement('canvas');
+      off.width  = W;
+      off.height = H;
+      const octx = off.getContext('2d');
+
+      // Drawing solid shape to read pixels from
+      octx.fillStyle = '#000000'; 
+
+      // Head
+      octx.beginPath();
+      octx.arc(W / 2, H / 2 - 100, 35, 0, Math.PI * 2);
+      octx.fill();
+
+      // Neck and Torso (Elegant, abstract curve)
+      octx.beginPath();
+      octx.moveTo(W / 2 - 15, H / 2 - 65);
+      octx.quadraticCurveTo(W / 2 - 110, H / 2 - 10, W / 2 - 140, H / 2 + 180); 
+      octx.lineTo(W / 2 + 140, H / 2 + 180); 
+      octx.quadraticCurveTo(W / 2 + 110, H / 2 - 10, W / 2 + 15, H / 2 - 65); 
+      octx.fill();
+
+      return off;
+    }
+
+    // 2. Map the pixels into particles
+    function initParticles() {
+      const offCanvas = createProceduralHuman();
+      const octx = offCanvas.getContext('2d');
+      const { data } = octx.getImageData(0, 0, W, H);
+
+      particles = [];
+      
+      for (let y = 0; y < H; y += SPACING) {
+        for (let x = 0; x < W; x += SPACING) {
+          const i = (y * W + x) * 4;
+          const alpha = data[i + 3];
+          
+          if (alpha > 128) { 
+            
+            const dx = x - heartCX;
+            const dy = y - heartCY;
+            const dist = Math.sqrt(dx * dx + dy * dy);
+            
+            const isHeart = dist < 22;
+
+            particles.push({
+              ox: x, 
+              oy: y,
+              x: x,  
+              y: y,
+              isHeart: isHeart,
+              distToHeart: dist,
+              phaseX: Math.random() * Math.PI * 2,
+              phaseY: Math.random() * Math.PI * 2,
+              driftSpeed: 0.5 + Math.random() * 0.5,
+            });
+          }
+        }
+      }
+    }
+
+    /* ── Cinematic Visceral Heartbeat (Lub-Dub Curve) ── */
+    function getHeartbeat(t) {
+      const p = t % BEAT_INTERVAL;
+      if (p < 0.12) return Math.sin((p / 0.12) * Math.PI);
+      if (p > 0.22 && p < 0.34) return Math.sin(((p - 0.22) / 0.12) * Math.PI) * 0.5;
+      return 0;
+    }
+
+    /* ── Animation Loop ── */
+    function animate(ts) {
+      requestAnimationFrame(animate);
+      if (!lastTs) lastTs = ts || 0;
+      const dt = Math.min(((ts || 0) - lastTs) / 1000, 0.05);
+      lastTs = ts || 0;
+      time += dt;
+
+      ctx.clearRect(0, 0, W, H);
+      if (!particles.length) return;
+
+      const beat = getHeartbeat(time);
+
+      // First Batch: The Body
+      ctx.beginPath();
+      // Crisp, dark grey/black for the minimalist silhouette
+      ctx.fillStyle = `rgba(15, 15, 15, 0.8)`; 
+
+      particles.forEach(p => {
+        if (p.isHeart) return; 
+
+        const driftX = Math.sin(time * p.driftSpeed + p.phaseX) * 1.5;
+        const driftY = Math.cos(time * p.driftSpeed + p.phaseY) * 1.5;
+
+        let pushX = 0, pushY = 0;
+        if (beat > 0) {
+          const force = Math.max(0, 1 - (p.distToHeart / 150)); 
+          const dx = p.ox - heartCX;
+          const dy = p.oy - heartCY;
+          const pushAmount = beat * force * 3.5;
+          pushX = (dx / p.distToHeart) * pushAmount;
+          pushY = (dy / p.distToHeart) * pushAmount;
+        }
+
+        p.x = p.ox + driftX + pushX;
+        p.y = p.oy + driftY + pushY;
+
+        ctx.moveTo(p.x + RADIUS, p.y);
+        ctx.arc(p.x, p.y, RADIUS, 0, Math.PI * 2);
+      });
+      ctx.fill();
+
+      // Second Batch: The Heart 
+      ctx.beginPath();
+      const heartOpacity = 0.6 + (beat * 0.4); 
+      // Sharp, visceral crimson to pop against the white and black
+      ctx.fillStyle = `rgba(210, 10, 10, ${heartOpacity})`;
+
+      particles.forEach(p => {
+        if (!p.isHeart) return;
+
+        const dx = p.ox - heartCX;
+        const dy = p.oy - heartCY;
+        const expand = beat * 4.0; 
+        
+        p.x = p.ox + (dx / p.distToHeart) * expand;
+        p.y = p.oy + (dy / p.distToHeart) * expand;
+
+        const currentRadius = RADIUS + (beat * 0.8);
+        ctx.moveTo(p.x + currentRadius, p.y);
+        ctx.arc(p.x, p.y, currentRadius, 0, Math.PI * 2);
+      });
+      ctx.fill();
+    }
+
+    initParticles();
+    requestAnimationFrame(animate);
+
+  })();
 </script>
 </body>
 </html>
