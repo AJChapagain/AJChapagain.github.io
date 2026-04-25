@@ -15,7 +15,6 @@
       --border:     #ededed;
       --text-main:  #000000;
       --text-muted: #999999;
-      --text-link:  #333333;
       --font:       'Mulish', sans-serif;
       --mono:       Menlo, Monaco, Consolas, monospace;
     }
@@ -47,14 +46,11 @@
       justify-content: space-between;
       padding: 0 20px;
     }
-
     #nav-logo {
       font-size: 14px;
       font-weight: 700;
       color: var(--text-main);
-      letter-spacing: 0;
     }
-
     #nav-right {
       display: flex;
       align-items: center;
@@ -73,34 +69,27 @@
       padding: 30px 20px 0;
       border-bottom: 1px solid var(--border);
     }
-
     #profile-top {
       display: flex;
       align-items: center;
       justify-content: space-between;
       margin-bottom: 20px;
     }
-
     #profile-name {
       font-size: 24px;
       font-weight: 700;
       color: var(--text-main);
       letter-spacing: -0.01em;
     }
-
     #profile-meta {
       font-size: 12px;
       color: var(--text-muted);
       font-family: var(--mono);
     }
-
-    /* filter tabs */
     #profile-tabs {
       display: flex;
       align-items: center;
-      gap: 0;
     }
-
     .tab {
       font-size: 13px;
       font-weight: 400;
@@ -121,15 +110,14 @@
       border-bottom-color: var(--text-main);
     }
 
-    /* ── GRID CONTAINER ──────────────────────────────────── */
+    /* ── GRID ────────────────────────────────────────────── */
     #grid-wrap {
       padding: 20px;
     }
-
     #grid {
       display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 15px;
+      grid-template-columns: repeat(6, 1fr);
+      gap: 12px;
     }
 
     /* ── BLOCK / CARD ────────────────────────────────────── */
@@ -138,69 +126,30 @@
       flex-direction: column;
       gap: 8px;
       cursor: pointer;
-      position: relative;
     }
-
-    /* image container */
     .block-img {
       aspect-ratio: 1 / 1;
       background: var(--card-bg);
       border-radius: 3px;
-      border: 1px solid transparent;
+      border: 1px solid var(--border);
       overflow: hidden;
       display: flex;
       align-items: center;
       justify-content: center;
-      transition: border-color 0.1s;
-      position: relative;
+      transition: border-color 0.15s;
     }
-
     .block-img img {
       width: 100%;
       height: 100%;
-      object-fit: cover;
+      object-fit: contain;
       object-position: center;
-      opacity: 1;
-      transition: opacity 0.1s;
+      transition: opacity 0.15s;
     }
-
     .block:hover .block-img {
-      border-color: var(--border);
+      border-color: #ccc;
     }
     .block:hover .block-img img {
-      opacity: 0.9;
-    }
-
-    /* options button — top right, visible on hover */
-    .block-options {
-      position: absolute;
-      top: 6px;
-      right: 6px;
-      z-index: 2;
-      opacity: 0;
-      transition: opacity 0.1s;
-    }
-    .block:hover .block-options { opacity: 1; }
-
-    .block-options button {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      width: 24px;
-      height: 24px;
-      background: rgba(255,255,255,0.9);
-      border: 1px solid var(--border);
-      border-radius: 3px;
-      cursor: pointer;
-      padding: 0;
-    }
-    .block-options button:hover {
-      background: var(--bg);
-    }
-    .block-options svg {
-      width: 12px;
-      height: 12px;
-      fill: var(--text-muted);
+      opacity: 0.85;
     }
 
     /* metadata */
@@ -210,9 +159,8 @@
       gap: 2px;
       padding: 0 1px;
     }
-
     .block-title {
-      font-size: 13px;
+      font-size: 11px;
       font-weight: 700;
       color: var(--text-main);
       display: -webkit-box;
@@ -221,18 +169,10 @@
       overflow: hidden;
       line-height: 1.4;
     }
-
-    .block-author {
-      font-size: 13px;
-      font-weight: 400;
-      color: var(--text-main);
-    }
-
     .block-info {
-      font-size: 12px;
+      font-size: 10px;
       color: var(--text-muted);
       font-family: var(--mono);
-      font-variant-numeric: tabular-nums;
       white-space: nowrap;
       overflow: hidden;
       text-overflow: ellipsis;
@@ -255,7 +195,6 @@
       opacity: 1;
       pointer-events: all;
     }
-
     #lb-inner {
       display: flex;
       flex-direction: column;
@@ -263,7 +202,6 @@
       gap: 14px;
       max-width: 90vw;
     }
-
     #lb-img {
       max-width: 80vw;
       max-height: 72vh;
@@ -271,14 +209,12 @@
       border: 1px solid var(--border);
       border-radius: 3px;
     }
-
     #lb-label {
       font-size: 13px;
       font-weight: 700;
       color: var(--text-main);
       text-align: center;
     }
-
     #lb-sublabel {
       font-size: 12px;
       color: var(--text-muted);
@@ -286,7 +222,6 @@
       margin-top: -8px;
       text-align: center;
     }
-
     #lb-top {
       position: absolute;
       top: 0; left: 0; right: 0;
@@ -297,13 +232,11 @@
       padding: 0 20px;
       border-bottom: 1px solid var(--border);
     }
-
     #lb-counter {
       font-size: 12px;
       color: var(--text-muted);
       font-family: var(--mono);
     }
-
     #lb-close {
       font-size: 13px;
       font-weight: 600;
@@ -315,7 +248,6 @@
       font-family: var(--font);
     }
     #lb-close:hover { color: var(--text-main); }
-
     #lb-bot {
       position: absolute;
       bottom: 0; left: 0; right: 0;
@@ -326,7 +258,6 @@
       gap: 40px;
       border-top: 1px solid var(--border);
     }
-
     .lb-nav {
       font-size: 13px;
       font-weight: 600;
@@ -340,11 +271,11 @@
     .lb-nav:hover { color: var(--text-main); }
 
     /* ── RESPONSIVE ──────────────────────────────────────── */
-    @media (max-width: 600px) {
-      #grid {
-        grid-template-columns: repeat(2, 1fr);
-        gap: 10px;
-      }
+    @media (max-width: 900px) {
+      #grid { grid-template-columns: repeat(3, 1fr); }
+    }
+    @media (max-width: 500px) {
+      #grid { grid-template-columns: repeat(2, 1fr); }
       #profile { padding: 20px 14px 0; }
       #grid-wrap { padding: 14px; }
       #nav { padding: 0 14px; }
@@ -380,11 +311,6 @@
     <div class="block" onclick="openLB(0)">
       <div class="block-img">
         <img src="photo1.jpg" alt="in ma village" loading="lazy" />
-        <div class="block-options">
-          <button onclick="event.stopPropagation()" title="Options" aria-label="Options">
-            <svg viewBox="0 0 16 16"><circle cx="3" cy="8" r="1.2"/><circle cx="8" cy="8" r="1.2"/><circle cx="13" cy="8" r="1.2"/></svg>
-          </button>
-        </div>
       </div>
       <div class="block-meta">
         <div class="block-title">in ma village</div>
@@ -395,11 +321,6 @@
     <div class="block" onclick="openLB(1)">
       <div class="block-img">
         <img src="photo2.jpg" alt="clothing store era" loading="lazy" />
-        <div class="block-options">
-          <button onclick="event.stopPropagation()" title="Options" aria-label="Options">
-            <svg viewBox="0 0 16 16"><circle cx="3" cy="8" r="1.2"/><circle cx="8" cy="8" r="1.2"/><circle cx="13" cy="8" r="1.2"/></svg>
-          </button>
-        </div>
       </div>
       <div class="block-meta">
         <div class="block-title">clothing store era</div>
@@ -410,11 +331,6 @@
     <div class="block" onclick="openLB(2)">
       <div class="block-img">
         <img src="photo3.jpg" alt="pic with the judge before the prosecutor got fricked by urstruly" loading="lazy" />
-        <div class="block-options">
-          <button onclick="event.stopPropagation()" title="Options" aria-label="Options">
-            <svg viewBox="0 0 16 16"><circle cx="3" cy="8" r="1.2"/><circle cx="8" cy="8" r="1.2"/><circle cx="13" cy="8" r="1.2"/></svg>
-          </button>
-        </div>
       </div>
       <div class="block-meta">
         <div class="block-title">pic with the judge before the prosecutor got fricked by urstruly</div>
@@ -425,11 +341,6 @@
     <div class="block" onclick="openLB(3)">
       <div class="block-img">
         <img src="photo4.jpg" alt="orientation era" loading="lazy" />
-        <div class="block-options">
-          <button onclick="event.stopPropagation()" title="Options" aria-label="Options">
-            <svg viewBox="0 0 16 16"><circle cx="3" cy="8" r="1.2"/><circle cx="8" cy="8" r="1.2"/><circle cx="13" cy="8" r="1.2"/></svg>
-          </button>
-        </div>
       </div>
       <div class="block-meta">
         <div class="block-title">orientation era</div>
@@ -440,11 +351,6 @@
     <div class="block" onclick="openLB(4)">
       <div class="block-img">
         <img src="photo6.jpg" alt="vegas" loading="lazy" />
-        <div class="block-options">
-          <button onclick="event.stopPropagation()" title="Options" aria-label="Options">
-            <svg viewBox="0 0 16 16"><circle cx="3" cy="8" r="1.2"/><circle cx="8" cy="8" r="1.2"/><circle cx="13" cy="8" r="1.2"/></svg>
-          </button>
-        </div>
       </div>
       <div class="block-meta">
         <div class="block-title">vegas</div>
@@ -455,11 +361,6 @@
     <div class="block" onclick="openLB(5)">
       <div class="block-img">
         <img src="photo7.jpg" alt="small speech 500 humans" loading="lazy" />
-        <div class="block-options">
-          <button onclick="event.stopPropagation()" title="Options" aria-label="Options">
-            <svg viewBox="0 0 16 16"><circle cx="3" cy="8" r="1.2"/><circle cx="8" cy="8" r="1.2"/><circle cx="13" cy="8" r="1.2"/></svg>
-          </button>
-        </div>
       </div>
       <div class="block-meta">
         <div class="block-title">small speech 500 humans</div>
@@ -502,8 +403,8 @@
   function openLB(i) {
     idx = i;
     const p = photos[i];
-    document.getElementById('lb-img').src         = p.src;
-    document.getElementById('lb-img').alt         = p.title;
+    document.getElementById('lb-img').src              = p.src;
+    document.getElementById('lb-img').alt              = p.title;
     document.getElementById('lb-label').textContent    = p.title;
     document.getElementById('lb-sublabel').textContent = p.info;
     document.getElementById('lb-counter').textContent  = (i + 1) + ' / ' + photos.length;
@@ -529,7 +430,6 @@
     if (e.key === 'ArrowLeft')  stepLB(-1);
   });
 
-  // tab switching (visual only)
   document.querySelectorAll('.tab').forEach(function(tab) {
     tab.addEventListener('click', function() {
       document.querySelectorAll('.tab').forEach(function(t) { t.classList.remove('active'); });
