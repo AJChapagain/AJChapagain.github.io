@@ -110,39 +110,35 @@
       border-bottom-color: var(--text-main);
     }
 
-    /* ── GRID ────────────────────────────────────────────── */
+    /* ── GRID (masonry) ──────────────────────────────────── */
     #grid-wrap {
       padding: 20px;
     }
     #grid {
-      display: grid;
-      grid-template-columns: repeat(6, 1fr);
-      gap: 12px;
+      columns: 6 160px;
+      column-gap: 12px;
     }
 
     /* ── BLOCK / CARD ────────────────────────────────────── */
     .block {
+      break-inside: avoid;
       display: flex;
       flex-direction: column;
       gap: 8px;
       cursor: pointer;
+      margin-bottom: 12px;
     }
     .block-img {
-      aspect-ratio: 1 / 1;
       background: var(--card-bg);
       border-radius: 3px;
       border: 1px solid var(--border);
       overflow: hidden;
-      display: flex;
-      align-items: center;
-      justify-content: center;
       transition: border-color 0.15s;
     }
     .block-img img {
       width: 100%;
-      height: 100%;
-      object-fit: contain;
-      object-position: center;
+      height: auto;
+      display: block;
       transition: opacity 0.15s;
     }
     .block:hover .block-img {
@@ -272,10 +268,10 @@
 
     /* ── RESPONSIVE ──────────────────────────────────────── */
     @media (max-width: 900px) {
-      #grid { grid-template-columns: repeat(3, 1fr); }
+      #grid { columns: 3 160px; }
     }
     @media (max-width: 500px) {
-      #grid { grid-template-columns: repeat(2, 1fr); }
+      #grid { columns: 2 140px; }
       #profile { padding: 20px 14px 0; }
       #grid-wrap { padding: 14px; }
       #nav { padding: 0 14px; }
