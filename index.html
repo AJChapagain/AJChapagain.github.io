@@ -39,7 +39,6 @@
       overflow: hidden;
     }
 
-    /* NAV */
     #nav {
       height: 52px;
       border-bottom: 1px solid var(--border);
@@ -106,13 +105,8 @@
       padding-right: 12px;
       margin: 0 -12px;
     }
-    .link-row:hover .link-arrow {
-      transform: translate(3px, -3px);
-      color: var(--text-main);
-    }
-    .link-row:last-child:hover .link-arrow {
-      transform: translate(4px, 0px);
-    }
+    .link-row:hover .link-arrow { transform: translate(3px, -3px); color: var(--text-main); }
+    .link-row:last-child:hover .link-arrow { transform: translate(4px, 0px); }
 
     .link-left  { display: flex; align-items: center; gap: 14px; }
     .link-index { font-size: 11px; font-family: var(--mono); color: #cccccc; width: 20px; }
@@ -198,28 +192,32 @@
     @media (max-width: 700px) {
       #hero {
         grid-template-columns: 1fr;
-        gap: 12px;
-        padding-bottom: 0px;
+        gap: 0;
+        padding-bottom: 0;
       }
       #body {
-        padding: 16px 16px 0;
-        justify-content: space-evenly;
+        padding: 12px 16px 0;
       }
       #right {
         order: -1;
-        margin-bottom: 0;
-        height: 28vh;
+        height: 38vh;
+        min-height: 200px;
         display: flex;
         align-items: center;
         justify-content: center;
       }
+      #left {
+        justify-content: flex-start;
+      }
       #name {
-        font-size: clamp(40px, 15vw, 64px);
-        margin-bottom: 12px;
+        font-size: clamp(40px, 13vw, 64px);
+        margin-bottom: 16px;
         text-align: center;
       }
-      .link-row { padding: 10px 0; }
+      .link-row { padding: 11px 0; }
       #nav { padding: 0 16px; }
+      #ticker::before,
+      #ticker::after { width: 40px; }
     }
   </style>
 </head>
@@ -235,7 +233,6 @@
 
       <div id="left">
         <h1 id="name">ajchapa</h1>
-
         <div id="links">
           <a class="link-row" href="https://www.instagram.com/aapplejuce/" target="_blank" rel="noopener">
             <div class="link-left">
@@ -247,12 +244,10 @@
             </div>
             <span class="link-arrow">
               <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-                <line x1="7" y1="17" x2="17" y2="7"></line>
-                <polyline points="7 7 17 7 17 17"></polyline>
+                <line x1="7" y1="17" x2="17" y2="7"></line><polyline points="7 7 17 7 17 17"></polyline>
               </svg>
             </span>
           </a>
-
           <a class="link-row" href="https://www.linkedin.com/in/aj-chapagain/" target="_blank" rel="noopener">
             <div class="link-left">
               <span class="link-index">02</span>
@@ -263,12 +258,10 @@
             </div>
             <span class="link-arrow">
               <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-                <line x1="7" y1="17" x2="17" y2="7"></line>
-                <polyline points="7 7 17 7 17 17"></polyline>
+                <line x1="7" y1="17" x2="17" y2="7"></line><polyline points="7 7 17 7 17 17"></polyline>
               </svg>
             </span>
           </a>
-
           <a class="link-row" href="https://steamcommunity.com/profiles/76561198343184351/" target="_blank" rel="noopener">
             <div class="link-left">
               <span class="link-index">03</span>
@@ -279,12 +272,10 @@
             </div>
             <span class="link-arrow">
               <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-                <line x1="7" y1="17" x2="17" y2="7"></line>
-                <polyline points="7 7 17 7 17 17"></polyline>
+                <line x1="7" y1="17" x2="17" y2="7"></line><polyline points="7 7 17 7 17 17"></polyline>
               </svg>
             </span>
           </a>
-
           <a class="link-row" href="archive.html">
             <div class="link-left">
               <span class="link-index">04</span>
@@ -295,8 +286,7 @@
             </div>
             <span class="link-arrow">
               <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-                <line x1="5" y1="12" x2="19" y2="12"></line>
-                <polyline points="12 5 19 12 12 19"></polyline>
+                <line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline>
               </svg>
             </span>
           </a>
@@ -337,12 +327,11 @@
     }
     track.innerHTML = html;
 
-    const BEAT_INTERVAL = 1.2;
-    let lastTs = null;
-    let t = 0;
+    const BEAT = 1.2;
+    let lastTs = null, t = 0;
 
-    function getHeartbeat(t) {
-      const p = t % BEAT_INTERVAL;
+    function heartbeat(t) {
+      const p = t % BEAT;
       if (p < 0.12) return Math.sin((p / 0.12) * Math.PI);
       if (p > 0.22 && p < 0.34) return Math.sin(((p - 0.22) / 0.12) * Math.PI) * 0.5;
       return 0;
@@ -356,19 +345,16 @@
       const dt = Math.min((ts - lastTs) / 1000, 0.05);
       lastTs = ts;
       t += dt;
-
-      const beat = getHeartbeat(t);
+      const beat = heartbeat(t);
       const opacity = 0.55 + beat * 0.45;
       const scale = 1 + beat * 0.018;
       const spacing = 0.22 + beat * 0.06;
-
       ticks.forEach(el => {
         el.style.opacity = opacity;
         el.style.transform = `scaleY(${scale})`;
         el.style.letterSpacing = spacing + 'em';
       });
     }
-
     requestAnimationFrame(pulseTicker);
   })();
 
@@ -377,37 +363,43 @@
     const canvas = document.getElementById('particle-canvas');
     const ctx    = canvas.getContext('2d');
 
-    const W = 460;
-    const H = 575;
+    const isMobile = window.innerWidth <= 700;
+
+    // Bigger figure on desktop, well-proportioned on mobile
+    const SCALE   = isMobile ? 1.0 : 1.38;
+    const W       = isMobile ? 320 : 500;
+    const H       = isMobile ? 400 : 640;
     canvas.width  = W;
     canvas.height = H;
 
-    const SPACING       = 6;
-    const RADIUS        = 1.3;
+    const SPACING       = isMobile ? 5 : 6;
+    const RADIUS        = isMobile ? 1.1 : 1.4;
     const BEAT_INTERVAL = 1.2;
 
     let particles = [];
     let time      = 0;
     let lastTs    = null;
 
-    const heartCX = W / 2 - 29;
-    const heartCY = H / 2 + 12;
+    const heartCX = W / 2 - (isMobile ? 22 : 32);
+    const heartCY = H / 2 + (isMobile ? 10 : 14);
 
     function createProceduralHuman() {
       const off  = document.createElement('canvas');
       off.width  = W;
       off.height = H;
       const octx = off.getContext('2d');
-
       octx.fillStyle = '#000000';
+
       octx.translate(W / 2, H / 2);
-      octx.scale(1.15, 1.15);
+      octx.scale(SCALE, SCALE);
       octx.translate(-W / 2, -H / 2);
 
+      // Head
       octx.beginPath();
       octx.arc(W / 2, H / 2 - 100, 35, 0, Math.PI * 2);
       octx.fill();
 
+      // Body
       octx.beginPath();
       octx.moveTo(W / 2 - 15, H / 2 - 65);
       octx.quadraticCurveTo(W / 2 - 110, H / 2 - 10, W / 2 - 140, H / 2 + 180);
@@ -422,27 +414,19 @@
       const offCanvas = createProceduralHuman();
       const octx = offCanvas.getContext('2d');
       const { data } = octx.getImageData(0, 0, W, H);
-
       particles = [];
 
       for (let y = 0; y < H; y += SPACING) {
         for (let x = 0; x < W; x += SPACING) {
           const i = (y * W + x) * 4;
-          const alpha = data[i + 3];
-
-          if (alpha > 128) {
+          if (data[i + 3] > 128) {
             const dx = x - heartCX;
             const dy = y - heartCY;
             const dist = Math.sqrt(dx * dx + dy * dy);
-            const isHeart = dist < 25;
-
             particles.push({
-              ox: x,
-              oy: y,
-              x: x,
-              y: y,
-              isHeart: isHeart,
-              distToHeart: dist,
+              ox: x, oy: y, x, y,
+              isHeart: dist < 25,
+              distToHeart: dist || 0.01,
               phaseX: Math.random() * Math.PI * 2,
               phaseY: Math.random() * Math.PI * 2,
               driftSpeed: 0.5 + Math.random() * 0.5,
@@ -471,50 +455,42 @@
 
       const beat = getHeartbeat(time);
 
+      // Body
       ctx.beginPath();
-      ctx.fillStyle = `rgba(15, 15, 15, 0.8)`;
-
+      ctx.fillStyle = 'rgba(15, 15, 15, 0.82)';
       particles.forEach(p => {
         if (p.isHeart) return;
-
         const driftX = Math.sin(time * p.driftSpeed + p.phaseX) * 1.7;
         const driftY = Math.cos(time * p.driftSpeed + p.phaseY) * 1.7;
-
         let pushX = 0, pushY = 0;
         if (beat > 0) {
           const force = Math.max(0, 1 - (p.distToHeart / 175));
           const dx = p.ox - heartCX;
           const dy = p.oy - heartCY;
-          const pushAmount = beat * force * 4.0;
-          pushX = (dx / p.distToHeart) * pushAmount;
-          pushY = (dy / p.distToHeart) * pushAmount;
+          const pushAmt = beat * force * 4.5;
+          pushX = (dx / p.distToHeart) * pushAmt;
+          pushY = (dy / p.distToHeart) * pushAmt;
         }
-
         p.x = p.ox + driftX + pushX;
         p.y = p.oy + driftY + pushY;
-
         ctx.moveTo(p.x + RADIUS, p.y);
         ctx.arc(p.x, p.y, RADIUS, 0, Math.PI * 2);
       });
       ctx.fill();
 
+      // Heart
       ctx.beginPath();
-      const heartOpacity = 0.6 + (beat * 0.4);
-      ctx.fillStyle = `rgba(210, 10, 10, ${heartOpacity})`;
-
+      ctx.fillStyle = `rgba(210, 10, 10, ${0.6 + beat * 0.4})`;
       particles.forEach(p => {
         if (!p.isHeart) return;
-
         const dx = p.ox - heartCX;
         const dy = p.oy - heartCY;
-        const expand = beat * 4.6;
-
+        const expand = beat * 4.8;
         p.x = p.ox + (dx / p.distToHeart) * expand;
         p.y = p.oy + (dy / p.distToHeart) * expand;
-
-        const currentRadius = RADIUS + (beat * 0.9);
-        ctx.moveTo(p.x + currentRadius, p.y);
-        ctx.arc(p.x, p.y, currentRadius, 0, Math.PI * 2);
+        const r = RADIUS + beat * 0.9;
+        ctx.moveTo(p.x + r, p.y);
+        ctx.arc(p.x, p.y, r, 0, Math.PI * 2);
       });
       ctx.fill();
     }
