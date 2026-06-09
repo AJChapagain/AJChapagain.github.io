@@ -32,11 +32,11 @@
     a { color: inherit; text-decoration: none; }
 
     #page {
-      height: 100vh; 
-      height: 100dvh; 
+      height: 100vh;
+      height: 100dvh;
       display: flex;
       flex-direction: column;
-      overflow: hidden; 
+      overflow: hidden;
     }
 
     /* NAV */
@@ -56,7 +56,7 @@
       display: flex;
       flex-direction: column;
       padding: 48px 24px 0;
-      min-height: 0; /* Prevents flex children from blowing out the container height */
+      min-height: 0;
     }
 
     #hero {
@@ -77,7 +77,7 @@
 
     #name {
       font-size: clamp(56px, 10vw, 96px);
-      font-weight: 300; 
+      font-weight: 300;
       line-height: 0.92;
       letter-spacing: -0.05em;
       color: var(--text-main);
@@ -111,20 +111,20 @@
       color: var(--text-main);
     }
     .link-row:last-child:hover .link-arrow {
-      transform: translate(4px, 0px); 
+      transform: translate(4px, 0px);
     }
 
     .link-left  { display: flex; align-items: center; gap: 14px; }
     .link-index { font-size: 11px; font-family: var(--mono); color: #cccccc; width: 20px; }
     .link-name  { font-size: 13px; font-weight: 700; letter-spacing: 0.02em; }
     .link-handle{ font-size: 12px; color: var(--text-muted); font-family: var(--mono); }
-    
-    .link-arrow { 
+
+    .link-arrow {
       display: flex;
       align-items: center;
       justify-content: center;
-      color: #cccccc; 
-      transition: transform 0.3s, color 0.3s; 
+      color: #cccccc;
+      transition: transform 0.3s, color 0.3s;
     }
 
     #right {
@@ -132,17 +132,18 @@
       align-items: center;
       justify-content: center;
       width: 100%;
-      height: 100%; /* Take up remaining space */
-      min-height: 0; /* Crucial to let the canvas shrink so the ticker survives */
+      height: 100%;
+      min-height: 0;
     }
 
-    #particle-canvas { 
-      display: block; 
-      max-width: 100%; 
-      max-height: 100%; /* Forces canvas to shrink if container is too short */
+    #particle-canvas {
+      display: block;
+      max-width: 100%;
+      max-height: 100%;
       object-fit: contain;
     }
 
+    /* TICKER */
     #ticker {
       height: 44px;
       border-top: 1px solid var(--border);
@@ -151,29 +152,41 @@
       align-items: center;
       flex-shrink: 0;
       background: var(--bg);
+      position: relative;
     }
+    #ticker::before,
+    #ticker::after {
+      content: '';
+      position: absolute;
+      top: 0; bottom: 0;
+      width: 80px;
+      z-index: 2;
+      pointer-events: none;
+    }
+    #ticker::before { left: 0; background: linear-gradient(to right, var(--bg), transparent); }
+    #ticker::after  { right: 0; background: linear-gradient(to left, var(--bg), transparent); }
 
     #ticker-track {
       display: flex;
       white-space: nowrap;
-      animation: scroll 32s linear infinite;
+      animation: scroll 38s linear infinite;
     }
 
-    .tick { 
-      font-size: 12px; 
-      font-family: var(--mono); 
-      color: #000000; 
-      font-weight: 800; 
-      padding: 0 28px; 
-      letter-spacing: 0.08em; 
+    .tick {
+      font-size: 11px;
+      font-family: var(--mono);
+      color: #000000;
+      letter-spacing: 0.22em;
       text-transform: uppercase;
+      padding: 0 64px;
+      display: inline-block;
     }
-    .tick-dot { 
-      font-size: 12px; 
-      font-family: var(--mono); 
-      color: #000000; 
-      font-weight: 800;
-      padding: 0 4px; 
+    .tick-dot {
+      font-size: 11px;
+      font-family: var(--mono);
+      color: #cccccc;
+      padding: 0 8px;
+      display: inline-block;
     }
 
     @keyframes scroll {
@@ -181,39 +194,32 @@
       100% { transform: translateX(-50%); }
     }
 
-    /* ── MOBILE OPTIMIZATION ── */
+    /* MOBILE */
     @media (max-width: 700px) {
-      #hero { 
-        grid-template-columns: 1fr; 
-        gap: 12px; 
+      #hero {
+        grid-template-columns: 1fr;
+        gap: 12px;
         padding-bottom: 0px;
       }
-      
-      #body { 
+      #body {
         padding: 16px 16px 0;
-        justify-content: space-evenly; 
+        justify-content: space-evenly;
       }
-      
-      #right { 
-        order: -1; 
+      #right {
+        order: -1;
         margin-bottom: 0;
-        height: 28vh; 
+        height: 28vh;
         display: flex;
         align-items: center;
         justify-content: center;
       }
-
       #name {
-        font-size: clamp(40px, 15vw, 64px); 
+        font-size: clamp(40px, 15vw, 64px);
         margin-bottom: 12px;
         text-align: center;
       }
-
-      .link-row {
-        padding: 10px 0; 
-      }
-      
-      #nav  { padding: 0 16px; }
+      .link-row { padding: 10px 0; }
+      #nav { padding: 0 16px; }
     }
   </style>
 </head>
@@ -311,7 +317,7 @@
 </div>
 
 <script>
-  /* ── CLOCK ── */
+  /* CLOCK */
   function tick() {
     document.getElementById('nav-time').textContent =
       new Date().toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: false });
@@ -319,49 +325,72 @@
   tick();
   setInterval(tick, 1000);
 
-  /* ── TICKER: MARKET & COMMODITY DATA ── */
-  const statuses = [
-    { label: 'S&P 500',      value: () => '5,214.08 ▲' },
-    { label: 'NVDA',         value: () => '$880.08 ▲' },
-    { label: 'META',         value: () => '$510.92 ▲' },
-    { label: 'AMZN',         value: () => '$185.14 ▲' },
-    { label: 'MSFT',         value: () => '$425.22 ▼' },
-    { label: 'WTI CRUDE',    value: () => '$82.14 ▲' },
-    { label: '10-YR YIELD',  value: () => '4.32%' },
-  ];
-  
-  function buildTicker() {
+  /* TICKER */
+  (function () {
+    const phrase = "Shoot for the stars — land on the moon";
     const track = document.getElementById('ticker-track');
     let html = '';
-    for (let pass = 0; pass < 2; pass++) {
-      statuses.forEach(s => {
-        html += `<span class="tick">${s.label} — ${s.value()}</span><span class="tick-dot">+</span>`;
-      });
+    for (let i = 0; i < 2; i++) {
+      for (let j = 0; j < 4; j++) {
+        html += `<span class="tick">${phrase}</span><span class="tick-dot">·</span>`;
+      }
     }
     track.innerHTML = html;
-  }
-  buildTicker();
 
-  /* ── PROCEDURAL PARTICLE ENGINE ── */
+    const BEAT_INTERVAL = 1.2;
+    let lastTs = null;
+    let t = 0;
+
+    function getHeartbeat(t) {
+      const p = t % BEAT_INTERVAL;
+      if (p < 0.12) return Math.sin((p / 0.12) * Math.PI);
+      if (p > 0.22 && p < 0.34) return Math.sin(((p - 0.22) / 0.12) * Math.PI) * 0.5;
+      return 0;
+    }
+
+    const ticks = document.querySelectorAll('.tick');
+
+    function pulseTicker(ts) {
+      requestAnimationFrame(pulseTicker);
+      if (!lastTs) lastTs = ts;
+      const dt = Math.min((ts - lastTs) / 1000, 0.05);
+      lastTs = ts;
+      t += dt;
+
+      const beat = getHeartbeat(t);
+      const opacity = 0.55 + beat * 0.45;
+      const scale = 1 + beat * 0.018;
+      const spacing = 0.22 + beat * 0.06;
+
+      ticks.forEach(el => {
+        el.style.opacity = opacity;
+        el.style.transform = `scaleY(${scale})`;
+        el.style.letterSpacing = spacing + 'em';
+      });
+    }
+
+    requestAnimationFrame(pulseTicker);
+  })();
+
+  /* PARTICLE ENGINE */
   (function () {
     const canvas = document.getElementById('particle-canvas');
     const ctx    = canvas.getContext('2d');
 
-    // A slight 1.15x scale, not massive
-    const W = 460; 
-    const H = 575; 
+    const W = 460;
+    const H = 575;
     canvas.width  = W;
     canvas.height = H;
 
-    const SPACING       = 6;   
-    const RADIUS        = 1.3;  
-    const BEAT_INTERVAL = 1.2;  
+    const SPACING       = 6;
+    const RADIUS        = 1.3;
+    const BEAT_INTERVAL = 1.2;
 
     let particles = [];
     let time      = 0;
     let lastTs    = null;
 
-    const heartCX = W / 2 - 29; 
+    const heartCX = W / 2 - 29;
     const heartCY = H / 2 + 12;
 
     function createProceduralHuman() {
@@ -370,9 +399,7 @@
       off.height = H;
       const octx = off.getContext('2d');
 
-      octx.fillStyle = '#000000'; 
-
-      // Scale the procedural path drawing up slightly
+      octx.fillStyle = '#000000';
       octx.translate(W / 2, H / 2);
       octx.scale(1.15, 1.15);
       octx.translate(-W / 2, -H / 2);
@@ -383,9 +410,9 @@
 
       octx.beginPath();
       octx.moveTo(W / 2 - 15, H / 2 - 65);
-      octx.quadraticCurveTo(W / 2 - 110, H / 2 - 10, W / 2 - 140, H / 2 + 180); 
-      octx.lineTo(W / 2 + 140, H / 2 + 180); 
-      octx.quadraticCurveTo(W / 2 + 110, H / 2 - 10, W / 2 + 15, H / 2 - 65); 
+      octx.quadraticCurveTo(W / 2 - 110, H / 2 - 10, W / 2 - 140, H / 2 + 180);
+      octx.lineTo(W / 2 + 140, H / 2 + 180);
+      octx.quadraticCurveTo(W / 2 + 110, H / 2 - 10, W / 2 + 15, H / 2 - 65);
       octx.fill();
 
       return off;
@@ -397,24 +424,22 @@
       const { data } = octx.getImageData(0, 0, W, H);
 
       particles = [];
-      
+
       for (let y = 0; y < H; y += SPACING) {
         for (let x = 0; x < W; x += SPACING) {
           const i = (y * W + x) * 4;
           const alpha = data[i + 3];
-          
-          if (alpha > 128) { 
-            
+
+          if (alpha > 128) {
             const dx = x - heartCX;
             const dy = y - heartCY;
             const dist = Math.sqrt(dx * dx + dy * dy);
-            
             const isHeart = dist < 25;
 
             particles.push({
-              ox: x, 
+              ox: x,
               oy: y,
-              x: x,  
+              x: x,
               y: y,
               isHeart: isHeart,
               distToHeart: dist,
@@ -446,19 +471,18 @@
 
       const beat = getHeartbeat(time);
 
-      // Body Particles
       ctx.beginPath();
-      ctx.fillStyle = `rgba(15, 15, 15, 0.8)`; 
+      ctx.fillStyle = `rgba(15, 15, 15, 0.8)`;
 
       particles.forEach(p => {
-        if (p.isHeart) return; 
+        if (p.isHeart) return;
 
         const driftX = Math.sin(time * p.driftSpeed + p.phaseX) * 1.7;
         const driftY = Math.cos(time * p.driftSpeed + p.phaseY) * 1.7;
 
         let pushX = 0, pushY = 0;
         if (beat > 0) {
-          const force = Math.max(0, 1 - (p.distToHeart / 175)); 
+          const force = Math.max(0, 1 - (p.distToHeart / 175));
           const dx = p.ox - heartCX;
           const dy = p.oy - heartCY;
           const pushAmount = beat * force * 4.0;
@@ -474,9 +498,8 @@
       });
       ctx.fill();
 
-      // Heart Particles
       ctx.beginPath();
-      const heartOpacity = 0.6 + (beat * 0.4); 
+      const heartOpacity = 0.6 + (beat * 0.4);
       ctx.fillStyle = `rgba(210, 10, 10, ${heartOpacity})`;
 
       particles.forEach(p => {
@@ -484,12 +507,12 @@
 
         const dx = p.ox - heartCX;
         const dy = p.oy - heartCY;
-        const expand = beat * 4.6; 
-        
+        const expand = beat * 4.6;
+
         p.x = p.ox + (dx / p.distToHeart) * expand;
         p.y = p.oy + (dy / p.distToHeart) * expand;
 
-        const currentRadius = RADIUS + (beat * 0.9); 
+        const currentRadius = RADIUS + (beat * 0.9);
         ctx.moveTo(p.x + currentRadius, p.y);
         ctx.arc(p.x, p.y, currentRadius, 0, Math.PI * 2);
       });
@@ -498,7 +521,6 @@
 
     initParticles();
     requestAnimationFrame(animate);
-
   })();
 </script>
 </body>
