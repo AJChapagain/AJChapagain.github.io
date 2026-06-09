@@ -167,10 +167,11 @@
     }
 
     .tick {
-      font-size: 11px;
+      font-size: 11.5px;
       font-family: var(--mono);
+      font-weight: 800;
       color: #000000;
-      letter-spacing: 0.22em;
+      letter-spacing: 0.28em;
       text-transform: uppercase;
       padding: 0 64px;
       display: inline-block;
@@ -178,11 +179,17 @@
     .tick-dot {
       font-size: 11px;
       font-family: var(--mono);
-      color: #cccccc;
+      font-weight: 800;
+      color: #aaaaaa;
       padding: 0 8px;
       display: inline-block;
     }
 
+    #archive-num {
+      color: rgba(210, 10, 10, 0.45);
+      font-weight: 700;
+      transition: none;
+    }
     @keyframes scroll {
       0%   { transform: translateX(0); }
       100% { transform: translateX(-50%); }
@@ -287,7 +294,7 @@
               <span class="link-index">04</span>
               <div>
                 <div class="link-name">archive</div>
-                <div class="link-handle">7 frames</div>
+                <div class="link-handle"><span id="archive-num">7</span> frames</div>
               </div>
             </div>
             <span class="link-arrow">
@@ -332,7 +339,12 @@
       }
     }
     track.innerHTML = html;
+  })();
 
+  /* ARCHIVE 7 PULSE */
+  (function () {
+    const el = document.getElementById('archive-num');
+    if (!el) return;
     const BEAT = 1.2;
     let lastTs = null, t = 0;
 
@@ -343,25 +355,19 @@
       return 0;
     }
 
-    const ticks = document.querySelectorAll('.tick');
-
-    function pulseTicker(ts) {
-      requestAnimationFrame(pulseTicker);
+    function pulse(ts) {
+      requestAnimationFrame(pulse);
       if (!lastTs) lastTs = ts;
       const dt = Math.min((ts - lastTs) / 1000, 0.05);
       lastTs = ts;
       t += dt;
       const beat = heartbeat(t);
-      const opacity = 0.55 + beat * 0.45;
-      const scale = 1 + beat * 0.018;
-      const spacing = 0.22 + beat * 0.06;
-      ticks.forEach(el => {
-        el.style.opacity = opacity;
-        el.style.transform = `scaleY(${scale})`;
-        el.style.letterSpacing = spacing + 'em';
-      });
+      const r = Math.round(210 + beat * 30);
+      const opacity = 0.45 + beat * 0.55;
+      el.style.color = `rgba(${r}, 10, 10, ${opacity})`;
+      el.style.fontWeight = beat > 0.05 ? '800' : '700';
     }
-    requestAnimationFrame(pulseTicker);
+    requestAnimationFrame(pulse);
   })();
 
   /* PARTICLE ENGINE */
