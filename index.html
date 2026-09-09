@@ -137,64 +137,6 @@
       object-fit: contain;
     }
 
-    /* TICKER */
-    #ticker {
-      height: 44px;
-      border-top: 1px solid var(--border);
-      overflow: hidden;
-      display: flex;
-      align-items: center;
-      flex-shrink: 0;
-      background: var(--bg);
-      position: relative;
-    }
-    #ticker::before,
-    #ticker::after {
-      content: '';
-      position: absolute;
-      top: 0; bottom: 0;
-      width: 80px;
-      z-index: 2;
-      pointer-events: none;
-    }
-    #ticker::before { left: 0; background: linear-gradient(to right, var(--bg), transparent); }
-    #ticker::after  { right: 0; background: linear-gradient(to left, var(--bg), transparent); }
-
-    #ticker-track {
-      display: flex;
-      white-space: nowrap;
-      animation: scroll 38s linear infinite;
-    }
-
-    .tick {
-      font-size: 11.5px;
-      font-family: var(--mono);
-      font-weight: 800;
-      color: #000000;
-      letter-spacing: 0.28em;
-      text-transform: uppercase;
-      padding: 0 64px;
-      display: inline-block;
-    }
-    .tick-dot {
-      font-size: 11px;
-      font-family: var(--mono);
-      font-weight: 800;
-      color: #aaaaaa;
-      padding: 0 8px;
-      display: inline-block;
-    }
-
-    #archive-num {
-      color: rgba(210, 10, 10, 0.45);
-      font-weight: 700;
-      transition: none;
-    }
-    @keyframes scroll {
-      0%   { transform: translateX(0); }
-      100% { transform: translateX(-50%); }
-    }
-
     /* MOBILE */
     @media (max-width: 700px) {
       #hero {
@@ -229,8 +171,6 @@
       }
       .link-row { padding: 11px 0; }
       #nav { padding: 0 16px; }
-      #ticker::before,
-      #ticker::after { width: 40px; }
     }
   </style>
 </head>
@@ -313,10 +253,6 @@
     </div>
   </div>
 
-  <div id="ticker">
-    <div id="ticker-track"></div>
-  </div>
-
 </div>
 
 <script>
@@ -327,19 +263,6 @@
   }
   tick();
   setInterval(tick, 1000);
-
-  /* TICKER */
-  (function () {
-    const phrase = "Shoot for the stars — land on the moon";
-    const track = document.getElementById('ticker-track');
-    let html = '';
-    for (let i = 0; i < 2; i++) {
-      for (let j = 0; j < 4; j++) {
-        html += `<span class="tick">${phrase}</span><span class="tick-dot">·</span>`;
-      }
-    }
-    track.innerHTML = html;
-  })();
 
   /* ARCHIVE 7 PULSE */
   (function () {
