@@ -112,23 +112,27 @@
       border-bottom-color: var(--text-main);
     }
 
-    /* ── GRID (masonry) ──────────────────────────────────── */
+    /* ── GRID ────────────────────────────────────────────── */
     #grid-wrap {
       padding: 20px;
+      max-width: 1600px;
+      margin: 0 auto;
     }
     #grid {
-      columns: 6 160px;
-      column-gap: 12px;
+      display: grid;
+      grid-template-columns: repeat(12, 1fr);
+      gap: 24px 12px;
+      align-items: start;
     }
 
-    /* ── BLOCK / CARD ────────────────────────────────────── */
+/* ── BLOCK / CARD ────────────────────────────────────── */
     .block {
       break-inside: avoid;
       display: flex;
       flex-direction: column;
       gap: 8px;
       cursor: pointer;
-      margin-bottom: 12px;
+      grid-column: span var(--d, 2);
     }
     .block-img {
       background: var(--card-bg);
@@ -149,6 +153,13 @@
     .block:hover .block-img img {
       opacity: 0.85;
     }
+
+    /* featured (big speech) */
+    .block.featured .block-title {
+      font-size: 16px;
+      -webkit-line-clamp: 3;
+    }
+    .block.featured .block-info { font-size: 11px; }
 
     /* metadata */
     .block-meta {
@@ -271,10 +282,13 @@
 
     /* ── RESPONSIVE ──────────────────────────────────────── */
     @media (max-width: 900px) {
-      #grid { columns: 3 160px; }
+      #grid { grid-template-columns: repeat(6, 1fr); }
+      .block { grid-column: span var(--t, 2); }
     }
     @media (max-width: 500px) {
-      #grid { columns: 2 140px; }
+      #grid { grid-template-columns: repeat(2, 1fr); gap: 20px 12px; }
+      .block { grid-column: span var(--m, 1); }
+      .block.featured .block-title { font-size: 14px; }
       #profile { padding: 20px 14px 0; }
       #grid-wrap { padding: 14px; }
       #nav { padding: 0 14px; }
@@ -307,7 +321,7 @@
 <div id="grid-wrap">
   <div id="grid">
 
-    <div class="block" onclick="openLB(0)">
+    <div class="block" style="--d:2;--t:2;--m:1" onclick="openLB(0)">
       <div class="block-img">
         <img src="photo1.jpg" alt="I am just a Village Boy" loading="lazy" />
       </div>
@@ -317,7 +331,7 @@
       </div>
     </div>
 
-    <div class="block" onclick="openLB(1)">
+    <div class="block" style="--d:2;--t:2;--m:1" onclick="openLB(1)">
       <div class="block-img">
         <img src="photo2.jpg" alt="clothing store era" loading="lazy" />
       </div>
@@ -327,7 +341,7 @@
       </div>
     </div>
 
-    <div class="block" onclick="openLB(2)">
+    <div class="block" style="--d:2;--t:2;--m:1" onclick="openLB(2)">
       <div class="block-img">
         <img src="photo3.jpg" alt="pic with the judge before the prosecutor got fricked by urstruly" loading="lazy" />
       </div>
@@ -337,27 +351,27 @@
       </div>
     </div>
 
-    <div class="block" onclick="openLB(3)">
-      <div class="block-img">
-        <img src="photo4.jpg" alt="orientation era" loading="lazy" />
-      </div>
-      <div class="block-meta">
-        <div class="block-title">orientation era</div>
-        <div class="block-info">frame 04 &bull; 1 block</div>
-      </div>
-    </div>
-
-    <div class="block" onclick="openLB(4)">
+    <div class="block" style="--d:3;--t:3;--m:1" onclick="openLB(3)">
       <div class="block-img">
         <img src="photo6.jpg" alt="vegas" loading="lazy" />
       </div>
       <div class="block-meta">
         <div class="block-title">vegas</div>
+        <div class="block-info">frame 04 &bull; 1 block</div>
+      </div>
+    </div>
+
+    <div class="block" style="--d:3;--t:3;--m:2" onclick="openLB(4)">
+      <div class="block-img">
+        <img src="photo4.jpg" alt="orientation era" loading="lazy" />
+      </div>
+      <div class="block-meta">
+        <div class="block-title">orientation era</div>
         <div class="block-info">frame 05 &bull; 1 block</div>
       </div>
     </div>
 
-    <div class="block" onclick="openLB(5)">
+    <div class="block featured" style="--d:9;--t:6;--m:2" onclick="openLB(5)">
       <div class="block-img">
         <img src="photo8.jpg" alt="big speech 5000 humans" loading="lazy" />
       </div>
@@ -367,7 +381,7 @@
       </div>
     </div>
 
-    <div class="block" onclick="openLB(6)">
+    <div class="block" style="--d:3;--t:3;--m:1" onclick="openLB(6)">
       <div class="block-img">
         <img src="photo9.jpg" alt="wannabe Dj era" loading="lazy" />
       </div>
@@ -399,13 +413,13 @@
 
 <script>
   const photos = [
-    { src: 'photo1.jpg', title: 'I am just a Village Boy',                                            info: 'frame 01 \u2022 1 block' },
-    { src: 'photo2.jpg', title: 'clothing store era',                                                 info: 'frame 02 \u2022 1 block' },
-    { src: 'photo3.jpg', title: 'pic with the judge before the prosecutor got fricked by urstruly',   info: 'frame 03 \u2022 1 block' },
-    { src: 'photo4.jpg', title: 'orientation era',                                                    info: 'frame 04 \u2022 1 block' },
-    { src: 'photo6.jpg', title: 'vegas',                                                              info: 'frame 05 \u2022 1 block' },
-    { src: 'photo8.jpg', title: 'big speech 5000 humans',                                             info: 'frame 06 \u2022 1 block' },
-    { src: 'photo9.jpg', title: 'wannabe Dj era',                                                     info: 'frame 07 \u2022 1 block' },
+    { src: 'photo1.jpg', title: "I am just a Village Boy", info: 'frame 01 \u2022 1 block' },
+    { src: 'photo2.jpg', title: "clothing store era", info: 'frame 02 \u2022 1 block' },
+    { src: 'photo3.jpg', title: "pic with the judge before the prosecutor got fricked by urstruly", info: 'frame 03 \u2022 1 block' },
+    { src: 'photo6.jpg', title: "vegas", info: 'frame 04 \u2022 1 block' },
+    { src: 'photo4.jpg', title: "orientation era", info: 'frame 05 \u2022 1 block' },
+    { src: 'photo8.jpg', title: "big speech 5000 humans", info: 'frame 06 \u2022 1 block' },
+    { src: 'photo9.jpg', title: "wannabe Dj era", info: 'frame 07 \u2022 1 block' },
   ];
 
   let idx = 0;
