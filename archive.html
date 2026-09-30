@@ -6,6 +6,7 @@
   <title>AJChapa — Archive</title>
   <link rel="icon" type="image/png" href="favicon.png">
   <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Mulish:wght@400;600;700&display=swap" rel="stylesheet" />
   <style>
     /* ── TOKENS ──────────────────────────────────────────── */
@@ -32,6 +33,7 @@
     a { color: inherit; text-decoration: none; }
     img { display: block; max-width: 100%; }
     button { font-family: var(--font); }
+    :focus-visible { outline: 2px solid var(--text-main); outline-offset: 2px; }
 
     /* ── NAV ─────────────────────────────────────────────── */
     #nav {
@@ -183,6 +185,7 @@
       display: flex;
       align-items: center;
       justify-content: center;
+      padding: 55px 0;
       opacity: 0;
       pointer-events: none;
       transition: opacity 0.15s ease;
@@ -200,7 +203,7 @@
     }
     #lb-img {
       max-width: 80vw;
-      max-height: 72vh;
+      max-height: calc(100vh - 55px - 55px - 90px);
       object-fit: contain;
       border: 1px solid var(--border);
       border-radius: 3px;
@@ -275,7 +278,7 @@
       #profile { padding: 20px 14px 0; }
       #grid-wrap { padding: 14px; }
       #nav { padding: 0 14px; }
-      #lb-img { max-width: 96vw; max-height: 60vh; }
+      #lb-img { max-width: 96vw; }
     }
   </style>
 </head>
@@ -293,7 +296,7 @@
 <div id="profile">
   <div id="profile-top">
     <h1 id="profile-name">Archive</h1>
-    <span id="profile-meta">8 blocks</span>
+    <span id="profile-meta">7 blocks</span>
   </div>
   <div id="profile-tabs">
     <span class="tab active">Blocks</span>
@@ -306,7 +309,7 @@
 
     <div class="block" onclick="openLB(0)">
       <div class="block-img">
-        <img src="photo1.jpg" alt="I am just a village Boy" loading="lazy" />
+        <img src="photo1.jpg" alt="I am just a Village Boy" loading="lazy" />
       </div>
       <div class="block-meta">
         <div class="block-title">I am just a Village Boy</div>
@@ -356,31 +359,21 @@
 
     <div class="block" onclick="openLB(5)">
       <div class="block-img">
-        <img src="photo7.jpg" alt="small speech 500 humans" loading="lazy" />
+        <img src="photo8.jpg" alt="big speech 5000 humans" loading="lazy" />
       </div>
       <div class="block-meta">
-        <div class="block-title">small speech 500 humans</div>
+        <div class="block-title">big speech 5000 humans</div>
         <div class="block-info">frame 06 &bull; 1 block</div>
       </div>
     </div>
 
     <div class="block" onclick="openLB(6)">
       <div class="block-img">
-        <img src="photo8.jpg" alt="big speech 5000 humans" loading="lazy" />
-      </div>
-      <div class="block-meta">
-        <div class="block-title">big speech 5000 humans</div>
-        <div class="block-info">frame 07 &bull; 1 block</div>
-      </div>
-    </div>
-
-    <div class="block" onclick="openLB(7)">
-      <div class="block-img">
         <img src="photo9.jpg" alt="wannabe Dj era" loading="lazy" />
       </div>
       <div class="block-meta">
         <div class="block-title">wannabe Dj era</div>
-        <div class="block-info">frame 08 &bull; 1 block</div>
+        <div class="block-info">frame 07 &bull; 1 block</div>
       </div>
     </div>
 
@@ -406,14 +399,13 @@
 
 <script>
   const photos = [
-    { src: 'photo1.jpg', title: 'I am just a Village Boy',                                                          info: 'frame 01 \u2022 1 block' },
-    { src: 'photo2.jpg', title: 'clothing store era',                                                     info: 'frame 02 \u2022 1 block' },
-    { src: 'photo3.jpg', title: 'pic with the judge before the prosecutor got fricked by urstruly',        info: 'frame 03 \u2022 1 block' },
-    { src: 'photo4.jpg', title: 'orientation era',                                                        info: 'frame 04 \u2022 1 block' },
-    { src: 'photo6.jpg', title: 'vegas',                                                                  info: 'frame 05 \u2022 1 block' },
-    { src: 'photo7.jpg', title: 'small speech 500 humans',                                                info: 'frame 06 \u2022 1 block' },
-    { src: 'photo8.jpg', title: 'big speech 5000 humans',                                                 info: 'frame 07 \u2022 1 block' },
-    { src: 'photo9.jpg', title: 'wannabe Dj Era',                                                         info: 'frame 08 \u2022 1 block' },
+    { src: 'photo1.jpg', title: 'I am just a Village Boy',                                            info: 'frame 01 \u2022 1 block' },
+    { src: 'photo2.jpg', title: 'clothing store era',                                                 info: 'frame 02 \u2022 1 block' },
+    { src: 'photo3.jpg', title: 'pic with the judge before the prosecutor got fricked by urstruly',   info: 'frame 03 \u2022 1 block' },
+    { src: 'photo4.jpg', title: 'orientation era',                                                    info: 'frame 04 \u2022 1 block' },
+    { src: 'photo6.jpg', title: 'vegas',                                                              info: 'frame 05 \u2022 1 block' },
+    { src: 'photo8.jpg', title: 'big speech 5000 humans',                                             info: 'frame 06 \u2022 1 block' },
+    { src: 'photo9.jpg', title: 'wannabe Dj era',                                                     info: 'frame 07 \u2022 1 block' },
   ];
 
   let idx = 0;
