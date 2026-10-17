@@ -41,11 +41,14 @@
     #nav-back:hover{color:var(--text-main)}
     #nav-time{font-size:11px;color:var(--text-muted);font-family:var(--mono)}
 
-    /* ================= hero: full width, hugging the corners ================= */
-    #hero{display:flex;justify-content:space-between;align-items:center;gap:24px;padding:6px 20px 0}
+    /* ================= hero: compact, pulled in from the edges ================= */
+    #hero{
+      display:flex;justify-content:space-between;align-items:center;gap:24px;
+      width:100%;max-width:1320px;margin:0 auto;padding:6px 56px 0;
+    }
     h1#title{
       font-family:var(--serif);font-weight:400;
-      font-size:clamp(40px,5.5vw,64px);letter-spacing:-.015em;line-height:1;cursor:default;
+      font-size:clamp(32px,4.2vw,50px);letter-spacing:-.015em;line-height:1;cursor:default;
     }
     .kword{display:inline-block;white-space:nowrap}
     .kmask{display:inline-block;overflow:hidden;vertical-align:top;padding-bottom:.12em;margin-bottom:-.12em}
@@ -62,12 +65,12 @@
 
     /* ================= the little scroll button ================= */
     #scroll-btn{
-      display:flex;align-items:center;gap:10px;background:none;border:0;cursor:pointer;
-      font-family:var(--serif);font-size:26px;line-height:1;color:var(--text-main);
+      display:flex;align-items:center;gap:8px;background:none;border:0;cursor:pointer;
+      font-family:var(--serif);font-size:22px;line-height:1;color:var(--text-main);
       opacity:0;transform:translateY(8px);animation:how-in .8s ease .5s forwards;
     }
     @keyframes how-in{to{opacity:1;transform:translateY(0)}}
-    #scroll-btn svg{width:46px;height:36px;display:block;filter:drop-shadow(0 6px 8px rgba(90,12,21,.3));transition:transform .45s cubic-bezier(.2,.7,.25,1)}
+    #scroll-btn svg{width:38px;height:29px;display:block;filter:drop-shadow(0 5px 7px rgba(90,12,21,.3));transition:transform .45s cubic-bezier(.2,.7,.25,1)}
     #scroll-btn:hover svg{transform:rotate(-6deg) scale(1.1)}
     #scroll-btn .paper{transition:transform .45s cubic-bezier(.2,.7,.25,1);transform-origin:50% 50%}
     #scroll-btn:hover .paper{transform:scaleY(1.08)}
@@ -134,6 +137,12 @@
       grid-template-columns:repeat(auto-fill,minmax(210px,240px));gap:36px 28px;
       justify-content:center;perspective:1400px;
     }
+
+    /* each person gets their own colour */
+    .c-gold {--ac:#c9a227;--ac-deep:#a8842f;--ac-pale:#f1dfa8;--ac-rgb:201,162,39;--ac-wash:#fcf7e6;--ac-line:#d9c48f}
+    .c-blue {--ac:#2f86ee;--ac-deep:#1d5fb8;--ac-pale:#cfe4ff;--ac-rgb:47,134,238;--ac-wash:#eef5ff;--ac-line:#a9c8f0}
+    .c-green{--ac:#21a35a;--ac-deep:#187a43;--ac-pale:#c9eed8;--ac-rgb:33,163,90;--ac-wash:#eefaf2;--ac-line:#a5d9b9}
+
     .card{position:relative;aspect-ratio:5/6.7;opacity:0;animation:rise .7s ease forwards;cursor:pointer}
     .card[data-fx="aim"]{cursor:crosshair}
     .card:focus{outline:none}
@@ -147,66 +156,65 @@
 
     .face{
       position:absolute;inset:0;backface-visibility:hidden;-webkit-backface-visibility:hidden;
-      border-radius:20px;overflow:hidden;background:#fff;border:1px solid var(--foil);
+      border-radius:20px;overflow:hidden;background:#fff;border:1px solid var(--ac-line);
       box-shadow:0 1px 2px rgba(0,0,0,.05),0 22px 44px -22px rgba(0,0,0,.24);
     }
     .face.back{transform:rotateY(180deg)}
-    .keyline{position:absolute;inset:9px;border:1px solid rgba(217,196,143,.55);border-radius:13px;pointer-events:none;z-index:6}
+    .keyline{position:absolute;inset:9px;border:1px solid rgba(var(--ac-rgb),.5);border-radius:13px;pointer-events:none;z-index:6}
 
-    .photo-wrap{position:relative;height:66%;overflow:hidden;background:#f4f4f4}
-    .photo-wrap img{width:100%;height:100%;object-fit:cover;display:block}
-    .photo-wrap::after{content:"";position:absolute;inset:auto 0 0 0;height:30%;pointer-events:none;
-      background:linear-gradient(to top,rgba(0,0,0,.18),transparent)}
+    /* photo fills the frame, focus point set per person */
+    .photo-wrap{position:relative;height:66%;overflow:hidden;background:var(--ac-wash)}
+    .photo-wrap img{width:100%;height:100%;object-fit:cover;object-position:var(--pos,50% 30%);display:block}
+    .photo-wrap::after{content:"";position:absolute;inset:auto 0 0 0;height:26%;pointer-events:none;
+      background:linear-gradient(to top,rgba(0,0,0,.16),transparent)}
     .sheen{
       position:absolute;inset:0;z-index:2;pointer-events:none;opacity:0;transition:opacity .3s ease;
       background:
-        radial-gradient(circle at var(--mx,50%) var(--my,50%),rgba(255,255,255,.4),transparent 55%),
-        linear-gradient(115deg,transparent calc(var(--mx,50%) - 22%),rgba(255,226,150,.3) var(--mx,50%),transparent calc(var(--mx,50%) + 22%));
+        radial-gradient(circle at var(--mx,50%) var(--my,50%),rgba(255,255,255,.35),transparent 55%),
+        linear-gradient(115deg,transparent calc(var(--mx,50%) - 22%),rgba(var(--ac-rgb),.22) var(--mx,50%),transparent calc(var(--mx,50%) + 22%));
     }
     .card:hover .sheen,body.gyro .sheen{opacity:1}
     .photo-wrap.empty{
       display:flex;align-items:center;justify-content:center;
-      background:radial-gradient(120% 90% at 50% 20%,#fffaf0,#f6ecd0);
+      background:radial-gradient(120% 90% at 50% 20%,#fff,var(--ac-wash));
     }
     .photo-wrap.empty::after{display:none}
-    .photo-wrap.empty .initial{font-family:var(--serif);font-style:italic;font-size:130px;line-height:1;color:rgba(201,162,39,.5)}
+    .photo-wrap.empty .initial{font-family:var(--serif);font-style:italic;font-size:130px;line-height:1;color:rgba(var(--ac-rgb),.5)}
 
     .plate{
       position:relative;height:34%;padding:14px 22px 16px;display:flex;flex-direction:column;justify-content:center;
-      background:linear-gradient(180deg,#fff,#fcf7e6);border-top:1px solid rgba(217,196,143,.5);
+      background:linear-gradient(180deg,#fff,var(--ac-wash));border-top:1px solid rgba(var(--ac-rgb),.35);
     }
     .plate .name{font-family:var(--serif);font-size:36px;line-height:1}
     .plate .title{
       display:flex;align-items:center;gap:9px;margin-top:8px;
-      font-family:var(--serif);font-style:italic;font-size:20px;line-height:1.1;color:var(--gold-deep);
+      font-family:var(--serif);font-style:italic;font-size:20px;line-height:1.1;color:var(--ac-deep);
     }
-    .plate .title::before{content:"";width:6px;height:6px;background:var(--gold);transform:rotate(45deg);flex-shrink:0}
+    .plate .title::before{content:"";width:6px;height:6px;background:var(--ac);transform:rotate(45deg);flex-shrink:0}
 
     .face.back{display:flex;flex-direction:column;padding:28px 26px;background:#fff}
     .face.back::before{
       content:"";position:absolute;inset:0;pointer-events:none;
       background-image:
-        repeating-linear-gradient(45deg,rgba(168,132,47,.06) 0 1px,transparent 1px 14px),
-        repeating-linear-gradient(-45deg,rgba(168,132,47,.06) 0 1px,transparent 1px 14px);
+        repeating-linear-gradient(45deg,rgba(var(--ac-rgb),.07) 0 1px,transparent 1px 14px),
+        repeating-linear-gradient(-45deg,rgba(var(--ac-rgb),.07) 0 1px,transparent 1px 14px);
     }
     .face.back>*{position:relative}
     .face.back>.keyline{position:absolute}
     .back-name{font-family:var(--serif);font-size:40px;line-height:1}
-    .back-title{font-family:var(--serif);font-style:italic;font-size:22px;margin-top:6px;color:var(--gold-deep)}
+    .back-title{font-family:var(--serif);font-style:italic;font-size:22px;margin-top:6px;color:var(--ac-deep)}
     .back-rule{height:1px;background:var(--border);margin:20px 0 16px}
     .back-label{font-family:var(--serif);font-style:italic;font-size:17px;color:var(--text-muted);margin-bottom:12px}
     .back-known{list-style:none;display:grid;gap:12px}
     .back-known li{display:flex;align-items:center;gap:12px;font-family:var(--serif);font-size:24px;line-height:1}
-    .back-known li::before{content:"";width:7px;height:7px;background:var(--gold);transform:rotate(45deg);flex-shrink:0}
+    .back-known li::before{content:"";width:7px;height:7px;background:var(--ac);transform:rotate(45deg);flex-shrink:0}
     .back-foot{margin-top:auto;font-family:var(--serif);font-style:italic;font-size:16px;color:var(--text-muted)}
 
-    /* ================================================================
-       PER-CARD EFFECTS
-       ================================================================ */
+    /* ================= PER-CARD EFFECTS ================= */
     .fx{position:absolute;inset:0;z-index:3;pointer-events:none;opacity:0;transition:opacity .25s ease;overflow:hidden}
     .card:hover .fx,.card:focus-visible .fx{opacity:1}
 
-    /* ---------- AURA (ajchapa): living golden halo + rising embers ---------- */
+    /* AURA (ajchapa): golden halo + embers */
     .halo{
       position:absolute;inset:-16px;z-index:-1;pointer-events:none;
       opacity:.85;transform:scale(1);transition:opacity .5s ease,transform .6s cubic-bezier(.2,.7,.25,1);
@@ -229,71 +237,71 @@
       100%{opacity:0;transform:translate(var(--dx),-290px) scale(.3)}
     }
 
-    /* ---------- AIM (alex): build grid + tracking crosshair ---------- */
+    /* AIM (alex): blue build grid + crosshair */
     .fx-aim .agrid{
       position:absolute;inset:0;
       background-image:
-        linear-gradient(rgba(168,132,47,.4) 1px,transparent 1px),
-        linear-gradient(90deg,rgba(168,132,47,.4) 1px,transparent 1px);
+        linear-gradient(rgba(var(--ac-rgb),.5) 1px,transparent 1px),
+        linear-gradient(90deg,rgba(var(--ac-rgb),.5) 1px,transparent 1px);
       background-size:34px 34px;
       -webkit-mask-image:radial-gradient(circle 96px at var(--fx,50%) var(--fy,50%),#000 0%,transparent 100%);
       mask-image:radial-gradient(circle 96px at var(--fx,50%) var(--fy,50%),#000 0%,transparent 100%);
     }
     .reticle{
       position:absolute;left:0;top:0;width:56px;height:56px;margin:-28px 0 0 -28px;
-      transition:transform .09s linear;will-change:transform;
-      filter:drop-shadow(0 0 2px rgba(255,255,255,.9));
+      transition:transform .09s linear;will-change:transform;color:var(--ac-deep);
+      filter:drop-shadow(0 0 2px rgba(255,255,255,.95));
     }
     .reticle svg{width:100%;height:100%;display:block;animation:lock 2.4s ease-in-out infinite}
     @keyframes lock{50%{transform:scale(.86)}}
     .burst{
       position:absolute;width:14px;height:14px;margin:-7px 0 0 -7px;border-radius:50%;
-      border:2px solid #c9a227;animation:burst .55s ease-out forwards;
+      border:2px solid var(--ac);animation:burst .55s ease-out forwards;
     }
     @keyframes burst{to{transform:scale(7);opacity:0}}
 
-    /* ---------- SHEET (kush): live spreadsheet with a snapping cell ---------- */
-    .fx-sheet{font-family:var(--mono);font-size:9px;color:#6a5a28}
+    /* SHEET (kush): green spreadsheet */
+    .fx-sheet{font-family:var(--mono);font-size:9px;color:var(--ac-deep)}
     .sh-bar{
       position:absolute;left:0;right:0;top:0;height:20px;display:flex;align-items:center;gap:6px;padding:0 6px;
-      background:rgba(255,252,242,.94);border-bottom:1px solid rgba(168,132,47,.4);
+      background:rgba(255,255,255,.95);border-bottom:1px solid rgba(var(--ac-rgb),.45);
     }
-    .sh-name{min-width:30px;padding:1px 6px;border:1px solid rgba(168,132,47,.45);background:#fff;text-align:center;color:#4a3a10}
-    .sh-fxl{font-family:var(--serif);font-style:italic;font-size:12px;color:var(--gold-deep)}
-    .sh-formula{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;color:#4a3a10}
+    .sh-name{min-width:30px;padding:1px 6px;border:1px solid rgba(var(--ac-rgb),.5);background:#fff;text-align:center;color:#12432a}
+    .sh-fxl{font-family:var(--serif);font-style:italic;font-size:12px;color:var(--ac-deep)}
+    .sh-formula{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;color:#12432a}
     .sh-cols{
       position:absolute;left:20px;right:0;top:20px;height:16px;display:flex;overflow:hidden;
-      background:rgba(251,244,222,.94);border-bottom:1px solid rgba(168,132,47,.4);
+      background:rgba(244,252,247,.95);border-bottom:1px solid rgba(var(--ac-rgb),.45);
     }
-    .sh-cols span{flex:0 0 40px;text-align:center;line-height:16px;border-right:1px solid rgba(168,132,47,.3)}
+    .sh-cols span{flex:0 0 40px;text-align:center;line-height:16px;border-right:1px solid rgba(var(--ac-rgb),.3)}
     .sh-rows{
       position:absolute;left:0;top:20px;bottom:0;width:20px;overflow:hidden;padding-top:16px;
-      background:rgba(251,244,222,.94);border-right:1px solid rgba(168,132,47,.4);
+      background:rgba(244,252,247,.95);border-right:1px solid rgba(var(--ac-rgb),.45);
     }
-    .sh-rows span{display:block;height:26px;line-height:26px;text-align:center;border-bottom:1px solid rgba(168,132,47,.3)}
-    .sh-cols span.on,.sh-rows span.on{background:#f1dfa8;color:#3a2c08;font-weight:700}
+    .sh-rows span{display:block;height:26px;line-height:26px;text-align:center;border-bottom:1px solid rgba(var(--ac-rgb),.3)}
+    .sh-cols span.on,.sh-rows span.on{background:var(--ac-pale);color:#0d3a21;font-weight:700}
     .sh-grid{
       position:absolute;left:20px;top:36px;right:0;bottom:0;
       background-image:
-        linear-gradient(rgba(168,132,47,.3) 1px,transparent 1px),
-        linear-gradient(90deg,rgba(168,132,47,.3) 1px,transparent 1px);
+        linear-gradient(rgba(var(--ac-rgb),.35) 1px,transparent 1px),
+        linear-gradient(90deg,rgba(var(--ac-rgb),.35) 1px,transparent 1px);
       background-size:40px 26px;
     }
     .sh-sel{
-      position:absolute;left:20px;top:36px;width:40px;height:26px;border:2px solid #c9a227;
-      background:rgba(241,223,168,.3);transition:transform .08s ease-out;
+      position:absolute;left:20px;top:36px;width:40px;height:26px;border:2px solid var(--ac);
+      background:rgba(var(--ac-rgb),.18);transition:transform .08s ease-out;
     }
-    .sh-sel::after{content:"";position:absolute;right:-4px;bottom:-4px;width:6px;height:6px;background:#c9a227;border:1px solid #fff}
+    .sh-sel::after{content:"";position:absolute;right:-4px;bottom:-4px;width:6px;height:6px;background:var(--ac);border:1px solid #fff}
 
     @media (max-width:640px){
-      #hero{padding:4px 14px 0}
+      #hero{padding:4px 18px 0}
       #body{padding:4px 16px 64px}
       #nav{padding:0 16px}
       #wall{grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:28px 16px;margin-top:12px}
       .plate{padding:12px 16px}
       .plate .name{font-size:28px}
       .plate .title{font-size:16px}
-      #scroll-btn{font-size:22px}
+      #scroll-btn{font-size:19px}
       #s-content{padding:34px 22px 28px}
       #s-title{font-size:48px}
       #s-rules .txt{font-size:25px}
@@ -366,18 +374,25 @@
   <script>
     // ─────────────────────────────
     //  ADD YOUR PEOPLE HERE
-    //  fx picks the card's special effect:
-    //    "aura"  golden halo + rising embers
-    //    "aim"   build grid + tracking crosshair
-    //    "sheet" spreadsheet with a snapping cell
-    //    ""      no special effect
+    //  photo : exact filename in the repo
+    //  pos   : where the photo is anchored inside the frame
+    //          "50% 20%" = centered, a bit toward the top (good for faces).
+    //          first number = left/right, second = up/down. tweak until it looks right.
+    //  color : "gold" | "blue" | "green"
+    //  fx    : "aura" | "aim" | "sheet" | ""
     // ─────────────────────────────
     const GOATS = [
-      { name:"Ajchapa", title:"The Goat", photo:"photo2.jpg", fx:"aura",
+      { name:"Ajchapa", title:"The Goat",
+        photo:"4A9D35FD-F758-4855-9359-5189C87A03CF.JPG", pos:"50% 25%",
+        color:"gold", fx:"aura",
         known:["Aura","Hustle","Flips"] },
-      { name:"Alex", title:"Goat of Fortnite", photo:"", fx:"aim",
+      { name:"Alex", title:"Goat of Fortnite",
+        photo:"IMG_3858.heic", pos:"50% 25%",
+        color:"blue", fx:"aim",
         known:["Builds","Clutch","Aim"] },
-      { name:"Kush", title:"Goat of Excel", photo:"", fx:"sheet",
+      { name:"Kush", title:"Goat of Excel",
+        photo:"85CD46FA-7B40-468F-9EC2-C50FDA1E57BE.PNG", pos:"50% 25%",
+        color:"green", fx:"sheet",
         known:["Formulas","Pivot Tables","VLOOKUP Speed"] },
     ];
     const RULES = [
@@ -394,10 +409,10 @@
     const LETTERS = "ABCDEFGHIJKLMNOP";
     function fxMarkup(kind) {
       if (kind === "aim") return `<div class="fx fx-aim"><div class="agrid"></div>
-        <div class="reticle"><svg viewBox="0 0 56 56" fill="none" stroke="#b8901f" stroke-width="1.6" stroke-linecap="round">
+        <div class="reticle"><svg viewBox="0 0 56 56" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round">
           <circle cx="28" cy="28" r="15"/>
           <path d="M28 4v14M28 38v14M4 28h14M38 28h14"/>
-          <circle cx="28" cy="28" r="1.8" fill="#b8901f" stroke="none"/></svg></div></div>`;
+          <circle cx="28" cy="28" r="1.8" fill="currentColor" stroke="none"/></svg></div></div>`;
       if (kind === "sheet") {
         const cols = [...LETTERS].slice(0, 10).map((l) => `<span>${l}</span>`).join("");
         const rows = Array.from({ length: 12 }, (_, i) => `<span>${i + 1}</span>`).join("");
@@ -420,9 +435,10 @@
     // ── build the cards
     GOATS.forEach((g, i) => {
       const card = document.createElement("article");
-      card.className = "card";
+      card.className = "card c-" + (g.color || "gold");
       card.dataset.fx = g.fx || "";
       card.style.animationDelay = (i * 110) + "ms";
+      if (g.pos) card.style.setProperty("--pos", g.pos);
       card.tabIndex = 0;
       card.setAttribute("role", "button");
       card.setAttribute("aria-label", g.name + ", " + g.title + ". Activate to flip.");
@@ -455,6 +471,15 @@
             <div class="back-foot">The Wall</div>
           </div>
         </div></div>`;
+
+      // if a photo can't load (wrong name, or a format the browser can't show),
+      // fall back to a tinted card with their initial instead of a broken image
+      const img = card.querySelector(".photo-wrap img");
+      if (img) img.addEventListener("error", () => {
+        const w = img.parentElement;
+        w.classList.add("empty");
+        img.replaceWith(Object.assign(document.createElement("div"), { className: "initial", textContent: g.name[0] }));
+      });
 
       const flip = () => card.classList.toggle("flipped");
       card.addEventListener("click", flip);
