@@ -41,7 +41,7 @@
     #nav-back:hover{color:var(--text-main)}
     #nav-time{font-size:11px;color:var(--text-muted);font-family:var(--mono)}
 
-    /* ================= hero: compact, pulled in from the edges ================= */
+    /* ================= hero ================= */
     #hero{
       display:flex;justify-content:space-between;align-items:center;gap:24px;
       width:100%;max-width:1320px;margin:0 auto;padding:6px 56px 0;
@@ -63,7 +63,7 @@
     @keyframes kin{to{opacity:1;transform:translateY(0)}}
     h1#title:hover .kl{background-position:100% 0}
 
-    /* ================= the little scroll button ================= */
+    /* ================= code scroll button ================= */
     #scroll-btn{
       display:flex;align-items:center;gap:8px;background:none;border:0;cursor:pointer;
       font-family:var(--serif);font-size:22px;line-height:1;color:var(--text-main);
@@ -133,12 +133,12 @@
     /* ================= the wall ================= */
     #body{flex:1;width:100%;max-width:1180px;margin:0 auto;padding:6px 24px 80px}
     #wall{
-      margin-top:14px;display:grid;
-      grid-template-columns:repeat(auto-fill,minmax(210px,240px));gap:36px 28px;
+      margin-top:30px;display:grid;
+      grid-template-columns:repeat(auto-fill,minmax(210px,240px));gap:40px 28px;
       justify-content:center;perspective:1400px;
     }
 
-    /* each person gets their own colour */
+    /* each person has their own colour */
     .c-gold {--ac:#c9a227;--ac-deep:#a8842f;--ac-pale:#f1dfa8;--ac-rgb:201,162,39;--ac-wash:#fcf7e6;--ac-line:#d9c48f}
     .c-blue {--ac:#2f86ee;--ac-deep:#1d5fb8;--ac-pale:#cfe4ff;--ac-rgb:47,134,238;--ac-wash:#eef5ff;--ac-line:#a9c8f0}
     .c-green{--ac:#21a35a;--ac-deep:#187a43;--ac-pale:#c9eed8;--ac-rgb:33,163,90;--ac-wash:#eefaf2;--ac-line:#a5d9b9}
@@ -162,11 +162,15 @@
     .face.back{transform:rotateY(180deg)}
     .keyline{position:absolute;inset:9px;border:1px solid rgba(var(--ac-rgb),.5);border-radius:13px;pointer-events:none;z-index:6}
 
-    /* photo fills the frame, focus point set per person */
-    .photo-wrap{position:relative;height:66%;overflow:hidden;background:var(--ac-wash)}
-    .photo-wrap img{width:100%;height:100%;object-fit:cover;object-position:var(--pos,50% 30%);display:block}
+    .photo-wrap{position:relative;height:68%;overflow:hidden;background:var(--ac-wash)}
+    .photo-wrap img{width:100%;height:100%;object-fit:cover;object-position:var(--pos,50% 25%);display:block}
     .photo-wrap::after{content:"";position:absolute;inset:auto 0 0 0;height:26%;pointer-events:none;
       background:linear-gradient(to top,rgba(0,0,0,.16),transparent)}
+    /* a light colour grade per person, so each photo feels like it belongs to its card */
+    .card[data-fx="aura"]  .photo-wrap img{filter:saturate(1.08) contrast(1.03) sepia(.08)}
+    .card[data-fx="aim"]   .photo-wrap img{filter:saturate(1.1) contrast(1.06) hue-rotate(-4deg)}
+    .card[data-fx="sheet"] .photo-wrap img{filter:saturate(1.02) contrast(1.04)}
+
     .sheen{
       position:absolute;inset:0;z-index:2;pointer-events:none;opacity:0;transition:opacity .3s ease;
       background:
@@ -179,10 +183,10 @@
       background:radial-gradient(120% 90% at 50% 20%,#fff,var(--ac-wash));
     }
     .photo-wrap.empty::after{display:none}
-    .photo-wrap.empty .initial{font-family:var(--serif);font-style:italic;font-size:130px;line-height:1;color:rgba(var(--ac-rgb),.5)}
+    .photo-wrap .initial{font-family:var(--serif);font-style:italic;font-size:130px;line-height:1;color:rgba(var(--ac-rgb),.5)}
 
     .plate{
-      position:relative;height:34%;padding:14px 22px 16px;display:flex;flex-direction:column;justify-content:center;
+      position:relative;height:32%;padding:14px 22px 16px;display:flex;flex-direction:column;justify-content:center;
       background:linear-gradient(180deg,#fff,var(--ac-wash));border-top:1px solid rgba(var(--ac-rgb),.35);
     }
     .plate .name{font-family:var(--serif);font-size:36px;line-height:1}
@@ -210,11 +214,21 @@
     .back-known li::before{content:"";width:7px;height:7px;background:var(--ac);transform:rotate(45deg);flex-shrink:0}
     .back-foot{margin-top:auto;font-family:var(--serif);font-style:italic;font-size:16px;color:var(--text-muted)}
 
-    /* ================= PER-CARD EFFECTS ================= */
+    /* ================================================================
+       PER-CARD EFFECTS (hover). Faces always stay visible.
+       ================================================================ */
     .fx{position:absolute;inset:0;z-index:3;pointer-events:none;opacity:0;transition:opacity .25s ease;overflow:hidden}
     .card:hover .fx,.card:focus-visible .fx{opacity:1}
 
-    /* AURA (ajchapa): golden halo + embers */
+    /* ---------- AJCHAPA: legend. crown, halo, embers, moving gold foil ---------- */
+    .crown{
+      position:absolute;z-index:8;left:50%;top:-24px;width:64px;height:48px;margin-left:-32px;
+      pointer-events:none;filter:drop-shadow(0 6px 8px rgba(120,84,10,.35));
+      transition:transform .6s cubic-bezier(.2,.7,.25,1),opacity .3s ease;
+    }
+    .crown svg{width:100%;height:100%;display:block}
+    .card:hover .crown{transform:translateY(-8px) rotate(-3deg) scale(1.08)}
+    .card.flipped .crown{opacity:0}
     .halo{
       position:absolute;inset:-16px;z-index:-1;pointer-events:none;
       opacity:.85;transform:scale(1);transition:opacity .5s ease,transform .6s cubic-bezier(.2,.7,.25,1);
@@ -236,71 +250,123 @@
       15%{opacity:1}
       100%{opacity:0;transform:translate(var(--dx),-290px) scale(.3)}
     }
+    .fx-aura::before{
+      content:"";position:absolute;inset:0;
+      background:radial-gradient(120% 90% at 50% 100%,rgba(255,214,102,.38),transparent 60%);
+    }
+    .fx-aura .foil{
+      position:absolute;top:-10%;bottom:-10%;width:42%;left:-60%;
+      background:linear-gradient(100deg,transparent,rgba(255,236,170,.55),transparent);
+      transform:skewX(-14deg);
+    }
+    .card:hover .fx-aura .foil{animation:foil 2.6s ease-in-out infinite}
+    @keyframes foil{0%{left:-60%}60%,100%{left:130%}}
 
-    /* AIM (alex): blue build grid + crosshair */
+    /* ---------- ALEX: game HUD. shield + health, scope, hit markers, kill feed ---------- */
     .fx-aim .agrid{
       position:absolute;inset:0;
       background-image:
         linear-gradient(rgba(var(--ac-rgb),.5) 1px,transparent 1px),
         linear-gradient(90deg,rgba(var(--ac-rgb),.5) 1px,transparent 1px);
       background-size:34px 34px;
-      -webkit-mask-image:radial-gradient(circle 96px at var(--fx,50%) var(--fy,50%),#000 0%,transparent 100%);
-      mask-image:radial-gradient(circle 96px at var(--fx,50%) var(--fy,50%),#000 0%,transparent 100%);
+      -webkit-mask-image:radial-gradient(circle 90px at var(--fx,50%) var(--fy,50%),#000 0%,transparent 100%);
+      mask-image:radial-gradient(circle 90px at var(--fx,50%) var(--fy,50%),#000 0%,transparent 100%);
+    }
+    .fx-aim::before{
+      content:"";position:absolute;inset:0;
+      box-shadow:inset 0 0 40px rgba(var(--ac-rgb),.45);
     }
     .reticle{
       position:absolute;left:0;top:0;width:56px;height:56px;margin:-28px 0 0 -28px;
-      transition:transform .09s linear;will-change:transform;color:var(--ac-deep);
-      filter:drop-shadow(0 0 2px rgba(255,255,255,.95));
+      transition:transform .09s linear;will-change:transform;color:#fff;
+      filter:drop-shadow(0 0 3px rgba(var(--ac-rgb),.95));
     }
     .reticle svg{width:100%;height:100%;display:block;animation:lock 2.4s ease-in-out infinite}
     @keyframes lock{50%{transform:scale(.86)}}
+    .hud{position:absolute;left:14px;right:14px;bottom:14px;display:grid;gap:5px}
+    .hud .bar{height:7px;border-radius:2px;background:rgba(0,0,0,.4);overflow:hidden;transform:skewX(-18deg)}
+    .hud .bar i{display:block;height:100%;width:0;transition:width 1.1s cubic-bezier(.2,.7,.25,1) .1s}
+    .hud .shield i{background:linear-gradient(90deg,#4aa3ff,#9fd0ff)}
+    .hud .hp i{background:linear-gradient(90deg,#34c76f,#8ef0b4);transition-delay:.3s}
+    .card:hover .hud .bar i{width:100%}
     .burst{
       position:absolute;width:14px;height:14px;margin:-7px 0 0 -7px;border-radius:50%;
       border:2px solid var(--ac);animation:burst .55s ease-out forwards;
     }
     @keyframes burst{to{transform:scale(7);opacity:0}}
+    .hit{position:absolute;width:22px;height:22px;margin:-11px 0 0 -11px;animation:hit .5s ease-out forwards}
+    .hit::before,.hit::after{
+      content:"";position:absolute;left:50%;top:50%;width:22px;height:2px;margin:-1px 0 0 -11px;
+      background:#fff;box-shadow:0 0 5px var(--ac);
+    }
+    .hit::before{transform:rotate(45deg)}
+    .hit::after{transform:rotate(-45deg)}
+    @keyframes hit{0%{transform:scale(.4);opacity:1}100%{transform:scale(1.5);opacity:0}}
+    .feed{position:absolute;top:12px;right:12px;display:flex;flex-direction:column;align-items:flex-end;gap:4px}
+    .feed-item{
+      font:800 10px var(--font);letter-spacing:.14em;text-transform:uppercase;color:#fff;
+      background:rgba(18,56,128,.8);padding:4px 9px;border-left:2px solid #8ec2ff;
+      animation:feed 1.6s ease forwards;
+    }
+    @keyframes feed{
+      0%{opacity:0;transform:translateX(18px)}
+      12%{opacity:1;transform:none}
+      80%{opacity:1}
+      100%{opacity:0}
+    }
 
-    /* SHEET (kush): green spreadsheet */
+    /* ---------- KUSH: live spreadsheet laid over his photo (face stays visible) ---------- */
     .fx-sheet{font-family:var(--mono);font-size:9px;color:var(--ac-deep)}
     .sh-bar{
       position:absolute;left:0;right:0;top:0;height:20px;display:flex;align-items:center;gap:6px;padding:0 6px;
-      background:rgba(255,255,255,.95);border-bottom:1px solid rgba(var(--ac-rgb),.45);
+      background:rgba(255,255,255,.88);border-bottom:1px solid rgba(var(--ac-rgb),.5);
     }
     .sh-name{min-width:30px;padding:1px 6px;border:1px solid rgba(var(--ac-rgb),.5);background:#fff;text-align:center;color:#12432a}
     .sh-fxl{font-family:var(--serif);font-style:italic;font-size:12px;color:var(--ac-deep)}
     .sh-formula{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;color:#12432a}
     .sh-cols{
       position:absolute;left:20px;right:0;top:20px;height:16px;display:flex;overflow:hidden;
-      background:rgba(244,252,247,.95);border-bottom:1px solid rgba(var(--ac-rgb),.45);
+      background:rgba(244,252,247,.82);border-bottom:1px solid rgba(var(--ac-rgb),.5);
     }
-    .sh-cols span{flex:0 0 40px;text-align:center;line-height:16px;border-right:1px solid rgba(var(--ac-rgb),.3)}
+    .sh-cols span{flex:0 0 40px;text-align:center;line-height:16px;border-right:1px solid rgba(var(--ac-rgb),.35)}
     .sh-rows{
       position:absolute;left:0;top:20px;bottom:0;width:20px;overflow:hidden;padding-top:16px;
-      background:rgba(244,252,247,.95);border-right:1px solid rgba(var(--ac-rgb),.45);
+      background:rgba(244,252,247,.82);border-right:1px solid rgba(var(--ac-rgb),.5);
     }
-    .sh-rows span{display:block;height:26px;line-height:26px;text-align:center;border-bottom:1px solid rgba(var(--ac-rgb),.3)}
+    .sh-rows span{display:block;height:26px;line-height:26px;text-align:center;border-bottom:1px solid rgba(var(--ac-rgb),.35)}
     .sh-cols span.on,.sh-rows span.on{background:var(--ac-pale);color:#0d3a21;font-weight:700}
     .sh-grid{
       position:absolute;left:20px;top:36px;right:0;bottom:0;
       background-image:
-        linear-gradient(rgba(var(--ac-rgb),.35) 1px,transparent 1px),
-        linear-gradient(90deg,rgba(var(--ac-rgb),.35) 1px,transparent 1px);
+        linear-gradient(rgba(255,255,255,.55) 1px,transparent 1px),
+        linear-gradient(90deg,rgba(255,255,255,.55) 1px,transparent 1px);
       background-size:40px 26px;
     }
     .sh-sel{
       position:absolute;left:20px;top:36px;width:40px;height:26px;border:2px solid var(--ac);
-      background:rgba(var(--ac-rgb),.18);transition:transform .08s ease-out;
+      background:rgba(var(--ac-rgb),.28);transition:transform .08s ease-out;
     }
     .sh-sel::after{content:"";position:absolute;right:-4px;bottom:-4px;width:6px;height:6px;background:var(--ac);border:1px solid #fff}
+    .sh-chart{
+      position:absolute;right:10px;bottom:10px;height:46px;display:flex;align-items:flex-end;gap:4px;
+      padding:6px 8px;background:rgba(255,255,255,.82);border:1px solid rgba(var(--ac-rgb),.5);border-radius:6px;
+    }
+    .sh-chart i{
+      display:block;width:7px;height:var(--h);background:linear-gradient(180deg,var(--ac),var(--ac-deep));border-radius:2px 2px 0 0;
+      transform:scaleY(0);transform-origin:bottom;transition:transform .7s cubic-bezier(.2,.7,.25,1);
+      transition-delay:calc(var(--k) * .08s + .15s);
+    }
+    .card:hover .sh-chart i{transform:scaleY(1)}
 
     @media (max-width:640px){
       #hero{padding:4px 18px 0}
       #body{padding:4px 16px 64px}
       #nav{padding:0 16px}
-      #wall{grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:28px 16px;margin-top:12px}
+      #wall{grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:36px 16px;margin-top:28px}
       .plate{padding:12px 16px}
       .plate .name{font-size:28px}
       .plate .title{font-size:16px}
+      .crown{width:52px;height:39px;margin-left:-26px;top:-20px}
       #scroll-btn{font-size:19px}
       #s-content{padding:34px 22px 28px}
       #s-title{font-size:48px}
@@ -311,7 +377,7 @@
       #scroll-btn,.card{animation-duration:.01s}
       #s-body,#scroll-modal.open #s-body{transition:none}
       .reveal,#scroll-modal.open .reveal{transition:none}
-      .halo::before,.ember,.reticle svg{animation:none}
+      .halo::before,.ember,.reticle svg,.card:hover .fx-aura .foil{animation:none}
       .ember{display:none}
     }
   </style>
@@ -374,24 +440,23 @@
   <script>
     // ─────────────────────────────
     //  ADD YOUR PEOPLE HERE
-    //  photo : exact filename in the repo
-    //  pos   : where the photo is anchored inside the frame
-    //          "50% 20%" = centered, a bit toward the top (good for faces).
-    //          first number = left/right, second = up/down. tweak until it looks right.
+    //  photo : exact filename in the repo (case matters!)
+    //  pos   : where the photo is anchored in the frame. "50% 25%" = centered,
+    //          a bit toward the top. second number: lower = shows more of the top.
     //  color : "gold" | "blue" | "green"
     //  fx    : "aura" | "aim" | "sheet" | ""
     // ─────────────────────────────
     const GOATS = [
       { name:"Ajchapa", title:"The Goat",
-        photo:"4A9D35FD-F758-4855-9359-5189C87A03CF.JPG", pos:"50% 25%",
+        photo:"ajchapa.JPG", pos:"50% 25%",
         color:"gold", fx:"aura",
         known:["Aura","Hustle","Flips"] },
       { name:"Alex", title:"Goat of Fortnite",
-        photo:"IMG_3858.heic", pos:"50% 25%",
+        photo:"Alex.heic", pos:"50% 25%",
         color:"blue", fx:"aim",
         known:["Builds","Clutch","Aim"] },
       { name:"Kush", title:"Goat of Excel",
-        photo:"85CD46FA-7B40-468F-9EC2-C50FDA1E57BE.PNG", pos:"50% 25%",
+        photo:"Kush.PNG", pos:"50% 25%",
         color:"green", fx:"sheet",
         known:["Formulas","Pivot Tables","VLOOKUP Speed"] },
     ];
@@ -405,10 +470,41 @@
     const reduceMotion = matchMedia("(prefers-reduced-motion: reduce)").matches;
     const clamp = (v, a, b) => Math.min(b, Math.max(a, v));
 
+    // ── HEIC support: Safari shows .heic natively. Chrome/Android can't, so only
+    //    when the image fails we load a small converter and show it as a JPEG.
+    let heicLib = null;
+    function loadHeicLib() {
+      if (heicLib) return heicLib;
+      heicLib = new Promise((res, rej) => {
+        const s = document.createElement("script");
+        s.src = "https://cdnjs.cloudflare.com/ajax/libs/heic2any/0.0.4/heic2any.min.js";
+        s.onload = () => res(window.heic2any); s.onerror = rej;
+        document.head.appendChild(s);
+      });
+      return heicLib;
+    }
+    async function heicToUrl(src) {
+      const [conv, blob] = await Promise.all([loadHeicLib(), fetch(src).then((r) => r.blob())]);
+      let out = await conv({ blob, toType: "image/jpeg", quality: 0.88 });
+      if (Array.isArray(out)) out = out[0];
+      return URL.createObjectURL(out);
+    }
+
     // ── effect markup
     const LETTERS = "ABCDEFGHIJKLMNOP";
+    const CROWN = `<div class="crown" aria-hidden="true"><svg viewBox="0 0 64 48">
+      <defs><linearGradient id="cg" x1="0" y1="0" x2="0" y2="1">
+        <stop offset="0" stop-color="#fff1bd"/><stop offset=".5" stop-color="#d9a83a"/><stop offset="1" stop-color="#8a6a1f"/></linearGradient></defs>
+      <path d="M6 38 L10 14 L22 26 L32 8 L42 26 L54 14 L58 38 Z" fill="url(#cg)" stroke="#8a6a1f" stroke-width="1.2" stroke-linejoin="round"/>
+      <rect x="6" y="38" width="52" height="6" rx="2" fill="url(#cg)" stroke="#8a6a1f" stroke-width="1.2"/>
+      <circle cx="10" cy="14" r="3" fill="#fff1bd" stroke="#8a6a1f"/><circle cx="32" cy="8" r="3.4" fill="#9a1826" stroke="#8a6a1f"/><circle cx="54" cy="14" r="3" fill="#fff1bd" stroke="#8a6a1f"/>
+      <circle cx="32" cy="31" r="2.4" fill="#9a1826"/><circle cx="20" cy="33" r="1.8" fill="#fff1bd"/><circle cx="44" cy="33" r="1.8" fill="#fff1bd"/></svg></div>`;
+
     function fxMarkup(kind) {
+      if (kind === "aura") return `<div class="fx fx-aura"><div class="foil"></div></div>`;
       if (kind === "aim") return `<div class="fx fx-aim"><div class="agrid"></div>
+        <div class="hud"><div class="bar shield"><i></i></div><div class="bar hp"><i></i></div></div>
+        <div class="feed"></div>
         <div class="reticle"><svg viewBox="0 0 56 56" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round">
           <circle cx="28" cy="28" r="15"/>
           <path d="M28 4v14M28 38v14M4 28h14M38 28h14"/>
@@ -416,10 +512,12 @@
       if (kind === "sheet") {
         const cols = [...LETTERS].slice(0, 10).map((l) => `<span>${l}</span>`).join("");
         const rows = Array.from({ length: 12 }, (_, i) => `<span>${i + 1}</span>`).join("");
+        const bars = [38, 62, 48, 84, 100].map((h, k) => `<i style="--h:${h}%;--k:${k}"></i>`).join("");
         return `<div class="fx fx-sheet">
           <div class="sh-grid"></div><div class="sh-sel"></div>
           <div class="sh-bar"><span class="sh-name">A1</span><span class="sh-fxl">fx</span><span class="sh-formula">=VLOOKUP(A1,Wall,2,0)</span></div>
-          <div class="sh-cols">${cols}</div><div class="sh-rows">${rows}</div></div>`;
+          <div class="sh-cols">${cols}</div><div class="sh-rows">${rows}</div>
+          <div class="sh-chart">${bars}</div></div>`;
       }
       return "";
     }
@@ -445,13 +543,14 @@
 
       const fx = fxMarkup(g.fx);
       const photo = g.photo
-        ? `<div class="photo-wrap"><img src="${g.photo}" alt="${g.name}" loading="lazy" decoding="async">
+        ? `<div class="photo-wrap"><img src="${g.photo}" alt="${g.name}" decoding="async">
              <div class="sheen"></div>${fx}</div>`
         : `<div class="photo-wrap empty"><div class="initial">${g.name[0]}</div>${fx}</div>`;
 
       const known = g.known.map((k) => `<li>${k}</li>`).join("");
 
       card.innerHTML = `
+        ${g.fx === "aura" ? CROWN : ""}
         ${g.fx === "aura" && !reduceMotion ? haloMarkup() : ""}
         <div class="flipper"><div class="tilter">
           <div class="face front">
@@ -472,14 +571,22 @@
           </div>
         </div></div>`;
 
-      // if a photo can't load (wrong name, or a format the browser can't show),
-      // fall back to a tinted card with their initial instead of a broken image
+      // photo fallback: .heic gets converted on the fly; anything else becomes a tinted initial card
       const img = card.querySelector(".photo-wrap img");
-      if (img) img.addEventListener("error", () => {
-        const w = img.parentElement;
-        w.classList.add("empty");
-        img.replaceWith(Object.assign(document.createElement("div"), { className: "initial", textContent: g.name[0] }));
-      });
+      if (img) {
+        let tried = false;
+        const giveUp = () => {
+          img.parentElement.classList.add("empty");
+          img.replaceWith(Object.assign(document.createElement("div"), { className: "initial", textContent: g.name[0] }));
+        };
+        img.addEventListener("error", async () => {
+          if (!tried && /\.heic$/i.test(g.photo)) {
+            tried = true;
+            try { img.src = await heicToUrl(g.photo); return; } catch (_) {}
+          }
+          giveUp();
+        });
+      }
 
       const flip = () => card.classList.toggle("flipped");
       card.addEventListener("click", flip);
@@ -491,6 +598,7 @@
     });
 
     // ── effect behaviour
+    const FEED = ["Eliminated", "Headshot", "Clutch", "Victory"];
     function bindFx(card, kind) {
       const wrap = card.querySelector(".photo-wrap");
       const fx = card.querySelector(".fx");
@@ -498,7 +606,8 @@
 
       if (kind === "aim") {
         const ret = fx.querySelector(".reticle");
-        let first = true;
+        const feed = fx.querySelector(".feed");
+        let first = true, n = 0;
         wrap.addEventListener("pointermove", (e) => {
           const r = wrap.getBoundingClientRect();
           const x = e.clientX - r.left, y = e.clientY - r.top;
@@ -511,12 +620,19 @@
         wrap.addEventListener("pointerleave", () => { first = true; });
         wrap.addEventListener("click", (e) => {
           const r = wrap.getBoundingClientRect();
-          const b = document.createElement("i");
-          b.className = "burst";
-          b.style.left = (e.clientX - r.left) + "px";
-          b.style.top = (e.clientY - r.top) + "px";
-          fx.appendChild(b);
-          b.addEventListener("animationend", () => b.remove());
+          const x = (e.clientX - r.left) + "px", y = (e.clientY - r.top) + "px";
+          ["burst", "hit"].forEach((cls) => {
+            const b = document.createElement("i");
+            b.className = cls; b.style.left = x; b.style.top = y;
+            fx.appendChild(b);
+            b.addEventListener("animationend", () => b.remove());
+          });
+          const item = document.createElement("div");
+          item.className = "feed-item";
+          item.textContent = FEED[n++ % FEED.length];
+          feed.appendChild(item);
+          while (feed.children.length > 3) feed.firstChild.remove();
+          item.addEventListener("animationend", () => item.remove());
         });
       }
 
