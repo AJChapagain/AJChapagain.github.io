@@ -58,19 +58,70 @@
 
     #body { flex: 1; width: 100%; max-width: 1180px; margin: 0 auto; padding: 56px 24px 96px; }
 
-    /* the title is the image: massive, tight, uppercase */
+    /* ================= hero ================= */
+    #hero {
+      display: flex; justify-content: space-between; align-items: flex-end;
+      gap: 48px;
+    }
     #eyebrow {
       font-family: var(--mono); font-size: 11px;
       letter-spacing: .32em; text-transform: uppercase;
       color: var(--text-muted);
     }
+
+    /* kinetic title: letters stagger up on load, ripple near the
+       cursor, and a champagne light sweeps through on hover */
     h1#title {
       margin-top: 16px;
       font-weight: 800;
       font-size: clamp(34px, 5vw, 58px);
       letter-spacing: -0.02em;
-      line-height: 1;
+      line-height: 1.05;
       text-transform: uppercase;
+      cursor: default;
+    }
+    .kword { display: inline-block; white-space: nowrap; }
+    .kmask { display: inline-block; overflow: hidden; vertical-align: top; will-change: transform; }
+    .kl {
+      display: inline-block;
+      opacity: 0; transform: translateY(110%);
+      animation: kin .85s cubic-bezier(.19, .7, .22, 1) forwards;
+      animation-delay: var(--d, 0ms);
+      /* near-black letters with a hidden gold band for the hover sweep */
+      background: linear-gradient(105deg, #111 42%, #c9a227 50%, #111 58%);
+      background-size: 280% 100%; background-position: 0% 0;
+      -webkit-background-clip: text; background-clip: text; color: transparent;
+      transition: background-position 1.1s ease;
+    }
+    @keyframes kin { to { opacity: 1; transform: translateY(0); } }
+    h1#title:hover .kl { background-position: 100% 0; }
+
+    /* how-goats-get-picked panel, top right */
+    #how {
+      flex-shrink: 0; width: 262px;
+      border: 1px solid var(--border); border-radius: 16px;
+      background: rgba(255, 255, 255, .72);
+      backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px);
+      box-shadow: 0 12px 32px -18px rgba(0, 0, 0, .18);
+      padding: 20px 22px;
+      opacity: 0; transform: translateY(14px);
+      animation: how-in .8s ease .55s forwards;
+    }
+    @keyframes how-in { to { opacity: 1; transform: translateY(0); } }
+    #how-title {
+      font-size: 10px; font-weight: 800; letter-spacing: .24em;
+      text-transform: uppercase; color: var(--text-muted);
+      padding-bottom: 12px; border-bottom: 1px solid var(--border);
+    }
+    #how ol { list-style: none; margin-top: 4px; }
+    #how li {
+      display: flex; align-items: baseline; gap: 12px;
+      padding: 9px 0; border-bottom: 1px solid #f3f3f3; font-size: 13px;
+    }
+    #how li:last-child { border-bottom: 0; padding-bottom: 0; }
+    #how li span {
+      font-family: var(--mono); font-size: 11px; color: var(--gold-deep);
+      font-variant-numeric: tabular-nums;
     }
 
     /* ================= the wall ================= */
@@ -205,11 +256,19 @@
     .back-foot { margin-top: auto; font-size: 10px; letter-spacing: .22em;
                  text-transform: uppercase; color: var(--text-muted); }
 
+    @media (max-width: 760px) {
+      #hero { flex-direction: column; align-items: flex-start; gap: 28px; }
+      #how { width: 100%; }
+    }
     @media (max-width: 640px) {
       #body { padding: 40px 16px 72px; }
       #nav { padding: 0 16px; }
       #wall { grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 30px 18px; }
       .photo-title { font-size: 12px; left: 14px; right: 14px; bottom: 12px; }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      .kl { animation: none; opacity: 1; transform: none; }
+      #how, .card { animation-duration: .01s; }
     }
   </style>
 </head>
@@ -221,8 +280,20 @@
     </nav>
 
     <div id="body">
-      <div id="eyebrow">ajchapa · 003</div>
-      <h1 id="title">Wall <span class="amp">&amp;</span> Goats</h1>
+      <header id="hero">
+        <div id="hero-left">
+          <div id="eyebrow">ajchapa · 003</div>
+          <h1 id="title" aria-label="Wall and Goats"></h1>
+        </div>
+        <aside id="how">
+          <div id="how-title">how goats get picked</div>
+          <ol>
+            <li><span>01</span>undeniable at one thing</li>
+            <li><span>02</span>hand-picked by ajchapa</li>
+            <li><span>03</span>the wall is final</li>
+          </ol>
+        </aside>
+      </header>
       <main id="wall"></main>
     </div>
   </div>
@@ -295,8 +366,52 @@
       wall.appendChild(card);
     });
 
-    // — buttery tilt + hover lift: one rAF loop, lerped toward the
-    //   cursor. the slight delay is what makes it feel like an
+    // — kinetic title: build the letters, stagger their entrance,
+    //   ripple them near the cursor, sweep gold through on hover
+    const titleEl = document.getElementById("title");
+    ["Wall", "&", "Goats"].forEach((w, wi) => {
+      const word = document.createElement("span");
+      word.className = "kword";
+      word.setAttribute("aria-hidden", "true");
+      [...w].forEach((ch, ci) => {
+        const mask = document.createElement("span");
+        mask.className = "kmask";
+        const l = document.createElement("span");
+        l.className = "kl";
+        l.textContent = ch;
+        l.style.setProperty("--d", ((wi * 5 + ci) * 45) + "ms");
+        mask.appendChild(l);
+        word.appendChild(mask);
+      });
+      titleEl.appendChild(word);
+      titleEl.appendChild(document.createTextNode(" "));
+    });
+
+    const masks = [...titleEl.querySelectorAll(".kmask")];
+    const heroLeft = document.getElementById("hero-left");
+    const lift = masks.map(() => 0);
+    let mouseX = null;
+    heroLeft.addEventListener("pointermove", (e) => { mouseX = e.clientX; });
+    heroLeft.addEventListener("pointerleave", () => { mouseX = null; });
+
+    if (!reduceMotion) (function wave() {
+      masks.forEach((m, i) => {
+        let t = 0;
+        if (mouseX !== null) {
+          const r = m.getBoundingClientRect();
+          const d = ((r.left + r.width / 2) - mouseX) / 70;
+          t = -12 * Math.exp(-d * d);
+        }
+        lift[i] += (t - lift[i]) * 0.18;
+        if (Math.abs(lift[i]) > 0.05 || t !== 0) {
+          m.style.transform = "translateY(" + lift[i].toFixed(2) + "px)";
+        }
+      });
+      requestAnimationFrame(wave);
+    })();
+
+    // — buttery card tilt + hover lift: one rAF loop, lerped toward
+    //   the cursor. the slight delay is what makes it feel like an
     //   object, not a control. (calm when reduced-motion is on)
     const cards = [...document.querySelectorAll(".card")];
     const state = cards.map(() => ({ tx: 0, ty: 0, cx: 0, cy: 0, lift: 0, liftT: 0, active: false }));
