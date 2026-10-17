@@ -3,258 +3,211 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>goat wall — ajchapa</title>
+  <title>goats — ajchapa</title>
   <link rel="icon" type="image/png" href="favicon.png" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Archivo:wght@500;700;800;900&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Mulish:wght@300;700;800&display=swap" rel="stylesheet" />
   <style>
-    /* ============ GOAT WALL — ajchapa.com/goats.html ============
-       everything on this page is driven by the GOATS array
-       at the bottom of this file (search: ADD YOUR GOATS HERE).
-       to add a goat: copy one entry, change the name/title/
-       photo/stats. that's it.                                   */
+    /* ============ goats — ajchapa.com/goats.html ============
+       same theme as the rest of the site: white, hairlines,
+       Mulish. to add a goat, copy an entry in the GOATS
+       array at the bottom of this file.                     */
 
     :root {
-      --bg:     #08080a;
-      --card:   #101014;
-      --gold:   #f0b429;
-      --gold-2: #ffd34d;
-      --text:   #f5f2ea;
-      --muted:  #8f8b80;
-      --line:   #232328;
-      --sx: 50vw;   /* spotlight position, moved by JS */
-      --sy: 30vh;
+      --bg:         #ffffff;
+      --border:     #ebebeb;
+      --text-main:  #000000;
+      --text-muted: #888888;
+      --font:       'Mulish', sans-serif;
+      --mono:       Menlo, Monaco, Consolas, monospace;
     }
 
     *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
 
     html, body {
       background: var(--bg);
-      color: var(--text);
-      font-family: 'Archivo', system-ui, sans-serif;
-      min-height: 100%;
+      color: var(--text-main);
+      font-family: var(--font);
+      font-size: 14px;
+      line-height: 1.45;
       -webkit-font-smoothing: antialiased;
     }
 
-    /* spotlight that follows the cursor */
-    #spotlight {
-      position: fixed; inset: 0;
-      background: radial-gradient(620px circle at var(--sx) var(--sy),
-                  rgba(240, 180, 41, 0.08), transparent 65%);
-      pointer-events: none;
-      z-index: 1;
+    a { color: inherit; text-decoration: none; }
+
+    #page {
+      min-height: 100vh;
+      min-height: 100dvh;
+      display: flex;
+      flex-direction: column;
     }
 
-    #page { position: relative; z-index: 2; max-width: 1080px; margin: 0 auto; padding: 0 24px 80px; }
-
-    /* ---------- header ---------- */
-    header { padding: 28px 0 10px; }
-    .back { color: var(--muted); text-decoration: none; font-size: 13px; letter-spacing: .04em; }
-    .back:hover { color: var(--gold); }
-    h1 {
-      font-weight: 900; font-size: clamp(48px, 9vw, 96px);
-      letter-spacing: -0.02em; line-height: 1; margin-top: 18px;
+    /* same nav as index */
+    #nav {
+      height: 52px;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 24px;
+      flex-shrink: 0;
     }
-    h1 .gold { color: var(--gold); }
-    .sub { color: var(--muted); margin-top: 10px; font-size: 15px; }
-    .rule { height: 1px; background: var(--line); margin: 26px 0 40px; }
+    #nav-back { font-size: 12px; color: var(--text-muted); letter-spacing: .04em; }
+    #nav-back:hover { color: var(--text-main); }
+    #nav-time { font-size: 11px; color: var(--text-muted); font-family: var(--mono); }
 
-    /* ---------- card grid ---------- */
+    #body {
+      flex: 1;
+      width: 100%;
+      max-width: 1080px;
+      margin: 0 auto;
+      padding: 56px 24px 72px;
+    }
+
+    h1#title {
+      font-weight: 800;
+      font-size: clamp(34px, 5vw, 52px);
+      letter-spacing: -0.02em;
+      line-height: 1.05;
+    }
+    #count {
+      margin-top: 10px;
+      font-size: 12px;
+      color: var(--text-muted);
+      font-family: var(--mono);
+      letter-spacing: .06em;
+    }
+
+    /* ---------- the grid ---------- */
     #wall {
+      margin-top: 40px;
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(280px, 320px));
-      gap: 36px;
-      justify-content: center;
-      perspective: 1200px;
+      grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+      gap: 40px 28px;
     }
 
-    .card {
-      --mx: 50%; --my: 50%;
-      opacity: 0;
-      animation: rise .7s cubic-bezier(.2, .7, .2, 1) forwards;
-    }
+    .goat { opacity: 0; animation: rise .6s ease forwards; }
     @keyframes rise {
-      from { opacity: 0; transform: translateY(36px) scale(.97); }
-      to   { opacity: 1; transform: translateY(0) scale(1); }
+      from { opacity: 0; transform: translateY(14px); }
+      to   { opacity: 1; transform: translateY(0); }
     }
 
-    .card-inner {
-      position: relative;
-      background: var(--card);
-      border: 1px solid var(--line);
-      border-radius: 18px;
+    .goat-photo {
+      aspect-ratio: 4 / 5;
       overflow: hidden;
-      transition: transform .18s ease-out, border-color .25s, box-shadow .25s;
-      transform-style: preserve-3d;
+      border: 1px solid var(--border);
+      background: #fafafa;
     }
-    .card:hover .card-inner {
-      border-color: rgba(240, 180, 41, .55);
-      box-shadow: 0 24px 70px -18px rgba(240, 180, 41, .28);
+    .goat-photo img {
+      width: 100%; height: 100%;
+      object-fit: cover; display: block;
+      filter: saturate(.88);
+      transform: scale(1);
+      transition: transform .8s cubic-bezier(.16, 1, .3, 1), filter .5s ease;
+    }
+    .goat:hover .goat-photo img { transform: scale(1.04); filter: saturate(1.05); }
+    .goat-photo.soon {
+      display: flex; align-items: center; justify-content: center;
+      color: var(--text-muted); font-size: 12px; letter-spacing: .08em;
     }
 
-    /* holographic shine that follows the cursor */
-    .card-inner::after {
-      content: ""; position: absolute; inset: 0;
-      background: radial-gradient(420px circle at var(--mx) var(--my),
-                  rgba(255, 211, 77, 0.16), transparent 55%);
-      opacity: 0; transition: opacity .25s; pointer-events: none;
+    .goat-meta {
+      display: flex;
+      gap: 14px;
+      padding-top: 14px;
     }
-    .card:hover .card-inner::after { opacity: 1; }
-
-    .photo { aspect-ratio: 4 / 4.4; overflow: hidden; background: #17171c; }
-    .photo img { width: 100%; height: 100%; object-fit: cover; display: block;
-                 filter: saturate(1.05) contrast(1.03); }
-    .photo.placeholder {
-      display: flex; flex-direction: column; align-items: center; justify-content: center;
-      gap: 10px; color: var(--muted);
+    .goat-index {
+      font-family: var(--mono);
+      font-size: 11px;
+      color: var(--text-muted);
+      padding-top: 3px;
     }
-    .photo.placeholder .q { font-size: 72px; font-weight: 900; color: var(--gold); opacity: .85; }
-    .photo.placeholder span { font-size: 13px; letter-spacing: .06em; }
+    .goat-name { font-weight: 700; font-size: 15px; }
+    .goat-title { color: var(--text-muted); font-size: 13px; margin-top: 1px; }
 
-    .card-body { padding: 20px 20px 22px; }
-    .kicker {
-      font-size: 11px; font-weight: 800; letter-spacing: .28em;
-      color: var(--gold); margin-bottom: 8px;
+    footer {
+      border-top: 1px solid var(--border);
+      padding: 18px 24px;
+      display: flex; justify-content: space-between;
+      font-size: 11px; color: var(--text-muted); font-family: var(--mono);
     }
-    .name { font-size: 30px; font-weight: 900; letter-spacing: -0.01em; }
-    .goat-of { color: var(--muted); font-size: 14px; margin-top: 2px; font-style: italic; }
 
-    .stats { margin-top: 16px; display: grid; gap: 9px; }
-    .stat { display: grid; grid-template-columns: 74px 1fr 30px; align-items: center; gap: 10px; font-size: 12px; }
-    .stat .label { color: var(--muted); letter-spacing: .05em; text-transform: lowercase; }
-    .stat .bar { height: 5px; background: #22222a; border-radius: 99px; overflow: hidden; }
-    .stat .fill { height: 100%; width: 0; border-radius: 99px;
-                  background: linear-gradient(90deg, var(--gold), var(--gold-2));
-                  transition: width 1s cubic-bezier(.2, .7, .2, 1) .3s; }
-    .stat .num { text-align: right; font-weight: 700; color: var(--gold-2); }
-
-    .certify {
-      margin-top: 18px; width: 100%;
-      background: transparent; color: var(--text);
-      border: 1px solid var(--line); border-radius: 12px;
-      padding: 11px; font-family: inherit; font-size: 13px; font-weight: 700;
-      letter-spacing: .04em; cursor: pointer;
-      transition: border-color .2s, background .2s, transform .1s;
+    @media (max-width: 640px) {
+      #body { padding: 40px 16px 56px; }
+      #nav { padding: 0 16px; }
+      #wall { gap: 32px; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); }
     }
-    .certify:hover { border-color: var(--gold); background: rgba(240, 180, 41, .08); }
-    .certify:active { transform: scale(.97); }
-    .certify .count { color: var(--gold-2); }
-
-    footer { text-align: center; color: var(--muted); font-size: 13px; margin-top: 70px; }
-    footer b { color: var(--text); }
   </style>
 </head>
 <body>
-  <div id="spotlight"></div>
-
   <div id="page">
-    <header>
-      <a class="back" href="/">← ajchapa.com</a>
-      <h1>GOAT <span class="gold">WALL</span></h1>
-      <p class="sub">people i have deemed goats. no appeals.</p>
-      <div class="rule"></div>
-    </header>
 
-    <main id="wall"><!-- cards are rendered here by the script below --></main>
+    <nav id="nav">
+      <a id="nav-back" href="/">← ajchapa</a>
+      <span id="nav-time">—</span>
+    </nav>
 
-    <footer>think you belong here? you don't. — <b>management</b></footer>
+    <div id="body">
+      <h1 id="title">goats</h1>
+      <div id="count">—</div>
+      <main id="wall"><!-- rendered by the script below --></main>
+    </div>
+
+    <footer>
+      <span>ajchapa.com/goats</span>
+      <span id="foot-year">2026</span>
+    </footer>
+
   </div>
 
   <script>
-    // ═══════════════════════════════════════════════════
+    // ─────────────────────────────
     //  ADD YOUR GOATS HERE
-    //  copy a block, change name / title / photo / stats.
-    //  photo = filename in this repo (e.g. "photo2.jpg").
-    //  use photo: "" and the card shows a "pic soon" slot.
-    // ═══════════════════════════════════════════════════
+    //  copy a line, change name / title / photo.
+    //  photo = a filename in this repo (e.g. "photo2.jpg").
+    //  photo: "" shows a quiet placeholder tile.
+    // ─────────────────────────────
     const GOATS = [
-      {
-        id: "ajchapa",
-        name: "ajchapa",
-        title: "the goat",
-        photo: "photo2.jpg",
-        stats: [["aura", 99], ["hustle", 97], ["flips", 94]],
-      },
-      {
-        id: "alex",
-        name: "alex",
-        title: "goat of fortnite",
-        photo: "", // ← send me alex's pic and i'll drop it in
-        stats: [["builds", 99], ["clutch", 96], ["aim", 93]],
-      },
+      { id: "ajchapa", name: "ajchapa", title: "the goat",         photo: "photo2.jpg" },
+      { id: "alex",    name: "alex",    title: "goat of fortnite", photo: ""           },
     ];
 
     const wall = document.getElementById("wall");
 
     GOATS.forEach((g, i) => {
-      const card = document.createElement("article");
-      card.className = "card";
-      card.style.animationDelay = (i * 130) + "ms";
+      const el = document.createElement("article");
+      el.className = "goat";
+      el.style.animationDelay = (i * 90) + "ms";
 
-      const photoHtml = g.photo
-        ? `<div class="photo"><img src="${g.photo}" alt="${g.name}"></div>`
-        : `<div class="photo placeholder"><div class="q">?</div><span>pic coming soon</span></div>`;
+      const photo = g.photo
+        ? `<div class="goat-photo"><img src="${g.photo}" alt="${g.name}" loading="lazy"></div>`
+        : `<div class="goat-photo soon"><span>soon</span></div>`;
 
-      const statsHtml = g.stats.map(([label, val]) => `
-        <div class="stat">
-          <span class="label">${label}</span>
-          <span class="bar"><span class="fill" data-w="${val}"></span></span>
-          <span class="num">${val}</span>
-        </div>`).join("");
-
-      card.innerHTML = `
-        <div class="card-inner">
-          ${photoHtml}
-          <div class="card-body">
-            <div class="kicker">certified goat</div>
-            <div class="name">${g.name}</div>
-            <div class="goat-of">"${g.title}"</div>
-            <div class="stats">${statsHtml}</div>
-            <button class="certify">🤙 certify this goat · <span class="count">0</span></button>
+      el.innerHTML = `
+        ${photo}
+        <div class="goat-meta">
+          <span class="goat-index">${String(i + 1).padStart(2, "0")}</span>
+          <div>
+            <div class="goat-name">${g.name}</div>
+            <div class="goat-title">${g.title}</div>
           </div>
         </div>`;
-
-      // certify counter (saved in this browser)
-      const key = "goatwall_cert_" + g.id;
-      const countEl = card.querySelector(".count");
-      countEl.textContent = localStorage.getItem(key) || 0;
-      card.querySelector(".certify").addEventListener("click", (e) => {
-        const n = (parseInt(localStorage.getItem(key) || 0) + 1);
-        localStorage.setItem(key, n);
-        countEl.textContent = n;
-        e.currentTarget.animate(
-          [{ transform: "scale(1)" }, { transform: "scale(.94)" }, { transform: "scale(1)" }],
-          { duration: 180 });
-      });
-
-      // 3D tilt + holo shine follow the cursor
-      const inner = card.querySelector(".card-inner");
-      card.addEventListener("mousemove", (e) => {
-        const r = card.getBoundingClientRect();
-        const x = (e.clientX - r.left) / r.width - 0.5;
-        const y = (e.clientY - r.top) / r.height - 0.5;
-        inner.style.transform = `rotateY(${x * 14}deg) rotateX(${-y * 14}deg)`;
-        card.style.setProperty("--mx", ((x + 0.5) * 100) + "%");
-        card.style.setProperty("--my", ((y + 0.5) * 100) + "%");
-      });
-      card.addEventListener("mouseleave", () => {
-        inner.style.transform = "rotateY(0deg) rotateX(0deg)";
-      });
-
-      wall.appendChild(card);
+      wall.appendChild(el);
     });
 
-    // animate the stat bars once cards land
-    requestAnimationFrame(() => setTimeout(() => {
-      document.querySelectorAll(".fill").forEach(f => f.style.width = f.dataset.w + "%");
-    }, 350));
+    document.getElementById("count").textContent =
+      String(GOATS.length).padStart(2, "0") + " certified";
 
-    // spotlight follows the cursor
-    addEventListener("pointermove", (e) => {
-      document.documentElement.style.setProperty("--sx", e.clientX + "px");
-      document.documentElement.style.setProperty("--sy", e.clientY + "px");
-    });
+    // same live clock as the index page
+    function tick() {
+      const d = new Date();
+      const p = (n) => String(n).padStart(2, "0");
+      document.getElementById("nav-time").textContent =
+        p(d.getHours()) + ":" + p(d.getMinutes()) + ":" + p(d.getSeconds());
+    }
+    tick(); setInterval(tick, 1000);
+    document.getElementById("foot-year").textContent = new Date().getFullYear();
   </script>
 </body>
 </html>
