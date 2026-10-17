@@ -7,7 +7,7 @@
   <link rel="icon" type="image/png" href="favicon.png" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Mulish:wght@300;700;800&family=Playfair+Display:ital,wght@1,500;1,600&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Mulish:wght@300;700;800&display=swap" rel="stylesheet" />
   <style>
     /* ============ wall of goats — ajchapa.com/goats.html ============
        white minimal page (same theme as the rest of the site).
@@ -21,7 +21,6 @@
       --text-main:  #000000;
       --text-muted: #888888;
       --font:       'Mulish', sans-serif;
-      --serif:      'Playfair Display', Georgia, serif;
       --mono:       Menlo, Monaco, Consolas, monospace;
       --foil:       #d9c48f;   /* champagne hairline */
       --gold-deep:  #a8842f;   /* richer gold, used sparingly */
@@ -68,14 +67,10 @@
     h1#title {
       margin-top: 16px;
       font-weight: 800;
-      font-size: clamp(54px, 9.5vw, 124px);
-      letter-spacing: -0.03em;
-      line-height: .95;
+      font-size: clamp(34px, 5vw, 58px);
+      letter-spacing: -0.02em;
+      line-height: 1;
       text-transform: uppercase;
-    }
-    h1#title .amp {
-      font-family: var(--serif); font-style: italic; font-weight: 500;
-      letter-spacing: -0.01em; color: var(--gold-deep);
     }
 
     /* ================= the wall ================= */
@@ -146,13 +141,13 @@
     }
     .photo-wrap.soon .scrim { display: none; }
 
-    /* the goat-of line, set like a magazine caption */
+    /* the goat-of line: crisp, stamped, confident */
     .photo-title {
       position: absolute; z-index: 4;
       left: 20px; right: 20px; bottom: 16px;
-      font-family: var(--serif); font-style: italic; font-weight: 500;
-      font-size: 22px; line-height: 1.18; color: #fff;
-      text-shadow: 0 1px 14px rgba(0,0,0,.4);
+      font-size: 13px; font-weight: 800;
+      letter-spacing: .16em; text-transform: uppercase;
+      color: #fff; text-shadow: 0 1px 14px rgba(0,0,0,.45);
       pointer-events: none;
     }
     .photo-wrap.soon .photo-title {
@@ -197,8 +192,8 @@
     .face.back { display: flex; flex-direction: column; padding: 26px 24px; background: #fff; }
     .back-name { font-size: 19px; font-weight: 800; letter-spacing: .03em;
                  text-transform: uppercase; }
-    .back-title { font-family: var(--serif); font-style: italic; font-size: 17px;
-                  color: var(--text-main); margin-top: 4px; }
+    .back-title { font-size: 13px; font-weight: 800; letter-spacing: .14em;
+                  text-transform: uppercase; color: var(--text-main); margin-top: 6px; }
     .back-rule { height: 1px; background: var(--border); margin: 18px 0; }
     .back-stats { display: grid; gap: 12px; margin-top: 2px; }
     .back-stat { display: flex; justify-content: space-between; align-items: baseline;
@@ -214,7 +209,7 @@
       #body { padding: 40px 16px 72px; }
       #nav { padding: 0 16px; }
       #wall { grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 30px 18px; }
-      .photo-title { font-size: 18px; left: 14px; right: 14px; bottom: 12px; }
+      .photo-title { font-size: 12px; left: 14px; right: 14px; bottom: 12px; }
     }
   </style>
 </head>
