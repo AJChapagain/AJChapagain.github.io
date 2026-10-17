@@ -34,17 +34,15 @@
     }
     body.locked{overflow:hidden}
     a{color:inherit;text-decoration:none}
-    #page{min-height:100vh;min-height:100dvh;display:flex;flex-direction:column}
+    #page{min-height:100vh;min-height:100dvh;display:flex;flex-direction:column;overflow-x:clip}
 
     #nav{height:48px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;padding:0 24px;flex-shrink:0}
     #nav-back{font-size:12px;color:var(--text-muted);letter-spacing:.04em}
     #nav-back:hover{color:var(--text-main)}
     #nav-time{font-size:11px;color:var(--text-muted);font-family:var(--mono)}
 
-    #body{flex:1;width:100%;max-width:1180px;margin:0 auto;padding:30px 24px 80px}
-
-    /* ================= hero (compact) ================= */
-    #hero{display:flex;justify-content:space-between;align-items:center;gap:24px}
+    /* ================= hero: full width, hugging the corners ================= */
+    #hero{display:flex;justify-content:space-between;align-items:center;gap:24px;padding:6px 20px 0}
     h1#title{
       font-family:var(--serif);font-weight:400;
       font-size:clamp(40px,5.5vw,64px);letter-spacing:-.015em;line-height:1;cursor:default;
@@ -83,7 +81,6 @@
     }
     #scroll-modal.open{visibility:visible;opacity:1;transition:opacity .4s ease}
     #scroll{width:100%;max-width:460px}
-
     .rod{
       position:relative;height:22px;border-radius:11px;
       background:linear-gradient(180deg,var(--ox1),var(--ox2) 55%,var(--ox3));
@@ -95,7 +92,6 @@
     }
     .rod::before{left:-9px}
     .rod::after{right:-9px}
-
     #s-body{
       margin:0 16px;display:grid;grid-template-rows:0fr;
       transition:grid-template-rows .9s cubic-bezier(.5,0,.3,1);
@@ -118,7 +114,6 @@
     }
     #s-close:hover{background:rgba(168,132,47,.18)}
     #s-close:focus-visible{outline:2px solid var(--ox2);outline-offset:2px}
-
     .reveal{opacity:0;transform:translateY(8px);transition:opacity .3s ease,transform .3s ease}
     #scroll-modal.open .reveal{
       opacity:1;transform:none;
@@ -133,12 +128,14 @@
     #s-rules .txt{display:block;font-family:var(--serif);font-size:29px;line-height:1.1;margin-top:2px}
 
     /* ================= the wall ================= */
+    #body{flex:1;width:100%;max-width:1180px;margin:0 auto;padding:6px 24px 80px}
     #wall{
-      margin-top:34px;display:grid;
+      margin-top:14px;display:grid;
       grid-template-columns:repeat(auto-fill,minmax(210px,240px));gap:36px 28px;
       justify-content:center;perspective:1400px;
     }
-    .card{aspect-ratio:5/6.7;opacity:0;animation:rise .7s ease forwards;cursor:pointer}
+    .card{position:relative;aspect-ratio:5/6.7;opacity:0;animation:rise .7s ease forwards;cursor:pointer}
+    .card[data-fx="aim"]{cursor:crosshair}
     .card:focus{outline:none}
     .card:focus-visible .face{outline:2px solid var(--text-main);outline-offset:4px}
     @keyframes rise{from{opacity:0;transform:translateY(18px)}to{opacity:1;transform:translateY(0)}}
@@ -156,12 +153,10 @@
     .face.back{transform:rotateY(180deg)}
     .keyline{position:absolute;inset:9px;border:1px solid rgba(217,196,143,.55);border-radius:13px;pointer-events:none;z-index:6}
 
-    /* front: clean photo, all the type lives on the plate */
     .photo-wrap{position:relative;height:66%;overflow:hidden;background:#f4f4f4}
     .photo-wrap img{width:100%;height:100%;object-fit:cover;display:block}
     .photo-wrap::after{content:"";position:absolute;inset:auto 0 0 0;height:30%;pointer-events:none;
       background:linear-gradient(to top,rgba(0,0,0,.18),transparent)}
-
     .sheen{
       position:absolute;inset:0;z-index:2;pointer-events:none;opacity:0;transition:opacity .3s ease;
       background:
@@ -169,7 +164,6 @@
         linear-gradient(115deg,transparent calc(var(--mx,50%) - 22%),rgba(255,226,150,.3) var(--mx,50%),transparent calc(var(--mx,50%) + 22%));
     }
     .card:hover .sheen,body.gyro .sheen{opacity:1}
-
     .photo-wrap.empty{
       display:flex;align-items:center;justify-content:center;
       background:radial-gradient(120% 90% at 50% 20%,#fffaf0,#f6ecd0);
@@ -188,7 +182,6 @@
     }
     .plate .title::before{content:"";width:6px;height:6px;background:var(--gold);transform:rotate(45deg);flex-shrink:0}
 
-    /* back */
     .face.back{display:flex;flex-direction:column;padding:28px 26px;background:#fff}
     .face.back::before{
       content:"";position:absolute;inset:0;pointer-events:none;
@@ -207,10 +200,96 @@
     .back-known li::before{content:"";width:7px;height:7px;background:var(--gold);transform:rotate(45deg);flex-shrink:0}
     .back-foot{margin-top:auto;font-family:var(--serif);font-style:italic;font-size:16px;color:var(--text-muted)}
 
+    /* ================================================================
+       PER-CARD EFFECTS
+       ================================================================ */
+    .fx{position:absolute;inset:0;z-index:3;pointer-events:none;opacity:0;transition:opacity .25s ease;overflow:hidden}
+    .card:hover .fx,.card:focus-visible .fx{opacity:1}
+
+    /* ---------- AURA (ajchapa): living golden halo + rising embers ---------- */
+    .halo{
+      position:absolute;inset:-16px;z-index:-1;pointer-events:none;
+      opacity:.85;transform:scale(1);transition:opacity .5s ease,transform .6s cubic-bezier(.2,.7,.25,1);
+    }
+    .card:hover .halo{opacity:1;transform:scale(1.07)}
+    .halo::before{
+      content:"";position:absolute;inset:10px;border-radius:34px;
+      background:conic-gradient(from 20deg,#fff1bd,#e0a82e,#c9a227,#ffe9a0,#d9a83a,#fff1bd);
+      filter:blur(24px);opacity:.42;animation:aura 3.4s ease-in-out infinite;
+    }
+    @keyframes aura{50%{opacity:.78;transform:scale(1.05)}}
+    .ember{
+      position:absolute;bottom:4%;left:var(--x);width:4px;height:4px;border-radius:50%;
+      background:#f6d77a;box-shadow:0 0 8px 2px rgba(246,215,122,.85);opacity:0;
+      animation:ember var(--t) linear infinite;animation-delay:var(--dl);
+    }
+    @keyframes ember{
+      0%{opacity:0;transform:translate(0,0) scale(1)}
+      15%{opacity:1}
+      100%{opacity:0;transform:translate(var(--dx),-290px) scale(.3)}
+    }
+
+    /* ---------- AIM (alex): build grid + tracking crosshair ---------- */
+    .fx-aim .agrid{
+      position:absolute;inset:0;
+      background-image:
+        linear-gradient(rgba(168,132,47,.4) 1px,transparent 1px),
+        linear-gradient(90deg,rgba(168,132,47,.4) 1px,transparent 1px);
+      background-size:34px 34px;
+      -webkit-mask-image:radial-gradient(circle 96px at var(--fx,50%) var(--fy,50%),#000 0%,transparent 100%);
+      mask-image:radial-gradient(circle 96px at var(--fx,50%) var(--fy,50%),#000 0%,transparent 100%);
+    }
+    .reticle{
+      position:absolute;left:0;top:0;width:56px;height:56px;margin:-28px 0 0 -28px;
+      transition:transform .09s linear;will-change:transform;
+      filter:drop-shadow(0 0 2px rgba(255,255,255,.9));
+    }
+    .reticle svg{width:100%;height:100%;display:block;animation:lock 2.4s ease-in-out infinite}
+    @keyframes lock{50%{transform:scale(.86)}}
+    .burst{
+      position:absolute;width:14px;height:14px;margin:-7px 0 0 -7px;border-radius:50%;
+      border:2px solid #c9a227;animation:burst .55s ease-out forwards;
+    }
+    @keyframes burst{to{transform:scale(7);opacity:0}}
+
+    /* ---------- SHEET (kush): live spreadsheet with a snapping cell ---------- */
+    .fx-sheet{font-family:var(--mono);font-size:9px;color:#6a5a28}
+    .sh-bar{
+      position:absolute;left:0;right:0;top:0;height:20px;display:flex;align-items:center;gap:6px;padding:0 6px;
+      background:rgba(255,252,242,.94);border-bottom:1px solid rgba(168,132,47,.4);
+    }
+    .sh-name{min-width:30px;padding:1px 6px;border:1px solid rgba(168,132,47,.45);background:#fff;text-align:center;color:#4a3a10}
+    .sh-fxl{font-family:var(--serif);font-style:italic;font-size:12px;color:var(--gold-deep)}
+    .sh-formula{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;color:#4a3a10}
+    .sh-cols{
+      position:absolute;left:20px;right:0;top:20px;height:16px;display:flex;overflow:hidden;
+      background:rgba(251,244,222,.94);border-bottom:1px solid rgba(168,132,47,.4);
+    }
+    .sh-cols span{flex:0 0 40px;text-align:center;line-height:16px;border-right:1px solid rgba(168,132,47,.3)}
+    .sh-rows{
+      position:absolute;left:0;top:20px;bottom:0;width:20px;overflow:hidden;padding-top:16px;
+      background:rgba(251,244,222,.94);border-right:1px solid rgba(168,132,47,.4);
+    }
+    .sh-rows span{display:block;height:26px;line-height:26px;text-align:center;border-bottom:1px solid rgba(168,132,47,.3)}
+    .sh-cols span.on,.sh-rows span.on{background:#f1dfa8;color:#3a2c08;font-weight:700}
+    .sh-grid{
+      position:absolute;left:20px;top:36px;right:0;bottom:0;
+      background-image:
+        linear-gradient(rgba(168,132,47,.3) 1px,transparent 1px),
+        linear-gradient(90deg,rgba(168,132,47,.3) 1px,transparent 1px);
+      background-size:40px 26px;
+    }
+    .sh-sel{
+      position:absolute;left:20px;top:36px;width:40px;height:26px;border:2px solid #c9a227;
+      background:rgba(241,223,168,.3);transition:transform .08s ease-out;
+    }
+    .sh-sel::after{content:"";position:absolute;right:-4px;bottom:-4px;width:6px;height:6px;background:#c9a227;border:1px solid #fff}
+
     @media (max-width:640px){
-      #body{padding:24px 16px 64px}
+      #hero{padding:4px 14px 0}
+      #body{padding:4px 16px 64px}
       #nav{padding:0 16px}
-      #wall{grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:28px 16px;margin-top:28px}
+      #wall{grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:28px 16px;margin-top:12px}
       .plate{padding:12px 16px}
       .plate .name{font-size:28px}
       .plate .title{font-size:16px}
@@ -224,6 +303,8 @@
       #scroll-btn,.card{animation-duration:.01s}
       #s-body,#scroll-modal.open #s-body{transition:none}
       .reveal,#scroll-modal.open .reveal{transition:none}
+      .halo::before,.ember,.reticle svg{animation:none}
+      .ember{display:none}
     }
   </style>
 </head>
@@ -234,36 +315,36 @@
       <span id="nav-time">—</span>
     </nav>
 
+    <header id="hero">
+      <h1 id="title" aria-label="The Wall"></h1>
+
+      <button id="scroll-btn" type="button" aria-label="Read the code">
+        <svg viewBox="0 0 64 48" aria-hidden="true">
+          <defs>
+            <linearGradient id="g" x1="0" y1="0" x2="1" y2="0">
+              <stop offset="0" stop-color="#8a6a1f"/><stop offset=".4" stop-color="#f1dfa8"/><stop offset=".7" stop-color="#c9a227"/><stop offset="1" stop-color="#8a6a1f"/>
+            </linearGradient>
+            <linearGradient id="r" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0" stop-color="#9a1826"/><stop offset="1" stop-color="#3b060c"/>
+            </linearGradient>
+            <linearGradient id="p" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0" stop-color="#f7eccf"/><stop offset="1" stop-color="#ecdcae"/>
+            </linearGradient>
+          </defs>
+          <rect class="paper" x="10" y="9" width="44" height="30" fill="url(#p)" stroke="#c9a227" stroke-width=".8"/>
+          <g stroke="#7a0f1a" stroke-opacity=".55" stroke-width="1.6" stroke-linecap="round">
+            <line x1="19" y1="18" x2="45" y2="18"/><line x1="19" y1="24" x2="45" y2="24"/><line x1="19" y1="30" x2="36" y2="30"/>
+          </g>
+          <rect x="6" y="3" width="52" height="9" rx="4.5" fill="url(#r)" stroke="#c9a227" stroke-width=".8"/>
+          <rect x="6" y="36" width="52" height="9" rx="4.5" fill="url(#r)" stroke="#c9a227" stroke-width=".8"/>
+          <rect x="2" y="1" width="6" height="13" rx="3" fill="url(#g)"/><rect x="56" y="1" width="6" height="13" rx="3" fill="url(#g)"/>
+          <rect x="2" y="34" width="6" height="13" rx="3" fill="url(#g)"/><rect x="56" y="34" width="6" height="13" rx="3" fill="url(#g)"/>
+        </svg>
+        <span>Code</span>
+      </button>
+    </header>
+
     <div id="body">
-      <header id="hero">
-        <h1 id="title" aria-label="The Wall"></h1>
-
-        <button id="scroll-btn" type="button" aria-label="Read the code">
-          <svg viewBox="0 0 64 48" aria-hidden="true">
-            <defs>
-              <linearGradient id="g" x1="0" y1="0" x2="1" y2="0">
-                <stop offset="0" stop-color="#8a6a1f"/><stop offset=".4" stop-color="#f1dfa8"/><stop offset=".7" stop-color="#c9a227"/><stop offset="1" stop-color="#8a6a1f"/>
-              </linearGradient>
-              <linearGradient id="r" x1="0" y1="0" x2="0" y2="1">
-                <stop offset="0" stop-color="#9a1826"/><stop offset="1" stop-color="#3b060c"/>
-              </linearGradient>
-              <linearGradient id="p" x1="0" y1="0" x2="0" y2="1">
-                <stop offset="0" stop-color="#f7eccf"/><stop offset="1" stop-color="#ecdcae"/>
-              </linearGradient>
-            </defs>
-            <rect class="paper" x="10" y="9" width="44" height="30" fill="url(#p)" stroke="#c9a227" stroke-width=".8"/>
-            <g stroke="#7a0f1a" stroke-opacity=".55" stroke-width="1.6" stroke-linecap="round">
-              <line x1="19" y1="18" x2="45" y2="18"/><line x1="19" y1="24" x2="45" y2="24"/><line x1="19" y1="30" x2="36" y2="30"/>
-            </g>
-            <rect x="6" y="3" width="52" height="9" rx="4.5" fill="url(#r)" stroke="#c9a227" stroke-width=".8"/>
-            <rect x="6" y="36" width="52" height="9" rx="4.5" fill="url(#r)" stroke="#c9a227" stroke-width=".8"/>
-            <rect x="2" y="1" width="6" height="13" rx="3" fill="url(#g)"/><rect x="56" y="1" width="6" height="13" rx="3" fill="url(#g)"/>
-            <rect x="2" y="34" width="6" height="13" rx="3" fill="url(#g)"/><rect x="56" y="34" width="6" height="13" rx="3" fill="url(#g)"/>
-          </svg>
-          <span>Code</span>
-        </button>
-      </header>
-
       <main id="wall"></main>
     </div>
   </div>
@@ -285,16 +366,18 @@
   <script>
     // ─────────────────────────────
     //  ADD YOUR PEOPLE HERE
-    //  copy a block, change the text. photo: "" shows a gold
-    //  gradient with their initial until you add a filename.
-    //  write everything the way you want it to appear.
+    //  fx picks the card's special effect:
+    //    "aura"  golden halo + rising embers
+    //    "aim"   build grid + tracking crosshair
+    //    "sheet" spreadsheet with a snapping cell
+    //    ""      no special effect
     // ─────────────────────────────
     const GOATS = [
-      { name:"Ajchapa", title:"The Goat", photo:"photo2.jpg",
+      { name:"Ajchapa", title:"The Goat", photo:"photo2.jpg", fx:"aura",
         known:["Aura","Hustle","Flips"] },
-      { name:"Alex", title:"Goat of Fortnite", photo:"",
+      { name:"Alex", title:"Goat of Fortnite", photo:"", fx:"aim",
         known:["Builds","Clutch","Aim"] },
-      { name:"Kush", title:"Goat of Excel", photo:"",
+      { name:"Kush", title:"Goat of Excel", photo:"", fx:"sheet",
         known:["Formulas","Pivot Tables","VLOOKUP Speed"] },
     ];
     const RULES = [
@@ -307,23 +390,53 @@
     const reduceMotion = matchMedia("(prefers-reduced-motion: reduce)").matches;
     const clamp = (v, a, b) => Math.min(b, Math.max(a, v));
 
+    // ── effect markup
+    const LETTERS = "ABCDEFGHIJKLMNOP";
+    function fxMarkup(kind) {
+      if (kind === "aim") return `<div class="fx fx-aim"><div class="agrid"></div>
+        <div class="reticle"><svg viewBox="0 0 56 56" fill="none" stroke="#b8901f" stroke-width="1.6" stroke-linecap="round">
+          <circle cx="28" cy="28" r="15"/>
+          <path d="M28 4v14M28 38v14M4 28h14M38 28h14"/>
+          <circle cx="28" cy="28" r="1.8" fill="#b8901f" stroke="none"/></svg></div></div>`;
+      if (kind === "sheet") {
+        const cols = [...LETTERS].slice(0, 10).map((l) => `<span>${l}</span>`).join("");
+        const rows = Array.from({ length: 12 }, (_, i) => `<span>${i + 1}</span>`).join("");
+        return `<div class="fx fx-sheet">
+          <div class="sh-grid"></div><div class="sh-sel"></div>
+          <div class="sh-bar"><span class="sh-name">A1</span><span class="sh-fxl">fx</span><span class="sh-formula">=VLOOKUP(A1,Wall,2,0)</span></div>
+          <div class="sh-cols">${cols}</div><div class="sh-rows">${rows}</div></div>`;
+      }
+      return "";
+    }
+    function haloMarkup() {
+      const spots = [-4, 2, 7, 93, 98, 104, 30, 55, 78];
+      const embers = spots.map((x, i) => {
+        const t = (4 + (i * 0.53) % 2.6).toFixed(2), dl = (-(i * 0.9) % 5).toFixed(2), dx = (((i % 3) - 1) * 18) + "px";
+        return `<i class="ember" style="--x:${x}%;--t:${t}s;--dl:${dl}s;--dx:${dx}"></i>`;
+      }).join("");
+      return `<div class="halo" aria-hidden="true">${embers}</div>`;
+    }
+
     // ── build the cards
     GOATS.forEach((g, i) => {
       const card = document.createElement("article");
       card.className = "card";
+      card.dataset.fx = g.fx || "";
       card.style.animationDelay = (i * 110) + "ms";
       card.tabIndex = 0;
       card.setAttribute("role", "button");
       card.setAttribute("aria-label", g.name + ", " + g.title + ". Activate to flip.");
 
+      const fx = fxMarkup(g.fx);
       const photo = g.photo
         ? `<div class="photo-wrap"><img src="${g.photo}" alt="${g.name}" loading="lazy" decoding="async">
-             <div class="sheen"></div></div>`
-        : `<div class="photo-wrap empty"><div class="initial">${g.name[0]}</div></div>`;
+             <div class="sheen"></div>${fx}</div>`
+        : `<div class="photo-wrap empty"><div class="initial">${g.name[0]}</div>${fx}</div>`;
 
       const known = g.known.map((k) => `<li>${k}</li>`).join("");
 
       card.innerHTML = `
+        ${g.fx === "aura" && !reduceMotion ? haloMarkup() : ""}
         <div class="flipper"><div class="tilter">
           <div class="face front">
             <div class="keyline"></div>${photo}
@@ -349,7 +462,63 @@
         if (e.key === "Enter" || e.key === " ") { e.preventDefault(); flip(); }
       });
       wall.appendChild(card);
+      bindFx(card, g.fx);
     });
+
+    // ── effect behaviour
+    function bindFx(card, kind) {
+      const wrap = card.querySelector(".photo-wrap");
+      const fx = card.querySelector(".fx");
+      if (!fx || reduceMotion) return;
+
+      if (kind === "aim") {
+        const ret = fx.querySelector(".reticle");
+        let first = true;
+        wrap.addEventListener("pointermove", (e) => {
+          const r = wrap.getBoundingClientRect();
+          const x = e.clientX - r.left, y = e.clientY - r.top;
+          if (first) { ret.style.transition = "none"; }
+          ret.style.transform = `translate(${x}px,${y}px)`;
+          fx.style.setProperty("--fx", x + "px");
+          fx.style.setProperty("--fy", y + "px");
+          if (first) { ret.offsetWidth; ret.style.transition = ""; first = false; }
+        });
+        wrap.addEventListener("pointerleave", () => { first = true; });
+        wrap.addEventListener("click", (e) => {
+          const r = wrap.getBoundingClientRect();
+          const b = document.createElement("i");
+          b.className = "burst";
+          b.style.left = (e.clientX - r.left) + "px";
+          b.style.top = (e.clientY - r.top) + "px";
+          fx.appendChild(b);
+          b.addEventListener("animationend", () => b.remove());
+        });
+      }
+
+      if (kind === "sheet") {
+        const sel = fx.querySelector(".sh-sel");
+        const nameEl = fx.querySelector(".sh-name");
+        const formula = fx.querySelector(".sh-formula");
+        const colEls = [...fx.querySelectorAll(".sh-cols span")];
+        const rowEls = [...fx.querySelectorAll(".sh-rows span")];
+        let lc = -1, lr = -1;
+        wrap.addEventListener("pointermove", (e) => {
+          const r = wrap.getBoundingClientRect();
+          const maxC = Math.max(1, Math.floor((r.width - 20) / 40));
+          const maxR = Math.max(1, Math.floor((r.height - 36) / 26));
+          const c = clamp(Math.floor((e.clientX - r.left - 20) / 40), 0, maxC - 1);
+          const rw = clamp(Math.floor((e.clientY - r.top - 36) / 26), 0, maxR - 1);
+          if (c === lc && rw === lr) return;
+          if (lc >= 0) { colEls[lc].classList.remove("on"); rowEls[lr].classList.remove("on"); }
+          lc = c; lr = rw;
+          colEls[c].classList.add("on"); rowEls[rw].classList.add("on");
+          sel.style.transform = `translate(${c * 40}px,${rw * 26}px)`;
+          const addr = LETTERS[c] + (rw + 1);
+          nameEl.textContent = addr;
+          formula.textContent = `=VLOOKUP(${addr},Wall,2,0)`;
+        });
+      }
+    }
 
     // ── kinetic title
     const titleEl = document.getElementById("title");
