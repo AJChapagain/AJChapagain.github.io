@@ -449,10 +449,10 @@
 
     /* front: visible until the flip is halfway, then hidden */
     .face.front{visibility:visible;transition:visibility 0s 0s}
-    .card.flipped .face.front{visibility:hidden;transition:visibility 0s .4s}
+    .card.flipped .face.front{visibility:hidden;transition:visibility 0s .12s}
 
     /* back: hidden until the flip starts, hidden again once flipped back */
-    .face.back{visibility:hidden;transition:visibility 0s .4s}
+    .face.back{visibility:hidden;transition:visibility 0s .12s}
     .card.flipped .face.back{visibility:visible;transition:visibility 0s 0s}
 
     /* the front effects also sit below the back's content, so taps and hovers never hit them */
