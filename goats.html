@@ -250,6 +250,48 @@
             );
         }
 
+        /* A single soft sheen when the card is revealed */
+        .face.back::after {
+          content: "";
+          position: absolute;
+          inset: 0;
+          z-index: 5;
+          pointer-events: none;
+          opacity: 0;
+          background: linear-gradient(
+            110deg,
+            transparent 25%,
+            rgba(255, 255, 255, .5) 45%,
+            rgba(var(--ac-rgb), .08) 50%,
+            transparent 68%
+          );
+          transform: translateX(-120%);
+        }
+
+        .card.flipped .face.back::after {
+          animation: back-sheen .85s ease-out .38s 1 both;
+        }
+
+        @keyframes back-sheen {
+          0% {
+            opacity: 0;
+            transform: translateX(-120%);
+          }
+          20% {
+            opacity: .8;
+          }
+          100% {
+            opacity: 0;
+            transform: translateX(120%);
+          }
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+          .card.flipped .face.back::after {
+            animation: none;
+          }
+        }
+
         .face.back > * {
           position: relative;
         }
@@ -387,15 +429,31 @@
           );
           transform: scaleX(0);
           transform-origin: left center;
-          transition: transform .85s cubic-bezier(.2, .7, .25, 1);
+          transition: transform .7s cubic-bezier(.2, .7, .25, 1);
         }
 
+        /* Bars fill after the card turns, with a small stagger */
         .card.flipped .m-bar i {
           transform: scaleX(var(--w));
-          transition-delay: calc(.35s + var(--k) * .12s);
+          transition-delay: calc(.48s + var(--k) * .12s);
         }
 
-        /* Overpowered ability: special red accent, without overflowing */
+        /* Maximum power: 100/100 */
+        .moves li.max .m-pow {
+          color: var(--ac-deep);
+        }
+
+        .moves li.max .m-bar i {
+          background: linear-gradient(
+            90deg,
+            var(--ac),
+            var(--ac-pale),
+            #fff
+          );
+          box-shadow: 0 0 5px rgba(var(--ac-rgb), .35);
+        }
+
+        /* Overpowered ability: reserved red treatment */
         .moves li.over .m-name,
         .moves li.over .m-pow {
           color: #d83c2e;
@@ -410,7 +468,7 @@
           box-shadow: 0 0 8px rgba(216, 60, 46, .22);
         }
 
-        /* Unknown ability stays understated */
+        /* Unknown ability: dashed meter and question mark */
         .moves li.mystery .m-name {
           color: var(--text-muted);
           font-style: italic;
@@ -421,11 +479,26 @@
         }
 
         .moves li.mystery .m-bar {
-          background: repeating-linear-gradient(
-            90deg,
-            rgba(var(--ac-rgb), .2) 0 5px,
-            transparent 5px 10px
-          );
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          overflow: visible;
+          background: transparent;
+          border: 1px dashed rgba(var(--ac-rgb), .55);
+          border-radius: 99px;
+        }
+
+        .moves li.mystery .m-bar::after {
+          content: "?";
+          position: absolute;
+          left: 50%;
+          top: 50%;
+          transform: translate(-50%, -50%);
+          padding: 0 5px;
+          background: #fff;
+          color: var(--ac-deep);
+          font: 700 9px var(--mono);
+          line-height: 1;
         }
 
         .moves li.mystery .m-bar i {
@@ -847,7 +920,8 @@
 
       const moves = (g.moves || []).map(([n, p], k) => {
         const mystery = n === "???";
-        const over = p > 100;
+        const over = !mystery && Number(p) > 100;
+        const maximum = !mystery && !over && Number(p) === 100;
 
         // Keep the displayed number accurate, but never let the bar
         // extend beyond the width of its track.
@@ -855,6 +929,7 @@
 
         const classes = [
           mystery ? "mystery" : "",
+          maximum ? "max" : "",
           over ? "over" : ""
         ].filter(Boolean).join(" ");
 
