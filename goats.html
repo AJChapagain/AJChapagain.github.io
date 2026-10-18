@@ -808,26 +808,28 @@
     //  moves : three  ["Move name", power 1-100]   (placeholders for now)
     // ─────────────────────────────
     const GOATS = [
-      { name:"ajchapa", title:"The Goat",
+      { name:"ajchapa", title:"Thee Goat?",
         photo:"ajchapa.JPG", pos:"50% 25%", zoom:1,
         color:"gold", fx:"aura",
         hp:"???",
         moves:[["Self Glaze", 120], ["Chill", 80], ["???", 0]] },
+
       { name:"Alex", title:"Goat of Fortnite",
         photo:"Alex.jpg", pos:"50% 25%", zoom:1,
         color:"blue", fx:"aim",
         hp:100,
-        moves:[["Mountain Biking", 90], ["Nice Guy", 100], ["1v1 vs Acjagoa", 0]] },
+        moves:[["Likability", 90], ["Nice Guy", 100], ["1v1 vs ajchapa", 0]] },
+
       { name:"Kush", title:"Goat of Excel",
         photo:"Kush.PNG", pos:"50% 25%", zoom:1,
         color:"green", fx:"sheet",
         hp:100,
-        moves:[["Handsome", 85], ["Work Life Balance", 30], ["Move Three", 90]] },
+        moves:[["Handsome", 85], ["Work Life Balance", 30], ["Shopaholic", 80]] },
     ];
     const RULES = [
-      ["i.",   "Placeholder one"],
-      ["ii.",  "Placeholder two"],
-      ["iii.", "Placeholder three"],
+      ["i.",   "Picked by yours truly"],
+      ["ii.",  "Any title can change hands"],
+      ["iii.", "Made with luh, ajchapa"],
     ];
 
     const wall = document.getElementById("wall");
@@ -947,8 +949,6 @@
       }).join("");
 
       card.innerHTML = `
-        ${HANG}
-        ${g.fx === "aura" ? CROWN : ""}
         ${g.fx === "aura" && !reduceMotion ? haloMarkup() : ""}
         <div class="flipper"><div class="tilter">
           <div class="face front">
