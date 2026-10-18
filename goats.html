@@ -444,6 +444,19 @@
       .halo::before,.ember,.reticle svg,.fx-aura .foil,.crown,.flip-hint b,.sh-chart i{animation:none}
       .ember{display:none}
     }
+    /* ===== phone fix: stop the front's effects showing through the back ===== */
+    .face *{-webkit-backface-visibility:hidden;backface-visibility:hidden}
+
+    /* front: visible until the flip is halfway, then hidden */
+    .face.front{visibility:visible;transition:visibility 0s 0s}
+    .card.flipped .face.front{visibility:hidden;transition:visibility 0s .4s}
+
+    /* back: hidden until the flip starts, hidden again once flipped back */
+    .face.back{visibility:hidden;transition:visibility 0s .4s}
+    .card.flipped .face.back{visibility:visible;transition:visibility 0s 0s}
+
+    /* the front effects also sit below the back's content, so taps and hovers never hit them */
+    .card.flipped .fx{pointer-events:none}
   </style>
 </head>
 <body>
@@ -517,7 +530,7 @@
         hp:100,
         moves:[["Move One", 70], ["Move Two", 50], ["Move Three", 90]] },
       { name:"Alex", title:"Goat of Fortnite",
-        photo:"Alex.heic", pos:"50% 25%", zoom:1,
+        photo:"Alex.jpg", pos:"50% 25%", zoom:1,
         color:"blue", fx:"aim",
         hp:100,
         moves:[["Move One", 70], ["Move Two", 50], ["Move Three", 90]] },
