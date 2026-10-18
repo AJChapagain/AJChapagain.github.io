@@ -225,45 +225,254 @@
     @keyframes nudge{0%,70%,100%{transform:rotate(0)}85%{transform:rotate(180deg)}}
     .card:hover .flip-hint{opacity:1;transform:translateX(-2px)}
 
-    /* ================= card back: trading-card stat sheet (placeholders) ================= */
-    .face.back{display:flex;flex-direction:column;padding:20px 18px 16px;background:#fff}
-    .face.back::before{
-      content:"";position:absolute;inset:0;pointer-events:none;
-      background-image:
-        repeating-linear-gradient(45deg,rgba(var(--ac-rgb),.07) 0 1px,transparent 1px 14px),
-        repeating-linear-gradient(-45deg,rgba(var(--ac-rgb),.07) 0 1px,transparent 1px 14px);
-    }
-    .face.back>*{position:relative}
-    .face.back>.keyline{position:absolute}
-    .b-top{display:flex;align-items:baseline;justify-content:space-between;gap:8px}
-    .b-name{font-family:var(--serif);font-size:27px;line-height:1}
-    .b-hp{font-family:var(--mono);font-size:10px;color:var(--text-muted);letter-spacing:.06em;white-space:nowrap}
-    .b-hp b{font:700 17px var(--mono);color:var(--ac-deep);margin-left:3px;letter-spacing:0}
-    .back-title{font-family:var(--serif);font-style:italic;font-size:15px;margin-top:3px;color:var(--ac-deep)}
-    .back-rule{height:1px;background:var(--border);margin:10px 0 12px}
+    /* ================= CARD BACK: refined ability layout ================= */
 
-    .moves{list-style:none;display:grid;gap:16px}
-    .m-row{display:flex;align-items:baseline;justify-content:space-between;gap:8px}
-    .m-name{font-family:var(--serif);font-size:20px;line-height:1.05}
-    .m-pow{font:700 16px var(--mono);font-variant-numeric:tabular-nums;color:var(--text-main)}
-    .m-bar{height:3px;margin-top:6px;background:rgba(var(--ac-rgb),.16);border-radius:2px;overflow:hidden}
-    .m-bar i{
-      display:block;height:100%;background:linear-gradient(90deg,var(--ac),var(--ac-pale),var(--ac));
-      transform:scaleX(0);transform-origin:left;transition:transform .9s cubic-bezier(.2,.7,.25,1);
-    }
-    .card.flipped .m-bar i{transform:scaleX(var(--w));transition-delay:calc(.45s + var(--k) * .12s)}
+        .face.back {
+          display: flex;
+          flex-direction: column;
+          padding: 19px 17px 16px;
+          background:
+            radial-gradient(ellipse at 50% 0%, var(--ac-wash), transparent 72%),
+            #fff;
+        }
 
-    /* over 100: the bar breaks past its track, hot */
-    .m-bar.over{overflow:visible}
-    .m-bar i.over{background:linear-gradient(90deg,#ff4d2e,#ffc63c,#ff4d2e);box-shadow:0 0 14px rgba(255,93,46,.65)}
-    li.over .m-pow{color:#e04a1f}
-    /* mystery move: dimmed name, dashed empty track */
-    li.mystery .m-name{color:var(--text-muted);font-style:italic}
-    li.mystery .m-pow{color:var(--text-muted)}
-    li.mystery .m-bar{background:repeating-linear-gradient(90deg,rgba(var(--ac-rgb),.18) 0 6px,transparent 6px 12px)}
-    li.mystery .m-bar i{display:none}
+        .face.back::before {
+          content: "";
+          position: absolute;
+          inset: 0;
+          pointer-events: none;
+          background:
+            linear-gradient(
+              135deg,
+              rgba(var(--ac-rgb), .055),
+              transparent 42%,
+              rgba(var(--ac-rgb), .035)
+            );
+        }
 
-    /* ================================================================
+        .face.back > * {
+          position: relative;
+        }
+
+        .face.back > .keyline {
+          position: absolute;
+        }
+
+        .b-top {
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+          gap: 8px;
+          min-width: 0;
+        }
+
+        .b-name {
+          min-width: 0;
+          overflow: hidden;
+          text-overflow: ellipsis;
+          white-space: nowrap;
+          font-family: var(--serif);
+          font-size: 27px;
+          line-height: 1.05;
+        }
+
+        .b-hp {
+          flex-shrink: 0;
+          font-family: var(--mono);
+          font-size: 9px;
+          color: var(--text-muted);
+          letter-spacing: .08em;
+          white-space: nowrap;
+        }
+
+        .b-hp b {
+          font: 700 15px var(--mono);
+          color: var(--ac-deep);
+          margin-left: 3px;
+          letter-spacing: 0;
+        }
+
+        .back-title {
+          margin-top: 5px;
+          font-family: var(--serif);
+          font-style: italic;
+          font-size: 14px;
+          line-height: 1.2;
+          color: var(--ac-deep);
+          overflow: hidden;
+          white-space: nowrap;
+          text-overflow: ellipsis;
+        }
+
+        .back-rule {
+          display: flex;
+          align-items: center;
+          gap: 8px;
+          height: 1px;
+          flex-shrink: 0;
+          margin: 15px 0 16px;
+          background: rgba(var(--ac-rgb), .24);
+        }
+
+        /* Three abilities occupy equal vertical space */
+        .moves {
+          list-style: none;
+          display: grid;
+          grid-template-rows: repeat(3, minmax(0, 1fr));
+          gap: 0;
+          flex: 1;
+          min-height: 0;
+        }
+
+        .moves li {
+          display: flex;
+          flex-direction: column;
+          justify-content: center;
+          min-width: 0;
+          padding: 9px 0 10px;
+          border-bottom: 1px solid rgba(var(--ac-rgb), .13);
+        }
+
+        .moves li:last-child {
+          border-bottom: 0;
+        }
+
+        .m-row {
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+          gap: 8px;
+          min-width: 0;
+        }
+
+        .m-name {
+          min-width: 0;
+          overflow: hidden;
+          text-overflow: ellipsis;
+          white-space: nowrap;
+          font-family: var(--serif);
+          font-size: 19px;
+          line-height: 1.15;
+        }
+
+        .m-pow {
+          flex-shrink: 0;
+          font: 700 13px var(--mono);
+          font-variant-numeric: tabular-nums;
+          color: var(--text-main);
+        }
+
+        /* Clean, contained power meter */
+        .m-bar {
+          position: relative;
+          width: 100%;
+          height: 4px;
+          flex-shrink: 0;
+          margin-top: 9px;
+          background: rgba(var(--ac-rgb), .13);
+          border-radius: 99px;
+          overflow: hidden;
+        }
+
+        .m-bar i {
+          display: block;
+          width: 100%;
+          height: 100%;
+          border-radius: inherit;
+          background: linear-gradient(
+            90deg,
+            var(--ac-deep),
+            var(--ac),
+            var(--ac-pale)
+          );
+          transform: scaleX(0);
+          transform-origin: left center;
+          transition: transform .85s cubic-bezier(.2, .7, .25, 1);
+        }
+
+        .card.flipped .m-bar i {
+          transform: scaleX(var(--w));
+          transition-delay: calc(.35s + var(--k) * .12s);
+        }
+
+        /* Overpowered ability: special red accent, without overflowing */
+        .moves li.over .m-name,
+        .moves li.over .m-pow {
+          color: #d83c2e;
+        }
+
+        .moves li.over .m-bar {
+          background: rgba(216, 60, 46, .12);
+        }
+
+        .moves li.over .m-bar i {
+          background: linear-gradient(90deg, #d83c2e, #ff795b);
+          box-shadow: 0 0 8px rgba(216, 60, 46, .22);
+        }
+
+        /* Unknown ability stays understated */
+        .moves li.mystery .m-name {
+          color: var(--text-muted);
+          font-style: italic;
+        }
+
+        .moves li.mystery .m-pow {
+          color: #aaa;
+        }
+
+        .moves li.mystery .m-bar {
+          background: repeating-linear-gradient(
+            90deg,
+            rgba(var(--ac-rgb), .2) 0 5px,
+            transparent 5px 10px
+          );
+        }
+
+        .moves li.mystery .m-bar i {
+          display: none;
+        }
+
+        /* Small screens */
+        @media (max-width: 640px) {
+          .face.back {
+            padding: 15px 13px 12px;
+          }
+
+          .b-name {
+            font-size: 22px;
+          }
+
+          .b-hp b {
+            font-size: 13px;
+          }
+
+          .back-title {
+            font-size: 12px;
+          }
+
+          .back-rule {
+            margin: 11px 0 10px;
+          }
+
+          .moves li {
+            padding: 7px 0 8px;
+          }
+
+          .m-name {
+            font-size: 16px;
+          }
+
+          .m-pow {
+            font-size: 12px;
+          }
+
+          .m-bar {
+            margin-top: 7px;
+            height: 3px;
+          }
+        }
+
+        /* ================================================================
        PER-CARD EFFECTS: always running. hover makes them react.
        ================================================================ */
     .fx{position:absolute;inset:0;z-index:3;pointer-events:none;overflow:hidden}
@@ -432,14 +641,6 @@
       .plate .title{font-size:14px}
       .flip-hint{font-size:12px}
       .flip-hint b{width:17px;height:17px;font-size:10px}
-      .face.back{padding:16px 14px 12px}
-      .b-name{font-size:22px}
-      .b-hp b{font-size:14px}
-      .back-title{font-size:13px}
-      .back-rule{margin:8px 0 10px}
-      .moves{gap:12px}
-      .m-name{font-size:16px}
-      .m-pow{font-size:13px}
       .crown{width:46px;height:35px;margin-left:-23px;top:-18px}
       #scroll-btn{font-size:19px}
       #s-content{padding:34px 22px 28px}
@@ -645,10 +846,29 @@
         : `<div class="photo-wrap empty"><div class="initial">${g.name[0]}</div>${fx}</div>`;
 
       const moves = (g.moves || []).map(([n, p], k) => {
-        const mystery = n === "???", over = p > 100;
-        const cls = (mystery ? " mystery" : "") + (over ? " over" : "");
-        return `<li class="${cls.trim()}"><div class="m-row"><span class="m-name">${n}</span><span class="m-pow">${mystery ? "?" : p}</span></div>
-          <div class="m-bar${over ? " over" : ""}"><i class="${over ? "over" : ""}" style="--w:${over ? p / 100 : clamp(p, 0, 100) / 100};--k:${k}"></i></div></li>`;
+        const mystery = n === "???";
+        const over = p > 100;
+
+        // Keep the displayed number accurate, but never let the bar
+        // extend beyond the width of its track.
+        const width = clamp(Number(p) || 0, 0, 100);
+
+        const classes = [
+          mystery ? "mystery" : "",
+          over ? "over" : ""
+        ].filter(Boolean).join(" ");
+
+        return `
+          <li class="${classes}" style="--k:${k}">
+            <div class="m-row">
+              <span class="m-name">${n}</span>
+              <span class="m-pow">${mystery ? "?" : p}</span>
+            </div>
+            <div class="m-bar">
+              <i style="--w:${width / 100}"></i>
+            </div>
+          </li>
+        `;
       }).join("");
 
       card.innerHTML = `
