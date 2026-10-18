@@ -253,6 +253,16 @@
     }
     .card.flipped .m-bar i{transform:scaleX(var(--w));transition-delay:calc(.45s + var(--k) * .12s)}
 
+    /* over 100: the bar breaks past its track, hot */
+    .m-bar.over{overflow:visible}
+    .m-bar i.over{background:linear-gradient(90deg,#ff4d2e,#ffc63c,#ff4d2e);box-shadow:0 0 14px rgba(255,93,46,.65)}
+    li.over .m-pow{color:#e04a1f}
+    /* mystery move: dimmed name, dashed empty track */
+    li.mystery .m-name{color:var(--text-muted);font-style:italic}
+    li.mystery .m-pow{color:var(--text-muted)}
+    li.mystery .m-bar{background:repeating-linear-gradient(90deg,rgba(var(--ac-rgb),.18) 0 6px,transparent 6px 12px)}
+    li.mystery .m-bar i{display:none}
+
     /* ================================================================
        PER-CARD EFFECTS: always running. hover makes them react.
        ================================================================ */
@@ -524,21 +534,21 @@
     //  moves : three  ["Move name", power 1-100]   (placeholders for now)
     // ─────────────────────────────
     const GOATS = [
-      { name:"ajchapa", title:"The Goat?",
+      { name:"ajchapa", title:"The Goat",
         photo:"ajchapa.JPG", pos:"50% 25%", zoom:1,
         color:"gold", fx:"aura",
-        hp:100,
-        moves:[["Move One", 70], ["Move Two", 50], ["Move Three", 90]] },
+        hp:"???",
+        moves:[["Self Glaze", 120], ["Chill", 80], ["???", 0]] },
       { name:"Alex", title:"Goat of Fortnite",
         photo:"Alex.jpg", pos:"50% 25%", zoom:1,
         color:"blue", fx:"aim",
         hp:100,
-        moves:[["Move One", 70], ["Move Two", 50], ["Move Three", 90]] },
+        moves:[["Mountain Biking", 90], ["Nice Guy", 100], ["1v1 vs Acjagoa", 0]] },
       { name:"Kush", title:"Goat of Excel",
         photo:"Kush.PNG", pos:"50% 25%", zoom:1,
         color:"green", fx:"sheet",
         hp:100,
-        moves:[["Move One", 70], ["Move Two", 50], ["Move Three", 90]] },
+        moves:[["Handsome", 85], ["Work Life Balance", 30], ["Move Three", 90]] },
     ];
     const RULES = [
       ["i.",   "Placeholder one"],
@@ -634,9 +644,12 @@
              <div class="sheen"></div>${fx}</div>`
         : `<div class="photo-wrap empty"><div class="initial">${g.name[0]}</div>${fx}</div>`;
 
-      const moves = (g.moves || []).map(([n, p], k) => `
-        <li><div class="m-row"><span class="m-name">${n}</span><span class="m-pow">${p}</span></div>
-          <div class="m-bar"><i style="--w:${clamp(p, 0, 100) / 100};--k:${k}"></i></div></li>`).join("");
+      const moves = (g.moves || []).map(([n, p], k) => {
+        const mystery = n === "???", over = p > 100;
+        const cls = (mystery ? " mystery" : "") + (over ? " over" : "");
+        return `<li class="${cls.trim()}"><div class="m-row"><span class="m-name">${n}</span><span class="m-pow">${mystery ? "?" : p}</span></div>
+          <div class="m-bar${over ? " over" : ""}"><i class="${over ? "over" : ""}" style="--w:${over ? p / 100 : clamp(p, 0, 100) / 100};--k:${k}"></i></div></li>`;
+      }).join("");
 
       card.innerHTML = `
         ${HANG}
