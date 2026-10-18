@@ -134,8 +134,6 @@
 
     /* ================= the wall: a gallery wall ================= */
     #body{flex:1;padding-top:18px;padding-bottom:90px}
-    /* cards hang from little gold nails on thin wires, at slightly different heights,
-       like frames on a real wall. the top padding leaves room for the wires. */
     #wall{
       display:grid;grid-template-columns:repeat(auto-fill,minmax(176px,1fr));
       gap:40px 24px;perspective:1400px;padding-top:50px;align-items:start;
@@ -199,19 +197,24 @@
     .photo-wrap.empty::after{display:none}
     .photo-wrap .initial{font-family:var(--serif);font-style:italic;font-size:110px;line-height:1;color:rgba(var(--ac-rgb),.5)}
 
+    /* ---------- name plate: the same layout on every card ----------
+       row 1: name on the left, flip badge on the right
+       row 2: title, always one line, never grows past the card */
     .plate{
-      position:relative;height:28%;padding:10px 18px 12px;display:flex;flex-direction:column;justify-content:center;
+      position:relative;height:28%;padding:0 18px;display:flex;flex-direction:column;justify-content:center;gap:6px;
       background:linear-gradient(180deg,#fff,var(--ac-wash));border-top:1px solid rgba(var(--ac-rgb),.35);
     }
-    .plate .name{font-family:var(--serif);font-size:30px;line-height:1}
+    .plate .row{display:flex;align-items:center;justify-content:space-between;gap:8px;min-width:0}
+    .plate .name{font-family:var(--serif);font-size:30px;line-height:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-width:0}
     .plate .title{
-      display:flex;align-items:center;gap:8px;margin-top:5px;
-      font-family:var(--serif);font-style:italic;font-size:17px;line-height:1.1;color:var(--ac-deep);
+      display:flex;align-items:center;gap:8px;min-width:0;
+      font-family:var(--serif);font-style:italic;font-size:16px;line-height:1.1;color:var(--ac-deep);
     }
     .plate .title::before{content:"";width:5px;height:5px;background:var(--ac);transform:rotate(45deg);flex-shrink:0}
+    .plate .title span{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-width:0}
 
     .flip-hint{
-      position:absolute;right:16px;bottom:11px;display:flex;align-items:center;gap:5px;
+      flex-shrink:0;display:flex;align-items:center;gap:5px;
       font-family:var(--serif);font-style:italic;font-size:13px;color:var(--ac-deep);
       opacity:.85;transition:opacity .3s ease,transform .3s ease;
     }
@@ -237,23 +240,18 @@
     .b-hp{font-family:var(--mono);font-size:10px;color:var(--text-muted);letter-spacing:.06em;white-space:nowrap}
     .b-hp b{font:700 17px var(--mono);color:var(--ac-deep);margin-left:3px;letter-spacing:0}
     .back-title{font-family:var(--serif);font-style:italic;font-size:15px;margin-top:3px;color:var(--ac-deep)}
-    .back-rule{height:1px;background:var(--border);margin:10px 0 9px}
+    .back-rule{height:1px;background:var(--border);margin:10px 0 12px}
 
-    .moves{list-style:none;display:grid;gap:10px}
+    .moves{list-style:none;display:grid;gap:16px}
     .m-row{display:flex;align-items:baseline;justify-content:space-between;gap:8px}
-    .m-name{font-family:var(--serif);font-size:18px;line-height:1.05}
-    .m-pow{font:700 15px var(--mono);font-variant-numeric:tabular-nums;color:var(--text-main)}
-    .m-bar{height:3px;margin-top:5px;background:rgba(var(--ac-rgb),.16);border-radius:2px;overflow:hidden}
+    .m-name{font-family:var(--serif);font-size:20px;line-height:1.05}
+    .m-pow{font:700 16px var(--mono);font-variant-numeric:tabular-nums;color:var(--text-main)}
+    .m-bar{height:3px;margin-top:6px;background:rgba(var(--ac-rgb),.16);border-radius:2px;overflow:hidden}
     .m-bar i{
       display:block;height:100%;background:linear-gradient(90deg,var(--ac),var(--ac-pale),var(--ac));
       transform:scaleX(0);transform-origin:left;transition:transform .9s cubic-bezier(.2,.7,.25,1);
     }
     .card.flipped .m-bar i{transform:scaleX(var(--w));transition-delay:calc(.45s + var(--k) * .12s)}
-
-    .b-foot{margin-top:auto;display:grid;grid-template-columns:repeat(3,1fr);gap:6px;padding-top:8px;border-top:1px solid var(--border)}
-    .b-foot div{display:flex;flex-direction:column;gap:2px}
-    .b-foot small{font:400 8px var(--mono);letter-spacing:.1em;text-transform:uppercase;color:var(--text-muted)}
-    .b-foot b{font:700 12px var(--mono);color:var(--ac-deep)}
 
     /* ================================================================
        PER-CARD EFFECTS: always running. hover makes them react.
@@ -419,21 +417,19 @@
       #nav{padding:0 16px}
       #body{padding-top:14px;padding-bottom:64px}
       #wall{grid-template-columns:repeat(auto-fill,minmax(148px,1fr));gap:34px 14px;padding-top:46px}
-      .plate{padding:8px 14px}
+      .plate{padding:0 14px;gap:5px}
       .plate .name{font-size:25px}
       .plate .title{font-size:14px}
-      .flip-hint{right:12px;bottom:9px;font-size:12px}
+      .flip-hint{font-size:12px}
       .flip-hint b{width:17px;height:17px;font-size:10px}
       .face.back{padding:16px 14px 12px}
       .b-name{font-size:22px}
       .b-hp b{font-size:14px}
       .back-title{font-size:13px}
-      .back-rule{margin:8px 0}
-      .moves{gap:7px}
-      .m-name{font-size:15px}
+      .back-rule{margin:8px 0 10px}
+      .moves{gap:12px}
+      .m-name{font-size:16px}
       .m-pow{font-size:13px}
-      .b-foot small{font-size:7px}
-      .b-foot b{font-size:10px}
       .crown{width:46px;height:35px;margin-left:-23px;top:-18px}
       #scroll-btn{font-size:19px}
       #s-content{padding:34px 22px 28px}
@@ -511,36 +507,30 @@
     //  photo : exact filename in the repo (case matters!)
     //  pos / zoom : photo placement. Use  yoursite/goats.html?tune  to dial it in.
     //  color : "gold" | "blue" | "green"      fx : "aura" | "aim" | "sheet" | ""
-    //
-    //  BACK OF THE CARD (placeholders for now, we'll make these real):
-    //  hp     : a number
-    //  moves  : three  ["Move name", power 1-100]
-    //  weak / resist / retreat : the little stats along the bottom
+    //  hp    : a number
+    //  moves : three  ["Move name", power 1-100]   (placeholders for now)
     // ─────────────────────────────
     const GOATS = [
-      { name:"ajchapa", title:"The Goat",
+      { name:"ajchapa", title:"The Goat?",
         photo:"ajchapa.JPG", pos:"50% 25%", zoom:1,
         color:"gold", fx:"aura",
         hp:100,
-        moves:[["Move One", 70], ["Move Two", 50], ["Move Three", 90]],
-        weak:"—", resist:"—", retreat:"—" },
+        moves:[["Move One", 70], ["Move Two", 50], ["Move Three", 90]] },
       { name:"Alex", title:"Goat of Fortnite",
         photo:"Alex.heic", pos:"50% 25%", zoom:1,
         color:"blue", fx:"aim",
         hp:100,
-        moves:[["Move One", 70], ["Move Two", 50], ["Move Three", 90]],
-        weak:"—", resist:"—", retreat:"—" },
+        moves:[["Move One", 70], ["Move Two", 50], ["Move Three", 90]] },
       { name:"Kush", title:"Goat of Excel",
         photo:"Kush.PNG", pos:"50% 25%", zoom:1,
         color:"green", fx:"sheet",
         hp:100,
-        moves:[["Move One", 70], ["Move Two", 50], ["Move Three", 90]],
-        weak:"—", resist:"—", retreat:"—" },
+        moves:[["Move One", 70], ["Move Two", 50], ["Move Three", 90]] },
     ];
     const RULES = [
-      ["i.",   "Undeniable at one thing"],
-      ["ii.",  "Hand-picked by ajchapa"],
-      ["iii.", "The wall is final"],
+      ["i.",   "Placeholder one"],
+      ["ii.",  "Placeholder two"],
+      ["iii.", "Placeholder three"],
     ];
 
     const wall = document.getElementById("wall");
@@ -643,9 +633,11 @@
           <div class="face front">
             <div class="keyline"></div>${photo}
             <div class="plate">
-              <div class="name">${g.name}</div>
-              <div class="title">${g.title}</div>
-              <div class="flip-hint"><b>↻</b>flip</div>
+              <div class="row">
+                <div class="name">${g.name}</div>
+                <div class="flip-hint"><b>↻</b>flip</div>
+              </div>
+              <div class="title"><span>${g.title}</span></div>
             </div>
           </div>
           <div class="face back">
@@ -657,11 +649,6 @@
             <div class="back-title">${g.title}</div>
             <div class="back-rule"></div>
             <ul class="moves">${moves}</ul>
-            <div class="b-foot">
-              <div><small>weakness</small><b>${g.weak ?? "—"}</b></div>
-              <div><small>resistance</small><b>${g.resist ?? "—"}</b></div>
-              <div><small>retreat</small><b>${g.retreat ?? "—"}</b></div>
-            </div>
           </div>
         </div></div>`;
 
