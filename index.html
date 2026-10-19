@@ -121,6 +121,30 @@
       transition: transform 0.3s, color 0.3s;
     }
 
+    /* the wall row: same row + gold foil sweep */
+    .wall-row { position: relative; overflow: hidden; }
+    .wall-row .link-left, .wall-row .link-arrow { position: relative; z-index: 1; }
+    .wall-row .foil {
+      position: absolute;
+      top: -10%; bottom: -10%;
+      width: 34%; left: -60%;
+      pointer-events: none;
+      z-index: 0;
+      background: linear-gradient(100deg, transparent, rgba(240,205,100,.45), rgba(255,236,170,.6), rgba(240,205,100,.45), transparent);
+      transform: skewX(-14deg);
+      animation: wall-foil 5s ease-in-out infinite;
+    }
+    .wall-row:hover .foil { animation-duration: 2.4s; }
+    @keyframes wall-foil {
+      0% { left: -60%; }
+      40%, 100% { left: 130%; }
+    }
+    .wall-row .link-index { color: #c9a227; }
+    .wall-row:hover .link-arrow { color: #a8842f; }
+    @media (prefers-reduced-motion: reduce) {
+      .wall-row .foil { animation: none; display: none; }
+    }
+
     #right {
       display: flex;
       align-items: center;
@@ -235,6 +259,21 @@
               <div>
                 <div class="link-name">archive</div>
                 <div class="link-handle"><span id="archive-num">7</span> frames</div>
+              </div>
+            </div>
+            <span class="link-arrow">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                <line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline>
+              </svg>
+            </span>
+          </a>
+          <a class="link-row wall-row" href="goats.html">
+            <span class="foil" aria-hidden="true"></span>
+            <div class="link-left">
+              <span class="link-index">05</span>
+              <div>
+                <div class="link-name">the wall</div>
+                <div class="link-handle">goats</div>
               </div>
             </div>
             <span class="link-arrow">
