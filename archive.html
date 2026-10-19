@@ -160,6 +160,11 @@
       -webkit-line-clamp: 3;
     }
     .block.featured .block-info { font-size: 11px; }
+    .block.featured .block-img img {
+      aspect-ratio: 3 / 4;
+      object-fit: cover;
+      object-position: 50% 50%;
+    }
 
     /* metadata */
     .block-meta {
@@ -371,7 +376,7 @@
       </div>
     </div>
 
-    <div class="block featured" style="--d:4;--t:4;--m:2" onclick="openLB(5)">
+    <div class="block featured" style="--d:3;--t:3;--m:1" onclick="openLB(5)">
       <div class="block-img">
         <img src="photo8.jpg" alt="big speech 5000 humans" loading="lazy" />
       </div>
