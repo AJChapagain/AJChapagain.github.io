@@ -154,12 +154,7 @@
       opacity: 0.85;
     }
 
-    /* featured (big speech) */
-    .block.featured .block-title {
-      font-size: 16px;
-      -webkit-line-clamp: 3;
-    }
-    .block.featured .block-info { font-size: 11px; }
+    /* featured (big speech): same type as the other frames, portrait crop on the image */
     .block.featured .block-img img {
       aspect-ratio: 3 / 4;
       object-fit: cover;
@@ -293,7 +288,6 @@
     @media (max-width: 500px) {
       #grid { grid-template-columns: repeat(2, 1fr); gap: 20px 12px; }
       .block { grid-column: span var(--m, 1); }
-      .block.featured .block-title { font-size: 14px; }
       #profile { padding: 20px 14px 0; }
       #grid-wrap { padding: 14px; }
       #nav { padding: 0 14px; }
