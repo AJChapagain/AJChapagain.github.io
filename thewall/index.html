@@ -14,7 +14,7 @@
   <link rel="icon" type="image/png" href="/favicon.png" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Mulish:wght@300;700;800&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Mulish:wght@300;700;800&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet" />
   <style>
     :root {
       --border:#ebebeb; --text-main:#111; --text-muted:#888;
@@ -155,6 +155,12 @@
     .c-gold {--ac:#c9a227;--ac-deep:#a8842f;--ac-pale:#f1dfa8;--ac-rgb:201,162,39;--ac-wash:#fcf7e6;--ac-line:#d9c48f}
     .c-blue {--ac:#2f86ee;--ac-deep:#1d5fb8;--ac-pale:#cfe4ff;--ac-rgb:47,134,238;--ac-wash:#eef5ff;--ac-line:#a9c8f0}
     .c-green{--ac:#21a35a;--ac-deep:#187a43;--ac-pale:#c9eed8;--ac-rgb:33,163,90;--ac-wash:#eefaf2;--ac-line:#a5d9b9}
+    /* dlc: the one dark card. it also switches to a mono voice inside the card */
+    .c-dlc{
+      --ac:#9b6bff;--ac-deep:#c4abff;--ac-pale:#e1d3f7;--ac-rgb:155,107,255;--ac-wash:#1d1233;--ac-line:#3a2a5c;
+      --ink:#120a1f;--ink2:#1d1233;--paper:#f4eeff;
+      --mono:'Space Mono',Menlo,Monaco,Consolas,monospace;--font:var(--mono);--serif:var(--mono);
+    }
 
     .card{position:relative;aspect-ratio:5/6.7;opacity:0;animation:rise .7s ease forwards;cursor:pointer}
     .card[data-fx="aim"]{cursor:crosshair}
@@ -175,7 +181,7 @@
     .face.back{transform:rotateY(180deg)}
     .keyline{position:absolute;inset:8px;border:1px solid rgba(var(--ac-rgb),.5);border-radius:12px;pointer-events:none;z-index:6}
 
-    .photo-wrap{position:relative;height:72%;overflow:hidden;background:var(--ac-wash)}
+    .photo-wrap{position:relative;height:67%;overflow:hidden;background:var(--ac-wash)}
     .photo-wrap img{
       width:100%;height:100%;object-fit:cover;object-position:var(--pos,50% 25%);display:block;
       transform:scale(var(--zoom,1));transform-origin:var(--pos,50% 25%);
@@ -199,9 +205,11 @@
 
     /* ---------- name plate: the same layout on every card ----------
        row 1: name on the left, flip badge on the right
-       row 2: title, always one line, never grows past the card */
+       row 2: title, always one line, never grows past the card
+       the padding is lopsided on purpose (a bit more at the bottom) so the
+       title sits clear of the keyline instead of crowding the card edge */
     .plate{
-      position:relative;height:28%;padding:0 18px;display:flex;flex-direction:column;justify-content:center;gap:6px;
+      position:relative;height:33%;padding:2px 18px 8px;display:flex;flex-direction:column;justify-content:center;gap:6px;
       background:linear-gradient(180deg,#fff,var(--ac-wash));border-top:1px solid rgba(var(--ac-rgb),.35);
     }
     .plate .row{display:flex;align-items:center;justify-content:space-between;gap:8px;min-width:0}
@@ -688,9 +696,127 @@
     }
     @keyframes grow{0%{transform:scaleY(.15)}30%,85%{transform:scaleY(1)}100%{transform:scaleY(.15)}}
 
+    /* ================================================================
+       GARYBOY: the DLC card. dark, mono, sharp corners, its own species.
+       everything here is scoped to .c-dlc so the GOAT cards are untouched.
+       ================================================================ */
+    .c-dlc .face{
+      border-radius:6px;
+      background:radial-gradient(120% 70% at 50% 0%,var(--ink2),var(--ink) 70%);
+      box-shadow:0 1px 2px rgba(0,0,0,.08),0 26px 44px -22px rgba(60,20,130,.55);
+    }
+
+    /* corner brackets instead of a rounded keyline */
+    .brk{position:absolute;inset:8px;pointer-events:none;z-index:7}
+    .brk i{position:absolute;width:12px;height:12px;border:0 solid rgba(var(--ac-rgb),.85)}
+    .brk i:nth-child(1){left:0;top:0;border-width:1px 0 0 1px}
+    .brk i:nth-child(2){right:0;top:0;border-width:1px 1px 0 0}
+    .brk i:nth-child(3){left:0;bottom:0;border-width:0 0 1px 1px}
+    .brk i:nth-child(4){right:0;bottom:0;border-width:0 1px 1px 0}
+
+    /* front: purple-graded photo, fading into the dark plate */
+    .c-dlc .photo-wrap{background:var(--ink2)}
+    .c-dlc .photo-wrap img{
+      filter:saturate(.9) contrast(1.06) drop-shadow(0 0 0 rgba(255,0,120,0)) drop-shadow(0 0 0 rgba(0,200,255,0));
+    }
+    .c-dlc .photo-wrap::before{
+      content:"";position:absolute;inset:0;z-index:1;pointer-events:none;
+      background:linear-gradient(160deg,rgba(var(--ac-rgb),.55),rgba(50,14,110,.45));mix-blend-mode:soft-light;
+    }
+    .c-dlc .photo-wrap::after{height:34%;z-index:2;background:linear-gradient(to top,var(--ink),transparent)}
+    .c-dlc .sheen{
+      z-index:4;
+      background:
+        radial-gradient(circle at var(--mx,50%) var(--my,50%),rgba(255,255,255,.22),transparent 55%),
+        linear-gradient(115deg,transparent calc(var(--mx,50%) - 22%),rgba(var(--ac-rgb),.3) var(--mx,50%),transparent calc(var(--mx,50%) + 22%));
+    }
+    .c-dlc .photo-wrap.empty{background:radial-gradient(120% 90% at 50% 20%,var(--ac-line),var(--ink))}
+    .c-dlc .photo-wrap.empty::before,.c-dlc .photo-wrap.empty::after{display:none}
+    .c-dlc .photo-wrap .initial{font-style:normal;color:rgba(var(--ac-rgb),.55)}
+    .c-dlc:hover .photo-wrap img{animation:split .5s steps(3) 1}
+    @keyframes split{
+      0%{filter:saturate(.9) contrast(1.06) drop-shadow(4px 0 0 rgba(255,0,120,.55)) drop-shadow(-4px 0 0 rgba(0,200,255,.55))}
+      45%{filter:saturate(.9) contrast(1.06) drop-shadow(-3px 0 0 rgba(255,0,120,.45)) drop-shadow(3px 0 0 rgba(0,200,255,.45))}
+      100%{filter:saturate(.9) contrast(1.06) drop-shadow(0 0 0 rgba(255,0,120,0)) drop-shadow(0 0 0 rgba(0,200,255,0))}
+    }
+    .c-dlc .chip{
+      position:absolute;top:15px;left:15px;z-index:5;font:800 9px var(--font);letter-spacing:.16em;text-transform:uppercase;
+      padding:4px 8px;line-height:1;background:var(--ac);color:var(--ink);
+    }
+
+    /* front: plate */
+    .c-dlc .plate{background:none}
+    .c-dlc .plate .name{font-size:28px;letter-spacing:-.02em;text-transform:uppercase;color:var(--paper)}
+    .c-dlc .plate .title{font-style:normal;font-size:10.5px;letter-spacing:.1em;text-transform:uppercase;line-height:1.2}
+    .c-dlc .plate .title::before{transform:none}
+    .c-dlc .meta{display:flex;justify-content:flex-end;align-items:center;font:700 8.5px var(--mono);letter-spacing:.14em;text-transform:uppercase}
+    .c-dlc .meta .hint{display:flex;align-items:center;gap:5px;color:var(--ac-deep);transition:color .3s ease}
+    .c-dlc .meta .hint b{font-weight:700;font-size:10px;display:inline-block;animation:nudge 3.6s ease-in-out infinite}
+    .c-dlc:hover .meta .hint{color:#fff}
+
+    /* back: scanlines, mono type, segmented bars */
+    .c-dlc .face.back{
+      padding:20px 17px 15px;
+      background:radial-gradient(120% 70% at 50% 0%,var(--ink2),var(--ink) 70%);
+    }
+    .c-dlc .face.back::before{background:repeating-linear-gradient(to bottom,rgba(var(--ac-rgb),.05) 0 1px,transparent 1px 3px)}
+    .c-dlc .face.back::after{
+      background:linear-gradient(110deg,transparent 25%,rgba(255,255,255,.22) 45%,rgba(var(--ac-rgb),.18) 50%,transparent 68%);
+    }
+    .c-dlc .face.back > .brk{position:absolute}
+    .c-dlc .b-name{font-size:22px;letter-spacing:-.02em;text-transform:uppercase;color:var(--paper)}
+    .c-dlc .back-title{margin-top:5px;font-style:normal;font-size:9.5px;letter-spacing:.1em;text-transform:uppercase}
+    .c-dlc .back-rule{margin:14px 0 6px;background:rgba(var(--ac-rgb),.3)}
+    .c-dlc .moves li{padding:8px 0 9px;border-bottom-color:rgba(var(--ac-rgb),.14)}
+    .c-dlc .m-name{font-size:14px;letter-spacing:.04em;text-transform:uppercase;color:var(--paper)}
+    .c-dlc .m-name em{
+      font:700 7.5px var(--mono);font-style:normal;letter-spacing:.12em;text-transform:uppercase;vertical-align:middle;
+      margin-left:8px;padding:2px 5px;color:#ff8fa0;border:1px solid rgba(255,143,160,.55);
+    }
+    .c-dlc .m-pow{color:var(--paper)}
+    .seg{display:grid;grid-template-columns:repeat(20,1fr);gap:2px;margin-top:8px}
+    .seg i{position:relative;height:5px;background:rgba(var(--ac-rgb),.17)}
+    .seg i.on::after{content:"";position:absolute;inset:0;background:var(--ac);opacity:0;transition:opacity .15s ease}
+    .card.flipped .seg i.on::after{opacity:1;transition-delay:calc(.5s + var(--k) * .14s + var(--s) * .03s)}
+    .c-dlc .moves li.max .m-pow{color:var(--ac-pale)}
+    .c-dlc .moves li.max .seg i.on::after{background:var(--ac-pale)}
+    .c-dlc .moves li.bug .m-pow{color:#ff8fa0}
+    .c-dlc .moves li.bug .seg i.on::after{background:#ff6b81}
+
+    /* ---------- garyboy: purple haze + scanlines, auto-running ---------- */
+    .fx-haze{opacity:.9;transition:opacity .5s ease,transform .8s cubic-bezier(.2,.7,.25,1)}
+    .fx-haze::before{
+      content:"";position:absolute;inset:0;
+      background:linear-gradient(to top,rgba(var(--ac-rgb),.28),transparent 65%);
+    }
+    .fx-haze .puff{
+      position:absolute;left:var(--x);top:var(--y);width:70%;height:50%;border-radius:50%;
+      background:radial-gradient(closest-side,rgba(var(--ac-rgb),.7),rgba(var(--ac-rgb),.22) 55%,transparent);
+      filter:blur(18px);opacity:.35;mix-blend-mode:screen;
+      animation:haze var(--t) ease-in-out infinite;animation-delay:var(--dl);
+    }
+    @keyframes haze{
+      0%,100%{transform:translate(0,0) scale(.9);opacity:.2}
+      50%{transform:translate(var(--dx),-14%) scale(1.15);opacity:.6}
+    }
+    .fx-haze .scan{
+      position:absolute;inset:0;
+      background:repeating-linear-gradient(to bottom,rgba(0,0,0,.2) 0 1px,transparent 1px 3px);
+    }
+    .fx-haze .scan::after{
+      content:"";position:absolute;left:0;right:0;top:0;height:28%;
+      background:linear-gradient(to bottom,transparent,rgba(var(--ac-rgb),.3),transparent);
+      animation:scanmove 6.5s linear infinite;
+    }
+    @keyframes scanmove{from{transform:translateY(-100%)}to{transform:translateY(380%)}}
+    .c-dlc:hover .fx-haze{opacity:1;transform:scale(1.05)}
+    .c-dlc:hover .fx-haze .scan::after{animation-duration:2.4s}
+
     /* ================= tune mode (?tune) ================= */
     body.tune .card{cursor:grab}
-    body.tune .fx,body.tune .flip-hint,body.tune .sheen,body.tune .crown,body.tune .halo,body.tune .hang{display:none}
+    body.tune .fx,body.tune .flip-hint,body.tune .meta,body.tune .chip,body.tune .sheen,body.tune .crown,body.tune .halo,body.tune .hang{display:none}
+    body.tune .c-dlc .photo-wrap::before,body.tune .c-dlc .photo-wrap::after{display:none}
+    body.tune .c-dlc:hover .photo-wrap img{animation:none}
     body.tune .photo-wrap{outline:2px dashed #e5484d;outline-offset:-2px}
     #tuner{
       position:fixed;left:50%;bottom:16px;transform:translateX(-50%);z-index:90;width:min(560px,calc(100vw - 24px));
@@ -709,7 +835,7 @@
       #nav{padding:0 16px}
       #body{padding-top:14px;padding-bottom:64px}
       #wall{grid-template-columns:repeat(auto-fill,minmax(148px,1fr));gap:34px 14px;padding-top:46px}
-      .plate{padding:0 14px;gap:5px}
+      .plate{padding:2px 14px 8px;gap:5px}
       .plate .name{font-size:25px}
       .plate .title{font-size:14px}
       .flip-hint{font-size:12px}
@@ -719,6 +845,16 @@
       #s-content{padding:34px 22px 28px}
       #s-title{font-size:48px}
       #s-rules .txt{font-size:25px}
+      /* garyboy */
+      .c-dlc .plate .name{font-size:23px}
+      .c-dlc .plate .title{font-size:9px;letter-spacing:.06em}
+      .c-dlc .face.back{padding:16px 13px 12px}
+      .c-dlc .b-name{font-size:19px}
+      .c-dlc .back-title{font-size:9px}
+      .c-dlc .back-rule{margin:10px 0 4px}
+      .c-dlc .moves li{padding:6px 0 7px}
+      .c-dlc .m-name{font-size:12px}
+      .seg{margin-top:6px}
     }
     @media (prefers-reduced-motion:reduce){
       .kl{animation:none;opacity:1;transform:none}
@@ -727,6 +863,11 @@
       .reveal,#scroll-modal.open .reveal{transition:none}
       .halo::before,.ember,.reticle svg,.fx-aura .foil,.crown,.flip-hint b,.sh-chart i{animation:none}
       .ember{display:none}
+      .fx-haze .puff{animation:none;opacity:.35}
+      .fx-haze .scan::after{animation:none;display:none}
+      .fx-haze,.c-dlc:hover .fx-haze{transition:none;transform:none}
+      .c-dlc .meta .hint b{animation:none}
+      .c-dlc:hover .photo-wrap img{animation:none}
     }
     /* ===== phone fix: stop the front's effects showing through the back ===== */
     .face *{-webkit-backface-visibility:hidden;backface-visibility:hidden}
@@ -803,8 +944,8 @@
     //  ADD YOUR PEOPLE HERE
     //  photo : exact filename in the repo (case matters!)
     //  pos / zoom : photo placement. Use  yoursite/goats.html?tune  to dial it in.
-    //  color : "gold" | "blue" | "green"      fx : "aura" | "aim" | "sheet" | ""
-    //  hp    : a number
+    //  color : "gold" | "blue" | "green" | "dlc"      fx : "aura" | "aim" | "sheet" | "haze" | ""
+    //  hp    : a number (the dlc card doesn't show it)
     //  moves : three  ["Move name", power 1-100]   (placeholders for now)
     // ─────────────────────────────
     const GOATS = [
@@ -825,6 +966,12 @@
         color:"green", fx:"sheet",
         hp:100,
         moves:[["Handsome", 85], ["Work Life Balance", 30], ["Shopaholic", 80]] },
+
+      { name:"Garyboy", title:"Walking Lunch Money",
+        photo:"/Gary.png", pos:"50% 25%", zoom:1,
+        color:"dlc", fx:"haze",
+        hp:100,
+        moves:[["Drugs", 100], ["Personable", 80], ["Memory", 50]] },
     ];
     const RULES = [
       ["i.",   "Picked by urs truly"],
@@ -872,6 +1019,9 @@
       <svg viewBox="0 0 100 40" preserveAspectRatio="none"><line x1="50" y1="0" x2="14" y2="40"/><line x1="50" y1="0" x2="86" y2="40"/></svg>
       <i></i></div>`;
 
+    // corner brackets (the dlc card uses these instead of the rounded keyline)
+    const BRK = `<div class="brk" aria-hidden="true"><i></i><i></i><i></i><i></i></div>`;
+
     function fxMarkup(kind) {
       if (kind === "aura") return `<div class="fx fx-aura"><div class="foil"></div></div>`;
       if (kind === "aim") return `<div class="fx fx-aim"><div class="agrid"></div>
@@ -891,6 +1041,12 @@
           <div class="sh-cols">${cols}</div><div class="sh-rows">${rows}</div>
           <div class="sh-chart">${bars}</div></div>`;
       }
+      if (kind === "haze") {
+        // x, y (% of photo), drift duration (s), delay (s), horizontal drift
+        const puffs = [[-18, 48, 13, 0, "26%"], [30, 8, 17, -5, "-22%"], [-6, 22, 15, -9, "20%"], [38, 55, 19, -3, "-28%"], [8, 62, 14, -11, "24%"]]
+          .map(([x, y, t, dl, dx]) => `<i class="puff" style="--x:${x}%;--y:${y}%;--t:${t}s;--dl:${dl}s;--dx:${dx}"></i>`).join("");
+        return `<div class="fx fx-haze"><div class="scan"></div>${puffs}</div>`;
+      }
       return "";
     }
     function haloMarkup() {
@@ -904,6 +1060,7 @@
 
     // ── build the cards
     GOATS.forEach((g, i) => {
+      const dlc = g.color === "dlc";
       const card = document.createElement("article");
       card.className = "card c-" + (g.color || "gold");
       card.dataset.fx = g.fx || "";
@@ -915,10 +1072,11 @@
       card.setAttribute("aria-label", g.name + ", " + g.title + ". Activate to flip.");
 
       const fx = fxMarkup(g.fx);
+      const chip = dlc ? `<span class="chip">DLC</span>` : "";
       const photo = g.photo
         ? `<div class="photo-wrap"><img src="${g.photo}" alt="${g.name}" decoding="async" draggable="false">
-             <div class="sheen"></div>${fx}</div>`
-        : `<div class="photo-wrap empty"><div class="initial">${g.name[0]}</div>${fx}</div>`;
+             <div class="sheen"></div>${fx}${chip}</div>`
+        : `<div class="photo-wrap empty"><div class="initial">${g.name[0]}</div>${fx}${chip}</div>`;
 
       const moves = (g.moves || []).map(([n, p], k) => {
         const mystery = n === "???";
@@ -948,7 +1106,39 @@
         `;
       }).join("");
 
-      card.innerHTML = `
+      // dlc moves: 20-block segmented meters, plus a red tag when a stat is 10 or below
+      const SEGS = 20;
+      const dlcMoves = dlc ? (g.moves || []).map(([n, p], k) => {
+        const power = clamp(Number(p) || 0, 0, 100);
+        const lit = Math.round(power / 100 * SEGS);
+        const bug = power <= 10;
+        const cls = [power === 100 ? "max" : "", bug ? "bug" : ""].filter(Boolean).join(" ");
+        const segs = Array.from({ length: SEGS }, (_, s) => `<i class="${s < lit ? "on" : ""}" style="--s:${s}"></i>`).join("");
+        return `
+          <li class="${cls}" style="--k:${k}">
+            <div class="m-row"><span class="m-name">${n}${bug ? "<em>known issue</em>" : ""}</span><span class="m-pow">${p}</span></div>
+            <div class="seg">${segs}</div>
+          </li>`;
+      }).join("") : "";
+
+      card.innerHTML = dlc ? `
+        <div class="flipper"><div class="tilter">
+          <div class="face front">
+            ${BRK}${photo}
+            <div class="plate">
+              <div class="name">${g.name}</div>
+              <div class="title"><span>${g.title}</span></div>
+              <div class="meta"><span class="hint"><b>↻</b>flip</span></div>
+            </div>
+          </div>
+          <div class="face back">
+            ${BRK}
+            <div class="b-top"><div class="b-name">${g.name}</div></div>
+            <div class="back-title">${g.title}</div>
+            <div class="back-rule"></div>
+            <ul class="moves">${dlcMoves}</ul>
+          </div>
+        </div></div>` : `
         ${g.fx === "aura" && !reduceMotion ? haloMarkup() : ""}
         <div class="flipper"><div class="tilter">
           <div class="face front">
