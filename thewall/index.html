@@ -945,7 +945,7 @@
     //  photo : exact filename in the repo (case matters!)
     //  pos / zoom : photo placement. Use  yoursite/goats.html?tune  to dial it in.
     //  color : "gold" | "blue" | "green" | "dlc"      fx : "aura" | "aim" | "sheet" | "haze" | ""
-    //  hp    : a number (the dlc card doesn't show it)
+    //  hp    : formula A — the average of the three moves, rounded (ajchapa stays "???")
     //  moves : three  ["Move name", power 1-100]   (placeholders for now)
     // ─────────────────────────────
     const GOATS = [
@@ -958,19 +958,19 @@
       { name:"Alex", title:"Goat of Fortnite",
         photo:"/Alex.jpg", pos:"50% 25%", zoom:1,
         color:"blue", fx:"aim",
-        hp:100,
+        hp:63,
         moves:[["Likability", 90], ["Nice Guy", 100], ["1v1 vs ajchapa", 0]] },
 
       { name:"Kush", title:"Goat of Excel",
         photo:"/5E063B38-E541-412F-B0DE-A586461C325A.jpeg", pos:"50% 25%", zoom:1,
         color:"green", fx:"sheet",
-        hp:100,
+        hp:65,
         moves:[["Handsome", 85], ["Work Life Balance", 30], ["Shopaholic", 80]] },
 
       { name:"Garyboy", title:"Walking Lunch Money",
         photo:"/Gary.png", pos:"50% 25%", zoom:1,
         color:"dlc", fx:"haze",
-        hp:100,
+        hp:70,
         moves:[["Liver & Lungs", 50], ["Personable", 80], ["Chef", 80]] },
     ];
     const RULES = [
@@ -1133,7 +1133,7 @@
           </div>
           <div class="face back">
             ${BRK}
-            <div class="b-top"><div class="b-name">${g.name}</div></div>
+            <div class="b-top"><div class="b-name">${g.name}</div><div class="b-hp">HP.SYS<b>${g.hp ?? "—"}</b></div></div>
             <div class="back-title">${g.title}</div>
             <div class="back-rule"></div>
             <ul class="moves">${dlcMoves}</ul>
