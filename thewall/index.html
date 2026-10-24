@@ -406,6 +406,11 @@
           line-height: 1.15;
         }
 
+        /* Long ability names step down a size so they fit on one line like the rest */
+        .moves li.long .m-name {
+          font-size: 16px;
+        }
+
         .m-pow {
           flex-shrink: 0;
           font: 700 13px var(--mono);
@@ -1260,7 +1265,8 @@
         const classes = [
           mystery ? "mystery" : "",
           maximum ? "max" : "",
-          over ? "over" : ""
+          over ? "over" : "",
+          n.length > 17 ? "long" : ""
         ].filter(Boolean).join(" ");
 
         return `
