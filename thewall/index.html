@@ -406,9 +406,12 @@
           line-height: 1.15;
         }
 
-        /* Long ability names step down a size so they fit on one line like the rest */
+        /* Long ability names step down a size and may wrap to a second line,
+           so the full name always stays inside the card */
         .moves li.long .m-name {
           font-size: 16px;
+          white-space: normal;
+          line-height: 1.1;
         }
 
         .m-pow {
