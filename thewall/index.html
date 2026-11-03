@@ -834,17 +834,18 @@
       animation:moneyflow 6s linear infinite;
       padding-bottom:.12em;margin-bottom:-.12em;
     }
-    @keyframes moneyflow{to{background-position:-240% 0}}
+    @keyframes moneyflow{from{background-position:100% 0}to{background-position:0% 0}}
 
-    /* ajchapa's name: the gold shine — his alone, front and back.
+    /* ajchapa's name: the same dark ink as every other card's name (#111),
+       with a gold light sweeping across — his signature, front and back.
        includes the invisible descender room so the j never clips. */
     .c-gold .plate .name,.c-gold .b-name{
-      background:linear-gradient(100deg,#8a6a1f 0%,#c9a227 30%,#fff3b8 46%,#fffbe8 50%,#fff3b8 54%,#c9a227 70%,#8a6a1f 100%);
+      background:linear-gradient(100deg,#111 0%,#111 42%,#ffe9a3 47%,#fffbe8 50%,#ffe9a3 53%,#111 58%,#111 100%);
       background-size:240% 100%;-webkit-background-clip:text;background-clip:text;color:transparent;
-      animation:goldname 7s linear infinite;
+      animation:goldshine 6s linear infinite;
       padding-bottom:.12em;margin-bottom:-.12em;
     }
-    @keyframes goldname{to{background-position:-240% 0}}
+    @keyframes goldshine{from{background-position:100% 0}to{background-position:0% 0}}
     @media (prefers-reduced-motion:reduce){
       .c-gold .plate .name,.c-gold .b-name{animation:none}
     }
