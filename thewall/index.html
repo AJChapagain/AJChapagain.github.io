@@ -173,7 +173,7 @@
     @keyframes rise{from{opacity:0;transform:translateY(18px)}to{opacity:1;transform:translateY(0)}}
 
     .flipper{position:relative;width:100%;height:100%;transform-style:preserve-3d;transition:transform .8s cubic-bezier(.2,.7,.25,1)}
-    .card.flipped .flipper{transform:rotateY(180deg)}
+    .card.flipped .flipper{transform:rotateY(180deg)} scale(1.35)}
     .tilter{position:absolute;inset:0;transform-style:preserve-3d}
     .card:hover .tilter{will-change:transform}
 
@@ -912,7 +912,7 @@
       box-shadow:0 1px 2px rgba(0,0,0,.08),0 26px 44px -22px rgba(60,20,130,.55);
     }
 
-    /* corner brackets instead of a rounded keyline */
+    
     .brk{position:absolute;inset:8px;pointer-events:none;z-index:7}
     .brk i{position:absolute;width:12px;height:12px;border:0 solid rgba(var(--ac-rgb),.85)}
     .brk i:nth-child(1){left:0;top:0;border-width:1px 0 0 1px}
@@ -920,7 +920,7 @@
     .brk i:nth-child(3){left:0;bottom:0;border-width:0 0 1px 1px}
     .brk i:nth-child(4){right:0;bottom:0;border-width:0 1px 1px 0}
 
-    /* front: purple-graded photo, fading into the dark plate */
+    
     .c-dlc .photo-wrap{background:var(--ink2)}
     .c-dlc .photo-wrap img{
       filter:saturate(.9) contrast(1.06) drop-shadow(0 0 0 rgba(255,0,120,0)) drop-shadow(0 0 0 rgba(0,200,255,0));
