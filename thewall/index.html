@@ -156,6 +156,7 @@
     .c-blue {--ac:#2f86ee;--ac-deep:#1d5fb8;--ac-pale:#cfe4ff;--ac-rgb:47,134,238;--ac-wash:#eef5ff;--ac-line:#a9c8f0}
     .c-green{--ac:#21a35a;--ac-deep:#187a43;--ac-pale:#c9eed8;--ac-rgb:33,163,90;--ac-wash:#eefaf2;--ac-line:#a5d9b9}
     .c-pink {--ac:#ff3d9a;--ac-deep:#c2185b;--ac-pale:#ffd1e8;--ac-rgb:255,61,154;--ac-wash:#fff0f7;--ac-line:#f6a8cd}
+    .c-money{--ac:#5b8a3c;--ac-deep:#2f5a1f;--ac-pale:#d8e8c0;--ac-rgb:91,138,60;--ac-wash:#f3f8ea;--ac-line:#b5cf98}
     /* dlc: the one dark card. it also switches to a mono voice inside the card */
     .c-dlc{
       --ac:#9b6bff;--ac-deep:#c4abff;--ac-pale:#e1d3f7;--ac-rgb:155,107,255;--ac-wash:#1d1233;--ac-line:#3a2a5c;
@@ -812,6 +813,86 @@
       .fx-craft .glit{opacity:.5}
       .fx-craft .dust{display:none}
     }
+    @media (prefers-reduced-motion:reduce){
+      .c-money .plate .name,.c-money .b-name,.fx-money .glow,.fx-money .bill,.fx-money .coin,
+      .pistol,.pistol .shine{animation:none}
+      .fx-money .bill,.fx-money .coin{display:none}
+    }
+
+    /* ================================================================
+       MIJO: money — dollar-bill olive + gold, falling bills, coins,
+       and a little pistol riding the top edge like the crown.
+       ================================================================ */
+    .c-money .plate .name,.c-money .b-name{
+      background:linear-gradient(100deg,#1f3d12 0%,#2f5a1f 32%,#c9a227 46%,#f6e6a6 50%,#c9a227 54%,#2f5a1f 68%,#1f3d12 100%);
+      background-size:240% 100%;-webkit-background-clip:text;background-clip:text;color:transparent;
+      animation:goldflow 6s linear infinite;
+    }
+    @keyframes goldflow{to{background-position:-240% 0}}
+
+    .fx-money::before{
+      content:"";position:absolute;inset:0;
+      background:radial-gradient(120% 80% at 50% 100%,rgba(201,162,39,.28),transparent 62%);
+      box-shadow:inset 0 0 34px rgba(var(--ac-rgb),.28);
+    }
+    .fx-money .glow{
+      position:absolute;left:-20%;right:-20%;height:45%;bottom:-10%;filter:blur(18px);opacity:.5;
+      background:radial-gradient(closest-side,rgba(246,215,122,.9),transparent);
+      animation:glow 5s ease-in-out infinite alternate;
+    }
+    @keyframes glow{to{transform:translateY(-18%) scale(1.15);opacity:.8}}
+    .fx-money .bill{
+      position:absolute;left:var(--x);top:-12%;width:34px;height:16px;border-radius:2px;opacity:0;
+      display:grid;place-items:center;
+      background:linear-gradient(135deg,#a9cd88,#5b8a3c);border:1px solid #2f5a1f;
+      box-shadow:0 2px 4px rgba(20,50,10,.28);
+      animation:billfall var(--t) ease-in-out infinite;animation-delay:var(--dl);
+    }
+    .fx-money .bill::before{content:"";position:absolute;inset:2px;border:1px solid rgba(255,255,255,.4);border-radius:1px}
+    .fx-money .bill b{position:relative;font:700 9px var(--mono);color:#1f3d12}
+    @keyframes billfall{
+      0%{opacity:0;transform:translate(0,0) rotate(0)}
+      10%{opacity:.95}
+      50%{transform:translate(calc(var(--dx) * -.6),120px) rotate(calc(var(--r) * .5))}
+      90%{opacity:.9}
+      100%{opacity:0;transform:translate(var(--dx),270px) rotate(var(--r))}
+    }
+    .fx-money .coin{
+      position:absolute;left:var(--x);top:-8%;width:15px;height:15px;border-radius:50%;opacity:0;
+      background:radial-gradient(circle at 35% 30%,#fff3b8,#e0a82e 60%,#a8842f);border:1px solid #8a6a1f;
+      box-shadow:0 0 6px 1px rgba(246,215,122,.6);
+      animation:coinfall var(--t) linear infinite;animation-delay:var(--dl);
+    }
+    @keyframes coinfall{
+      0%{opacity:0;transform:translate(0,0) perspective(80px) rotateY(0)}
+      10%{opacity:1}
+      90%{opacity:1}
+      100%{opacity:0;transform:translate(var(--dx),270px) perspective(80px) rotateY(1080deg)}
+    }
+    .card:hover .fx-money .bill,.card:hover .fx-money .coin{animation-duration:calc(var(--t) * .55)}
+    .fx-money .cpop{
+      position:absolute;width:var(--s);height:var(--s);margin:calc(var(--s) / -2) 0 0 calc(var(--s) / -2);border-radius:50%;
+      background:radial-gradient(circle at 35% 30%,#fff3b8,#e0a82e 60%,#a8842f);border:1px solid #8a6a1f;
+      animation:cpop .9s ease-out forwards;
+    }
+    @keyframes cpop{
+      0%{transform:translate(0,0) scale(.3) rotate(0);opacity:1}
+      100%{transform:translate(var(--dx),var(--dy)) scale(1) rotate(540deg);opacity:0}
+    }
+
+    /* the little pistol: sits on the top edge, like the crown */
+    .pistol{
+      position:absolute;z-index:8;left:50%;top:-26px;width:66px;height:46px;margin-left:-33px;pointer-events:none;
+      filter:drop-shadow(0 6px 7px rgba(20,25,15,.38));
+      transform-origin:30% 80%;
+      transition:transform .6s cubic-bezier(.2,.7,.25,1),opacity .3s ease;animation:gunfloat 4s ease-in-out infinite;
+    }
+    @keyframes gunfloat{50%{margin-top:-5px}}
+    .pistol svg{width:100%;height:100%;display:block;overflow:visible}
+    .card:hover .pistol{transform:translateY(-8px) rotate(-8deg) scale(1.1)}
+    .card.flipped .pistol{opacity:0}
+    .pistol .shine{animation:gunshine 4s ease-in-out infinite}
+    @keyframes gunshine{0%,55%,100%{transform:translateX(0);opacity:0}70%{opacity:.85}85%{transform:translateX(30px);opacity:0}}
 
     /* ================================================================
        GARYBOY: the DLC card. dark, mono, sharp corners, its own species.
@@ -931,7 +1012,7 @@
 
     /* ================= tune mode (?tune) ================= */
     body.tune .card{cursor:grab}
-    body.tune .fx,body.tune .flip-hint,body.tune .meta,body.tune .chip,body.tune .sheen,body.tune .crown,body.tune .halo,body.tune .orang,body.tune .hang{display:none}
+    body.tune .fx,body.tune .flip-hint,body.tune .meta,body.tune .chip,body.tune .sheen,body.tune .crown,body.tune .halo,body.tune .orang,body.tune .pistol,body.tune .hang{display:none}
     body.tune .c-dlc .photo-wrap::before,body.tune .c-dlc .photo-wrap::after{display:none}
     body.tune .c-dlc:hover .photo-wrap img{animation:none}
     body.tune .photo-wrap{outline:2px dashed #e5484d;outline-offset:-2px}
@@ -963,6 +1044,7 @@
       #s-title{font-size:48px}
       #s-rules .txt{font-size:25px}
       /* garyboy */
+      .pistol{width:56px;height:39px;margin-left:-28px;top:-22px}
       .c-dlc .plate .name{font-size:23px}
       .c-dlc .plate .title{font-size:8.5px;letter-spacing:.02em}
       .c-dlc .face.back{padding:16px 13px 12px}
@@ -1095,6 +1177,12 @@
         color:"dlc", fx:"haze",
         hp:70,
         moves:[["Liver & Lungs", 50], ["Personable", 80], ["Chef", 80]] },
+
+      { name:"Mijo", title:"Goat of Money",
+        photo:"/miho.JPG", pos:"50% 25%", zoom:1,
+        color:"money", fx:"money",
+        hp:"—",
+        moves:[["Generosity", 90], ["Drive", 80], ["???", "???"]] },
     ];
     const RULES = [
       ["i.",   "Picked by urs truly"],
@@ -1106,6 +1194,7 @@
     const reduceMotion = matchMedia("(prefers-reduced-motion: reduce)").matches;
     const TUNE = new URLSearchParams(location.search).has("tune");
     const clamp = (v, a, b) => Math.min(b, Math.max(a, v));
+    const rnd = (a, b) => a + Math.random() * (b - a);
     if (TUNE) document.body.classList.add("tune");
 
     // ── HEIC: Safari shows it natively; other browsers get a converter only if needed
@@ -1185,6 +1274,13 @@
           <span class="tape t1"></span><span class="tape t2"></span>
           ${twinkles}${dust}</div>`;
       }
+      if (kind === "money") {
+        const bills = [[8,12,-30,0,160],[30,15,35,-5,-140],[54,11,-25,-9,190],[76,14,30,-3,-170],[20,17,-20,-12,130],[66,13,25,-7,-150]]
+          .map(([x,t,dx,dl,r]) => `<i class="bill" style="--x:${x}%;--t:${t}s;--dx:${dx}px;--dl:${dl}s;--r:${r}deg"><b>$</b></i>`).join("");
+        const coins = [[14,7,18,-1],[40,9,-22,-4],[62,6.5,20,-2],[86,8.5,-16,-6],[28,10,14,-8],[72,7.5,-20,-5]]
+          .map(([x,t,dx,dl]) => `<i class="coin" style="--x:${x}%;--t:${t}s;--dx:${dx}px;--dl:${dl}s"></i>`).join("");
+        return `<div class="fx fx-money"><div class="glow"></div>${bills}${coins}</div>`;
+      }
       return "";
     }
     function haloMarkup() {
@@ -1235,6 +1331,28 @@
           <path d="M39 50.5 Q42 52.8 45 50.5" stroke="#7a3510" stroke-width=".9" fill="none" stroke-linecap="round"/>
         </svg></div>`;
     }
+
+    // mijo's little cartoon pistol that sits on top of the card
+    const PISTOL = `<div class="pistol" aria-hidden="true"><svg viewBox="0 0 66 46">
+      <defs>
+        <linearGradient id="gm" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0" stop-color="#6a7080"/><stop offset=".5" stop-color="#3b404c"/><stop offset="1" stop-color="#1d2027"/></linearGradient>
+        <linearGradient id="gg" x1="0" y1="0" x2="1" y2="0">
+          <stop offset="0" stop-color="#8a6a1f"/><stop offset=".4" stop-color="#fff1bd"/><stop offset=".7" stop-color="#d9a83a"/><stop offset="1" stop-color="#8a6a1f"/></linearGradient>
+        <clipPath id="slideclip"><rect x="3" y="6" width="58" height="16" rx="3"/></clipPath>
+      </defs>
+      <path d="M13 22 L31 22 L28 43 Q27 45 24 45 L13 45 Q10 45 10.5 42 Z" fill="#5a3a1c" stroke="#2b1a0a" stroke-width="1.2" stroke-linejoin="round"/>
+      <path d="M14 28 L28 28 M13.5 33 L27 33 M13 38 L26 38" stroke="#2b1a0a" stroke-opacity=".5" stroke-width="1" stroke-linecap="round"/>
+      <path d="M34 22 L34 30 Q34 35 39 35 Q44 35 44 30 L44 22" fill="none" stroke="#1d2027" stroke-width="2.2" stroke-linecap="round"/>
+      <path d="M39 22 L38 29" stroke="url(#gg)" stroke-width="2.2" stroke-linecap="round"/>
+      <rect x="3" y="6" width="58" height="16" rx="3" fill="url(#gm)" stroke="#12141a" stroke-width="1.2"/>
+      <rect x="3" y="12" width="58" height="2.4" fill="url(#gg)" opacity=".9" clip-path="url(#slideclip)"/>
+      <rect x="26" y="8" width="14" height="3.4" rx="1" fill="#12141a" opacity=".75"/>
+      <path d="M8 6 L8 2.5 L12 2.5 L12 6" fill="#1d2027"/>
+      <path d="M55 6 L55 3 L58 3 L58 6" fill="#1d2027"/>
+      <circle cx="61" cy="14" r="2.1" fill="#0b0c10"/>
+      <g clip-path="url(#slideclip)"><rect class="shine" x="4" y="6" width="8" height="16" fill="#fff" opacity="0" transform="skewX(-20)"/></g>
+    </svg></div>`;
 
     // ── build the cards
     GOATS.forEach((g, i) => {
@@ -1318,7 +1436,7 @@
             <ul class="moves">${dlcMoves}</ul>
           </div>
         </div></div>` : `
-        ${g.fx === "aura" && !reduceMotion ? haloMarkup() : ""}${g.fx === "craft" && !reduceMotion ? orangMarkup() : ""}
+        ${g.fx === "aura" && !reduceMotion ? haloMarkup() : ""}${g.fx === "craft" && !reduceMotion ? orangMarkup() : ""}${g.fx === "money" && !reduceMotion ? PISTOL : ""}
         <div class="flipper"><div class="tilter">
           <div class="face front">
             <div class="keyline"></div>${photo}
@@ -1365,7 +1483,30 @@
       });
       wall.appendChild(card);
       if (!TUNE) bindFx(card, g.fx);
+      bindMoney(card, g.fx);
     });
+
+    // ── mijo's money effect: click = coin burst
+    function bindMoney(card, kind) {
+      const wrap = card.querySelector(".photo-wrap");
+      const fx = card.querySelector(".fx");
+      if (kind !== "money" || !fx || reduceMotion) return;
+      const pop = (x, y, s, dx, dy) => {
+        const el = document.createElement("i");
+        el.className = "cpop";
+        el.style.left = x + "px"; el.style.top = y + "px";
+        el.style.setProperty("--s", s + "px");
+        el.style.setProperty("--dx", dx + "px");
+        el.style.setProperty("--dy", dy + "px");
+        fx.appendChild(el);
+        el.addEventListener("animationend", () => el.remove());
+      };
+      wrap.addEventListener("click", (e) => {
+        const r = wrap.getBoundingClientRect();
+        const x = e.clientX - r.left, y = e.clientY - r.top;
+        for (let i = 0; i < 14; i++) pop(x, y, rnd(10, 18), rnd(-70, 70), rnd(-80, 50));
+      });
+    }
 
     // ── effects: they run on their own, and take over when you hover
     const FEED = ["Eliminated", "Headshot", "Clutch", "Victory"];
