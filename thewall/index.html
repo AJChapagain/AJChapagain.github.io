@@ -815,7 +815,7 @@
     }
     @media (prefers-reduced-motion:reduce){
       .c-money .plate .name,.c-money .b-name,.fx-money .bill,.fx-money .coin,
-      .pistol,.pistol .shine,.book{animation:none}
+      .pistol,.book{animation:none}
       .fx-money .bill,.fx-money .coin{display:none}
     }
 
@@ -836,9 +836,18 @@
     }
     @keyframes moneyflow{to{background-position:-240% 0}}
 
-    /* ajchapa's j was clipping too — same invisible room for the descender,
-       scoped to his card only so nothing else moves */
-    .c-gold .plate .name,.c-gold .b-name{padding-bottom:.12em;margin-bottom:-.12em}
+    /* ajchapa's name: the gold shine — his alone, front and back.
+       includes the invisible descender room so the j never clips. */
+    .c-gold .plate .name,.c-gold .b-name{
+      background:linear-gradient(100deg,#8a6a1f 0%,#c9a227 30%,#fff3b8 46%,#fffbe8 50%,#fff3b8 54%,#c9a227 70%,#8a6a1f 100%);
+      background-size:240% 100%;-webkit-background-clip:text;background-clip:text;color:transparent;
+      animation:goldname 7s linear infinite;
+      padding-bottom:.12em;margin-bottom:-.12em;
+    }
+    @keyframes goldname{to{background-position:-240% 0}}
+    @media (prefers-reduced-motion:reduce){
+      .c-gold .plate .name,.c-gold .b-name{animation:none}
+    }
 
     .fx-money::before{
       content:"";position:absolute;inset:0;
@@ -895,8 +904,6 @@
     .pistol svg{width:100%;height:100%;display:block;overflow:visible}
     .card:hover .pistol{transform:translateY(-8px) rotate(-8deg) scale(1.1)}
     .card.flipped .pistol{opacity:0}
-    .pistol .shine{animation:gunshine 4s ease-in-out infinite}
-    @keyframes gunshine{0%,55%,100%{transform:translateX(0);opacity:0}70%{opacity:.85}85%{transform:translateX(30px);opacity:0}}
 
     /* ================================================================
        GARYBOY: the DLC card. dark, mono, sharp corners, its own species.
@@ -1401,7 +1408,6 @@
       <path d="M8 6 L8 2.5 L12 2.5 L12 6" fill="#1d2027"/>
       <path d="M55 6 L55 3 L58 3 L58 6" fill="#1d2027"/>
       <circle cx="61" cy="14" r="2.1" fill="#0b0c10"/>
-      <g clip-path="url(#slideclip)"><rect class="shine" x="4" y="6" width="8" height="16" fill="#fff" opacity="0" transform="skewX(-20)"/></g>
     </svg></div>`;
 
     // ── build the cards
