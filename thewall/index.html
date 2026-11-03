@@ -815,7 +815,7 @@
     }
     @media (prefers-reduced-motion:reduce){
       .c-money .plate .name,.c-money .b-name,.fx-money .glow,.fx-money .bill,.fx-money .coin,
-      .pistol,.pistol .shine{animation:none}
+      .pistol,.pistol .shine,.book{animation:none}
       .fx-money .bill,.fx-money .coin{display:none}
     }
 
@@ -950,6 +950,8 @@
 
     /* front: plate */
     .c-dlc .plate{background:none}
+    /* the flip hint sat almost on the bottom edge of the dark cards — lift the plate a breath */
+    .c-dlc .plate{padding-bottom:14px}
     .c-dlc .plate .name{font-size:28px;letter-spacing:-.02em;color:var(--paper);line-height:1.3;padding-bottom:.05em}
     .c-dlc .plate .title{font-style:normal;font-size:10px;letter-spacing:.02em;text-transform:uppercase;line-height:1.2}
     .c-dlc .plate .title::before{transform:none}
@@ -1016,6 +1018,29 @@
     .c-dlc:hover .fx-haze{opacity:1;transform:scale(1.05)}
     .c-dlc:hover .fx-haze .scan::after{animation-duration:2.4s}
 
+    /* ================================================================
+       HELEN: ember palette on the dlc skeleton. her card carries both
+       c-ember (her colors) and c-dlc (the dark-card structure), so every
+       dlc rule applies and only the palette vars need overriding here.
+       (this block sits after .c-dlc so her vars win)
+       ================================================================ */
+    .c-ember{--ac:#ff7a45;--ac-deep:#ffb08a;--ac-pale:#ffe0d0;--ac-rgb:255,122,69;--ac-wash:#2a140c;--ac-line:#5c2e1c;
+      --ink:#1a0d08;--ink2:#2a140c;--paper:#fff1e8;
+      --mono:'Space Mono',Menlo,Monaco,Consolas,monospace;--font:var(--mono);--serif:var(--mono)}
+    /* long move names step down a size so they always fit (ember only — garyboy untouched) */
+    .c-ember .moves li.long .m-name{font-size:11px;letter-spacing:.02em}
+
+    /* the book: small, bottom right of the photo area, gently floating */
+    .book{
+      position:absolute;right:16px;bottom:18px;width:40px;height:44px;
+      filter:drop-shadow(0 0 8px rgba(var(--ac-rgb),.55));
+      animation:bookfloat 4.5s ease-in-out infinite;
+      transition:transform .5s cubic-bezier(.2,.7,.25,1);
+    }
+    .book svg{width:100%;height:100%;display:block;overflow:visible}
+    .card:hover .book{transform:rotate(-8deg) scale(1.1)}
+    @keyframes bookfloat{50%{translate:0 -5px}}
+
     /* ================= tune mode (?tune) ================= */
     body.tune .card{cursor:grab}
     body.tune .fx,body.tune .flip-hint,body.tune .meta,body.tune .chip,body.tune .sheen,body.tune .crown,body.tune .halo,body.tune .orang,body.tune .pistol,body.tune .hang{display:none}
@@ -1051,6 +1076,8 @@
       #s-rules .txt{font-size:25px}
       /* garyboy */
       .pistol{width:56px;height:39px;margin-left:-28px;top:-22px}
+      .book{width:32px;height:35px;right:12px;bottom:14px}
+      .c-ember .moves li.long .m-name{font-size:10px;letter-spacing:.01em}
       .c-dlc .plate .name{font-size:23px}
       .c-dlc .plate .title{font-size:8.5px;letter-spacing:.02em}
       .c-dlc .face.back{padding:16px 13px 12px}
@@ -1189,6 +1216,12 @@
         color:"money", fx:"money",
         hp:"—",
         moves:[["Generosity", 90], ["Drive", 80], ["???", "???"]] },
+
+      { name:"Helen", title:"Keller",
+        photo:"/helen.JPG", pos:"50% 25%", zoom:1,
+        color:"ember", fx:"ember",
+        hp:60,
+        moves:[["Drunk Politics", 100], ["Art", 80], ["Gluten", 0]] },
     ];
     const RULES = [
       ["i.",   "Picked by urs truly"],
@@ -1259,11 +1292,12 @@
           <div class="sh-cols">${cols}</div><div class="sh-rows">${rows}</div>
           <div class="sh-chart">${bars}</div></div>`;
       }
-      if (kind === "haze") {
+      if (kind === "haze" || kind === "ember") {
         // x, y (% of photo), drift duration (s), delay (s), horizontal drift
         const puffs = [[-18, 48, 13, 0, "26%"], [30, 8, 17, -5, "-22%"], [-6, 22, 15, -9, "20%"], [38, 55, 19, -3, "-28%"], [8, 62, 14, -11, "24%"]]
           .map(([x, y, t, dl, dx]) => `<i class="puff" style="--x:${x}%;--y:${y}%;--t:${t}s;--dl:${dl}s;--dx:${dx}"></i>`).join("");
-        return `<div class="fx fx-haze"><div class="scan"></div>${puffs}</div>`;
+        const book = kind === "ember" ? BOOK : "";
+        return `<div class="fx fx-haze"><div class="scan"></div>${puffs}${book}</div>`;
       }
       if (kind === "craft") {
         const pts = [
@@ -1338,6 +1372,14 @@
         </svg></div>`;
     }
 
+    // helen's little ember book, floating bottom-right of the photo
+    const BOOK = `<div class="book" aria-hidden="true"><svg viewBox="0 0 40 44">
+      <rect x="6" y="3" width="29" height="38" rx="2.5" fill="#3a1c10" stroke="#ffb08a" stroke-width="1.6"/>
+      <rect x="6" y="3" width="6" height="38" rx="2" fill="#ff7a45" stroke="#ffb08a" stroke-width="1.6"/>
+      <path d="M19 14h12M19 20h12M19 26h8" stroke="#ffb08a" stroke-width="1.6" stroke-linecap="round"/>
+      <path d="M10 41h25" stroke="#ffe0d0" stroke-width="1.2" stroke-linecap="round" opacity=".6"/>
+    </svg></div>`;
+
     // mijo's little cartoon pistol that sits on top of the card
     const PISTOL = `<div class="pistol" aria-hidden="true"><svg viewBox="0 0 66 46">
       <defs>
@@ -1362,9 +1404,9 @@
 
     // ── build the cards
     GOATS.forEach((g, i) => {
-      const dlc = g.color === "dlc";
+      const dlc = g.color === "dlc" || g.color === "ember";
       const card = document.createElement("article");
-      card.className = "card c-" + (g.color || "gold");
+      card.className = "card c-" + (g.color || "gold") + (g.color === "ember" ? " c-dlc" : "");
       card.dataset.fx = g.fx || "";
       card.style.animationDelay = (i * 110) + "ms";
       card.style.setProperty("--pos", g.pos || "50% 25%");
@@ -1415,7 +1457,7 @@
         const power = clamp(Number(p) || 0, 0, 100);
         const lit = Math.round(power / 100 * SEGS);
         const bug = power <= 10;
-        const cls = [power === 100 ? "max" : "", bug ? "bug" : ""].filter(Boolean).join(" ");
+        const cls = [power === 100 ? "max" : "", bug ? "bug" : "", n.length > 9 ? "long" : ""].filter(Boolean).join(" ");
         const segs = Array.from({ length: SEGS }, (_, s) => `<i class="${s < lit ? "on" : ""}" style="--s:${s}"></i>`).join("");
         return `
           <li class="${cls}" style="--k:${k}">
