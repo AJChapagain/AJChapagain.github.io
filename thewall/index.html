@@ -824,11 +824,15 @@
        and a little pistol riding the top edge like the crown.
        ================================================================ */
     /* mijo's name: deep green with a light sweep (no gold — that's ajchapa's) */
+    /* the J's descender needs room, but the name must sit EXACTLY where every
+       other card's name sits: padding opens space inside the clip box, and the
+       negative margin pulls the layout box back by the same amount, so the
+       position doesn't move a pixel */
     .c-money .plate .name,.c-money .b-name{
       background:linear-gradient(100deg,#1f3d12 0%,#2f5a1f 30%,#a9cd88 46%,#eef7e4 50%,#a9cd88 54%,#2f5a1f 70%,#1f3d12 100%);
       background-size:240% 100%;-webkit-background-clip:text;background-clip:text;color:transparent;
       animation:moneyflow 6s linear infinite;
-      line-height:1.25;padding-bottom:.06em; /* room for the J's descender */
+      padding-bottom:.12em;margin-bottom:-.12em;
     }
     @keyframes moneyflow{to{background-position:-240% 0}}
 
