@@ -142,6 +142,8 @@
     .card:nth-child(3n){margin-top:7px}
     /* noel sits level with mijo (7px, from the 3n stagger rule) */
     .card:nth-child(8){margin-top:7px}
+    /* kelketra sits level with helen (0 — no stagger, same as card 7) */
+    .card:nth-child(9){margin-top:0}
 
     .hang{position:absolute;left:0;right:0;top:-40px;height:40px;pointer-events:none;z-index:0;
       opacity:0;animation:fade .6s ease .6s forwards}
@@ -159,8 +161,8 @@
     .c-green{--ac:#21a35a;--ac-deep:#187a43;--ac-pale:#c9eed8;--ac-rgb:33,163,90;--ac-wash:#eefaf2;--ac-line:#a5d9b9}
     .c-pink {--ac:#ff3d9a;--ac-deep:#c2185b;--ac-pale:#ffd1e8;--ac-rgb:255,61,154;--ac-wash:#fff0f7;--ac-line:#f6a8cd}
     .c-money{--ac:#5b8a3c;--ac-deep:#2f5a1f;--ac-pale:#d8e8c0;--ac-rgb:91,138,60;--ac-wash:#f3f8ea;--ac-line:#b5cf98}
-    /* golf: kelketra's fire-gold palette (goat-style light card) */
-    .c-golf{--ac:#e8920c;--ac-deep:#b36a00;--ac-pale:#ffe2a8;--ac-rgb:232,146,12;--ac-wash:#fff6e3;--ac-line:#f0c57a}
+    /* golf: kelketra's fire-orange palette — pushed orange, away from ajchapa's gold */
+    .c-golf{--ac:#f97316;--ac-deep:#c2410c;--ac-pale:#fed7aa;--ac-rgb:249,115,22;--ac-wash:#fff4e8;--ac-line:#fdba74}
     /* "Goat of Golf With Friends" is long, so his title runs a little smaller */
     .c-golf .plate .title{font-size:13px}
     /* dlc: the one dark card. it also switches to a mono voice inside the card */
@@ -1069,12 +1071,12 @@
     /* ── kelketra: flying golden balls, on fire ── */
     .fx-golf::before{
       content:"";position:absolute;inset:0;
-      background:radial-gradient(120% 80% at 50% 100%,rgba(232,146,12,.3),transparent 62%);
+      background:radial-gradient(120% 80% at 50% 100%,rgba(249,115,22,.3),transparent 62%);
       box-shadow:inset 0 0 34px rgba(var(--ac-rgb),.28);
     }
     .fx-golf .glow{
       position:absolute;left:-20%;right:-20%;height:45%;bottom:-10%;filter:blur(18px);opacity:.5;
-      background:radial-gradient(closest-side,rgba(255,170,50,.9),transparent);animation:glow 5s ease-in-out infinite alternate;
+      background:radial-gradient(closest-side,rgba(255,120,30,.9),transparent);animation:glow 5s ease-in-out infinite alternate;
     }
     @keyframes glow{to{transform:translateY(-18%) scale(1.15);opacity:.8}}
     .fx-golf .fly{
@@ -1100,16 +1102,16 @@
       position:absolute;inset:0;border-radius:50%;
       background:
         radial-gradient(circle at 30% 28%,rgba(255,255,255,.95) 0 14%,transparent 30%),
-        radial-gradient(circle,rgba(150,90,0,.45) 0 1px,transparent 1.3px) 0 0/4px 4px,
-        radial-gradient(circle at 40% 35%,#ffe9a6,#ffb52e 55%,#b36a00);
-      box-shadow:0 0 8px 2px rgba(255,170,50,.8);
+        radial-gradient(circle,rgba(160,60,0,.45) 0 1px,transparent 1.3px) 0 0/4px 4px,
+        radial-gradient(circle at 40% 35%,#ffe4c2,#ff8c1a 55%,#c2410c);
+      box-shadow:0 0 8px 2px rgba(255,120,30,.8);
       animation:spin .5s linear infinite;
     }
     @keyframes spin{to{transform:rotate(360deg)}}
     .fx-golf .arc::before{
       content:"";position:absolute;right:60%;top:50%;width:calc(var(--s) * 3.2);height:calc(var(--s) * .9);margin-top:calc(var(--s) * -.45);
       border-radius:50% 0 0 50%;
-      background:linear-gradient(to left,rgba(255,240,170,.95),rgba(255,150,30,.85) 35%,rgba(230,70,10,.5) 70%,transparent);
+      background:linear-gradient(to left,rgba(255,235,200,.95),rgba(255,120,30,.85) 35%,rgba(220,60,10,.5) 70%,transparent);
       filter:blur(2px);transform-origin:right center;animation:flicker .18s ease-in-out infinite alternate;
     }
     @keyframes flicker{from{transform:scaleY(.8) scaleX(.92)}to{transform:scaleY(1.2) scaleX(1.05)}}
@@ -1117,7 +1119,7 @@
     /* fire sparks on click */
     .fx-golf .spark{
       position:absolute;width:var(--s);height:var(--s);margin:calc(var(--s) / -2) 0 0 calc(var(--s) / -2);border-radius:50%;
-      background:radial-gradient(circle,#fff6c9,#ffb52e 55%,#e0480a);box-shadow:0 0 8px 2px rgba(255,140,30,.8);
+      background:radial-gradient(circle,#ffe9c9,#ff8c1a 55%,#d93a0a);box-shadow:0 0 8px 2px rgba(255,110,20,.8);
       animation:spark .8s ease-out forwards;
     }
     @keyframes spark{
@@ -1334,8 +1336,8 @@
       { name:"Kelketra", title:"Goat of Golf With Friends",
         photo:"/kelketra.png", pos:"50% 25%", zoom:1,
         color:"golf", fx:"golf",
-        hp:80,
-        moves:[["Rocket League",60],["Broker Cars",100],["Resilience",80]] },
+        hp:57,
+        moves:[["Rocket League",60],["Academic Weapon",30],["Resilience",80]] },
     ];
     const RULES = [
       ["i.",   "Picked by urs truly"],
