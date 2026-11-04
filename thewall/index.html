@@ -813,7 +813,7 @@
     }
     @media (prefers-reduced-motion:reduce){
       .c-money .plate .name,.c-money .b-name,.fx-money .bill,.fx-money .coin,
-      .pistol,.book{animation:none}
+      .pistol,.book,.golf,.golf .flag{animation:none}
       .fx-money .bill,.fx-money .coin{display:none}
     }
 
@@ -1038,6 +1038,14 @@
     /* no pink low-stat value either — gluten's 0 matches her other stats */
     .c-ember .moves li.bug .m-pow{color:var(--paper)}
 
+    /* fairway: kelketra's palette (dark forest-black + mint). sits after
+       .c-dlc/.c-ember so it reuses the dark-card structure, only vars change */
+    .c-fairway{--ac:#2ee6b0;--ac-deep:#8ff5d6;--ac-pale:#d6fff3;--ac-rgb:46,230,176;--ac-wash:#0b2a24;--ac-line:#1c5a4c;
+      --ink:#061512;--ink2:#0b2a24;--paper:#eafff9;
+      --mono:'Space Mono',Menlo,Monaco,Consolas,monospace;--font:var(--mono);--serif:var(--mono)}
+    /* placeholder stats stay muted, never pink */
+    .c-fairway .moves li.pending .m-pow{color:var(--text-muted)}
+
     /* the book: small, bottom right of the photo area, gently floating */
     .book{
       position:absolute;right:16px;bottom:18px;width:40px;height:44px;
@@ -1048,6 +1056,19 @@
     .book svg{width:100%;height:100%;display:block;overflow:visible}
     .card:hover .book{transform:rotate(-8deg) scale(1.1)}
     @keyframes bookfloat{50%{translate:0 -5px}}
+
+    /* the golf flag: small, bottom right of the photo area, gently floating */
+    .golf{
+      position:absolute;right:16px;bottom:18px;width:40px;height:46px;
+      filter:drop-shadow(0 0 8px rgba(var(--ac-rgb),.55));
+      animation:golffloat 4.5s ease-in-out infinite;
+      transition:transform .5s cubic-bezier(.2,.7,.25,1);
+    }
+    .golf svg{width:100%;height:100%;display:block;overflow:visible}
+    .card:hover .golf{transform:rotate(-6deg) scale(1.1)}
+    .golf .flag{transform-origin:14px 6px;animation:wave 2.4s ease-in-out infinite}
+    @keyframes golffloat{50%{translate:0 -5px}}
+    @keyframes wave{0%,100%{transform:skewY(0)}50%{transform:skewY(-8deg)}}
 
     /* ================= tune mode (?tune) ================= */
     body.tune .card{cursor:grab}
@@ -1085,6 +1106,7 @@
       /* garyboy */
       .pistol{width:56px;height:39px;margin-left:-28px;top:-22px}
       .book{width:32px;height:35px;right:12px;bottom:14px}
+      .golf{width:32px;height:37px;right:12px;bottom:14px}
       .c-ember .moves li.long .m-name{font-size:10px;letter-spacing:.01em}
       .c-dlc .plate .name{font-size:23px}
       .c-dlc .plate .title{font-size:8.5px;letter-spacing:.02em}
@@ -1238,12 +1260,12 @@
         hp:"—",
         moves:[["—", "—"], ["—", "—"], ["—", "—"]] },
 
-      /* kelketra — blank placeholder card (no photo, stats to be filled in) */
-      { name:"Kelketra", title:"",
-        pos:"50% 25%", zoom:1,
-        color:"blue", fx:"",
+      /* kelketra — dlc-style fairway card: mint on deep forest-black, golf flag fx */
+      { name:"Kelketra", title:"Golf With Friends",
+        photo:"/kelketra.png", pos:"50% 25%", zoom:1,
+        color:"fairway", fx:"fairway",
         hp:"—",
-        moves:[["—", "—"], ["—", "—"], ["—", "—"]] },
+        moves:[["1","—"],["2","—"],["3","—"]] },
     ];
     const RULES = [
       ["i.",   "Picked by urs truly"],
@@ -1314,12 +1336,13 @@
           <div class="sh-cols">${cols}</div><div class="sh-rows">${rows}</div>
           <div class="sh-chart">${bars}</div></div>`;
       }
-      if (kind === "haze" || kind === "ember") {
+      if (kind === "haze" || kind === "ember" || kind === "fairway") {
         // x, y (% of photo), drift duration (s), delay (s), horizontal drift
         const puffs = [[-18, 48, 13, 0, "26%"], [30, 8, 17, -5, "-22%"], [-6, 22, 15, -9, "20%"], [38, 55, 19, -3, "-28%"], [8, 62, 14, -11, "24%"]]
           .map(([x, y, t, dl, dx]) => `<i class="puff" style="--x:${x}%;--y:${y}%;--t:${t}s;--dl:${dl}s;--dx:${dx}"></i>`).join("");
         const book = kind === "ember" ? BOOK : "";
-        return `<div class="fx fx-haze"><div class="scan"></div>${puffs}${book}</div>`;
+        const golf = kind === "fairway" ? GOLF : "";
+        return `<div class="fx fx-haze"><div class="scan"></div>${puffs}${book}${golf}</div>`;
       }
       if (kind === "craft") {
         const pts = [
@@ -1402,6 +1425,16 @@
       <path d="M10 41h25" stroke="#ffe0d0" stroke-width="1.2" stroke-linecap="round" opacity=".6"/>
     </svg></div>`;
 
+    // kelketra's little golf flag in a hole
+    const GOLF = `<div class="golf" aria-hidden="true"><svg viewBox="0 0 40 46">
+      <ellipse cx="18" cy="40" rx="14" ry="4" fill="#061512" stroke="#8ff5d6" stroke-width="1.4"/>
+      <ellipse cx="18" cy="40" rx="5" ry="1.6" fill="#000" opacity=".7"/>
+      <line x1="14" y1="4" x2="14" y2="40" stroke="#d6fff3" stroke-width="2" stroke-linecap="round"/>
+      <path class="flag" d="M14 5 L32 11 L14 18 Z" fill="#2ee6b0" stroke="#8ff5d6" stroke-width="1.4" stroke-linejoin="round"/>
+      <circle cx="30" cy="35" r="4" fill="#eafff9" stroke="#8ff5d6" stroke-width="1.2"/>
+      <circle cx="29" cy="34" r=".7" fill="#8ff5d6"/><circle cx="31.2" cy="34.6" r=".7" fill="#8ff5d6"/><circle cx="30" cy="36.4" r=".7" fill="#8ff5d6"/>
+    </svg></div>`;
+
     // mijo's little cartoon pistol that sits on top of the card
     const PISTOL = `<div class="pistol" aria-hidden="true"><svg viewBox="0 0 66 46">
       <defs>
@@ -1425,9 +1458,9 @@
 
     // ── build the cards
     GOATS.forEach((g, i) => {
-      const dlc = g.color === "dlc" || g.color === "ember";
+      const dlc = g.color === "dlc" || g.color === "ember" || g.color === "fairway";
       const card = document.createElement("article");
-      card.className = "card c-" + (g.color || "gold") + (g.color === "ember" ? " c-dlc" : "");
+      card.className = "card c-" + (g.color || "gold") + ((g.color === "ember" || g.color === "fairway") ? " c-dlc" : "");
       card.dataset.fx = g.fx || "";
       card.style.animationDelay = (i * 110) + "ms";
       card.style.setProperty("--pos", g.pos || "50% 25%");
@@ -1475,10 +1508,11 @@
       // dlc moves: 20-block segmented meters, plus a red tag when a stat is 10 or below
       const SEGS = 20;
       const dlcMoves = dlc ? (g.moves || []).map(([n, p], k) => {
-        const power = clamp(Number(p) || 0, 0, 100);
+        const isNum = p !== "—" && p !== "" && Number.isFinite(Number(p));
+        const power = isNum ? clamp(Number(p), 0, 100) : 0;
         const lit = Math.round(power / 100 * SEGS);
-        const bug = power <= 10;
-        const cls = [power === 100 ? "max" : "", bug ? "bug" : "", n.length > 9 ? "long" : ""].filter(Boolean).join(" ");
+        const bug = isNum && power <= 10;
+        const cls = [power === 100 ? "max" : "", bug ? "bug" : "", !isNum ? "pending" : "", n.length > 9 ? "long" : ""].filter(Boolean).join(" ");
         const segs = Array.from({ length: SEGS }, (_, s) => `<i class="${s < lit ? "on" : ""}" style="--s:${s}"></i>`).join("");
         return `
           <li class="${cls}" style="--k:${k}">
