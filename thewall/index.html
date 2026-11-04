@@ -159,6 +159,10 @@
     .c-green{--ac:#21a35a;--ac-deep:#187a43;--ac-pale:#c9eed8;--ac-rgb:33,163,90;--ac-wash:#eefaf2;--ac-line:#a5d9b9}
     .c-pink {--ac:#ff3d9a;--ac-deep:#c2185b;--ac-pale:#ffd1e8;--ac-rgb:255,61,154;--ac-wash:#fff0f7;--ac-line:#f6a8cd}
     .c-money{--ac:#5b8a3c;--ac-deep:#2f5a1f;--ac-pale:#d8e8c0;--ac-rgb:91,138,60;--ac-wash:#f3f8ea;--ac-line:#b5cf98}
+    /* golf: kelketra's fire-gold palette (goat-style light card) */
+    .c-golf{--ac:#e8920c;--ac-deep:#b36a00;--ac-pale:#ffe2a8;--ac-rgb:232,146,12;--ac-wash:#fff6e3;--ac-line:#f0c57a}
+    /* "Goat of Golf With Friends" is long, so his title runs a little smaller */
+    .c-golf .plate .title{font-size:13px}
     /* dlc: the one dark card. it also switches to a mono voice inside the card */
     .c-dlc{
       --ac:#9b6bff;--ac-deep:#c4abff;--ac-pale:#e1d3f7;--ac-rgb:155,107,255;--ac-wash:#1d1233;--ac-line:#3a2a5c;
@@ -813,8 +817,10 @@
     }
     @media (prefers-reduced-motion:reduce){
       .c-money .plate .name,.c-money .b-name,.fx-money .bill,.fx-money .coin,
-      .pistol,.book,.golf,.golf .flag,.pot{animation:none}
+      .pistol,.book,.pot,.tee,.tee .flame{animation:none}
       .fx-money .bill,.fx-money .coin{display:none}
+      .fx-golf .glow,.fx-golf .fly,.fx-golf .arc,.fx-golf .ball,.fx-golf .arc::before{animation:none}
+      .fx-golf .fly{display:none}
     }
 
     /* ================================================================
@@ -1038,14 +1044,6 @@
     /* no pink low-stat value either — gluten's 0 matches her other stats */
     .c-ember .moves li.bug .m-pow{color:var(--paper)}
 
-    /* fairway: kelketra's palette (dark forest-black + mint). sits after
-       .c-dlc/.c-ember so it reuses the dark-card structure, only vars change */
-    .c-fairway{--ac:#2ee6b0;--ac-deep:#8ff5d6;--ac-pale:#d6fff3;--ac-rgb:46,230,176;--ac-wash:#0b2a24;--ac-line:#1c5a4c;
-      --ink:#061512;--ink2:#0b2a24;--paper:#eafff9;
-      --mono:'Space Mono',Menlo,Monaco,Consolas,monospace;--font:var(--mono);--serif:var(--mono)}
-    /* placeholder stats stay muted, never pink */
-    .c-fairway .moves li.pending .m-pow{color:var(--text-muted)}
-
     /* the book: small, bottom right of the photo area, gently floating */
     .book{
       position:absolute;right:16px;bottom:18px;width:40px;height:44px;
@@ -1056,19 +1054,6 @@
     .book svg{width:100%;height:100%;display:block;overflow:visible}
     .card:hover .book{transform:rotate(-8deg) scale(1.1)}
     @keyframes bookfloat{50%{translate:0 -5px}}
-
-    /* the golf flag: small, bottom right of the photo area, gently floating */
-    .golf{
-      position:absolute;right:16px;bottom:18px;width:40px;height:46px;
-      filter:drop-shadow(0 0 8px rgba(var(--ac-rgb),.55));
-      animation:golffloat 4.5s ease-in-out infinite;
-      transition:transform .5s cubic-bezier(.2,.7,.25,1);
-    }
-    .golf svg{width:100%;height:100%;display:block;overflow:visible}
-    .card:hover .golf{transform:rotate(-6deg) scale(1.1)}
-    .golf .flag{transform-origin:14px 6px;animation:wave 2.4s ease-in-out infinite}
-    @keyframes golffloat{50%{translate:0 -5px}}
-    @keyframes wave{0%,100%{transform:skewY(0)}50%{transform:skewY(-8deg)}}
 
     /* the weed pot: small, bottom right of the photo area, gently floating */
     .pot{
@@ -1081,9 +1066,81 @@
     .card:hover .pot{transform:rotate(-6deg) scale(1.1)}
     @keyframes potfloat{50%{translate:0 -5px}}
 
+    /* ── kelketra: flying golden balls, on fire ── */
+    .fx-golf::before{
+      content:"";position:absolute;inset:0;
+      background:radial-gradient(120% 80% at 50% 100%,rgba(232,146,12,.3),transparent 62%);
+      box-shadow:inset 0 0 34px rgba(var(--ac-rgb),.28);
+    }
+    .fx-golf .glow{
+      position:absolute;left:-20%;right:-20%;height:45%;bottom:-10%;filter:blur(18px);opacity:.5;
+      background:radial-gradient(closest-side,rgba(255,170,50,.9),transparent);animation:glow 5s ease-in-out infinite alternate;
+    }
+    @keyframes glow{to{transform:translateY(-18%) scale(1.15);opacity:.8}}
+    .fx-golf .fly{
+      position:absolute;left:0;top:var(--y);opacity:0;
+      animation:fly var(--t) linear infinite;animation-delay:var(--dl);
+    }
+    @keyframes fly{
+      0%{transform:translateX(-70px);opacity:0}
+      8%{opacity:1}
+      92%{opacity:1}
+      100%{transform:translateX(380px);opacity:0}
+    }
+    .fx-golf .arc{
+      display:block;position:relative;width:var(--s);height:var(--s);
+      animation:arc var(--t) linear infinite;animation-delay:var(--dl);
+    }
+    @keyframes arc{
+      0%{transform:translateY(0);animation-timing-function:ease-out}
+      50%{transform:translateY(calc(var(--h) * -1));animation-timing-function:ease-in}
+      100%{transform:translateY(0)}
+    }
+    .fx-golf .ball{
+      position:absolute;inset:0;border-radius:50%;
+      background:
+        radial-gradient(circle at 30% 28%,rgba(255,255,255,.95) 0 14%,transparent 30%),
+        radial-gradient(circle,rgba(150,90,0,.45) 0 1px,transparent 1.3px) 0 0/4px 4px,
+        radial-gradient(circle at 40% 35%,#ffe9a6,#ffb52e 55%,#b36a00);
+      box-shadow:0 0 8px 2px rgba(255,170,50,.8);
+      animation:spin .5s linear infinite;
+    }
+    @keyframes spin{to{transform:rotate(360deg)}}
+    .fx-golf .arc::before{
+      content:"";position:absolute;right:60%;top:50%;width:calc(var(--s) * 3.2);height:calc(var(--s) * .9);margin-top:calc(var(--s) * -.45);
+      border-radius:50% 0 0 50%;
+      background:linear-gradient(to left,rgba(255,240,170,.95),rgba(255,150,30,.85) 35%,rgba(230,70,10,.5) 70%,transparent);
+      filter:blur(2px);transform-origin:right center;animation:flicker .18s ease-in-out infinite alternate;
+    }
+    @keyframes flicker{from{transform:scaleY(.8) scaleX(.92)}to{transform:scaleY(1.2) scaleX(1.05)}}
+    .card:hover .fx-golf .fly,.card:hover .fx-golf .arc{animation-duration:calc(var(--t) * .55)}
+    /* fire sparks on click */
+    .fx-golf .spark{
+      position:absolute;width:var(--s);height:var(--s);margin:calc(var(--s) / -2) 0 0 calc(var(--s) / -2);border-radius:50%;
+      background:radial-gradient(circle,#fff6c9,#ffb52e 55%,#e0480a);box-shadow:0 0 8px 2px rgba(255,140,30,.8);
+      animation:spark .8s ease-out forwards;
+    }
+    @keyframes spark{
+      0%{transform:translate(0,0) scale(.4);opacity:1}
+      100%{transform:translate(var(--dx),var(--dy)) scale(1);opacity:0}
+    }
+
+    /* ornament on the top edge: golf ball on a tee, with a little flame */
+    .tee{
+      position:absolute;z-index:8;left:50%;top:-30px;width:46px;height:52px;margin-left:-23px;pointer-events:none;
+      filter:drop-shadow(0 6px 7px rgba(120,60,0,.35));
+      transition:transform .6s cubic-bezier(.2,.7,.25,1),opacity .3s ease;animation:teefloat 4s ease-in-out infinite;
+    }
+    @keyframes teefloat{50%{margin-top:-5px}}
+    .tee svg{width:100%;height:100%;display:block;overflow:visible}
+    .card:hover .tee{transform:translateY(-8px) rotate(-5deg) scale(1.1)}
+    .card.flipped .tee{opacity:0}
+    .tee .flame{transform-origin:23px 16px;animation:flame .35s ease-in-out infinite alternate}
+    @keyframes flame{from{transform:scale(.92,.95) skewX(-3deg)}to{transform:scale(1.06,1.08) skewX(3deg)}}
+
     /* ================= tune mode (?tune) ================= */
     body.tune .card{cursor:grab}
-    body.tune .fx,body.tune .flip-hint,body.tune .meta,body.tune .chip,body.tune .sheen,body.tune .crown,body.tune .halo,body.tune .orang,body.tune .pistol,body.tune .hang{display:none}
+    body.tune .fx,body.tune .flip-hint,body.tune .meta,body.tune .chip,body.tune .sheen,body.tune .crown,body.tune .halo,body.tune .orang,body.tune .pistol,body.tune .tee,body.tune .hang{display:none}
     body.tune .c-dlc .photo-wrap::before,body.tune .c-dlc .photo-wrap::after{display:none}
     body.tune .c-dlc:hover .photo-wrap img{animation:none}
     body.tune .photo-wrap{outline:2px dashed #e5484d;outline-offset:-2px}
@@ -1117,8 +1174,9 @@
       /* garyboy */
       .pistol{width:56px;height:39px;margin-left:-28px;top:-22px}
       .book{width:32px;height:35px;right:12px;bottom:14px}
-      .golf{width:32px;height:37px;right:12px;bottom:14px}
       .pot{width:32px;height:37px;right:12px;bottom:14px}
+      .tee{width:40px;height:45px;margin-left:-20px;top:-26px}
+      .c-golf .plate .title{font-size:11px}
       .c-ember .moves li.long .m-name{font-size:10px;letter-spacing:.01em}
       .c-dlc .plate .name{font-size:23px}
       .c-dlc .plate .title{font-size:8.5px;letter-spacing:.02em}
@@ -1272,10 +1330,10 @@
         hp:"—",
         moves:[["—", "—"], ["—", "—"], ["—", "—"]] },
 
-      /* kelketra — dlc-style fairway card: mint on deep forest-black, golf flag fx */
-      { name:"Kelketra", title:"Golf With Friends",
+      /* kelketra — goat-style fire-gold card: flying flaming golf balls, tee ornament */
+      { name:"Kelketra", title:"Goat of Golf With Friends",
         photo:"/kelketra.png", pos:"50% 25%", zoom:1,
-        color:"fairway", fx:"fairway",
+        color:"golf", fx:"golf",
         hp:"—",
         moves:[["1","—"],["2","—"],["3","—"]] },
     ];
@@ -1330,6 +1388,12 @@
     const BRK = `<div class="brk" aria-hidden="true"><i></i><i></i><i></i><i></i></div>`;
 
     function fxMarkup(kind) {
+      if (kind === "golf") {
+        // y (px from top), size (px), arc height (px), duration (s), delay (s)
+        const balls = [[30,13,38,6.5,0],[70,11,28,5.5,-2.2],[110,15,46,7.5,-4.5],[150,12,30,6,-1.2],[190,14,40,7,-5.8],[55,10,22,5,-3.4]]
+          .map(([y,s,h,t,dl]) => `<i class="fly" style="--y:${y}px;--t:${t}s;--dl:${dl}s"><i class="arc" style="--s:${s}px;--h:${h}px;--t:${t}s;--dl:${dl}s"><i class="ball"></i></i></i>`).join("");
+        return `<div class="fx fx-golf"><div class="glow"></div>${balls}</div>`;
+      }
       if (kind === "aura") return `<div class="fx fx-aura"><div class="foil"></div></div>`;
       if (kind === "aim") return `<div class="fx fx-aim"><div class="agrid"></div>
         <div class="hud"><div class="bar shield"><i></i></div><div class="bar hp"><i></i></div></div>
@@ -1348,14 +1412,13 @@
           <div class="sh-cols">${cols}</div><div class="sh-rows">${rows}</div>
           <div class="sh-chart">${bars}</div></div>`;
       }
-      if (kind === "haze" || kind === "ember" || kind === "fairway" || kind === "pot") {
+      if (kind === "haze" || kind === "ember" || kind === "pot") {
         // x, y (% of photo), drift duration (s), delay (s), horizontal drift
         const puffs = [[-18, 48, 13, 0, "26%"], [30, 8, 17, -5, "-22%"], [-6, 22, 15, -9, "20%"], [38, 55, 19, -3, "-28%"], [8, 62, 14, -11, "24%"]]
           .map(([x, y, t, dl, dx]) => `<i class="puff" style="--x:${x}%;--y:${y}%;--t:${t}s;--dl:${dl}s;--dx:${dx}"></i>`).join("");
         const book = kind === "ember" ? BOOK : "";
-        const golf = kind === "fairway" ? GOLF : "";
         const pot = kind === "pot" ? POT : "";
-        return `<div class="fx fx-haze"><div class="scan"></div>${puffs}${book}${golf}${pot}</div>`;
+        return `<div class="fx fx-haze"><div class="scan"></div>${puffs}${book}${pot}</div>`;
       }
       if (kind === "craft") {
         const pts = [
@@ -1438,14 +1501,17 @@
       <path d="M10 41h25" stroke="#ffe0d0" stroke-width="1.2" stroke-linecap="round" opacity=".6"/>
     </svg></div>`;
 
-    // kelketra's little golf flag in a hole
-    const GOLF = `<div class="golf" aria-hidden="true"><svg viewBox="0 0 40 46">
-      <ellipse cx="18" cy="40" rx="14" ry="4" fill="#061512" stroke="#8ff5d6" stroke-width="1.4"/>
-      <ellipse cx="18" cy="40" rx="5" ry="1.6" fill="#000" opacity=".7"/>
-      <line x1="14" y1="4" x2="14" y2="40" stroke="#d6fff3" stroke-width="2" stroke-linecap="round"/>
-      <path class="flag" d="M14 5 L32 11 L14 18 Z" fill="#2ee6b0" stroke="#8ff5d6" stroke-width="1.4" stroke-linejoin="round"/>
-      <circle cx="30" cy="35" r="4" fill="#eafff9" stroke="#8ff5d6" stroke-width="1.2"/>
-      <circle cx="29" cy="34" r=".7" fill="#8ff5d6"/><circle cx="31.2" cy="34.6" r=".7" fill="#8ff5d6"/><circle cx="30" cy="36.4" r=".7" fill="#8ff5d6"/>
+    // golf ball on a tee with a little flame, sits on top of kelketra's card
+    const TEE = `<div class="tee" aria-hidden="true"><svg viewBox="0 0 46 52">
+      <defs>
+        <radialGradient id="tb" cx=".35" cy=".3" r=".8"><stop offset="0" stop-color="#fffdf2"/><stop offset=".6" stop-color="#ffe9a6"/><stop offset="1" stop-color="#e8b84a"/></radialGradient>
+        <linearGradient id="fl" x1="0" y1="1" x2="0" y2="0"><stop offset="0" stop-color="#e0480a"/><stop offset=".55" stop-color="#ff9a1f"/><stop offset="1" stop-color="#fff0a0"/></linearGradient>
+      </defs>
+      <path d="M17 36 L29 36 L25 38 L24.5 50 L21.5 50 L21 38 Z" fill="#b36a00" stroke="#6b3d00" stroke-width="1" stroke-linejoin="round"/>
+      <circle cx="23" cy="26" r="11" fill="url(#tb)" stroke="#b36a00" stroke-width="1.2"/>
+      <g fill="#b36a00" opacity=".55"><circle cx="19" cy="23" r="1"/><circle cx="24" cy="21" r="1"/><circle cx="28" cy="25" r="1"/><circle cx="21" cy="28" r="1"/><circle cx="26" cy="30" r="1"/><circle cx="17.5" cy="29" r="1"/></g>
+      <path class="flame" d="M23 1 C27 7 31 9 29 15 C28 18 26 19 23 19 C20 19 18 18 17 15 C15.5 11 20 9 23 1 Z" fill="url(#fl)" stroke="#e0480a" stroke-width=".8" stroke-linejoin="round"/>
+      <path d="M23 9 C25 12 26 13 25 16 C24.5 17.4 23.8 18 23 18 C22.2 18 21.5 17.4 21.2 16 C20.6 13.5 22 12.5 23 9 Z" fill="#fff3b8" opacity=".9"/>
     </svg></div>`;
 
     // garyboy's little weed plant in a pot
@@ -1487,9 +1553,9 @@
 
     // ── build the cards
     GOATS.forEach((g, i) => {
-      const dlc = g.color === "dlc" || g.color === "ember" || g.color === "fairway";
+      const dlc = g.color === "dlc" || g.color === "ember";
       const card = document.createElement("article");
-      card.className = "card c-" + (g.color || "gold") + ((g.color === "ember" || g.color === "fairway") ? " c-dlc" : "");
+      card.className = "card c-" + (g.color || "gold") + (g.color === "ember" ? " c-dlc" : "");
       card.dataset.fx = g.fx || "";
       card.style.animationDelay = (i * 110) + "ms";
       card.style.setProperty("--pos", g.pos || "50% 25%");
@@ -1568,7 +1634,7 @@
             <ul class="moves">${dlcMoves}</ul>
           </div>
         </div></div>` : `
-        ${g.fx === "aura" && !reduceMotion ? haloMarkup() : ""}${g.fx === "craft" && !reduceMotion ? orangMarkup() : ""}${g.fx === "money" && !reduceMotion ? PISTOL : ""}
+        ${g.fx === "aura" && !reduceMotion ? haloMarkup() : ""}${g.fx === "craft" && !reduceMotion ? orangMarkup() : ""}${g.fx === "money" && !reduceMotion ? PISTOL : ""}${g.fx === "golf" && !reduceMotion ? TEE : ""}
         <div class="flipper"><div class="tilter">
           <div class="face front">
             <div class="keyline"></div>${photo}
@@ -1616,6 +1682,7 @@
       wall.appendChild(card);
       if (!TUNE) bindFx(card, g.fx);
       bindMoney(card, g.fx);
+      bindGolf(card, g.fx);
     });
 
     // ── mijo's money effect: click = coin burst
@@ -1637,6 +1704,27 @@
         const r = wrap.getBoundingClientRect();
         const x = e.clientX - r.left, y = e.clientY - r.top;
         for (let i = 0; i < 14; i++) pop(x, y, rnd(10, 18), rnd(-70, 70), rnd(-80, 50));
+      });
+    }
+
+    // ── kelketra's golf effect: click = fire sparks burst out
+    function bindGolf(card, kind) {
+      const wrap = card.querySelector(".photo-wrap");
+      const fx = card.querySelector(".fx");
+      if (kind !== "golf" || !fx || reduceMotion) return;
+      wrap.addEventListener("click", (e) => {
+        const r = wrap.getBoundingClientRect();
+        const x = e.clientX - r.left, y = e.clientY - r.top;
+        for (let i = 0; i < 14; i++) {
+          const el = document.createElement("i");
+          el.className = "spark";
+          el.style.left = x + "px"; el.style.top = y + "px";
+          el.style.setProperty("--s", rnd(6, 14) + "px");
+          el.style.setProperty("--dx", rnd(-70, 70) + "px");
+          el.style.setProperty("--dy", rnd(-80, 40) + "px");
+          fx.appendChild(el);
+          el.addEventListener("animationend", () => el.remove());
+        }
       });
     }
 
