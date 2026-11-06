@@ -35,9 +35,10 @@ body{
   margin:0;
   width:100%;
   min-height:100vh;
+  min-height:100dvh;
   overflow-x:hidden;
   background:
-    radial-gradient(1100px 420px at 50% -10%,rgba(217,196,143,.13),transparent 65%),
+    radial-gradient(1100px 420px at 50% 50%,rgba(217,196,143,.13),transparent 65%),
     #fff;
   color:var(--ink);
   font-family:Mulish,system-ui,sans-serif;
@@ -56,6 +57,7 @@ body{
 #app{
   width:100%;
   max-width:640px;
+  margin:auto;
   opacity:1;
   transition:opacity .2s ease;
 }
