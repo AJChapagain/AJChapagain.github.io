@@ -1,0 +1,1713 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>GOAT TEST</title>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Mulish:wght@400;600;800&display=swap" rel="stylesheet">
+
+<style>
+:root{
+  --ink:#111;
+  --mute:#888;
+  --line:#ebebeb;
+  --gold:#c9a227;
+  --gd:#a8842f;
+  --pale:#f1dfa8;
+  --foil:#d9c48f;
+  --ox:#9a1826;
+  --oxd:#5a0c15;
+}
+
+*{box-sizing:border-box}
+
+::selection{background:#f3e3b3}
+
+html{
+  width:100%;
+  overflow-x:hidden;
+}
+
+body{
+  margin:0;
+  width:100%;
+  min-height:100vh;
+  overflow-x:hidden;
+  background:
+    radial-gradient(1100px 420px at 50% -10%,rgba(217,196,143,.13),transparent 65%),
+    #fff;
+  color:var(--ink);
+  font-family:Mulish,system-ui,sans-serif;
+  display:flex;
+  justify-content:center;
+  padding:
+    max(24px,env(safe-area-inset-top))
+    16px
+    max(24px,env(safe-area-inset-bottom));
+}
+
+.mono{
+  font-family:Menlo,Monaco,Consolas,monospace;
+}
+
+#app{
+  width:100%;
+  max-width:640px;
+  opacity:1;
+  transition:opacity .2s ease;
+}
+
+.card{
+  width:100%;
+  min-width:0;
+  background:#fff;
+  border:1px solid var(--line);
+  border-radius:18px;
+  padding:clamp(18px,5vw,28px);
+  box-shadow:0 12px 32px -12px rgba(90,12,21,.18);
+}
+
+h1,h2{
+  font-family:'Instrument Serif',serif;
+  font-weight:400;
+  margin:0;
+}
+
+h1{
+  font-size:clamp(44px,12vw,64px);
+  letter-spacing:-1px;
+  line-height:1;
+  color:var(--oxd);
+  overflow-wrap:anywhere;
+}
+
+.rule{
+  height:1px;
+  background:rgba(168,132,47,.5);
+  margin:16px 0 20px;
+}
+
+.it{
+  font-family:'Instrument Serif',serif;
+  font-style:italic;
+}
+
+.cnt{
+  font-family:Menlo,Monaco,Consolas,monospace;
+  font-size:11px;
+  letter-spacing:.14em;
+  text-transform:uppercase;
+  color:var(--mute);
+}
+
+.tag{
+  font-weight:800;
+  letter-spacing:.14em;
+  font-size:11px;
+  text-transform:uppercase;
+  color:var(--gd);
+}
+
+.sub{
+  color:var(--mute);
+  line-height:1.6;
+}
+
+input{
+  width:100%;
+  min-width:0;
+  padding:14px;
+  border:1px solid var(--line);
+  border-radius:12px;
+  font:inherit;
+  font-size:16px;
+  margin:18px 0;
+}
+
+input:focus{
+  outline:none;
+  border-color:var(--gold);
+}
+
+button{
+  font:inherit;
+  cursor:pointer;
+  -webkit-tap-highlight-color:transparent;
+  touch-action:manipulation;
+  transition:transform .06s;
+}
+
+button:active{
+  transform:scale(.98);
+}
+
+.big{
+  width:100%;
+  min-height:52px;
+  padding:15px 16px;
+  border:0;
+  border-radius:14px;
+  background:var(--gold);
+  color:#111;
+  font-weight:800;
+  font-size:17px;
+  margin-top:18px;
+}
+
+.big:disabled{
+  opacity:.3;
+  cursor:default;
+}
+
+.big:hover:not(:disabled){
+  background:var(--gd);
+}
+
+.opts{
+  display:grid;
+  gap:10px;
+  width:100%;
+  min-width:0;
+}
+
+.opts.two{
+  grid-template-columns:repeat(2,minmax(0,1fr));
+}
+
+.opts button{
+  min-width:0;
+  min-height:56px;
+  text-align:left;
+  padding:14px 12px;
+  background:#fff;
+  border:1px solid var(--line);
+  border-radius:14px;
+  font-size:16px;
+  line-height:1.4;
+  overflow-wrap:anywhere;
+}
+
+.opts.two button{
+  text-align:center;
+  font-weight:800;
+  font-size:18px;
+}
+
+.opts button:active:not(:disabled){
+  transform:scale(.98);
+}
+
+.opts button:disabled{
+  cursor:default;
+}
+
+.opts button.picked{
+  background:var(--ink);
+  color:#fff;
+  border-color:var(--ink);
+}
+
+.top{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  min-width:0;
+}
+
+.react{
+  height:min(380px,60vh);
+  min-height:260px;
+  border-radius:18px;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  text-align:center;
+  padding:20px;
+  user-select:none;
+  cursor:pointer;
+  touch-action:manipulation;
+}
+
+.react h2{
+  font-size:34px;
+}
+
+.react.idle{
+  background:#fff;
+  border:1px solid var(--line);
+}
+
+.react.wait{
+  background:#b3261e;
+  color:#fff;
+}
+
+.react.go{
+  background:#16a34a;
+  color:#fff;
+}
+
+.dom{
+  margin:14px 0;
+}
+
+.dom .r{
+  display:flex;
+  justify-content:space-between;
+  font-weight:800;
+  font-size:13px;
+  letter-spacing:.12em;
+  margin-bottom:6px;
+}
+
+.track{
+  height:10px;
+  background:var(--line);
+  border-radius:9px;
+  overflow:hidden;
+}
+
+.track i{
+  display:block;
+  height:100%;
+  border-radius:9px;
+}
+
+.overall{
+  font-family:Menlo,Monaco,Consolas,monospace;
+  font-size:96px;
+  line-height:1;
+  margin:6px 0;
+}
+
+.rev{
+  border-top:1px solid var(--line);
+  padding:14px 0;
+  font-size:14px;
+  line-height:1.5;
+}
+
+.rev b{
+  display:block;
+  font-size:15px;
+  margin-bottom:4px;
+}
+
+.row{
+  display:flex;
+  gap:10px;
+  margin-top:12px;
+}
+
+.row button{
+  flex:1;
+  min-height:48px;
+  padding:13px;
+  border-radius:12px;
+  border:1px solid var(--line);
+  background:#fff;
+  font-weight:800;
+}
+
+.pads{
+  display:grid;
+  grid-template-columns:repeat(2,minmax(0,1fr));
+  gap:12px;
+  width:100%;
+}
+
+.pad{
+  min-width:0;
+  height:130px;
+  min-height:120px;
+  border:0;
+  border-radius:18px;
+  opacity:.35;
+  transition:opacity .08s,transform .06s;
+  touch-action:manipulation;
+}
+
+.pad.lit{
+  opacity:1;
+}
+
+.word{
+  font-weight:800;
+  font-size:clamp(48px,14vw,72px);
+  text-align:center;
+  margin:22px 0;
+  letter-spacing:.04em;
+}
+
+.opts.shapes button{
+  min-height:140px;
+  padding:10px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+}
+
+.opts.shapes svg{
+  display:block;
+  width:100%;
+  height:110px;
+  max-width:160px;
+}
+
+/* ---------- TIMER HEADER ---------- */
+
+.timer-head{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:40px;
+  width:100%;
+  min-width:0;
+  margin-bottom:12px;
+}
+
+.timer-count{
+  font-family:Menlo,Monaco,Consolas,monospace;
+  font-size:11px;
+  letter-spacing:.14em;
+  text-transform:uppercase;
+  color:var(--mute);
+  white-space:nowrap;
+  flex-shrink:0;
+}
+
+.timer-pill{
+  flex-shrink:0;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  border:1px solid var(--gold);
+  border-radius:999px;
+  padding:6px 12px;
+  font-family:Menlo,Monaco,Consolas,monospace;
+  font-size:16px;
+  color:var(--ink);
+  background:rgba(201,162,39,.05);
+  white-space:nowrap;
+  min-width:55px;
+}
+
+.bar{
+  position:relative;
+  width:100%;
+  height:4px;
+  background:var(--line);
+  border-radius:99px;
+  overflow:hidden;
+  margin-bottom:20px;
+}
+
+.bar i{
+  display:block;
+  width:100%;
+  height:100%;
+  background:var(--gold);
+  border-radius:99px;
+  transition:none;
+}
+
+/* ---------- TASK EDITORIAL START ---------- */
+
+.task-index{
+  font-family:'Instrument Serif',serif;
+  font-size:clamp(64px,16vw,88px);
+  line-height:.95;
+  color:var(--gold);
+  margin:12px 0 8px;
+}
+
+.task-title{
+  font-family:'Instrument Serif',serif;
+  font-size:40px;
+  line-height:1.05;
+  overflow-wrap:anywhere;
+}
+
+.task-rule{
+  width:100%;
+  height:1px;
+  background:rgba(168,132,47,.5);
+  margin:20px 0;
+}
+
+.task-instruction{
+  font-family:'Instrument Serif',serif;
+  font-style:italic;
+  font-size:23px;
+  line-height:1.4;
+  color:#555;
+  margin:0;
+}
+
+.task-position{
+  margin-bottom:8px;
+}
+
+/* ---------- PASSWORD GATE ---------- */
+
+.pin-row{
+  display:grid;
+  grid-template-columns:repeat(4,minmax(0,1fr));
+  gap:10px;
+  width:100%;
+  max-width:340px;
+  margin:22px auto 12px;
+}
+
+.pin-box{
+  width:100%;
+  min-width:0;
+  height:68px;
+  margin:0;
+  padding:0;
+  text-align:center;
+  font-family:Menlo,Monaco,Consolas,monospace;
+  font-size:28px;
+  font-weight:600;
+  border:1px solid var(--line);
+  border-radius:12px;
+  background:#fff;
+  color:var(--ink);
+  outline:none;
+  transition:border-color .12s,background .12s;
+  caret-color:var(--gold);
+}
+
+.pin-box:focus{
+  border:1px solid var(--gold);
+}
+
+.pin-box.wrong{
+  border:2px solid var(--ox);
+  background:rgba(154,24,38,.04);
+}
+
+.error-message{
+  min-height:22px;
+  margin:8px 0 0;
+  color:var(--ox);
+  font-weight:600;
+  font-size:14px;
+  text-align:center;
+}
+
+/* ---------- RESULTS PLAQUE ---------- */
+
+.plaque{
+  width:100%;
+  border:1px solid var(--gold);
+  border-radius:18px;
+  background:rgba(201,162,39,.08);
+  padding:24px 16px;
+  margin-top:20px;
+  text-align:center;
+}
+
+.plaque-code{
+  font-family:Menlo,Monaco,Consolas,monospace;
+  font-size:clamp(48px,16vw,72px);
+  line-height:1.15;
+  letter-spacing:.08em;
+  color:var(--oxd);
+  overflow-wrap:anywhere;
+}
+
+@media(max-width:400px){
+  body{
+    padding-left:12px;
+    padding-right:12px;
+  }
+
+  .card{
+    padding:18px;
+  }
+
+  .timer-head{
+    gap:40px;
+  }
+
+  .opts{
+    gap:9px;
+  }
+
+  .opts.two button{
+    padding:12px 8px;
+  }
+
+  .opts.shapes button{
+    min-height:140px;
+  }
+
+  .opts.shapes svg{
+    height:100px;
+  }
+
+  .pin-row{
+    gap:8px;
+  }
+
+  .pin-box{
+    height:64px;
+  }
+}
+
+@media(prefers-reduced-motion:reduce){
+  #app,button,.pin-box{
+    transition:none;
+  }
+}
+</style>
+</head>
+
+<body>
+<div id="app"></div>
+
+<script>
+const COL={
+  SPEED:'#ea6a1a',
+  MEMORY:'#2563eb',
+  REASONING:'#7b1e3a'
+};
+
+const $=s=>document.querySelector(s);
+const app=$('#app');
+
+const sleep=ms=>new Promise(r=>setTimeout(r,ms));
+const rnd=n=>Math.floor(Math.random()*n);
+const clamp=(x,a,b)=>Math.max(a,Math.min(b,x));
+
+const esc=s=>String(s).replace(/[&<>"']/g,c=>({
+  '&':'&amp;',
+  '<':'&lt;',
+  '>':'&gt;',
+  '"':'&quot;',
+  "'":'&#39;'
+}[c]));
+
+function shuffle(a){
+  a=a.slice();
+  for(let n=a.length-1;n>0;n--){
+    const j=rnd(n+1),t=a[n];
+    a[n]=a[j];
+    a[j]=t;
+  }
+  return a;
+}
+
+const sp=(left,T)=>(100+30*left/T)/130*100;
+
+/* ---------- SCREEN TRANSITIONS ---------- */
+
+function showScreen(html){
+  app.style.opacity='0';
+
+  setTimeout(()=>{
+    app.innerHTML=html;
+    app.style.opacity='1';
+  },200);
+}
+
+/* ---------- SHARED TIMED MULTIPLE-CHOICE ENGINE ---------- */
+
+function choice(box,items,secs,cb){
+  let k=0,tot=0,ok=0;
+  const res=[];
+
+  (function next(){
+
+    if(k>=items.length){
+      return cb(tot/items.length,ok,res);
+    }
+
+    const it=items[k];
+    const opts=shuffle(it.opts);
+
+    box.innerHTML=`
+      <div class="timer-head">
+        <span class="timer-count">${k+1} / ${items.length}</span>
+        <span class="timer-pill" id="cd">${secs}s</span>
+      </div>
+
+      <div class="bar">
+        <i id="fill"></i>
+      </div>
+
+      ${it.stem}
+
+      <div class="opts ${it.cls||''}">
+        ${opts.map((o,j)=>`
+          <button data-j="${j}">${o.h}</button>
+        `).join('')}
+      </div>
+    `;
+
+    const t0=performance.now();
+    let locked=false,raf;
+
+    const left=()=>Math.max(
+      0,
+      secs-(performance.now()-t0)/1000
+    );
+
+    const lock=j=>{
+      if(locked)return;
+
+      locked=true;
+      cancelAnimationFrame(raf);
+
+      const hit=j!==null&&opts[j].ok;
+
+      res.push(hit);
+
+      if(hit){
+        tot+=sp(left(),secs);
+        ok++;
+      }
+
+      box.querySelectorAll('.opts button').forEach(b=>{
+        b.disabled=true;
+
+        if(+b.dataset.j===j){
+          b.classList.add('picked');
+        }
+      });
+
+      setTimeout(()=>{
+        k++;
+        next();
+      },350);
+    };
+
+    const tick=()=>{
+      const l=left();
+
+      const fill=$('#fill');
+      const cd=$('#cd');
+
+      if(fill){
+        fill.style.width=(l/secs*100)+'%';
+      }
+
+      if(cd){
+        cd.textContent=Math.ceil(l)+'s';
+      }
+
+      if(l<=0){
+        lock(null);
+      }else{
+        raf=requestAnimationFrame(tick);
+      }
+    };
+
+    box.querySelectorAll('.opts button').forEach(b=>{
+      b.onclick=()=>lock(+b.dataset.j);
+    });
+
+    tick();
+
+  })();
+}
+
+/* ---------- 1. REACTION ---------- */
+
+function reaction(box,done){
+
+  box.innerHTML=`
+    <div id="r" class="react idle" style="margin-top:14px"></div>
+  `;
+
+  const r=$('#r');
+
+  let n=0,st='idle',tm,t0,real=null;
+
+  const label=()=>n===0
+    ?'PRACTICE — does not count'
+    :'THE REAL ONE — this counts';
+
+  const set=(c,h)=>{
+    r.className='react '+c;
+    r.innerHTML=h;
+  };
+
+  const idle=()=>{
+    st='idle';
+
+    set('idle',`
+      <p class="tag" style="color:var(--mute)">
+        ${label()}
+      </p>
+      <h2>Tap when it turns green</h2>
+      <p class="sub">tap to start</p>
+    `);
+  };
+
+  const arm=()=>{
+    st='wait';
+
+    set('wait',`
+      <p class="tag">${label()}</p>
+      <h2>Wait for green…</h2>
+    `);
+
+    tm=setTimeout(()=>{
+      st='go';
+      t0=performance.now();
+      set('go','<h2>TAP!</h2>');
+    },1500+Math.random()*2500);
+  };
+
+  const after=()=>{
+    n++;
+
+    setTimeout(()=>{
+      if(n<2){
+        idle();
+      }else{
+        done(
+          real===null?0:clamp((600-real)/450*100,0,100),
+          real===null?'Tapped too early (0)':real+' ms'
+        );
+      }
+    },1300);
+  };
+
+  r.onpointerdown=()=>{
+
+    if(st==='idle'){
+      arm();
+    }
+
+    else if(st==='wait'){
+      clearTimeout(tm);
+      st='res';
+
+      set('idle',`
+        <h2>Too early</h2>
+        <p class="sub">
+          ${n===0?'Practice only — now the real one':'The real attempt scores 0'}
+        </p>
+      `);
+
+      after();
+    }
+
+    else if(st==='go'){
+      const ms=Math.round(performance.now()-t0);
+
+      st='res';
+
+      if(n===1)real=ms;
+
+      set('idle',`
+        <h2 class="mono">${ms} ms</h2>
+        <p class="sub">
+          ${n===0?'practice — now the real one':'recorded'}
+        </p>
+      `);
+
+      after();
+    }
+  };
+
+  idle();
+}
+
+/* ---------- 2. PATTERN ---------- */
+
+const PADS=[
+  '#2563eb',
+  '#ea6a1a',
+  '#7b1e3a',
+  '#16a34a'
+];
+
+const TONES=[
+  261.6,
+  329.6,
+  392,
+  523.3
+];
+
+let actx=null;
+
+function beep(k){
+  try{
+    actx=actx||new(
+      window.AudioContext||window.webkitAudioContext
+    )();
+
+    if(actx.state==='suspended')actx.resume();
+
+    const o=actx.createOscillator();
+    const g=actx.createGain();
+
+    o.frequency.value=TONES[k];
+
+    o.connect(g);
+    g.connect(actx.destination);
+
+    g.gain.setValueAtTime(.15,actx.currentTime);
+
+    g.gain.exponentialRampToValueAtTime(
+      .001,
+      actx.currentTime+.35
+    );
+
+    o.start();
+    o.stop(actx.currentTime+.36);
+
+  }catch(e){}
+}
+
+function pattern(box,done){
+
+  box.innerHTML=`
+    <div id="pm" class="sub"
+      style="text-align:center;min-height:30px;margin:6px 0 14px">
+    </div>
+
+    <div class="pads">
+      ${PADS.map((c,k)=>`
+        <button
+          type="button"
+          class="pad"
+          data-k="${k}"
+          style="background:${c}">
+        </button>
+      `).join('')}
+    </div>
+  `;
+
+  const pm=$('#pm');
+  const pads=[...box.querySelectorAll('.pad')];
+
+  let acc=false,L=0;
+
+  const fin=()=>done(
+    L?(L-2)/6*100:0,
+    `Longest pattern: ${L} pads. Typical adult span is 5–6.`
+  );
+
+  async function flash(k){
+    pads[k].classList.add('lit');
+    beep(k);
+
+    await sleep(500);
+
+    pads[k].classList.remove('lit');
+  }
+
+  async function round(idx){
+
+    const len=[4,6,8][idx];
+    const seq=[];
+
+    for(let n=0;n<len;n++){
+      let k;
+
+      do{
+        k=rnd(4);
+      }while(n&&k===seq[n-1]);
+
+      seq.push(k);
+    }
+
+    pm.textContent=`Pattern ${idx+1} of 3 · ${len} pads · watch`;
+
+    await sleep(900);
+
+    for(const k of seq){
+      await flash(k);
+      await sleep(250);
+    }
+
+    pm.textContent='Your turn — repeat it';
+
+    let pos=0;
+    acc=true;
+
+    pads.forEach(p=>p.onpointerdown=()=>{
+
+      if(!acc)return;
+
+      const k=+p.dataset.k;
+
+      p.classList.add('lit');
+
+      beep(k);
+
+      setTimeout(()=>{
+        p.classList.remove('lit');
+      },160);
+
+      if(k!==seq[pos]){
+        acc=false;
+        pm.textContent='Wrong pad — task over';
+        return setTimeout(fin,1100);
+      }
+
+      if(++pos===len){
+        acc=false;
+        L=len;
+
+        pm.textContent='Correct!';
+
+        setTimeout(()=>{
+          idx<2?round(idx+1):fin();
+        },900);
+      }
+    });
+  }
+
+  round(0);
+}
+
+/* ---------- 3. STROOP ---------- */
+
+function stroop(box,done){
+
+  const C=[
+    ['RED','#d93025'],
+    ['BLUE','#2563eb'],
+    ['GREEN','#16a34a'],
+    ['YELLOW','#eab308']
+  ];
+
+  const tr=[];
+
+  for(let n=0;n<12;n++){
+    const w=rnd(4);
+    let ink=w;
+
+    if(n<6){
+      do{
+        ink=rnd(4);
+      }while(ink===w);
+    }
+
+    tr.push([w,ink]);
+  }
+
+  (async()=>{
+
+    let ok=0;
+    const rts=[];
+
+    for(const [w,ink] of shuffle(tr)){
+
+      box.innerHTML=`
+        <div class="word" style="color:${C[ink][1]}">
+          ${C[w][0]}
+        </div>
+
+        <div class="opts two">
+          ${C.map((c,j)=>`
+            <button data-j="${j}">${c[0]}</button>
+          `).join('')}
+        </div>
+      `;
+
+      const t0=performance.now();
+
+      const j=await new Promise(res=>{
+
+        const to=setTimeout(()=>res(-1),3000);
+
+        box.querySelectorAll('button').forEach(b=>{
+          b.onclick=()=>{
+            clearTimeout(to);
+            res(+b.dataset.j);
+          };
+        });
+
+      });
+
+      if(j===ink){
+        ok++;
+        rts.push(performance.now()-t0);
+      }
+
+      box.innerHTML='<div class="word">&nbsp;</div>';
+
+      await sleep(200);
+    }
+
+    const avg=rts.length
+      ?rts.reduce((a,b)=>a+b,0)/rts.length
+      :0;
+
+    const f=avg<=1000?1:avg<=1500?.85:.7;
+
+    done(
+      ok/12*100*f,
+      `${ok}/12 correct, avg ${Math.round(avg)} ms.`
+    );
+
+  })();
+}
+
+/* ---------- 4. MATH SPRINT ---------- */
+
+function math(box,done){
+
+  const P=[
+    ['47 + 28',75],
+    ['83 − 29',54],
+    ['6 × 14',84]
+  ];
+
+  const items=P.map(([t,a])=>{
+
+    const c=shuffle([
+      a+1,a-1,a+2,a-2,
+      a+9,a-9,a+10,a-10,
+      a+11,a-11
+    ]).filter(x=>x>0).slice(0,3);
+
+    return{
+      stem:`
+        <h2 class="mono"
+          style="text-align:center;font-size:48px;margin:26px 0">
+          ${t}
+        </h2>
+      `,
+      cls:'two',
+      opts:[
+        {h:a,ok:true},
+        ...c.map(x=>({h:x}))
+      ]
+    };
+  });
+
+  choice(box,items,10,(avg,ok)=>{
+    done(avg,`${ok}/3 correct`);
+  });
+}
+
+/* ---------- 5. ODD ONE OUT ---------- */
+
+const sv=i=>`
+  <svg viewBox="0 0 100 100"
+    fill="none"
+    stroke="#1a1a1a"
+    stroke-width="3"
+    stroke-linejoin="round">
+    ${i}
+  </svg>
+`;
+
+const PG=p=>`<polygon points="${p}"/>`;
+
+const RC=(x,y,w,h)=>
+  `<rect x="${x}" y="${y}" width="${w}" height="${h}"/>`;
+
+const CI=(x,y,r)=>
+  `<circle cx="${x}" cy="${y}" r="${r}"/>`;
+
+const DOT=(x,y)=>
+  `<circle cx="${x}" cy="${y}" r="5" fill="#1a1a1a" stroke="none"/>`;
+
+const TRI=PG('50,8 92,88 8,88');
+const SQ=RC(15,15,70,70);
+const PENT=PG('50,5 95,38 78,90 22,90 5,38');
+const CIR=CI(50,50,40);
+
+const ODD=[
+
+  {
+    n:'CURVES',
+    rule:'Only the circle has a curved edge — the rest are all straight lines.',
+    s:[TRI,SQ,PENT,CIR],
+    odd:3
+  },
+
+  {
+    n:'SIDE PARITY',
+    rule:'Square, hexagon and octagon all have an even number of sides. The pentagon has 5 — odd.',
+    s:[
+      SQ,
+      PG('25,5 75,5 95,50 75,95 25,95 5,50'),
+      PG('30,5 70,5 95,30 95,70 70,95 30,95 5,70 5,30'),
+      PENT
+    ],
+    odd:3
+  },
+
+  {
+    n:'SYMMETRY',
+    rule:'The first three are all mirror-symmetric. The scalene triangle has no mirror line.',
+    s:[
+      TRI,
+      SQ,
+      RC(10,25,80,50),
+      PG('10,10 10,90 70,90')
+    ],
+    odd:3
+  },
+
+  {
+    n:'DOT POSITION',
+    rule:'Three dots are inside the square. One is outside.',
+    s:[
+      SQ+DOT(50,50),
+      SQ+DOT(50,50),
+      SQ+DOT(50,50),
+      SQ+DOT(94,50)
+    ],
+    odd:3
+  },
+
+  {
+    n:'LOOPS',
+    rule:'Circle, square and triangle each enclose one region. The figure-8 encloses two.',
+    s:[
+      CIR,
+      SQ,
+      TRI,
+      CI(50,26,24)+CI(50,74,24)
+    ],
+    odd:3
+  }
+
+];
+
+function oddone(box,done){
+
+  const items=ODD.map(q=>({
+    stem:'',
+    cls:'two shapes',
+    opts:q.s.map((x,k)=>({
+      h:sv(x),
+      ok:k===q.odd
+    }))
+  }));
+
+  choice(box,items,30,(avg,ok,res)=>{
+
+    done(
+      avg,
+      `${ok}/5 correct.`,
+      ODD.map((q,k)=>
+        `${k+1}. ${q.rule} — ${res[k]?'Right':'Missed'}`
+      )
+    );
+
+  });
+}
+
+/* ---------- TASK LIST ---------- */
+
+const TASKS=[
+
+  {
+    n:'Reaction',
+    d:'SPEED',
+    ins:'Tap the moment the screen turns green. One practice, then the real one.',
+    what:'Reaction speed: how quickly you turn a signal into a movement.',
+    run:reaction
+  },
+
+  {
+    n:'Pattern',
+    d:'MEMORY',
+    ins:'Watch the lights and tones, then repeat the pattern.',
+    what:'Working memory: holding a sequence in mind and replaying it.',
+    run:pattern
+  },
+
+  {
+    n:'Stroop',
+    d:'SPEED',
+    ins:'Tap the INK color, not the word.',
+    what:'Executive control: ignoring the word to name the color.',
+    run:stroop
+  },
+
+  {
+    n:'Math Sprint',
+    d:'REASONING',
+    ins:'Tap the right answer. 10 seconds each.',
+    what:'Mental arithmetic under time pressure.',
+    run:math
+  },
+
+  {
+    n:'Odd One Out',
+    d:'REASONING',
+    ins:'Three shapes share a hidden rule. Tap the one that breaks it. 30 seconds each.',
+    what:'Fluid reasoning: finding the hidden rule and spotting the exception.',
+    run:oddone
+  }
+
+];
+
+const DOMS=[
+  'SPEED',
+  'MEMORY',
+  'REASONING'
+];
+
+let results=[];
+let ti=0;
+let name='';
+
+/* ---------- CODE SYSTEM ---------- */
+
+const encode=n=>
+  String(n).split('').map(d=>'JABCDEFGHI'[+d]).join('');
+
+const CODES={
+  '1175':'ajchapa',
+  '1606':'Alex',
+  '1809':'Kush',
+  '2986':'Mae',
+  '5693':'GaryBoy',
+  '5831':'Mijo',
+  '6936':'Helen',
+  '8321':'Noel',
+  '8453':'Kelketra'
+};
+
+let pwd='';
+
+/* ---------- PASSWORD GATE ---------- */
+
+function start(){
+
+  showScreen(`
+    <div class="card" style="text-align:center">
+
+      <h1>GOAT TEST</h1>
+
+      <div class="rule"></div>
+
+      <p class="it" style="font-size:24px;margin:0">
+        Please enter your password
+      </p>
+
+      <div class="pin-row" id="pins">
+
+        ${[0,1,2,3].map(i=>`
+          <input
+            class="pin-box"
+            data-i="${i}"
+            type="text"
+            inputmode="numeric"
+            pattern="[0-9]*"
+            maxlength="1"
+            autocomplete="off"
+            aria-label="Password digit ${i+1}">
+        `).join('')}
+
+      </div>
+
+      <p id="er" class="error-message"></p>
+
+      <button class="big" id="en">Enter</button>
+
+    </div>
+  `);
+
+  setTimeout(()=>{
+
+    const pins=[...app.querySelectorAll('.pin-box')];
+    const er=$('#er');
+
+    let submitting=false;
+
+    const value=()=>pins.map(p=>p.value).join('');
+
+    const clearWrong=()=>{
+      pins.forEach(p=>p.classList.remove('wrong'));
+      er.textContent='';
+    };
+
+    const tryIt=()=>{
+
+      if(submitting)return;
+
+      const v=value();
+
+      if(v.length!==4)return;
+
+      if(CODES[v]){
+        submitting=true;
+        pwd=v;
+        name=CODES[v];
+        afterCode();
+      }else{
+
+        submitting=true;
+
+        pins.forEach(p=>p.classList.add('wrong'));
+
+        er.textContent='Wrong code — try again.';
+
+        setTimeout(()=>{
+
+          pins.forEach(p=>{
+            p.value='';
+            p.classList.remove('wrong');
+          });
+
+          er.textContent='';
+
+          submitting=false;
+
+          pins[0].focus();
+
+        },750);
+      }
+    };
+
+    pins.forEach((p,i)=>{
+
+      p.oninput=()=>{
+
+        p.value=p.value.replace(/\D/g,'').slice(-1);
+
+        clearWrong();
+
+        if(p.value&&i<3){
+          pins[i+1].focus();
+        }
+
+        if(i===3&&p.value){
+          tryIt();
+        }
+      };
+
+      p.onkeydown=e=>{
+
+        if(e.key==='Backspace'&&!p.value&&i>0){
+          pins[i-1].focus();
+          pins[i-1].value='';
+          e.preventDefault();
+        }
+
+        if(e.key==='Enter'){
+          tryIt();
+        }
+
+        if(e.key==='ArrowLeft'&&i>0){
+          pins[i-1].focus();
+        }
+
+        if(e.key==='ArrowRight'&&i<3){
+          pins[i+1].focus();
+        }
+      };
+
+      p.onpaste=e=>{
+
+        e.preventDefault();
+
+        const pasted=(e.clipboardData||window.clipboardData)
+          .getData('text')
+          .replace(/\D/g,'')
+          .slice(0,4);
+
+        if(!pasted)return;
+
+        clearWrong();
+
+        pasted.split('').forEach((digit,j)=>{
+          if(pins[j]){
+            pins[j].value=digit;
+          }
+        });
+
+        if(pasted.length===4){
+          tryIt();
+        }else{
+          pins[Math.min(pasted.length,3)].focus();
+        }
+      };
+
+    });
+
+    $('#en').onclick=tryIt;
+
+    pins[0].focus();
+
+  },220);
+}
+
+/* ---------- AFTER CODE ---------- */
+
+function afterCode(){
+
+  let tk=null;
+
+  try{
+    tk=JSON.parse(localStorage.getItem('goatTaken_'+pwd));
+  }catch(e){}
+
+  if(tk){
+
+    showScreen(`
+      <div class="card">
+
+        <h1 style="font-size:48px">
+          You already took this exam
+        </h1>
+
+        <h2 style="font-size:40px;margin-top:22px">
+          ${esc(tk.name)}
+        </h2>
+
+        <p class="tag" style="margin:18px 0 4px">
+          YOUR CODE
+        </p>
+
+        <div class="mono"
+          style="font-size:clamp(48px,16vw,56px);line-height:1.1;overflow-wrap:anywhere">
+          ${esc(tk.code)}
+        </div>
+
+        <p class="cnt" style="margin-top:10px">
+          Taken ${esc(tk.date)}
+        </p>
+
+        <p class="it" style="font-size:22px;margin-top:18px">
+          Your score is hidden. Send your code to ajchapa.
+        </p>
+
+      </div>
+    `);
+
+    return;
+  }
+
+  showScreen(`
+    <div class="card">
+
+      <h1 style="font-size:clamp(44px,11vw,52px)">
+        Hello, ${esc(name)}
+      </h1>
+
+      <div class="rule"></div>
+
+      <p class="it"
+        style="font-size:24px;line-height:1.4;margin:0">
+        Please take this carefully — it will reflect on your card. You can only take this QUIZ ONCE. Please send me a screenshot of what the end says.
+      </p>
+
+      <button class="big" id="go">
+        Start
+      </button>
+
+    </div>
+  `);
+
+  setTimeout(()=>{
+
+    $('#go').onclick=()=>{
+      results=[];
+      ti=0;
+      runTask();
+    };
+
+  },220);
+}
+
+/* ---------- RUN TASK ---------- */
+
+function runTask(){
+
+  if(ti>=TASKS.length){
+    return finish();
+  }
+
+  const t=TASKS[ti];
+
+  const num=String(ti+1).padStart(2,'0');
+
+  showScreen(`
+    <div class="card">
+
+      <div class="top task-position">
+        <span class="cnt">TASK ${ti+1} / 5</span>
+      </div>
+
+      <div id="box">
+
+        <div class="task-index">${num}</div>
+
+        <h2 class="task-title">${t.n}</h2>
+
+        <div class="task-rule"></div>
+
+        <p class="task-instruction">
+          ${t.ins}
+        </p>
+
+        <button class="big" id="st">
+          Start
+        </button>
+
+      </div>
+
+    </div>
+  `);
+
+  setTimeout(()=>{
+
+    $('#st').onclick=()=>{
+
+      t.run($('#box'),(score,raw,detail)=>{
+
+        results.push({
+          t,
+          score:Math.round(score),
+          raw,
+          detail
+        });
+
+        ti++;
+
+        runTask();
+
+      });
+
+    };
+
+  },220);
+}
+
+/* ---------- RESULTS ---------- */
+
+function finish(){
+
+  const dm={};
+
+  DOMS.forEach(d=>{
+
+    const r=results.filter(x=>x.t.d===d);
+
+    dm[d]=r.reduce((s,x)=>s+x.score,0)/r.length;
+
+  });
+
+  const overall=Math.round(
+    DOMS.reduce((s,d)=>s+dm[d],0)/3
+  );
+
+  const code=encode(overall);
+
+  const date=new Date().toLocaleDateString();
+
+  try{
+
+    const b=JSON.parse(localStorage.getItem('goatBest'));
+
+    if(!b||overall>b.score){
+
+      localStorage.setItem(
+        'goatBest',
+        JSON.stringify({
+          score:overall,
+          name,
+          date
+        })
+      );
+
+    }
+
+  }catch(e){}
+
+  try{
+
+    localStorage.setItem(
+      'goatTaken_'+pwd,
+      JSON.stringify({
+        score:overall,
+        name,
+        code,
+        date
+      })
+    );
+
+  }catch(e){}
+
+  showScreen(`
+    <div class="card" style="text-align:center">
+
+      <p class="tag">RESULTS</p>
+
+      <h2 style="font-size:48px">
+        ${esc(name)}
+      </h2>
+
+      <div class="rule"></div>
+
+      <p class="it" style="font-size:24px;margin:0">
+        Your score is hidden
+      </p>
+
+      <div class="plaque">
+
+        <p class="tag" style="margin:0 0 14px">
+          YOUR CODE
+        </p>
+
+        <div class="plaque-code">${code}</div>
+
+      </div>
+
+      <p class="it" style="font-size:24px;margin:22px 0 0">
+        Screenshot this and send it to ajchapa.
+      </p>
+
+      <button class="big" id="cp">
+        Copy code
+      </button>
+
+    </div>
+  `);
+
+  setTimeout(()=>{
+
+    $('#cp').onclick=()=>{
+
+      const btn=$('#cp');
+
+      try{
+
+        if(navigator.clipboard&&navigator.clipboard.writeText){
+
+          navigator.clipboard.writeText(code).then(()=>{
+            btn.textContent='Copied';
+          }).catch(()=>{
+            btn.textContent=code;
+          });
+
+        }else{
+          btn.textContent=code;
+        }
+
+      }catch(e){
+        btn.textContent=code;
+      }
+
+    };
+
+  },220);
+}
+
+/* ---------- INITIALIZE ---------- */
+
+start();
+
+</script>
+</body>
+</html>
