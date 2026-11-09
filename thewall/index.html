@@ -1236,7 +1236,7 @@
     .card:hover .martini .liq{animation-duration:.9s}
 
     /* Auggie: peeks over the top edge, white paws gripping the card */
-    .cat{position:absolute;z-index:8;left:50%;top:-32px;width:96px;height:72px;margin-left:-48px;pointer-events:none;filter:drop-shadow(0 7px 7px rgba(8,40,38,.35));animation:catfloat 4.2s ease-in-out infinite;transition:opacity .3s ease}
+    .cat{position:absolute;z-index:8;left:auto;right:4px;top:-32px;width:96px;height:72px;transform:rotate(5deg);transform-origin:50% 100%;pointer-events:none;filter:drop-shadow(0 7px 7px rgba(8,40,38,.35));animation:catfloat 4.2s ease-in-out infinite;transition:opacity .3s ease}
     .cat svg{width:100%;height:100%;display:block;overflow:visible}
     @keyframes catfloat{50%{margin-top:-4px}}
     .card.flipped .cat{opacity:0}
@@ -1247,6 +1247,23 @@
     .cat .glint{transform-box:fill-box;transform-origin:center;animation:glint 2.8s ease-in-out infinite}
     .cat .glint.g2{animation-delay:-1.4s}
     @keyframes glint{0%,100%{transform:scale(0) rotate(0);opacity:0}50%{transform:scale(1) rotate(90deg);opacity:1}}
+    /* her back is custom: Auggie's portrait sits in the "Love for Auggie" row */
+    .moves.has-love{grid-template-rows:minmax(0,1.3fr) minmax(0,1fr) minmax(0,1fr)}
+    .moves.has-love li{padding:5px 0 6px}
+    .moves.has-love .m-bar{margin-top:6px}
+    .c-host .back-rule{margin:11px 0 6px}
+    .moves li.love{flex-direction:row;align-items:center;justify-content:flex-start;gap:10px}
+    .love-main{flex:1;min-width:0}
+    .bust-wrap{position:relative;flex-shrink:0}
+    .bust{width:46px;height:46px;border-radius:50%;overflow:hidden;background:radial-gradient(circle at 50% 30%,#fff,var(--ac-pale));border:1.5px solid var(--ac);box-shadow:0 0 0 3px rgba(var(--ac-rgb),.14)}
+    .bust svg{width:100%;height:100%;display:block}
+    .badge{position:absolute;right:-5px;bottom:-3px;width:19px;height:19px;border-radius:50%;background:#fff;border:1px solid rgba(229,54,95,.45);display:grid;place-items:center}
+    .heart{width:11px;height:11px;fill:#e5365f;animation:beat 1.7s ease-in-out infinite}
+    @keyframes beat{0%,38%,100%{transform:scale(1)}12%{transform:scale(1.3)}24%{transform:scale(1.05)}}
+    .moves li.love .m-name{white-space:normal;font-size:16px;line-height:1.05;color:#d6325c}
+    .moves li.love .m-pow{color:#d6325c}
+    .moves li.love .m-bar{background:rgba(229,54,95,.14)}
+    .moves li.love .m-bar i{background:linear-gradient(90deg,#e5365f,#ff8fa8,#ffd1dc);box-shadow:0 0 7px rgba(229,54,95,.4)}
     /* ================= tune mode (?tune) ================= */
     body.tune .card{cursor:grab}
     body.tune .fx,body.tune .flip-hint,body.tune .meta,body.tune .chip,body.tune .sheen,body.tune .crown,body.tune .halo,body.tune .orang,body.tune .pistol,body.tune .tee,body.tune .martini,body.tune .cat,body.tune .hang{display:none}
@@ -1285,7 +1302,16 @@
       .martini{width:46px;height:53px;margin-left:-23px;top:-28px}
       .c-host .plate .name{font-size:19px;line-height:25px}
       .c-host .b-name{font-size:18px}
-      .cat{width:80px;height:60px;margin-left:-40px;top:-26px}
+      .cat{width:80px;height:60px;right:2px;top:-26px}
+      .bust{width:38px;height:38px}
+      .moves li.love{gap:8px}
+      .moves.has-love li{padding:3px 0 4px}
+      .moves.has-love .m-bar{margin-top:4px}
+      .c-host .back-rule{margin:8px 0 4px}
+      .moves li.love .m-name{font-size:13px}
+      .badge{width:16px;height:16px}
+      .heart{width:9px;height:9px}
+      .c-host .flip-hint{font-size:0;gap:0}
       .c-golf .plate .title{font-size:11px}
       .c-ember .moves li.long .m-name{font-size:10px;letter-spacing:.01em}
       .c-dlc .plate .name{font-size:23px}
@@ -1309,7 +1335,7 @@
       .fx-haze,.c-dlc:hover .fx-haze{transition:none;transform:none}
       .c-dlc .meta .hint b{animation:none}
       .c-dlc:hover .photo-wrap img{animation:none}
-      .cat,.cat .eye,.cat .ear-r,.cat .glint,.fx-host .pp{animation:none}
+      .cat,.cat .eye,.cat .ear-r,.cat .glint,.fx-host .pp,.heart{animation:none}
       .fx-host .pp{opacity:.8}
     }
     /* ===== phone fix: stop the front's effects showing through the back ===== */
@@ -1459,7 +1485,7 @@
         photo:"/BANANNA.jpeg", pos:"50% 42%", zoom:1,
         color:"host", fx:"host",
         hp:"—",
-        moves:[["—","—"], ["—","—"], ["—","—"]] },
+        moves:[["Love for Auggie", 100, "love"], ["—","—"], ["—","—"]] },
     ];
 
     const wall = document.getElementById("wall");
@@ -1716,23 +1742,18 @@
 
     // Auggie: tuxedo cat (white body, black cap + mask, white forehead stripe, white muzzle, hazel eyes),
     // big white mitten paws, each with a small extra toe (polydactyl)
-    const CAT = `<div class="cat" aria-hidden="true"><svg viewBox="0 0 120 90">
-      <defs>
-        <clipPath id="hc"><ellipse cx="50" cy="30" rx="27" ry="22"/></clipPath>
-        <radialGradient id="catg" cx=".35" cy=".25" r=".8"><stop offset="0" stop-color="#3a4048"/><stop offset="1" stop-color="#1c2025"/></radialGradient>
-      </defs>
-      <g transform="translate(10 0)">
+    const HEAD = (s) => `
         <!-- white body -->
         <path d="M24 62 C24 48 35 44 50 44 C65 44 76 48 76 62 Z" fill="#fff" stroke="#c9d2d6" stroke-width="1.2"/>
         <!-- ears -->
-        <path d="M27 27 C22 16 23 8 26 4 C33 5 40 9 45 14 Z" fill="url(#catg)"/>
+        <path d="M27 27 C22 16 23 8 26 4 C33 5 40 9 45 14 Z" fill="url(#catg${s})"/>
         <path d="M30 21 C28 15 28 11 29 9 C33 10 36 12 39 15 Z" fill="#e9c3c8"/>
-        <g class="ear-r"><path d="M73 27 C78 16 77 8 74 4 C67 5 60 9 55 14 Z" fill="url(#catg)"/>
+        <g class="ear-r"><path d="M73 27 C78 16 77 8 74 4 C67 5 60 9 55 14 Z" fill="url(#catg${s})"/>
         <path d="M70 21 C72 15 72 11 71 9 C67 10 64 12 61 15 Z" fill="#e9c3c8"/></g>
         <!-- head: white base, dark cap and mask over it -->
         <ellipse cx="50" cy="30" rx="27" ry="22" fill="#fff" stroke="#c9d2d6" stroke-width="1.2"/>
-        <g clip-path="url(#hc)">
-          <path d="M18 56 L18 0 L82 0 L82 56 C76 48 70 42 61 39.5 C56 38.2 53 40.5 50 40.5 C47 40.5 44 38.2 39 39.5 C30 42 24 48 18 56 Z" fill="url(#catg)"/>
+        <g clip-path="url(#hc${s})">
+          <path d="M18 56 L18 0 L82 0 L82 56 C76 48 70 42 61 39.5 C56 38.2 53 40.5 50 40.5 C47 40.5 44 38.2 39 39.5 C30 42 24 48 18 56 Z" fill="url(#catg${s})"/>
           <path d="M50 11 C54.5 18 54.5 25 53 31 C52.2 35 56 38 56 44 L44 44 C44 38 47.8 35 47 31 C45.5 25 45.5 18 50 11 Z" fill="#fff"/>
           <ellipse cx="38" cy="14" rx="9" ry="4" fill="#fff" opacity=".1" transform="rotate(-25 38 14)"/>
         </g>
@@ -1745,7 +1766,16 @@
         <path d="M33 41 Q26 39.5 20 40 M33 44 Q26 45 21 47 M67 41 Q74 39.5 80 40 M67 44 Q74 45 79 47" stroke="#aeb8bc" stroke-width=".9" fill="none" stroke-linecap="round"/>
         <!-- collar -->
         <path d="M30 51 Q50 61 70 51" stroke="#0b6b66" stroke-width="4.4" fill="none" stroke-linecap="round"/>
-      </g>
+    `;
+
+    // Auggie: tuxedo cat (white body, black cap + mask, white forehead stripe, white muzzle, hazel eyes),
+    // big white mitten paws, each with a small extra toe (polydactyl)
+    const CAT = `<div class="cat" aria-hidden="true"><svg viewBox="0 0 120 90">
+      <defs>
+        <clipPath id="hc"><ellipse cx="50" cy="30" rx="27" ry="22"/></clipPath>
+        <radialGradient id="catg" cx=".35" cy=".25" r=".8"><stop offset="0" stop-color="#3a4048"/><stop offset="1" stop-color="#1c2025"/></radialGradient>
+      </defs>
+      <g transform="translate(10 0)">${HEAD("")}</g>
       <!-- left paw: soft mitten with a small extra toe (polydactyl) on the outer side -->
       <g stroke="#c9d2d6" stroke-width="1.2" fill="#fff">
         <ellipse cx="19.5" cy="68" rx="3.7" ry="5"/>
@@ -1762,6 +1792,16 @@
       <ellipse cx="88" cy="57" rx="5" ry="2.6" fill="#22262b"/>
       <path class="glint g2" d="M106 57.8 L106.8 60.2 L109.2 61 L106.8 61.8 L106 64.2 L105.2 61.8 L102.8 61 L105.2 60.2 Z" fill="#f2c230"/>
     </svg></div>`;
+
+    // round portrait of Auggie for the back of the card
+    const BUST = `<div class="bust" aria-hidden="true"><svg viewBox="18 2 64 60" preserveAspectRatio="xMidYMid slice">
+      <defs>
+        <clipPath id="hcb"><ellipse cx="50" cy="30" rx="27" ry="22"/></clipPath>
+        <radialGradient id="catgb" cx=".35" cy=".25" r=".8"><stop offset="0" stop-color="#3a4048"/><stop offset="1" stop-color="#1c2025"/></radialGradient>
+      </defs>
+      ${HEAD("b")}
+    </svg></div>`;
+    const HEART = `<svg class="heart" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 21.3l-1.5-1.3C5.4 15.4 2 12.3 2 8.5 2 5.4 4.4 3 7.5 3c1.7 0 3.4.8 4.5 2.1C13.1 3.8 14.8 3 16.5 3 19.6 3 22 5.4 22 8.5c0 3.8-3.4 6.9-8.5 11.5z"/></svg>`;
 
     // ── build the cards
     GOATS.forEach((g, i) => {
@@ -1783,7 +1823,16 @@
              <div class="sheen"></div>${fx}${chip}</div>`
         : `<div class="photo-wrap empty"><div class="initial">${g.name[0]}</div>${fx}${chip}</div>`;
 
-      const moves = (g.moves || []).map(([n, p], k) => {
+      const moves = (g.moves || []).map(([n, p, kind], k) => {
+        if (kind === "love") {
+          // custom row: Auggie's portrait (with a little heart badge) + the stat
+          const width = clamp(Number(p) || 0, 0, 100);
+          return `
+          <li class="love${Number(p) === 100 ? " max" : ""}" style="--k:${k}">
+            <div class="bust-wrap">${BUST}<span class="badge">${HEART}</span></div>
+            <div class="love-main"><div class="m-row"><span class="m-name">${n}</span><span class="m-pow">${p}</span></div>
+            <div class="m-bar"><i style="--w:${width / 100}"></i></div></div></li>`;
+        }
         const mystery = n === "???";
         const over = !mystery && Number(p) > 100;
         const maximum = !mystery && !over && Number(p) === 100;
@@ -1866,7 +1915,7 @@
             </div>
             <div class="back-title">${g.title}</div>
             <div class="back-rule"></div>
-            <ul class="moves">${moves}</ul>
+            <ul class="moves${g.moves.some((m) => m[2] === "love") ? " has-love" : ""}">${moves}</ul>
           </div>
         </div></div>`;
 
