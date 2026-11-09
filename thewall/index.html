@@ -184,6 +184,8 @@
     .card:focus{outline:none}
     .card:focus-visible .face{outline:2px solid var(--text-main);outline-offset:4px}
     @keyframes rise{from{opacity:0;transform:translateY(18px)}to{opacity:1;transform:translateY(0)}}
+    .card.locked{cursor:default}
+    .card.locked .flip-hint{display:none}
 
     .flipper{position:relative;width:100%;height:100%;transform-style:preserve-3d;transition:transform .8s cubic-bezier(.2,.7,.25,1)}
     .card.flipped .flipper{transform:rotateY(180deg)}
@@ -1264,6 +1266,9 @@
     .moves li.love .m-pow{color:#d6325c}
     .moves li.love .m-bar{background:rgba(229,54,95,.14)}
     .moves li.love .m-bar i{background:linear-gradient(90deg,#e5365f,#ff8fa8,#ffd1dc);box-shadow:0 0 7px rgba(229,54,95,.4)}
+    /* under-construction tape: caution stripes framing a yellow UNDER CONSTRUCTION band */
+    .tape{position:absolute;z-index:4;left:-14%;width:128%;top:46%;padding:5px 0;transform:rotate(-7deg);background:repeating-linear-gradient(-45deg,#111 0 10px,#f2c230 10px 20px);box-shadow:0 4px 12px rgba(0,0,0,.35);pointer-events:none}
+    .tape span{display:block;background:#f2c230;color:#111;font:800 11px var(--font);letter-spacing:.14em;text-align:center;padding:3px 0;white-space:nowrap}
     /* ================= tune mode (?tune) ================= */
     body.tune .card{cursor:grab}
     body.tune .fx,body.tune .flip-hint,body.tune .meta,body.tune .chip,body.tune .sheen,body.tune .crown,body.tune .halo,body.tune .orang,body.tune .pistol,body.tune .tee,body.tune .martini,body.tune .cat,body.tune .hang{display:none}
@@ -1312,6 +1317,7 @@
       .badge{width:16px;height:16px}
       .heart{width:9px;height:9px}
       .c-host .flip-hint{font-size:0;gap:0}
+      .tape span{font-size:9px;letter-spacing:.1em}
       .c-golf .plate .title{font-size:11px}
       .c-ember .moves li.long .m-name{font-size:10px;letter-spacing:.01em}
       .c-dlc .plate .name{font-size:23px}
@@ -1484,6 +1490,7 @@
       { name:"Banananana", title:"Goat of Hosting",
         photo:"/BANANNA.jpeg", pos:"50% 42%", zoom:1,
         color:"host", fx:"host",
+        locked:true, // under construction — no flip for now
         hp:"—",
         moves:[["Love for Auggie", 100, "love"], ["—","—"], ["—","—"]] },
     ];
@@ -1807,21 +1814,26 @@
     GOATS.forEach((g, i) => {
       const dlc = g.color === "dlc" || g.color === "ember";
       const card = document.createElement("article");
-      card.className = "card c-" + (g.color || "gold") + (g.color === "ember" ? " c-dlc" : "");
+      card.className = "card c-" + (g.color || "gold") + (g.color === "ember" ? " c-dlc" : "") + (g.locked ? " locked" : "");
       card.dataset.fx = g.fx || "";
       card.style.animationDelay = (i * 110) + "ms";
       card.style.setProperty("--pos", g.pos || "50% 25%");
       card.style.setProperty("--zoom", g.zoom || 1);
-      card.tabIndex = 0;
-      card.setAttribute("role", "button");
-      card.setAttribute("aria-label", g.name + ", " + g.title + ". Activate to flip.");
+      if (!g.locked) {
+        card.tabIndex = 0;
+        card.setAttribute("role", "button");
+        card.setAttribute("aria-label", g.name + ", " + g.title + ". Activate to flip.");
+      } else {
+        card.setAttribute("aria-label", g.name + ", " + g.title + ". Under construction.");
+      }
 
       const fx = fxMarkup(g.fx);
       const chip = dlc ? `<span class="chip">DLC</span>` : "";
+      const tape = g.locked ? `<div class="tape" aria-hidden="true"><span>\u26a0 UNDER CONSTRUCTION \u26a0 UNDER CONSTRUCTION \u26a0</span></div>` : "";
       const photo = g.photo
         ? `<div class="photo-wrap"><img src="${g.photo}" alt="${g.name}" decoding="async" draggable="false">
-             <div class="sheen"></div>${fx}${chip}</div>`
-        : `<div class="photo-wrap empty"><div class="initial">${g.name[0]}</div>${fx}${chip}</div>`;
+             <div class="sheen"></div>${fx}${chip}${tape}</div>`
+        : `<div class="photo-wrap empty"><div class="initial">${g.name[0]}</div>${fx}${chip}${tape}</div>`;
 
       const moves = (g.moves || []).map(([n, p, kind], k) => {
         if (kind === "love") {
@@ -1935,7 +1947,7 @@
         });
       }
 
-      const flip = () => { if (!TUNE) card.classList.toggle("flipped"); };
+      const flip = () => { if (!TUNE && !g.locked) card.classList.toggle("flipped"); };
       card.addEventListener("click", flip);
       card.addEventListener("keydown", (e) => {
         if (e.key === "Enter" || e.key === " ") { e.preventDefault(); flip(); }
