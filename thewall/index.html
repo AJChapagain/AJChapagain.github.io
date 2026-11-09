@@ -135,6 +135,7 @@
     .card:nth-child(8){margin-top:7px}
     /* kelketra sits level with helen (0 — no stagger, same as card 7) */
     .card:nth-child(9){margin-top:0}
+    .card:nth-child(10){margin-top:7px}
 
     .hang{position:absolute;left:0;right:0;top:-40px;height:40px;pointer-events:none;z-index:0;
       opacity:0;animation:fade .6s ease .6s forwards}
@@ -169,7 +170,7 @@
     .c-host{--ac:#0f9d94;--ac-deep:#0b6b66;--ac-pale:#c6efeb;--ac-rgb:15,157,148;--ac-wash:#eefaf9;--ac-line:#9fd8d3}
     .c-host .plate .name,.c-host .b-name{color:#0b4f4b}
     /* "Banananana" is long, so her name runs a little smaller on the front */
-    .c-host .plate .name{font-size:22px}
+    .c-host .plate .name{font-size:22px;line-height:30px}
     .c-host .b-name{font-size:21px}
     /* dlc: the one dark card. it also switches to a mono voice inside the card */
     .c-dlc{
@@ -1235,7 +1236,7 @@
     .card:hover .martini .liq{animation-duration:.9s}
 
     /* Auggie: peeks over the top edge, white paws gripping the card */
-    .cat{position:absolute;z-index:8;left:50%;top:-70px;width:140px;height:105px;margin-left:-70px;pointer-events:none;filter:drop-shadow(0 7px 7px rgba(8,40,38,.35));animation:catfloat 4.2s ease-in-out infinite;transition:opacity .3s ease}
+    .cat{position:absolute;z-index:8;left:50%;top:-32px;width:96px;height:72px;margin-left:-48px;pointer-events:none;filter:drop-shadow(0 7px 7px rgba(8,40,38,.35));animation:catfloat 4.2s ease-in-out infinite;transition:opacity .3s ease}
     .cat svg{width:100%;height:100%;display:block;overflow:visible}
     @keyframes catfloat{50%{margin-top:-4px}}
     .card.flipped .cat{opacity:0}
@@ -1282,9 +1283,9 @@
       .pot{width:32px;height:37px;right:12px;bottom:14px}
       .tee{width:40px;height:45px;margin-left:-20px;top:-26px}
       .martini{width:46px;height:53px;margin-left:-23px;top:-28px}
-      .c-host .plate .name{font-size:19px}
+      .c-host .plate .name{font-size:19px;line-height:25px}
       .c-host .b-name{font-size:18px}
-      .cat{width:112px;height:84px;margin-left:-56px;top:-56px}
+      .cat{width:80px;height:60px;margin-left:-40px;top:-26px}
       .c-golf .plate .title{font-size:11px}
       .c-ember .moves li.long .m-name{font-size:10px;letter-spacing:.01em}
       .c-dlc .plate .name{font-size:23px}
