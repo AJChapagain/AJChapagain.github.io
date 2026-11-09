@@ -1267,8 +1267,10 @@
     .moves li.love .m-bar{background:rgba(229,54,95,.14)}
     .moves li.love .m-bar i{background:linear-gradient(90deg,#e5365f,#ff8fa8,#ffd1dc);box-shadow:0 0 7px rgba(229,54,95,.4)}
     /* under-construction tape: caution stripes framing a yellow UNDER CONSTRUCTION band */
-    .tape{position:absolute;z-index:4;left:-14%;width:128%;top:46%;padding:5px 0;transform:rotate(-7deg);background:repeating-linear-gradient(-45deg,#111 0 10px,#f2c230 10px 20px);box-shadow:0 4px 12px rgba(0,0,0,.35);pointer-events:none}
-    .tape span{display:block;background:#f2c230;color:#111;font:800 11px var(--font);letter-spacing:.14em;text-align:center;padding:3px 0;white-space:nowrap}
+    .ctape{position:absolute;z-index:5;left:-14%;width:128%;top:46%;padding:5px 0;transform:rotate(12deg);background:repeating-linear-gradient(-45deg,#111 0 10px,#f2c230 10px 20px);box-shadow:0 4px 12px rgba(0,0,0,.35);pointer-events:none}
+    .ctape span{display:block;background:#f2c230;color:#111;font:800 11px var(--font);letter-spacing:.14em;text-align:center;padding:3px 0;white-space:nowrap}
+    .ctape.ctape2{z-index:4;transform:rotate(-12deg);height:28px;background:repeating-linear-gradient(45deg,#111 0 10px,#f2c230 10px 20px)}
+    .ctape-edge{position:absolute;z-index:5;left:0;right:0;bottom:0;height:12px;background:repeating-linear-gradient(-45deg,#111 0 8px,#f2c230 8px 16px);pointer-events:none}
     /* ================= tune mode (?tune) ================= */
     body.tune .card{cursor:grab}
     body.tune .fx,body.tune .flip-hint,body.tune .meta,body.tune .chip,body.tune .sheen,body.tune .crown,body.tune .halo,body.tune .orang,body.tune .pistol,body.tune .tee,body.tune .martini,body.tune .cat,body.tune .hang{display:none}
@@ -1317,7 +1319,8 @@
       .badge{width:16px;height:16px}
       .heart{width:9px;height:9px}
       .c-host .flip-hint{font-size:0;gap:0}
-      .tape span{font-size:9px;letter-spacing:.1em}
+      .ctape span{font-size:9px;letter-spacing:.1em}
+      .ctape.ctape2{height:24px}
       .c-golf .plate .title{font-size:11px}
       .c-ember .moves li.long .m-name{font-size:10px;letter-spacing:.01em}
       .c-dlc .plate .name{font-size:23px}
@@ -1829,7 +1832,8 @@
 
       const fx = fxMarkup(g.fx);
       const chip = dlc ? `<span class="chip">DLC</span>` : "";
-      const tape = g.locked ? `<div class="tape" aria-hidden="true"><span>\u26a0 UNDER CONSTRUCTION \u26a0 UNDER CONSTRUCTION \u26a0</span></div>` : "";
+      const tape = g.locked ? `<div class="ctape ctape2" aria-hidden="true"></div><div class="ctape" aria-hidden="true"><span>\u26a0 UNDER CONSTRUCTION \u26a0 UNDER CONSTRUCTION \u26a0</span></div>` : "";
+      const tapeEdge = g.locked ? `<div class="ctape-edge" aria-hidden="true"></div>` : "";
       const photo = g.photo
         ? `<div class="photo-wrap"><img src="${g.photo}" alt="${g.name}" decoding="async" draggable="false">
              <div class="sheen"></div>${fx}${chip}${tape}</div>`
@@ -1917,6 +1921,7 @@
                 <div class="flip-hint"><b>↻</b>flip</div>
               </div>
               <div class="title"><span>${g.title}</span></div>
+              ${tapeEdge}
             </div>
           </div>
           <div class="face back">
