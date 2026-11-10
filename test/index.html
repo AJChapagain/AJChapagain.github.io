@@ -611,7 +611,7 @@ function shuffle(a){
   return a;
 }
 
-const sp=(left,T)=>(100+30*left/T)/130*100;
+const sp=(left,T)=>60+40*left/T;
 
 /* ---------- SCREEN TRANSITIONS ---------- */
 
@@ -1511,7 +1511,7 @@ function afterCode(){
         </p>
 
         <button class="big" id="home">
-          Return to home page
+          Click here to go back to your profile
         </button>
 
       </div>
@@ -1519,7 +1519,7 @@ function afterCode(){
 
     setTimeout(()=>{
       var hb=document.getElementById('home');
-      if(hb) hb.onclick=function(){ location.href='/'; };
+      if(hb) hb.onclick=function(){ location.href='/members/'; };
     },220);
 
     return;
@@ -1760,7 +1760,7 @@ function finish(){
       </p>
 
       <button class="big" id="home">
-        Return to home page
+        Click here to go back to your profile
       </button>
 
     </div>
@@ -1769,7 +1769,7 @@ function finish(){
   setTimeout(()=>{
 
     $('#home').onclick=()=>{
-      location.href='/';
+      location.href='/members/';
     };
 
   },220);
