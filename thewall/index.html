@@ -65,63 +65,17 @@
     @keyframes kin{to{opacity:1;transform:translateY(0)}}
     @keyframes sweep{0%,82%{background-position:0% 0}100%{background-position:100% 0}}
 
-    /* ================= handbook ================= */
-    #handbook-btn{
+    /* ================= members login ================= */
+    #members-btn{
       display:flex;align-items:center;gap:10px;
       padding:10px 13px;border:0;background:none;cursor:pointer;
-      color:var(--ox2);font-family:var(--serif);font-size:23px;
+      color:var(--ox2);font-family:var(--serif);font-size:23px;text-decoration:none;
       transition:transform .25s ease;
     }
-    #handbook-btn:hover{transform:translateY(-2px)}
-    #handbook-btn svg{width:29px;height:29px}
-    #handbook-btn:focus-visible{outline:2px solid var(--ox2);outline-offset:5px}
+    #members-btn:hover{transform:translateY(-2px)}
+    #members-btn svg{width:29px;height:29px}
+    #members-btn:focus-visible{outline:2px solid var(--ox2);outline-offset:5px}
 
-    /* handbook modal */
-    #handbook-modal{
-      position:fixed;inset:0;z-index:100;display:flex;justify-content:center;align-items:center;padding:20px;
-      background:rgba(15,12,12,.65);
-      visibility:hidden;opacity:0;transition:opacity .3s ease,visibility .3s ease;
-    }
-    #handbook-modal.open{visibility:visible;opacity:1}
-    .handbook{
-      position:relative;width:100%;max-width:430px;
-      padding:45px 42px 38px;background:#fff;border-radius:5px;
-      box-shadow:0 25px 80px rgba(0,0,0,.22);
-      transform:translateY(18px) scale(.98);opacity:0;
-      transition:transform .4s cubic-bezier(.2,.7,.25,1),opacity .35s ease;
-    }
-    #handbook-modal.open .handbook{transform:translateY(0) scale(1);opacity:1}
-    #handbook-close{
-      position:absolute;top:17px;right:17px;width:32px;height:32px;
-      border:1px solid var(--border);border-radius:50%;background:#fff;color:#555;
-      font-size:20px;cursor:pointer;transition:background .2s,transform .2s;
-    }
-    #handbook-close:hover{background:#f5f3f2;transform:rotate(90deg)}
-    .heading{margin-bottom:34px}
-    .heading h2{margin:0;font-family:var(--serif);font-size:53px;line-height:1;font-weight:400;color:var(--text-main)}
-    .heading-line{width:38px;height:3px;margin-top:17px;background:var(--ox1)}
-    .rules{list-style:none;margin:0;padding:0}
-    .rules li{display:grid;grid-template-columns:35px 1fr;align-items:start;gap:12px;padding:19px 0;border-bottom:1px solid var(--border)}
-    .rules li:first-child{border-top:1px solid var(--border)}
-    .rule-number{padding-top:4px;font-size:11px;font-weight:700;letter-spacing:1px;color:var(--ox1)}
-    .rule-text{font-family:var(--serif);font-size:29px;line-height:1.15;color:var(--text-main)}
-    .enter-code{
-      display:flex;justify-content:space-between;align-items:center;
-      margin-top:30px;padding:16px 18px;background:var(--ox2);color:#fff;border-radius:3px;
-      font-family:var(--font);font-size:13px;font-weight:700;letter-spacing:1px;text-decoration:none;
-      transition:background .2s,transform .2s;
-    }
-    .enter-code:hover{background:var(--ox3);transform:translateY(-2px)}
-    .enter-code span{font-size:19px;font-weight:400}
-    .heading,.rules,.enter-code{animation:appear .5s both}
-    .rules{animation-delay:.1s}
-    .enter-code{animation-delay:.2s}
-    @keyframes appear{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
-    @media(max-width:480px){
-      .handbook{padding:42px 27px 29px}
-      .heading h2{font-size:47px}
-      .rule-text{font-size:26px}
-    }
 
     /* ================= the wall: a gallery wall ================= */
     #body{flex:1;padding-top:18px;padding-bottom:90px}
@@ -1300,7 +1254,7 @@
       .flip-hint{font-size:12px}
       .flip-hint b{width:17px;height:17px;font-size:10px}
       .crown{width:46px;height:35px;margin-left:-23px;top:-18px}
-      #handbook-btn{font-size:19px}
+      #members-btn{font-size:19px}
       /* garyboy */
       .pistol{width:56px;height:39px;margin-left:-28px;top:-22px}
       .book{width:32px;height:35px;right:12px;bottom:14px}
@@ -1336,7 +1290,6 @@
     @media (prefers-reduced-motion:reduce){
       .kl{animation:none;opacity:1;transform:none}
       .card,.hang{animation-duration:.01s}
-      #handbook-modal .handbook,.heading,.rules,.enter-code{transition:none;animation:none}
       .halo::before,.ember,.reticle svg,.fx-aura .foil,.crown,.flip-hint b,.sh-chart i{animation:none}
       .ember{display:none}
       .fx-haze .puff{animation:none;opacity:.35}
@@ -1372,21 +1325,17 @@
     <header id="hero" class="col">
       <h1 id="title" aria-label="The Wall"></h1>
 
-      <button id="handbook-btn" type="button"
-              aria-label="Open the Handbook"
-              aria-haspopup="dialog"
-              aria-controls="handbook-modal">
-        <!-- Custom open-book logo -->
+      <a id="members-btn" href="/members/" aria-label="Member login">
+        <!-- key icon -->
         <svg viewBox="0 0 24 24" fill="none"
              stroke="currentColor" stroke-width="1.4"
              stroke-linecap="round" stroke-linejoin="round"
              aria-hidden="true">
-          <path d="M4 5.5c2.8-1.1 5.5-.5 8 1.2v13c-2.5-1.7-5.2-2.3-8-1.2z"/>
-          <path d="M20 5.5c-2.8-1.1-5.5-.5-8 1.2v13c2.5-1.7-5.2-2.3-8-1.2z"/>
-          <path d="M8 9l2 .5M8 12l2 .5M16 9l-2 .5M16 12l-2 .5"/>
+          <circle cx="8" cy="15" r="4.5"/>
+          <path d="M11.2 11.8 20 3M15.5 7.5l3 3M13 10l2.5 2.5"/>
         </svg>
-        <span>Handbook</span>
-      </button>
+        <span>Members</span>
+      </a>
     </header>
 
     <div id="body" class="col">
@@ -1394,34 +1343,6 @@
     </div>
   </div>
 
-  <!-- handbook modal -->
-  <div id="handbook-modal" aria-hidden="true">
-    <section class="handbook"
-             role="dialog"
-             aria-modal="true"
-             aria-labelledby="handbook-title">
-      <button id="handbook-close" type="button"
-              aria-label="Close handbook">×</button>
-      <div class="heading">
-        <h2 id="handbook-title">Handbook</h2>
-        <div class="heading-line"></div>
-      </div>
-      <ol class="rules">
-        <li>
-          <span class="rule-number">01</span>
-          <span class="rule-text">Picked by urs truly</span>
-        </li>
-        <li>
-          <span class="rule-number">02</span>
-          <span class="rule-text">Made with luh</span>
-        </li>
-      </ol>
-      <a class="enter-code" href="/test/">
-        Enter code
-        <span aria-hidden="true">→</span>
-      </a>
-    </section>
-  </div>
 
   <script>
     // ─────────────────────────────
@@ -2342,34 +2263,6 @@
         } catch (_) {}
       }, { once: true });
     }
-
-    // ── handbook
-    const modal = document.getElementById("handbook-modal");
-    const openBtn = document.getElementById("handbook-btn");
-    const closeBtn = document.getElementById("handbook-close");
-
-    function openHandbook() {
-      modal.classList.add("open");
-      modal.setAttribute("aria-hidden", "false");
-      document.body.classList.add("locked");
-      setTimeout(() => closeBtn.focus({preventScroll:true}), 100);
-    }
-    function closeHandbook() {
-      modal.classList.remove("open");
-      modal.setAttribute("aria-hidden", "true");
-      document.body.classList.remove("locked");
-      openBtn.focus({preventScroll:true});
-    }
-    openBtn.addEventListener("click", openHandbook);
-    closeBtn.addEventListener("click", closeHandbook);
-    modal.addEventListener("click", (event) => {
-      if (event.target === modal) closeHandbook();
-    });
-    document.addEventListener("keydown", (event) => {
-      if (event.key === "Escape" && modal.classList.contains("open")) {
-        closeHandbook();
-      }
-    });
 
     // ── live clock
     function clock() {
