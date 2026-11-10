@@ -2187,7 +2187,7 @@ textarea.f-field{
       + '</div></div>'
       + '<div class="face back">'
       + BRK
-      + '<div class="b-top"><div class="b-name">'+esc(g.name)+'</div><div class="b-hp">HP<b data-hp>'+(g.hp == null ? "\u2014" : g.hp)+'</b></div></div>'
+      + '<div class="b-top"><div class="b-name">'+esc(g.name)+'</div><div class="b-hp"><b data-hp>'+(g.hp == null ? "\u2014" : g.hp)+'</b></div></div>'
       + '<div class="back-title">'+esc(g.title)+'</div>'
       + '<div class="back-rule"></div>'
       + '<ul class="moves">'+dlcMoves+'</ul>'
@@ -2210,7 +2210,7 @@ textarea.f-field{
       + '<div class="face back">'
       + '<div class="keyline"></div>'
       + '<div class="b-top"><div class="b-name">'+esc(g.name)+'</div>'
-      + '<div class="b-hp">HP<b data-hp>'+(g.hp == null ? "\u2014" : g.hp)+'</b></div></div>'
+      + '<div class="b-hp"><b data-hp>'+(g.hp == null ? "\u2014" : g.hp)+'</b></div></div>'
       + '<div class="back-title">'+esc(g.title)+'</div>'
       + '<div class="back-rule"></div>'
       + '<ul class="moves'+(g.moves.some(function(m){ return m[2] === "love"; }) ? " has-love" : "")+'">'+moves+'</ul>'
