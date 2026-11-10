@@ -4,6 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <title>MEMBERS</title>
+<link rel="icon" type="image/png" href="/favicon.png">
 
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -1759,6 +1760,9 @@ textarea.f-field{
 .m-req p{margin:6px 0;line-height:1.5}
 .m-req .actions{display:flex;gap:10px;margin-top:10px}
 .m-req .actions button{flex:1}
+.m-req-head{cursor:pointer;display:flex;align-items:center;gap:8px}
+.m-req-head .chev{color:var(--gold);font-size:14px;flex:0 0 auto}
+.m-req-body{display:none;margin-top:10px}
 
 @media(max-width:400px){
   body{padding-left:12px;padding-right:12px}
@@ -2626,18 +2630,10 @@ textarea.f-field{
       '<div class="m-sec"><h2>Your test scores</h2><div id="scores"><p class="m-note">Loading\u2026</p></div>' +
       '<a class="big" href="/test/">Take the test</a></div>' +
 
-      '<div class="m-sec"><h2>Ask for a change</h2>' +
-      '<p class="m-note">You can\u2019t change the wall yourself. Send a request for approval.</p>' +
-      '<label class="f-label" for="req-type">What do you want to change?</label>' +
-      '<select class="f-field" id="req-type">' +
-        '<option value="change_title">Change my title</option>' +
-        '<option value="change_photo">Change my photo</option>' +
-        '<option value="change_move">Change a move</option>' +
-        '<option value="add_person">Add a person</option>' +
-        '<option value="other">Something else</option>' +
-      '</select>' +
-      '<label class="f-label" for="req-details">The details</label>' +
-      '<textarea class="f-field" id="req-details" placeholder="What do you want changed? Be specific."></textarea>' +
+      '<div class="m-sec"><h2>Request a change</h2>' +
+      '<p class="m-note">You can\u2019t change the wall yourself. Request anything and it goes to ajchapa for approval.</p>' +
+      '<label class="f-label" for="req-details">Your request</label>' +
+      '<textarea class="f-field" id="req-details" placeholder="What do you want? Write anything."></textarea>' +
       '<button class="big" id="req-send">Send request</button>' +
       '<p class="m-note f-msg" id="req-msg"></p></div>' +
 
@@ -2781,10 +2777,9 @@ textarea.f-field{
           if(d.status==='pending') items.push({id:doc.id, d:d});
         });
         if(!items.length){ b.innerHTML='<p class="m-note">No pending requests.</p>'; return; }
-        var label={change_title:'Change title', change_photo:'Change photo', change_move:'Change a move', add_person:'Add a person', other:'Something else'};
         b.innerHTML = items.map(function(it){
           var who = (window.GOAT && GOAT.PEOPLE[it.d.code]) || it.d.code || 'Someone';
-          return '<div class="m-req"><div class="cnt">'+esc(who)+' \u00b7 '+esc(label[it.d.type]||it.d.type)+' \u00b7 '+esc(fmtTime(it.d.createdAt))+'</div>' +
+          return '<div class="m-req"><div class="cnt">'+esc(who)+' \u00b7 '+esc(fmtTime(it.d.createdAt))+'</div>' +
             '<p>'+esc(it.d.details||'')+'</p>' +
             '<div class="actions">' +
               '<button class="btn-ghost" data-decide="approved" data-id="'+esc(it.id)+'" data-code="'+esc(it.d.code||'')+'">Approve</button>' +
@@ -2817,6 +2812,8 @@ textarea.f-field{
 
   /* ---------- MANAGE PEOPLE (admin only; the two-code gate is at login) ---------- */
   var manageOverrides={};
+  var manageScores={};
+  var manageOpen={};
   function startManagePeople(){
     // No gate here — the admin already passed the two codes at login.
     renderPeopleList();
@@ -2835,6 +2832,16 @@ textarea.f-field{
         var b=$('#manage-people'); if(b) b.innerHTML='<p class="m-note">Couldn\u2019t load people right now.</p>';
       });
       unsubs.push(unsub);
+      // Scores, so each row shows their HP (or "-" if they haven't taken the test).
+      var unsub2 = GOAT.db.collection('scores').onSnapshot(function(snap){
+        manageScores={};
+        snap.forEach(function(doc){
+          var d=doc.data()||{};
+          if(d.taken && typeof d.overall==='number') manageScores[doc.id]=d.overall;
+        });
+        drawPeopleList();
+      }, function(){});
+      unsubs.push(unsub2);
     }catch(e){ box.innerHTML='<p class="m-note">Couldn\u2019t load people right now.</p>'; }
   }
 
@@ -2850,8 +2857,11 @@ textarea.f-field{
       var name=(typeof ov.name==='string' && ov.name) ? ov.name : (p.name||c);
       var title=(typeof ov.title==='string' && ov.title) ? ov.title : (p.title||'');
       var photo=(typeof ov.photo==='string' && ov.photo) ? ov.photo : (p.photo||'');
+      var hp = (c===ADMIN) ? '???' : (typeof manageScores[c]==='number' ? manageScores[c] : '-');
+      var open = !!manageOpen[c];
       return '<div class="m-req" data-pcode="'+esc(c)+'">' +
-        '<div class="cnt">'+esc(name)+' \u00b7 '+esc(title)+' \u00b7 code '+esc(c)+(removed?' \u00b7 REMOVED':'')+'</div>' +
+        '<div class="m-req-head"><span class="chev">'+(open?'▾':'▸')+'</span><div class="cnt">'+esc(name)+' · '+esc(title)+' · HP '+esc(String(hp))+(removed?' · REMOVED':'')+'</div></div>' +
+        '<div class="m-req-body" style="display:'+(open?'block':'none')+'">' +
         '<label class="f-label">Name</label>' +
         '<input class="f-field" data-f="name" value="'+esc(name)+'">' +
         '<label class="f-label">Title</label>' +
@@ -2865,8 +2875,23 @@ textarea.f-field{
             : '<button class="btn-danger" data-act="remove">Remove from the wall</button>') +
         '</div>' +
         '<p class="m-note f-msg" data-msg></p>' +
+        '</div>' +
       '</div>';
     }).join('');
+    [].slice.call(box.querySelectorAll('.m-req-head')).forEach(function(head){
+      head.onclick=function(){
+        var wrap=head.closest ? head.closest('[data-pcode]') : null;
+        if(!wrap) return;
+        var c=wrap.getAttribute('data-pcode');
+        var body=wrap.querySelector('.m-req-body');
+        var chev=head.querySelector('.chev');
+        if(!body) return;
+        var open = body.style.display==='block';
+        body.style.display = open ? 'none' : 'block';
+        if(chev) chev.textContent = open ? '▸' : '▾';
+        manageOpen[c] = !open;
+      };
+    });
     [].slice.call(box.querySelectorAll('[data-act]')).forEach(function(btn){
       btn.onclick=function(){
         var wrap=btn.closest ? btn.closest('[data-pcode]') : null;
@@ -2875,7 +2900,7 @@ textarea.f-field{
         var act=btn.getAttribute('data-act');
         var msgEl=wrap.querySelector('[data-msg]');
         function say(t){ if(msgEl) msgEl.textContent=t; }
-        if(dbDown()){ say('The database isn\u2019t reachable right now.'); return; }
+        if(dbDown()){ say('The database isn’t reachable right now.'); return; }
         btn.disabled=true;
         GOAT.ensureAuth().then(function(){
           var ref=GOAT.db.collection('people').doc(c);
@@ -2896,24 +2921,23 @@ textarea.f-field{
             return ref.set(data, {merge:true}).then(function(){ say('Saved. The wall updates live.'); });
           }
         }).catch(function(e){
-          say('Couldn\u2019t save that right now. Try again.');
+          say('Couldn’t save that right now. Try again.');
           if(window.console) console.warn('[members] manage people failed:', e && e.message);
         }).then(function(){ btn.disabled=false; });
       };
     });
   }
-
   function sendRequest(){
-    var typeEl=$('#req-type'), detEl=$('#req-details'), msgEl=$('#req-msg'), btn=$('#req-send');
-    if(!typeEl || !detEl || !msgEl) return;
+    var detEl=$('#req-details'), msgEl=$('#req-msg'), btn=$('#req-send');
+    if(!detEl || !msgEl) return;
     var details=(detEl.value||'').trim();
-    if(!details){ msgEl.textContent='Write what you want changed first.'; return; }
+    if(!details){ msgEl.textContent='Write what you want first.'; return; }
     if(dbDown()){ msgEl.textContent='The database isn\u2019t reachable right now \u2014 try again once it\u2019s set up.'; return; }
     btn.disabled=true;
     GOAT.ensureAuth().then(function(){
       return GOAT.db.collection('requests').add({
         code: code,
-        type: typeEl.value,
+        type: 'other',
         details: details,
         status: 'pending',
         createdAt: firebase.firestore.FieldValue.serverTimestamp()
