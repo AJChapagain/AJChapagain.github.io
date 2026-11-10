@@ -1436,42 +1436,49 @@
       { name:"ajchapa", title:"Thee Goat?",
         photo:"/ajchapa.JPG", pos:"50% 25%", zoom:1,
         color:"gold", fx:"aura",
+   code:"1175",
         hp:"???",
         moves:[["Self Glaze", 120], ["Chill", 80], ["Cancer", 0]] },
 
       { name:"Alex", title:"Goat of Fortnite",
         photo:"/Alex.jpg", pos:"50% 25%", zoom:1,
         color:"blue", fx:"aim",
+   code:"1606",
         hp:63,
         moves:[["Likability", 90], ["Nice Guy", 100], ["1v1 vs ajchapa", 0]] },
 
       { name:"Kush", title:"Goat of Excel",
         photo:"/5E063B38-E541-412F-B0DE-A586461C325A.jpeg", pos:"50% 25%", zoom:1,
         color:"green", fx:"sheet",
+   code:"1809",
         hp:65,
         moves:[["Handsome", 85], ["Work Life Balance", 30], ["Shopaholic", 80]] },
 
       { name:"Mae", title:"Goat of Crafts",
         photo:"/Mae.JPG", pos:"0% 28%", zoom:1,
         color:"pink", fx:"craft",
+   code:"2986",
         hp:74,
         moves:[["Heart", 101], ["Analytical Reasoning", 90], ["Athleticism", 30]] },
 
       { name:"GaryBoy", title:"Walking Lunch Money",
         photo:"/Gary.png", pos:"50% 25%", zoom:1,
         color:"dlc", fx:"pot",
+   code:"5693",
         hp:70,
         moves:[["Liver & Lungs", 50], ["Personable", 80], ["Chef", 80]] },
 
       { name:"Mijo", title:"Goat of Money",
         photo:"/miho.JPG", pos:"50% 25%", zoom:1,
         color:"money", fx:"money",
+   code:"5831",
         hp:63,
         moves:[["Generosity", 80], ["Drive", 80], ["Emotional Availability", 30]] },
 
       { name:"Helen", title:"Keller",
         photo:"/helen.JPG", pos:"50% 25%", zoom:1,
         color:"ember", fx:"ember",
+   code:"6936",
         hp:60,
         moves:[["Drunk Politics", 100], ["Art", 80], ["Gluten", 0]] },
 
@@ -1479,6 +1486,7 @@
       { name:"Noel", title:"Goat of Style",
         photo:"/Noel.png", pos:"50% 25%", zoom:1,
         color:"style", fx:"drink",
+   code:"8321",
         hp:78,
         moves:[["Alcohol", 105], ["Exotic Dancer", 80], ["Communication", 50]] },
 
@@ -1486,6 +1494,7 @@
       { name:"Kelketra", title:"Goat of Golf With Friends",
         photo:"/kelketra.jpg", pos:"50% 25%", zoom:1,
         color:"golf", fx:"golf",
+   code:"8453",
         hp:60,
         moves:[["Rocket League",70],["Academic Weapon",30],["Resilience",80]] },
 
@@ -1493,6 +1502,7 @@
       { name:"Banananana", title:"Goat of Hosting",
         photo:"/BANANNA (1).jpeg", pos:"50% 42%", zoom:1,
         color:"host", fx:"host",
+   // no code yet — add code:"XXXX" here once ajchapa gives her one
         hp:71,
         moves:[["Love for Auggie", 100, "love"], ["Partner", 32], ["Generosity", 80]] },
     ];
@@ -1818,6 +1828,7 @@
       const card = document.createElement("article");
       card.className = "card c-" + (g.color || "gold") + (g.color === "ember" ? " c-dlc" : "") + (g.locked ? " locked" : "");
       card.dataset.fx = g.fx || "";
+      if (g.code) card.dataset.code = g.code;
       card.style.animationDelay = (i * 110) + "ms";
       card.style.setProperty("--pos", g.pos || "50% 25%");
       card.style.setProperty("--zoom", g.zoom || 1);
@@ -1904,7 +1915,7 @@
           </div>
           <div class="face back">
             ${BRK}
-            <div class="b-top"><div class="b-name">${g.name}</div><div class="b-hp">HP<b>${g.hp ?? "—"}</b></div></div>
+            <div class="b-top"><div class="b-name">${g.name}</div><div class="b-hp">HP<b data-hp>${g.hp ?? "—"}</b></div></div>
             <div class="back-title">${g.title}</div>
             <div class="back-rule"></div>
             <ul class="moves">${dlcMoves}</ul>
@@ -1927,7 +1938,7 @@
             <div class="keyline"></div>
             <div class="b-top">
               <div class="b-name">${g.name}</div>
-              <div class="b-hp">HP<b>${g.hp ?? "—"}</b></div>
+              <div class="b-hp">HP<b data-hp>${g.hp ?? "—"}</b></div>
             </div>
             <div class="back-title">${g.title}</div>
             <div class="back-rule"></div>
@@ -2367,5 +2378,10 @@
     }
     clock(); setInterval(clock, 1000);
   </script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+  <script src="/firebase/firebase-init.js"></script>
+  <script src="/firebase/wall-live.js"></script>
 </body>
 </html>

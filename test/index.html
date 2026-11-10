@@ -573,6 +573,11 @@ button:active{
 <body>
 <div id="app"></div>
 
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+<script src="/firebase/firebase-init.js"></script>
+<script src="/firebase/test-save.js"></script>
 <script>
 const COL={
   SPEED:'#ea6a1a',
@@ -1285,6 +1290,17 @@ let pwd='';
 
 function start(){
 
+  // Already logged in on the members page? Skip the PIN and go straight in.
+  try {
+    var saved = (window.GOAT && GOAT.getCode && GOAT.getCode()) || '';
+    if (saved && CODES[saved]) {
+      pwd = saved;
+      name = CODES[saved];
+      afterCode();
+      return;
+    }
+  } catch (e) {}
+
   showScreen(`
     <div class="card" style="text-align:center">
 
@@ -1345,6 +1361,7 @@ function start(){
         submitting=true;
         pwd=v;
         name=CODES[v];
+        if (window.GOAT && GOAT.setCode) { try { GOAT.setCode(pwd); } catch (e) {} }
         afterCode();
       }else{
 
@@ -1490,36 +1507,72 @@ function afterCode(){
     return;
   }
 
-  showScreen(`
-    <div class="card">
+  // Firestore one-take check (members app). If this code already took the
+  // test in the database, show that instead of the Start screen. Any
+  // failure falls through to the Start screen — localStorage still gates.
+  if (typeof window.checkCanTakeTest === 'function') {
+    if (window.GOAT && GOAT.setCode) { try { GOAT.setCode(pwd); } catch (e) {} }
+    window.checkCanTakeTest().then(function (r) {
+      if (!r.allowed) {
+        showScreen(`
+          <div class="card">
 
-      <h1 style="font-size:clamp(44px,11vw,52px)">
-        Hello, ${esc(name)}
-      </h1>
+            <h1 style="font-size:48px">
+              You already took this exam
+            </h1>
 
-      <div class="rule"></div>
+            <h2 style="font-size:40px;margin-top:22px">
+              ${esc(name)}
+            </h2>
 
-      <p class="it"
-        style="font-size:24px;line-height:1.4;margin:0">
-        Please take this carefully — it will reflect on your card. You can only take this QUIZ ONCE. Please send me a screenshot of what the end says.
-      </p>
+            <p class="it" style="font-size:22px;margin-top:18px">
+              ${esc(r.reason || "You've already taken the test. One attempt per code.")}
+            </p>
 
-      <button class="big" id="go">
-        Start
-      </button>
+          </div>
+        `);
+        return;
+      }
+      showHello();
+    }).catch(function () { showHello(); });
+    return;
+  }
 
-    </div>
-  `);
+  showHello();
 
-  setTimeout(()=>{
+  function showHello(){
 
-    $('#go').onclick=()=>{
-      results=[];
-      ti=0;
-      runTask();
-    };
+    showScreen(`
+      <div class="card">
 
-  },220);
+        <h1 style="font-size:clamp(44px,11vw,52px)">
+          Hello, ${esc(name)}
+        </h1>
+
+        <div class="rule"></div>
+
+        <p class="it"
+          style="font-size:24px;line-height:1.4;margin:0">
+          Please take this carefully — it will reflect on your card. You can only take this QUIZ ONCE. Please send me a screenshot of what the end says.
+        </p>
+
+        <button class="big" id="go">
+          Start
+        </button>
+
+      </div>
+    `);
+
+    setTimeout(()=>{
+
+      $('#go').onclick=()=>{
+        results=[];
+        ti=0;
+        runTask();
+      };
+
+    },220);
+  }
 }
 
 /* ---------- RUN TASK ---------- */
@@ -1640,6 +1693,19 @@ function finish(){
     );
 
   }catch(e){}
+
+  // Save to Firestore (members app). Fire-and-forget — the letter-code
+  // screen below stays as the fallback if the save fails or is blocked.
+  if (typeof window.saveTestResults === 'function') {
+    window.saveTestResults({
+      speed: Math.round(dm.SPEED),
+      memory: Math.round(dm.MEMORY),
+      reasoning: Math.round(dm.REASONING),
+      overall: overall
+    }).catch(function (e) {
+      if (window.console) console.warn('[test] save failed, letter code is the fallback:', e && e.message);
+    });
+  }
 
   showScreen(`
     <div class="card" style="text-align:center">

@@ -1,0 +1,899 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>MEMBERS</title>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Mulish:wght@400;600;800&display=swap" rel="stylesheet">
+
+<style>
+:root{
+  --ink:#111;
+  --mute:#888;
+  --line:#ebebeb;
+  --gold:#c9a227;
+  --gd:#a8842f;
+  --pale:#f1dfa8;
+  --foil:#d9c48f;
+  --ox:#9a1826;
+  --oxd:#5a0c15;
+}
+
+*{box-sizing:border-box}
+
+::selection{background:#f3e3b3}
+
+html{
+  width:100%;
+  overflow-x:hidden;
+}
+
+body{
+  margin:0;
+  width:100%;
+  min-height:100vh;
+  min-height:100dvh;
+  overflow-x:hidden;
+  background:
+    radial-gradient(1100px 420px at 50% 50%,rgba(217,196,143,.13),transparent 65%),
+    #fff;
+  color:var(--ink);
+  font-family:Mulish,system-ui,sans-serif;
+  display:flex;
+  justify-content:center;
+  padding:
+    max(24px,env(safe-area-inset-top))
+    16px
+    max(24px,env(safe-area-inset-bottom));
+}
+
+.mono{
+  font-family:Menlo,Monaco,Consolas,monospace;
+}
+
+#app{
+  width:100%;
+  max-width:640px;
+  margin:auto;
+  opacity:1;
+  transition:opacity .2s ease;
+}
+
+.card{
+  width:100%;
+  min-width:0;
+  background:#fff;
+  border:1px solid var(--line);
+  border-radius:18px;
+  padding:clamp(18px,5vw,28px);
+  box-shadow:0 12px 32px -12px rgba(90,12,21,.18);
+}
+
+h1,h2{
+  font-family:'Instrument Serif',serif;
+  font-weight:400;
+  margin:0;
+}
+
+h1{
+  font-size:clamp(44px,12vw,64px);
+  letter-spacing:-1px;
+  line-height:1;
+  color:var(--oxd);
+  overflow-wrap:anywhere;
+}
+
+.rule{
+  height:1px;
+  background:rgba(168,132,47,.5);
+  margin:16px 0 20px;
+}
+
+.it{
+  font-family:'Instrument Serif',serif;
+  font-style:italic;
+}
+
+.cnt{
+  font-family:Menlo,Monaco,Consolas,monospace;
+  font-size:11px;
+  letter-spacing:.14em;
+  text-transform:uppercase;
+  color:var(--mute);
+}
+
+.tag{
+  font-weight:800;
+  letter-spacing:.14em;
+  font-size:11px;
+  text-transform:uppercase;
+  color:var(--gd);
+}
+
+.sub{
+  color:var(--mute);
+  line-height:1.6;
+}
+
+input{
+  width:100%;
+  min-width:0;
+  padding:14px;
+  border:1px solid var(--line);
+  border-radius:12px;
+  font:inherit;
+  font-size:16px;
+  margin:18px 0;
+}
+
+input:focus{
+  outline:none;
+  border-color:var(--gold);
+}
+
+button{
+  font:inherit;
+  cursor:pointer;
+  -webkit-tap-highlight-color:transparent;
+  touch-action:manipulation;
+  transition:transform .06s;
+}
+
+button:active{
+  transform:scale(.98);
+}
+
+.big{
+  width:100%;
+  min-height:52px;
+  padding:15px 16px;
+  border:0;
+  border-radius:14px;
+  background:var(--gold);
+  color:#111;
+  font-weight:800;
+  font-size:17px;
+  margin-top:18px;
+}
+
+.big:disabled{
+  opacity:.3;
+  cursor:default;
+}
+
+.big:hover:not(:disabled){
+  background:var(--gd);
+}
+
+.opts{
+  display:grid;
+  gap:10px;
+  width:100%;
+  min-width:0;
+}
+
+.opts.two{
+  grid-template-columns:repeat(2,minmax(0,1fr));
+}
+
+.opts button{
+  min-width:0;
+  min-height:56px;
+  text-align:left;
+  padding:14px 12px;
+  background:#fff;
+  border:1px solid var(--line);
+  border-radius:14px;
+  font-size:16px;
+  line-height:1.4;
+  overflow-wrap:anywhere;
+}
+
+.opts.two button{
+  text-align:center;
+  font-weight:800;
+  font-size:18px;
+}
+
+.opts button:active:not(:disabled){
+  transform:scale(.98);
+}
+
+.opts button:disabled{
+  cursor:default;
+}
+
+.opts button.picked{
+  background:var(--ink);
+  color:#fff;
+  border-color:var(--ink);
+}
+
+.top{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  min-width:0;
+}
+
+.react{
+  height:min(380px,60vh);
+  min-height:260px;
+  border-radius:18px;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  text-align:center;
+  padding:20px;
+  user-select:none;
+  cursor:pointer;
+  touch-action:manipulation;
+}
+
+.react h2{
+  font-size:34px;
+}
+
+.react.idle{
+  background:#fff;
+  border:1px solid var(--line);
+}
+
+.react.wait{
+  background:#b3261e;
+  color:#fff;
+}
+
+.react.go{
+  background:#16a34a;
+  color:#fff;
+}
+
+.dom{
+  margin:14px 0;
+}
+
+.dom .r{
+  display:flex;
+  justify-content:space-between;
+  font-weight:800;
+  font-size:13px;
+  letter-spacing:.12em;
+  margin-bottom:6px;
+}
+
+.track{
+  height:10px;
+  background:var(--line);
+  border-radius:9px;
+  overflow:hidden;
+}
+
+.track i{
+  display:block;
+  height:100%;
+  border-radius:9px;
+}
+
+.overall{
+  font-family:Menlo,Monaco,Consolas,monospace;
+  font-size:96px;
+  line-height:1;
+  margin:6px 0;
+}
+
+.rev{
+  border-top:1px solid var(--line);
+  padding:14px 0;
+  font-size:14px;
+  line-height:1.5;
+}
+
+.rev b{
+  display:block;
+  font-size:15px;
+  margin-bottom:4px;
+}
+
+.row{
+  display:flex;
+  gap:10px;
+  margin-top:12px;
+}
+
+.row button{
+  flex:1;
+  min-height:48px;
+  padding:13px;
+  border-radius:12px;
+  border:1px solid var(--line);
+  background:#fff;
+  font-weight:800;
+}
+
+.pads{
+  display:grid;
+  grid-template-columns:repeat(2,minmax(0,1fr));
+  gap:12px;
+  width:100%;
+}
+
+.pad{
+  min-width:0;
+  height:130px;
+  min-height:120px;
+  border:0;
+  border-radius:18px;
+  opacity:.35;
+  transition:opacity .08s,transform .06s;
+  touch-action:manipulation;
+}
+
+.pad.lit{
+  opacity:1;
+}
+
+.word{
+  font-weight:800;
+  font-size:clamp(48px,14vw,72px);
+  text-align:center;
+  margin:22px 0;
+  letter-spacing:.04em;
+}
+
+.opts.shapes button{
+  min-height:140px;
+  padding:10px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+}
+
+.opts.shapes svg{
+  display:block;
+  width:100%;
+  height:110px;
+  max-width:160px;
+}
+
+/* ---------- TIMER HEADER ---------- */
+
+.timer-head{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:40px;
+  width:100%;
+  min-width:0;
+  margin-bottom:12px;
+}
+
+.timer-count{
+  font-family:Menlo,Monaco,Consolas,monospace;
+  font-size:11px;
+  letter-spacing:.14em;
+  text-transform:uppercase;
+  color:var(--mute);
+  white-space:nowrap;
+  flex-shrink:0;
+}
+
+.timer-pill{
+  flex-shrink:0;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  border:1px solid var(--gold);
+  border-radius:999px;
+  padding:6px 12px;
+  font-family:Menlo,Monaco,Consolas,monospace;
+  font-size:16px;
+  color:var(--ink);
+  background:rgba(201,162,39,.05);
+  white-space:nowrap;
+  min-width:55px;
+}
+
+.bar{
+  position:relative;
+  width:100%;
+  height:4px;
+  background:var(--line);
+  border-radius:99px;
+  overflow:hidden;
+  margin-bottom:20px;
+}
+
+.bar i{
+  display:block;
+  width:100%;
+  height:100%;
+  background:var(--gold);
+  border-radius:99px;
+  transition:none;
+}
+
+/* ---------- TASK EDITORIAL START ---------- */
+
+.task-index{
+  font-family:'Instrument Serif',serif;
+  font-size:clamp(64px,16vw,88px);
+  line-height:.95;
+  color:var(--gold);
+  margin:12px 0 8px;
+}
+
+.task-title{
+  font-family:'Instrument Serif',serif;
+  font-size:40px;
+  line-height:1.05;
+  overflow-wrap:anywhere;
+}
+
+.task-rule{
+  width:100%;
+  height:1px;
+  background:rgba(168,132,47,.5);
+  margin:20px 0;
+}
+
+.task-instruction{
+  font-family:'Instrument Serif',serif;
+  font-style:italic;
+  font-size:23px;
+  line-height:1.4;
+  color:#555;
+  margin:0;
+}
+
+.task-position{
+  margin-bottom:8px;
+}
+
+/* ---------- PASSWORD GATE ---------- */
+
+.pin-row{
+  display:grid;
+  grid-template-columns:repeat(4,minmax(0,1fr));
+  gap:10px;
+  width:100%;
+  max-width:340px;
+  margin:22px auto 12px;
+}
+
+.pin-box{
+  width:100%;
+  min-width:0;
+  height:68px;
+  margin:0;
+  padding:0;
+  text-align:center;
+  font-family:Menlo,Monaco,Consolas,monospace;
+  font-size:28px;
+  font-weight:600;
+  border:1px solid var(--line);
+  border-radius:12px;
+  background:#fff;
+  color:var(--ink);
+  outline:none;
+  transition:border-color .12s,background .12s;
+  caret-color:var(--gold);
+}
+
+.pin-box:focus{
+  border:1px solid var(--gold);
+}
+
+.pin-box.wrong{
+  border:2px solid var(--ox);
+  background:rgba(154,24,38,.04);
+}
+
+.error-message{
+  min-height:22px;
+  margin:8px 0 0;
+  color:var(--ox);
+  font-weight:600;
+  font-size:14px;
+  text-align:center;
+}
+
+/* ---------- RESULTS PLAQUE ---------- */
+
+.plaque{
+  width:100%;
+  border:1px solid var(--gold);
+  border-radius:18px;
+  background:rgba(201,162,39,.08);
+  padding:24px 16px;
+  margin-top:20px;
+  text-align:center;
+}
+
+.plaque-code{
+  font-family:Menlo,Monaco,Consolas,monospace;
+  font-size:clamp(48px,16vw,72px);
+  line-height:1.15;
+  letter-spacing:.08em;
+  color:var(--oxd);
+  overflow-wrap:anywhere;
+}
+
+@media(max-width:400px){
+  body{
+    padding-left:12px;
+    padding-right:12px;
+  }
+
+  .card{
+    padding:18px;
+  }
+
+  .timer-head{
+    gap:40px;
+  }
+
+  .opts{
+    gap:9px;
+  }
+
+  .opts.two button{
+    padding:12px 8px;
+  }
+
+  .opts.shapes button{
+    min-height:140px;
+  }
+
+  .opts.shapes svg{
+    height:100px;
+  }
+
+  .pin-row{
+    gap:8px;
+  }
+
+  .pin-box{
+    height:64px;
+  }
+}
+
+@media(prefers-reduced-motion:reduce){
+  #app,button,.pin-box{
+    transition:none;
+  }
+}
+</style>
+<style>
+/* ---- members additions (on top of the test page's CSS) ---- */
+a.big{display:block;text-align:center;text-decoration:none}
+a.big:hover:not(:disabled){background:var(--gd)}
+.m-photo{width:120px;height:120px;border-radius:50%;object-fit:cover;border:2px solid var(--gold);display:block;margin:0 auto 12px;background:#f6f6f6}
+.m-sec{margin-top:28px}
+.m-sec h2{font-size:28px}
+.m-row{display:flex;justify-content:space-between;gap:12px;padding:10px 0;border-bottom:1px solid var(--line);font-size:16px}
+.m-row:last-child{border-bottom:0}
+.m-row b{font-family:Menlo,Monaco,Consolas,monospace}
+.m-note{color:var(--mute);font-size:14px;line-height:1.6}
+.m-field{width:100%;font:inherit;font-size:16px;padding:13px 14px;border:1px solid var(--line);border-radius:12px;background:#fff;color:var(--ink);margin-top:10px}
+.m-field:focus{outline:none;border-color:var(--gold)}
+textarea.m-field{min-height:96px;resize:vertical;line-height:1.5}
+.m-note-item{padding:12px 0;border-bottom:1px solid var(--line);font-size:15px;line-height:1.5}
+.m-note-item:last-child{border-bottom:0}
+.m-note-item .cnt{margin-top:4px}
+.m-req{border:1px solid var(--line);border-radius:14px;padding:14px;margin-top:12px}
+.m-req p{margin:6px 0;line-height:1.5}
+.m-req .actions{display:flex;gap:10px;margin-top:10px}
+.m-req .actions button{flex:1}
+.btn-ghost{background:#fff;border:1px solid var(--gold);color:var(--gd);border-radius:14px;min-height:44px;padding:10px 14px;font-weight:800;font-size:15px;width:100%}
+.btn-ghost:hover:not(:disabled){background:rgba(201,162,39,.08)}
+.btn-danger{background:#fff;border:1px solid var(--ox);color:var(--ox);border-radius:14px;min-height:44px;padding:10px 14px;font-weight:800;font-size:15px;width:100%}
+.btn-danger:hover:not(:disabled){background:rgba(154,24,38,.06)}
+.m-top{display:flex;justify-content:space-between;align-items:baseline;gap:12px}
+.linklike{background:none;border:0;color:var(--gd);font-weight:800;font-size:14px;padding:0;cursor:pointer}
+</style>
+</head>
+
+<body>
+<div id="app"></div>
+
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+<script src="/firebase/firebase-init.js"></script>
+<script>
+(function(){
+  var $=function(s){return document.querySelector(s);};
+  var app=$('#app');
+  var esc=function(s){return String(s).replace(/[&<>"']/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];});};
+  var ADMIN='1175';
+  var code='';
+  var profile=null;
+  var unsubs=[];
+
+  function stopListeners(){ unsubs.forEach(function(u){try{u();}catch(e){}}); unsubs=[]; }
+
+  function show(html){
+    app.style.opacity='0';
+    setTimeout(function(){ app.innerHTML=html; app.style.opacity='1'; },200);
+  }
+
+  function fmtTime(ts){
+    try{
+      var d = ts && ts.toDate ? ts.toDate() : (ts ? new Date(ts) : null);
+      if(!d || isNaN(d.getTime())) return '';
+      return d.toLocaleDateString() + ' ' + d.toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'});
+    }catch(e){ return ''; }
+  }
+
+  function dbDown(){
+    return !(window.GOAT && GOAT.db);
+  }
+
+  /* ---------- LOGIN ---------- */
+
+  function renderLogin(note){
+    stopListeners();
+    code=''; profile=null;
+    var down = dbDown();
+    var noGoat = !window.GOAT;
+    show(
+    '<div class="card" style="text-align:center">' +
+      '<h1>MEMBERS</h1><div class="rule"></div>' +
+      '<p class="it" style="font-size:24px;margin:0">Enter your code</p>' +
+      '<div class="pin-row" id="pins">' +
+        [0,1,2,3].map(function(i){
+          return '<input class="pin-box" data-i="'+i+'" type="text" inputmode="numeric" pattern="[0-9]*" maxlength="1" autocomplete="off">';
+        }).join('') +
+      '</div>' +
+      '<p class="error-message" id="er">' + esc(note||'') + '</p>' +
+      (noGoat ? '<p class="m-note" style="text-align:center">Members scripts didn\u2019t load. Refresh and try again.</p>' :
+        down ? '<p class="m-note" style="text-align:center">The members database is not reachable right now. You can still log in and see your card, but scores, requests, and notifications need the database.</p>' : '') +
+      '<p class="m-note" style="text-align:center;margin-top:18px">This is the GOAT wall members area. Your code is the 4-digit code from the test.</p>' +
+    '</div>');
+    setTimeout(bindPin, 220);
+  }
+
+  function bindPin(){
+    var pins=[].slice.call(app.querySelectorAll('.pin-box'));
+    var er=$('#er');
+    if(!pins.length) return;
+    var submitting=false;
+    var value=function(){ return pins.map(function(p){return p.value;}).join(''); };
+    var clearWrong=function(){ pins.forEach(function(p){p.classList.remove('wrong');}); };
+    var tryIt=function(){
+      if(submitting) return;
+      if(!window.GOAT){
+        er.textContent='Members scripts didn\u2019t load. Refresh and try again.';
+        return;
+      }
+      var v=value();
+      if(v.length!==4) return;
+      if(GOAT.PEOPLE[v]){
+        submitting=true;
+        GOAT.setCode(v);
+        GOAT.ensureAuth();
+        code=v; profile=GOAT.PROFILES[v];
+        renderDashboard();
+      }else{
+        submitting=true;
+        pins.forEach(function(p){p.classList.add('wrong');});
+        er.textContent='Wrong code — try again.';
+        setTimeout(function(){
+          pins.forEach(function(p){p.value='';p.classList.remove('wrong');});
+          er.textContent=''; submitting=false; pins[0].focus();
+        },750);
+      }
+    };
+    pins.forEach(function(p,i){
+      p.oninput=function(){
+        p.value=p.value.replace(/\D/g,'').slice(-1);
+        clearWrong();
+        if(p.value&&i<3) pins[i+1].focus();
+        if(i===3&&p.value) tryIt();
+      };
+      p.onkeydown=function(e){
+        if(e.key==='Backspace'&&!p.value&&i>0){ pins[i-1].focus(); pins[i-1].value=''; e.preventDefault(); }
+        if(e.key==='Enter') tryIt();
+        if(e.key==='ArrowLeft'&&i>0) pins[i-1].focus();
+        if(e.key==='ArrowRight'&&i<3) pins[i+1].focus();
+      };
+      p.onpaste=function(e){
+        e.preventDefault();
+        var pasted=(e.clipboardData||window.clipboardData).getData('text').replace(/\D/g,'').slice(0,4);
+        if(!pasted) return;
+        clearWrong();
+        pasted.split('').forEach(function(digit,j){ if(pins[j]) pins[j].value=digit; });
+        if(pasted.length===4) tryIt(); else pins[Math.min(pasted.length,3)].focus();
+      };
+    });
+    pins[0].focus();
+  }
+
+  /* ---------- DASHBOARD ---------- */
+
+  function renderDashboard(){
+    stopListeners();
+    if(!profile) return renderLogin('');
+    var isAdmin = code===ADMIN;
+    show(
+    '<div class="card">' +
+      '<div class="m-top"><h1 style="font-size:44px">Hello, '+esc(profile.name)+'</h1>' +
+      '<button class="linklike" id="logout">Log out</button></div>' +
+      '<div class="rule"></div>' +
+      '<div style="text-align:center">' +
+        '<img class="m-photo" src="'+esc(profile.photo)+'" alt="'+esc(profile.name)+'">' +
+        '<h2 style="font-size:36px">'+esc(profile.name)+'</h2>' +
+        '<p class="it" style="font-size:22px;margin:6px 0 0">'+esc(profile.title)+'</p>' +
+      '</div>' +
+
+      '<div class="m-sec"><h2>Your test scores</h2><div id="scores"><p class="m-note">Loading\u2026</p></div>' +
+      '<a class="big" href="/test/">Take the test</a></div>' +
+
+      '<div class="m-sec"><h2>Ask ajchapa for a change</h2>' +
+      '<p class="m-note">You can\u2019t change the wall yourself. Send a request and ajchapa will approve it or not.</p>' +
+      '<select class="m-field" id="req-type">' +
+        '<option value="change_title">Change my title</option>' +
+        '<option value="change_photo">Change my photo</option>' +
+        '<option value="change_move">Change a move</option>' +
+        '<option value="add_person">Add a person</option>' +
+        '<option value="other">Something else</option>' +
+      '</select>' +
+      '<textarea class="m-field" id="req-details" placeholder="What do you want changed? Be specific."></textarea>' +
+      '<button class="big" id="req-send">Send request</button>' +
+      '<p class="m-note" id="req-msg" style="margin-top:10px"></p></div>' +
+
+      '<div class="m-sec"><h2>Notifications</h2><div id="notes"><p class="m-note">Loading\u2026</p></div></div>' +
+
+      (isAdmin ? '<div class="m-sec"><h2>Requests for you</h2><div id="admin-reqs"><p class="m-note">Loading\u2026</p></div></div>' : '') +
+
+      '<p class="m-note" style="margin-top:26px;text-align:center">Only ajchapa can change the wall. Requests go to him for approval.</p>' +
+    '</div>');
+    setTimeout(function(){
+      var lo=$('#logout');
+      if(lo) lo.onclick=function(){ stopListeners(); if(window.GOAT) GOAT.clearCode(); renderLogin(''); };
+      var send=$('#req-send');
+      if(send) send.onclick=sendRequest;
+      startScores();
+      startNotes();
+      if(isAdmin) startAdmin();
+    }, 220);
+  }
+
+  function startScores(){
+    var box=$('#scores'); if(!box) return;
+    if(dbDown()){ box.innerHTML='<p class="m-note">Couldn\u2019t reach the database yet. Your scores will show once it\u2019s up.</p>'; return; }
+    try{
+      var unsub = GOAT.db.collection('scores').doc(code).onSnapshot(function(doc){
+        var b=$('#scores'); if(!b) return;
+        var d = doc.exists ? (doc.data()||{}) : null;
+        if(!d || !d.taken){
+          b.innerHTML='<p class="m-note">You haven\u2019t taken the test yet. Your HP updates on the wall as soon as you finish it.</p>';
+          return;
+        }
+        var row=function(label,v){ return '<div class="m-row"><span>'+label+'</span><b>'+Math.round(Number(v)||0)+'</b></div>'; };
+        b.innerHTML = row('SPEED',d.speed)+row('MEMORY',d.memory)+row('REASONING',d.reasoning)+
+          '<div class="m-row"><span>HP (overall)</span><b>'+Math.round(Number(d.overall)||0)+'</b></div>';
+      }, function(){
+        var b=$('#scores'); if(b) b.innerHTML='<p class="m-note">Couldn\u2019t load scores right now.</p>';
+      });
+      unsubs.push(unsub);
+    }catch(e){ box.innerHTML='<p class="m-note">Couldn\u2019t load scores right now.</p>'; }
+  }
+
+  function startNotes(){
+    var box=$('#notes'); if(!box) return;
+    if(dbDown()){ box.innerHTML='<p class="m-note">Notifications need the database.</p>'; return; }
+    try{
+      var unsub = GOAT.db.collection('notifications').orderBy('createdAt','desc').limit(30).onSnapshot(function(snap){
+        var b=$('#notes'); if(!b) return;
+        var items=[];
+        snap.forEach(function(doc){
+          var d=doc.data()||{};
+          if(code===ADMIN || d.code===code) items.push(d);
+        });
+        if(!items.length){ b.innerHTML='<p class="m-note">No notifications yet.</p>'; return; }
+        b.innerHTML = items.map(function(d){
+          return '<div class="m-note-item">'+esc(d.message||'')+'<div class="cnt">'+esc(fmtTime(d.createdAt))+'</div></div>';
+        }).join('');
+      }, function(){
+        var b=$('#notes'); if(b) b.innerHTML='<p class="m-note">Couldn\u2019t load notifications right now.</p>';
+      });
+      unsubs.push(unsub);
+    }catch(e){ box.innerHTML='<p class="m-note">Couldn\u2019t load notifications right now.</p>'; }
+  }
+
+  function startAdmin(){
+    var box=$('#admin-reqs'); if(!box) return;
+    if(dbDown()){ box.innerHTML='<p class="m-note">Requests need the database.</p>'; return; }
+    try{
+      var unsub = GOAT.db.collection('requests').orderBy('createdAt','desc').limit(50).onSnapshot(function(snap){
+        var b=$('#admin-reqs'); if(!b) return;
+        var items=[];
+        snap.forEach(function(doc){
+          var d=doc.data()||{};
+          if(d.status==='pending') items.push({id:doc.id, d:d});
+        });
+        if(!items.length){ b.innerHTML='<p class="m-note">No pending requests.</p>'; return; }
+        var label={change_title:'Change title', change_photo:'Change photo', change_move:'Change a move', add_person:'Add a person', other:'Something else'};
+        b.innerHTML = items.map(function(it){
+          var who = (window.GOAT && GOAT.PEOPLE[it.d.code]) || it.d.code || 'Someone';
+          return '<div class="m-req"><div class="cnt">'+esc(who)+' \u00b7 '+esc(label[it.d.type]||it.d.type)+' \u00b7 '+esc(fmtTime(it.d.createdAt))+'</div>' +
+            '<p>'+esc(it.d.details||'')+'</p>' +
+            '<div class="actions">' +
+              '<button class="btn-ghost" data-decide="approved" data-id="'+esc(it.id)+'" data-code="'+esc(it.d.code||'')+'">Approve</button>' +
+              '<button class="btn-danger" data-decide="denied" data-id="'+esc(it.id)+'" data-code="'+esc(it.d.code||'')+'">Deny</button>' +
+            '</div></div>';
+        }).join('');
+        [].slice.call(b.querySelectorAll('[data-decide]')).forEach(function(btn){
+          btn.onclick=function(){ decideRequest(btn.getAttribute('data-id'), btn.getAttribute('data-code'), btn.getAttribute('data-decide'), btn); };
+        });
+      }, function(){
+        var b=$('#admin-reqs'); if(b) b.innerHTML='<p class="m-note">Couldn\u2019t load requests right now.</p>';
+      });
+      unsubs.push(unsub);
+    }catch(e){ box.innerHTML='<p class="m-note">Couldn\u2019t load requests right now.</p>'; }
+  }
+
+  function decideRequest(id, requesterCode, status, btn){
+    if(dbDown()) return;
+    if(btn) btn.disabled=true;
+    GOAT.ensureAuth().then(function(){
+      return GOAT.db.collection('requests').doc(id).update({ status: status });
+    }).then(function(){
+      var msg = status==='approved' ? 'ajchapa approved your request.' : 'ajchapa denied your request.';
+      return GOAT.notify(msg, status==='approved' ? 'request_approved' : 'request_denied', requesterCode || '');
+    }).catch(function(e){
+      if(window.console) console.warn('[members] decide failed:', e && e.message);
+      if(btn) btn.disabled=false;
+    });
+  }
+
+  function sendRequest(){
+    var typeEl=$('#req-type'), detEl=$('#req-details'), msgEl=$('#req-msg'), btn=$('#req-send');
+    if(!typeEl || !detEl || !msgEl) return;
+    var details=(detEl.value||'').trim();
+    if(!details){ msgEl.textContent='Write what you want changed first.'; return; }
+    if(dbDown()){ msgEl.textContent='The database isn\u2019t reachable right now — try again once it\u2019s set up.'; return; }
+    btn.disabled=true;
+    GOAT.ensureAuth().then(function(){
+      return GOAT.db.collection('requests').add({
+        code: code,
+        type: typeEl.value,
+        details: details,
+        status: 'pending',
+        createdAt: firebase.firestore.FieldValue.serverTimestamp()
+      });
+    }).then(function(){
+      detEl.value='';
+      msgEl.textContent='Sent. ajchapa will review it.';
+      var who=(window.GOAT && GOAT.PEOPLE[code]) || code;
+      return GOAT.notify(who+' sent a request.', 'request_created', ADMIN);
+    }).catch(function(e){
+      msgEl.textContent='Couldn\u2019t send that right now. Try again.';
+      if(window.console) console.warn('[members] sendRequest failed:', e && e.message);
+    }).then(function(){ btn.disabled=false; });
+  }
+
+  /* ---------- BOOT ---------- */
+
+  (function boot(){
+    try{
+      var c = (window.GOAT && GOAT.getCode()) || '';
+      if(c && window.GOAT && GOAT.PEOPLE[c]){
+        code=c; profile=GOAT.PROFILES[c];
+        GOAT.ensureAuth();
+        renderDashboard();
+      }else{
+        renderLogin('');
+      }
+    }catch(e){ renderLogin(''); }
+  })();
+})();
+</script>
+</body>
+</html>
