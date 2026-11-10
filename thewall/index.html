@@ -267,11 +267,6 @@
           }
         }
 
-        @media (prefers-reduced-motion: reduce) {
-          .card.flipped .face.back::after {
-            animation: none;
-          }
-        }
 
         .face.back > * {
           position: relative;
@@ -324,10 +319,8 @@
           -webkit-background-clip: text;
                   background-clip: text;
           -webkit-text-fill-color: transparent;
-          filter: hue-rotate(0deg) brightness(1)
-                  drop-shadow(0 0 3px rgba(150,120,255,.9))
+          filter: drop-shadow(0 0 3px rgba(150,120,255,.9))
                   drop-shadow(0 0 10px color-mix(in srgb, var(--ac, #8a5cff) 60%, transparent));
-          animation: hp-cosmos 4s ease-in-out infinite;
         }
 
         /* twinkling stars scattered around the number */
@@ -341,7 +334,6 @@
           background: #7a5cff;
           box-shadow: -7px 5px 0 #19b5ff, 38px -4px 0 #ff5fb0, 42px 24px 0 #f5b400,
                       -5px 27px 0 #ff5fb0, 18px -8px 0 #19b5ff, 12px 40px 0 #7a5cff;
-          animation: hp-twinkle 1.6s ease-in-out infinite alternate;
         }
         /* 4-point sparkle, top-right */
         .b-hp b::after {
@@ -352,77 +344,9 @@
           pointer-events: none;
           background: #ffc933;
           clip-path: polygon(50% 0, 61% 39%, 100% 50%, 61% 61%, 50% 100%, 39% 61%, 0 50%, 39% 39%);
-          animation: hp-sparkle 2.2s ease-in-out infinite;
         }
 
-        /* THE MOON (comes in from the left) */
-        .b-hp::before {
-          content: "";
-          position: absolute;
-          z-index: 2;
-          left: 50%; top: -8px;
-          width: 12px; height: 12px;
-          margin-left: -6px;
-          border-radius: 50%;
-          pointer-events: none;
-          border: 1px solid #2c1d78;
-          background:
-            radial-gradient(circle at 62% 66%, rgba(90,80,150,.35) 0 1.6px, transparent 2px),
-            radial-gradient(circle at 34% 38%, rgba(90,80,150,.35) 0 1.3px, transparent 1.8px),
-            radial-gradient(circle at 35% 30%, #fff, #d6dcff 60%, #a9b0e6);
-          box-shadow: 0 0 6px rgba(190,200,255,.9);
-          animation: hp-moon 4s ease-in-out infinite;
-        }
-        /* THE COMET (comes in from the upper right) */
-        .b-hp::after {
-          content: "";
-          position: absolute;
-          z-index: 2;
-          left: 50%; top: -6px;
-          width: 26px; height: 5px;
-          border-radius: 5px;
-          pointer-events: none;
-          transform-origin: 2px 50%;
-          background:
-            radial-gradient(circle at 3px 50%, #fff 0 1.6px, #ffd24a 2.6px, transparent 4px),
-            linear-gradient(90deg, #ff4fa8, rgba(120,90,255,.6) 45%, transparent);
-          animation: hp-comet 4s ease-in-out infinite;
-        }
 
-        @keyframes hp-moon {
-          0%   { transform: translate(-28px,-4px) scale(.8); opacity: 0; }
-          10%  { opacity: 1; }
-          44%  { transform: translate(-4px,-2px) scale(1); opacity: 1; box-shadow: 0 0 6px rgba(190,200,255,.9); }
-          50%  { transform: translate(-1px,-1px) scale(1.3); opacity: 1;
-                 box-shadow: 0 0 0 4px rgba(255,210,80,.95), 0 0 20px 12px rgba(255,100,210,.85); }
-          62%  { transform: translate(-16px,-8px) scale(.9) rotate(-40deg); opacity: .8; box-shadow: 0 0 8px rgba(255,150,220,.7); }
-          74%  { transform: translate(-26px,-12px) scale(.7); opacity: 0; }
-          100% { transform: translate(-28px,-4px) scale(.8); opacity: 0; }
-        }
-        @keyframes hp-comet {
-          0%   { transform: translate(36px,-16px) rotate(-24deg); opacity: 0; }
-          10%  { opacity: 1; }
-          44%  { transform: translate(5px,-3px) rotate(-24deg); opacity: 1; }
-          50%  { transform: translate(0,0) rotate(-24deg) scaleX(.15); opacity: 1; }
-          53%  { opacity: 0; }
-          100% { transform: translate(36px,-16px) rotate(-24deg); opacity: 0; }
-        }
-        @keyframes hp-cosmos {
-          0%, 100% { filter: hue-rotate(0deg) brightness(1) drop-shadow(0 0 3px rgba(150,120,255,.9)) drop-shadow(0 0 10px color-mix(in srgb, var(--ac, #8a5cff) 60%, transparent)); }
-          30%      { filter: hue-rotate(35deg) brightness(1) drop-shadow(0 0 4px rgba(90,200,255,.9)) drop-shadow(0 0 14px color-mix(in srgb, var(--ac, #8a5cff) 75%, transparent)); }
-          50%      { filter: hue-rotate(70deg) brightness(1.5) drop-shadow(0 0 6px #fff) drop-shadow(0 0 24px color-mix(in srgb, var(--ac, #8a5cff) 95%, transparent)); }
-          75%      { filter: hue-rotate(20deg) brightness(1.05) drop-shadow(0 0 4px rgba(255,120,210,.9)) drop-shadow(0 0 12px color-mix(in srgb, var(--ac, #8a5cff) 70%, transparent)); }
-        }
-        @keyframes hp-twinkle { from { opacity: .25; } to { opacity: 1; } }
-        @keyframes hp-sparkle {
-          0%, 100% { transform: scale(.4) rotate(0deg); opacity: .5; }
-          50%      { transform: scale(1.1) rotate(90deg); opacity: 1; }
-        }
-
-        @media (prefers-reduced-motion: reduce) {
-          .b-hp b, .b-hp b::before, .b-hp b::after { animation: none; }
-          .b-hp::before, .b-hp::after { display: none; }
-        }
 
         .back-title {
           margin-top: 5px;
