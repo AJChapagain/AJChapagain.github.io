@@ -102,6 +102,17 @@
               var d = doc.data() || {};
               if (d.taken) updateOne(doc.id, d.overall);
             });
+            // A deleted score doc means the test was reset: HP goes back to "-".
+            snap.docChanges().forEach(function (ch) {
+              if (ch.type === "removed") {
+                var code = ch.doc.id;
+                if (code === "1175") return;
+                var card = document.querySelector('[data-code="' + code + '"]');
+                if (!card) return;
+                var hp = card.querySelector("[data-hp]");
+                if (hp && hp.textContent !== "-") hp.textContent = "-";
+              }
+            });
           }, function (e) {
             log("scores listener stopped:", e && e.message);
           });

@@ -2873,6 +2873,7 @@ textarea.f-field{
             ? '<button class="btn-ghost" data-act="restore">Restore to the wall</button>'
             : '<button class="btn-danger" data-act="remove">Remove from the wall</button>') +
         '</div>' +
+        '<div class="actions"><button class="btn-ghost" data-act="reset">Reset test</button></div>' +
         '<p class="m-note f-msg" data-msg></p>' +
         '</div>' +
       '</div>';
@@ -2902,6 +2903,10 @@ textarea.f-field{
         if(dbDown()){ say('The database isn’t reachable right now.'); return; }
         btn.disabled=true;
         GOAT.ensureAuth().then(function(){
+          if(act==='reset'){
+            try { localStorage.removeItem('goatTaken_'+c); } catch (e) {}
+            return GOAT.db.collection('scores').doc(c).delete().then(function(){ say('Test reset. They can take it again.'); });
+          }
           var ref=GOAT.db.collection('people').doc(c);
           if(act==='remove'){
             return ref.set({removed:true}, {merge:true}).then(function(){ say('Removed from the wall.'); });
