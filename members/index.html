@@ -344,13 +344,13 @@
           display: inline-block;
           font-family: "Anton", Impact, "Arial Narrow Bold", sans-serif;
           font-weight: 400;
-          font-size: 34px;
+          font-size: 20px;
           line-height: 1;
           letter-spacing: .03em;
           font-variant-numeric: lining-nums;
           transform: skewX(-6deg);
           color: #7a5cff;
-          -webkit-text-stroke: .8px #1a0b4d;
+          -webkit-text-stroke: .5px #1a0b4d;
           background:
             radial-gradient(1.5px 1.5px at 18% 24%, #fff 98%, transparent),
             radial-gradient(1.5px 1.5px at 62% 16%, #fff 98%, transparent),
@@ -365,24 +365,12 @@
                   drop-shadow(0 0 10px color-mix(in srgb, var(--ac, #8a5cff) 60%, transparent));
         }
 
-        /* twinkling stars scattered around the number */
-        .b-hp b::before {
-          content: "";
-          position: absolute;
-          left: 0; top: 0;
-          width: 2px; height: 2px;
-          border-radius: 50%;
-          pointer-events: none;
-          background: #7a5cff;
-          box-shadow: -7px 5px 0 #19b5ff, 38px -4px 0 #ff5fb0, 42px 24px 0 #f5b400,
-                      -5px 27px 0 #ff5fb0, 18px -8px 0 #19b5ff, 12px 40px 0 #7a5cff;
-        }
         /* 4-point sparkle, top-right */
         .b-hp b::after {
           content: "";
           position: absolute;
-          right: -9px; top: -7px;
-          width: 11px; height: 11px;
+          right: -7px; top: -5px;
+          width: 8px; height: 8px;
           pointer-events: none;
           background: #ffc933;
           clip-path: polygon(50% 0, 61% 39%, 100% 50%, 61% 61%, 50% 100%, 39% 61%, 0 50%, 39% 39%);
@@ -580,7 +568,7 @@
           }
 
           .b-hp b {
-            font-size: 30px;
+            font-size: 18px;
           }
 
           .back-title {
