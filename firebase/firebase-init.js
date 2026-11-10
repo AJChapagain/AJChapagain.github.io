@@ -21,8 +21,7 @@
   };
 
   // code -> display name. Used by test-save.js (string concatenation).
-  // NOTE: Banananana has NO code yet — do not invent one. Add her here
-  // (and to PROFILES below) once ajchapa gives her a code.
+  // Banananana's code is 2468 (added 2026-11-09).
   var PEOPLE = {
     "1175": "ajchapa",
     "1606": "Alex",
@@ -32,7 +31,8 @@
     "5831": "Mijo",
     "6936": "Helen",
     "8321": "Noel",
-    "8453": "Kelketra"
+    "8453": "Kelketra",
+    "2468": "Banananana"
   };
 
   // code -> { name, title, photo }. Used by the members dashboard to render
@@ -46,8 +46,8 @@
     "5831": { name: "Mijo",      title: "Goat of Money",             photo: "/miho.JPG" },
     "6936": { name: "Helen",     title: "Keller",                    photo: "/helen.JPG" },
     "8321": { name: "Noel",      title: "Goat of Style",             photo: "/Noel.png" },
-    "8453": { name: "Kelketra",  title: "Goat of Golf With Friends", photo: "/kelketra.jpg" }
-    // Banananana: no code yet. Add "XXXX": { name:"Banananana", title:"Goat of Hosting", photo:"/BANANNA (1).jpeg" } once she has one.
+    "8453": { name: "Kelketra",  title: "Goat of Golf With Friends", photo: "/kelketra.jpg" },
+    "2468": { name: "Banananana", title: "Goat of Hosting", photo: "/BANANNA (1).jpeg" }
   };
 
   var CODE_KEY = "goatCode";
