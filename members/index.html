@@ -2558,8 +2558,8 @@ textarea.f-field{
       '<div class="m-sec"><h2>Your test scores</h2><div id="scores"><p class="m-note">Loading\u2026</p></div>' +
       '<a class="big" href="/test/">Take the test</a></div>' +
 
-      '<div class="m-sec"><h2>Ask ajchapa for a change</h2>' +
-      '<p class="m-note">You can\u2019t change the wall yourself. Send a request and ajchapa will approve it or not.</p>' +
+      '<div class="m-sec"><h2>Ask for a change</h2>' +
+      '<p class="m-note">You can\u2019t change the wall yourself. Send a request for approval.</p>' +
       '<label class="f-label" for="req-type">What do you want to change?</label>' +
       '<select class="f-field" id="req-type">' +
         '<option value="change_title">Change my title</option>' +
@@ -2568,16 +2568,14 @@ textarea.f-field{
         '<option value="add_person">Add a person</option>' +
         '<option value="other">Something else</option>' +
       '</select>' +
-      '<label class="f-label" for="req-details">Tell him the details</label>' +
-      '<textarea class="f-field" id="req-details" placeholder="e.g. Change my title to \u201cGoat of Pickleball\u201d \u2014 I beat everyone last weekend."></textarea>' +
+      '<label class="f-label" for="req-details">The details</label>' +
+      '<textarea class="f-field" id="req-details" placeholder="What do you want changed? Be specific."></textarea>' +
       '<button class="big" id="req-send">Send request</button>' +
       '<p class="m-note f-msg" id="req-msg"></p></div>' +
 
       '<div class="m-sec"><h2>Notifications</h2><div id="notes"><p class="m-note">Loading\u2026</p></div></div>' +
 
       (isAdmin ? '<div class="m-sec"><h2>Requests for you</h2><div id="admin-reqs"><p class="m-note">Loading\u2026</p></div></div>' : '') +
-
-      '<p class="m-note" style="margin-top:26px;text-align:center">Only ajchapa can change the wall. Requests go to him for approval.</p>' +
     '</div>');
     setTimeout(function(){
       var stage=$('#goat-stage');
