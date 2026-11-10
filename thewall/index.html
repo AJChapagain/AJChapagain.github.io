@@ -1211,8 +1211,8 @@
     .moves li.love{flex-direction:row;align-items:center;justify-content:flex-start;gap:10px}
     .love-main{flex:1;min-width:0}
     .bust-wrap{position:relative;flex-shrink:0}
-    .bust{width:46px;height:46px;border-radius:50%;overflow:hidden;background:radial-gradient(circle at 50% 30%,#fff,var(--ac-pale));border:1.5px solid var(--ac);box-shadow:0 0 0 3px rgba(var(--ac-rgb),.14)}
-    .bust svg{width:100%;height:100%;display:block}
+    .bust{position:relative;width:46px;height:46px;border-radius:50%;overflow:hidden;background:radial-gradient(circle at 50% 30%,#fff,var(--ac-pale));border:1.5px solid var(--ac);box-shadow:0 0 0 3px rgba(var(--ac-rgb),.14)}
+    .bust img{position:absolute;width:170px;max-width:none;left:-91px;top:-3px;display:block}
     .badge{position:absolute;right:-5px;bottom:-3px;width:19px;height:19px;border-radius:50%;background:#fff;border:1px solid rgba(229,54,95,.45);display:grid;place-items:center}
     .heart{width:11px;height:11px;fill:#e5365f;animation:beat 1.7s ease-in-out infinite}
     @keyframes beat{0%,38%,100%{transform:scale(1)}12%{transform:scale(1.3)}24%{transform:scale(1.05)}}
@@ -1265,6 +1265,7 @@
       .c-host .b-name{font-size:18px}
       .cat{width:80px;height:60px;right:-6px;top:-26px}
       .bust{width:38px;height:38px}
+      .bust img{left:-95px;top:-7px}
       .moves li.love{gap:8px}
       .moves.has-love li{padding:3px 0 4px}
       .moves.has-love .m-bar{margin-top:4px}
@@ -1365,42 +1366,42 @@
         photo:"/Alex.jpg", pos:"50% 25%", zoom:1,
         color:"blue", fx:"aim",
    code:"1606",
-        hp:63,
+        hp:"-",
         moves:[["Likability", 90], ["Nice Guy", 100], ["1v1 vs ajchapa", 0]] },
 
       { name:"Kush", title:"Goat of Excel",
         photo:"/5E063B38-E541-412F-B0DE-A586461C325A.jpeg", pos:"50% 25%", zoom:1,
         color:"green", fx:"sheet",
    code:"1809",
-        hp:65,
+        hp:"-",
         moves:[["Handsome", 85], ["Work Life Balance", 30], ["Shopaholic", 80]] },
 
       { name:"Mae", title:"Goat of Crafts",
         photo:"/Mae.JPG", pos:"0% 28%", zoom:1,
         color:"pink", fx:"craft",
    code:"2986",
-        hp:74,
+        hp:"-",
         moves:[["Heart", 101], ["Analytical Reasoning", 90], ["Athleticism", 30]] },
 
       { name:"GaryBoy", title:"Walking Lunch Money",
         photo:"/Gary.png", pos:"50% 25%", zoom:1,
         color:"dlc", fx:"pot",
    code:"5693",
-        hp:70,
+        hp:"-",
         moves:[["Liver & Lungs", 50], ["Personable", 80], ["Chef", 80]] },
 
       { name:"Mijo", title:"Goat of Money",
         photo:"/miho.JPG", pos:"50% 25%", zoom:1,
         color:"money", fx:"money",
    code:"5831",
-        hp:63,
+        hp:"-",
         moves:[["Generosity", 80], ["Drive", 80], ["Emotional Availability", 30]] },
 
       { name:"Helen", title:"Keller",
         photo:"/helen.JPG", pos:"50% 25%", zoom:1,
         color:"ember", fx:"ember",
    code:"6936",
-        hp:60,
+        hp:"-",
         moves:[["Drunk Politics", 100], ["Art", 80], ["Gluten", 0]] },
 
       /* noel — goat of style: burgundy wine card, drink fx; all three moves set */
@@ -1408,7 +1409,7 @@
         photo:"/Noel.png", pos:"50% 25%", zoom:1,
         color:"style", fx:"drink",
    code:"8321",
-        hp:78,
+        hp:"-",
         moves:[["Alcohol", 105], ["Exotic Dancer", 80], ["Communication", 50]] },
 
       /* kelketra — goat-style fire-gold card: flying flaming golf balls, tee ornament */
@@ -1416,7 +1417,7 @@
         photo:"/kelketra.jpg", pos:"50% 25%", zoom:1,
         color:"golf", fx:"golf",
    code:"8453",
-        hp:60,
+        hp:"-",
         moves:[["Rocket League",70],["Academic Weapon",30],["Resilience",80]] },
 
       /* banananana — goat of hosting: teal card, paw-print fx, auggie the cat */
@@ -1424,7 +1425,7 @@
         photo:"/BANANNA (1).jpeg", pos:"50% 42%", zoom:1,
         color:"host", fx:"host",
         code:"2468",
-        hp:70,
+        hp:"-",
         moves:[["Love for Auggie", 100, "love"], ["Partner", 31], ["Generosity", 80]] },
     ];
 
@@ -1734,13 +1735,7 @@
     </svg></div>`;
 
     // round portrait of Auggie for the back of the card
-    const BUST = `<div class="bust" aria-hidden="true"><svg viewBox="18 2 64 60" preserveAspectRatio="xMidYMid slice">
-      <defs>
-        <clipPath id="hcb"><ellipse cx="50" cy="30" rx="27" ry="22"/></clipPath>
-        <radialGradient id="catgb" cx=".35" cy=".25" r=".8"><stop offset="0" stop-color="#3a4048"/><stop offset="1" stop-color="#1c2025"/></radialGradient>
-      </defs>
-      ${HEAD("b")}
-    </svg></div>`;
+    const BUST = `<div class="bust" aria-hidden="true"><img src="/IMG_7945.jpg" alt=""></div>`;
     const HEART = `<svg class="heart" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 21.3l-1.5-1.3C5.4 15.4 2 12.3 2 8.5 2 5.4 4.4 3 7.5 3c1.7 0 3.4.8 4.5 2.1C13.1 3.8 14.8 3 16.5 3 19.6 3 22 5.4 22 8.5c0 3.8-3.4 6.9-8.5 11.5z"/></svg>`;
 
     // ── build the cards

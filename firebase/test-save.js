@@ -46,6 +46,8 @@
   window.saveTestResults = async function (r) {
     var code = (window.GOAT && GOAT.getCode()) || "";
     if (!code || !(window.GOAT && GOAT.PEOPLE[code])) throw new Error("Not logged in.");
+    // ajchapa's HP stays "???" by design — never save a score for him.
+    if (code === "1175") return;
     if (!window.GOAT || !GOAT.db) return; // no Firestore — nothing to save to
     await GOAT.ensureAuth();
     var ref = GOAT.db.collection("scores").doc(code);

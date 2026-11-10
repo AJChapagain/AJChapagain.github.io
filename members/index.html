@@ -1252,8 +1252,8 @@
     .moves li.love{flex-direction:row;align-items:center;justify-content:flex-start;gap:10px}
     .love-main{flex:1;min-width:0}
     .bust-wrap{position:relative;flex-shrink:0}
-    .bust{width:46px;height:46px;border-radius:50%;overflow:hidden;background:radial-gradient(circle at 50% 30%,#fff,var(--ac-pale));border:1.5px solid var(--ac);box-shadow:0 0 0 3px rgba(var(--ac-rgb),.14)}
-    .bust svg{width:100%;height:100%;display:block}
+    .bust{position:relative;width:46px;height:46px;border-radius:50%;overflow:hidden;background:radial-gradient(circle at 50% 30%,#fff,var(--ac-pale));border:1.5px solid var(--ac);box-shadow:0 0 0 3px rgba(var(--ac-rgb),.14)}
+    .bust img{position:absolute;width:170px;max-width:none;left:-91px;top:-3px;display:block}
     .badge{position:absolute;right:-5px;bottom:-3px;width:19px;height:19px;border-radius:50%;background:#fff;border:1px solid rgba(229,54,95,.45);display:grid;place-items:center}
     .heart{width:11px;height:11px;fill:#e5365f;animation:beat 1.7s ease-in-out infinite}
     @keyframes beat{0%,38%,100%{transform:scale(1)}12%{transform:scale(1.3)}24%{transform:scale(1.05)}}
@@ -1306,6 +1306,7 @@
       .c-host .b-name{font-size:18px}
       .cat{width:80px;height:60px;right:-6px;top:-26px}
       .bust{width:38px;height:38px}
+      .bust img{left:-95px;top:-7px}
       .moves li.love{gap:8px}
       .moves.has-love li{padding:3px 0 4px}
       .moves.has-love .m-bar{margin-top:4px}
@@ -1714,11 +1715,26 @@ textarea.f-field{
 /* ---------- notifications ---------- */
 .notif-item{
   position:relative;
-  padding:13px 0 13px 16px;
+  padding:13px 34px 13px 16px;
   border-bottom:1px solid var(--m-line);
   font-size:15px;
   line-height:1.5;
 }
+.notif-del{
+  position:absolute;
+  right:0;
+  top:10px;
+  width:26px;
+  height:26px;
+  border:0;
+  background:transparent;
+  color:var(--m-dim);
+  font-size:18px;
+  line-height:1;
+  cursor:pointer;
+  border-radius:50%;
+}
+.notif-del:hover{color:#b3261e;background:rgba(179,38,30,.08)}
 .notif-item::before{
   content:"";
   position:absolute;
@@ -1805,39 +1821,39 @@ textarea.f-field{
       moves:[["Self Glaze", 120], ["Chill", 80], ["Cancer", 0]] },
     { name:"Alex", title:"Goat of Fortnite",
       photo:"/Alex.jpg", pos:"50% 25%", zoom:1,
-      color:"blue", fx:"aim", code:"1606", hp:63,
+      color:"blue", fx:"aim", code:"1606", hp:"-",
       moves:[["Likability", 90], ["Nice Guy", 100], ["1v1 vs ajchapa", 0]] },
     { name:"Kush", title:"Goat of Excel",
       photo:"/5E063B38-E541-412F-B0DE-A586461C325A.jpeg", pos:"50% 25%", zoom:1,
-      color:"green", fx:"sheet", code:"1809", hp:65,
+      color:"green", fx:"sheet", code:"1809", hp:"-",
       moves:[["Handsome", 85], ["Work Life Balance", 30], ["Shopaholic", 80]] },
     { name:"Mae", title:"Goat of Crafts",
       photo:"/Mae.JPG", pos:"0% 28%", zoom:1,
-      color:"pink", fx:"craft", code:"2986", hp:74,
+      color:"pink", fx:"craft", code:"2986", hp:"-",
       moves:[["Heart", 101], ["Analytical Reasoning", 90], ["Athleticism", 30]] },
     { name:"GaryBoy", title:"Walking Lunch Money",
       photo:"/Gary.png", pos:"50% 25%", zoom:1,
-      color:"dlc", fx:"pot", code:"5693", hp:70,
+      color:"dlc", fx:"pot", code:"5693", hp:"-",
       moves:[["Liver & Lungs", 50], ["Personable", 80], ["Chef", 80]] },
     { name:"Mijo", title:"Goat of Money",
       photo:"/miho.JPG", pos:"50% 25%", zoom:1,
-      color:"money", fx:"money", code:"5831", hp:63,
+      color:"money", fx:"money", code:"5831", hp:"-",
       moves:[["Generosity", 80], ["Drive", 80], ["Emotional Availability", 30]] },
     { name:"Helen", title:"Keller",
       photo:"/helen.JPG", pos:"50% 25%", zoom:1,
-      color:"ember", fx:"ember", code:"6936", hp:60,
+      color:"ember", fx:"ember", code:"6936", hp:"-",
       moves:[["Drunk Politics", 100], ["Art", 80], ["Gluten", 0]] },
     { name:"Noel", title:"Goat of Style",
       photo:"/Noel.png", pos:"50% 25%", zoom:1,
-      color:"style", fx:"drink", code:"8321", hp:78,
+      color:"style", fx:"drink", code:"8321", hp:"-",
       moves:[["Alcohol", 105], ["Exotic Dancer", 80], ["Communication", 50]] },
     { name:"Kelketra", title:"Goat of Golf With Friends",
       photo:"/kelketra.jpg", pos:"50% 25%", zoom:1,
-      color:"golf", fx:"golf", code:"8453", hp:60,
+      color:"golf", fx:"golf", code:"8453", hp:"-",
       moves:[["Rocket League",70],["Academic Weapon",30],["Resilience",80]] },
     { name:"Banananana", title:"Goat of Hosting",
       photo:"/BANANNA (1).jpeg", pos:"50% 42%", zoom:1,
-      color:"host", fx:"host", code:"2468", hp:70,
+      color:"host", fx:"host", code:"2468", hp:"-",
       moves:[["Love for Auggie", 100, "love"], ["Partner", 31], ["Generosity", 80]] }
   ];
 
@@ -2085,13 +2101,7 @@ textarea.f-field{
     + '<path class="glint g2" d="M106 57.8 L106.8 60.2 L109.2 61 L106.8 61.8 L106 64.2 L105.2 61.8 L102.8 61 L105.2 60.2 Z" fill="#f2c230"/>'
     + '</svg></div>';
 
-  var BUST = '<div class="bust" aria-hidden="true"><svg viewBox="18 2 64 60" preserveAspectRatio="xMidYMid slice">'
-    + '<defs>'
-    + '<clipPath id="hcb"><ellipse cx="50" cy="30" rx="27" ry="22"/></clipPath>'
-    + '<radialGradient id="catgb" cx=".35" cy=".25" r=".8"><stop offset="0" stop-color="#3a4048"/><stop offset="1" stop-color="#1c2025"/></radialGradient>'
-    + '</defs>'
-    + HEAD("b")
-    + '</svg></div>';
+  var BUST = '<div class="bust" aria-hidden="true"><img src="/IMG_7945.jpg" alt=""></div>';
   var HEART = '<svg class="heart" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 21.3l-1.5-1.3C5.4 15.4 2 12.3 2 8.5 2 5.4 4.4 3 7.5 3c1.7 0 3.4.8 4.5 2.1C13.1 3.8 14.8 3 16.5 3 19.6 3 22 5.4 22 8.5c0 3.8-3.4 6.9-8.5 11.5z"/></svg>';
 
   /* ---------- build one wall-identical card ---------- */
@@ -2465,7 +2475,6 @@ textarea.f-field{
     var noGoat = !window.GOAT;
     show(
     '<div class="panel login-panel">' +
-      '<p class="login-eyebrow">The Goat Wall &middot; Members</p>' +
       '<h1 class="login-title">MEMBERS</h1>' +
       '<div class="login-rule"></div>' +
       '<p class="login-sub">Enter your code to see your card</p>' +
@@ -2478,7 +2487,6 @@ textarea.f-field{
       (noGoat ? '<p class="m-note" style="text-align:center">Members scripts didn\u2019t load. Refresh and try again.</p>' :
         down ? '<p class="m-note" style="text-align:center">The members database is not reachable right now. You can still log in and see your card, but scores, requests, and notifications need the database.</p>' : '') +
       '<p class="login-diamond">&#9670;&nbsp;&nbsp;&#9670;&nbsp;&nbsp;&#9670;</p>' +
-      '<p class="m-note" style="text-align:center;margin-top:16px">Your code is the 4-digit code from the test. One code per person.</p>' +
     '</div>');
     setTimeout(bindPin, 220);
   }
@@ -2576,6 +2584,7 @@ textarea.f-field{
       '<div class="m-sec"><h2>Notifications</h2><div id="notes"><p class="m-note">Loading\u2026</p></div></div>' +
 
       (isAdmin ? '<div class="m-sec"><h2>Requests for you</h2><div id="admin-reqs"><p class="m-note">Loading\u2026</p></div></div>' : '') +
+      (isAdmin ? '<div class="m-sec"><h2>Manage people</h2><div id="manage-people"><p class="m-note">Loading\u2026</p></div></div>' : '') +
     '</div>');
     setTimeout(function(){
       var stage=$('#goat-stage');
@@ -2591,6 +2600,7 @@ textarea.f-field{
       startScores();
       startNotes();
       if(isAdmin) startAdmin();
+      if(isAdmin) startManagePeople();
     }, 220);
   }
 
@@ -2617,6 +2627,11 @@ textarea.f-field{
 
   function startScores(){
     var box=$('#scores'); if(!box) return;
+    // ajchapa's HP stays "???" by design — he doesn't take the test.
+    if(code===ADMIN){
+      box.innerHTML='<p class="m-note">Your HP stays &ldquo;???&rdquo; &mdash; you don&rsquo;t take the test.</p>';
+      return;
+    }
     if(dbDown()){ box.innerHTML='<p class="m-note">Couldn\u2019t reach the database yet. Your scores will show once it\u2019s up.</p>'; return; }
     try{
       var unsub = GOAT.db.collection('scores').doc(code).onSnapshot(function(doc){
@@ -2655,16 +2670,42 @@ textarea.f-field{
         var items=[];
         snap.forEach(function(doc){
           var d=doc.data()||{};
-          if(code===ADMIN || d.code===code) items.push(d);
+          if(code===ADMIN || d.code===code) items.push({id:doc.id, d:d});
         });
         if(!items.length){ b.innerHTML='<p class="m-note">No notifications yet.</p>'; return; }
-        b.innerHTML = items.map(function(d){
-          return '<div class="notif-item">'+esc(d.message||'')+'<div class="cnt">'+esc(fmtTime(d.createdAt))+'</div></div>';
+        b.innerHTML = items.map(function(it){
+          var d=it.d;
+          return '<div class="notif-item">'+esc(d.message||'')+'<button class="notif-del" data-id="'+esc(it.id)+'" aria-label="Delete notification">&times;</button><div class="cnt">'+esc(fmtTime(d.createdAt))+'</div></div>';
         }).join('');
+        // Seen handling: mark shown notifications as read (with when they
+        // were seen), and delete ones seen more than 2 days ago.
+        items.forEach(function(it){
+          var d=it.d;
+          var ref=GOAT.db.collection('notifications').doc(it.id);
+          if(!d.read){
+            ref.update({read:true, readAt: firebase.firestore.FieldValue.serverTimestamp()}).catch(function(){});
+          } else if(d.readAt && d.readAt.toDate){
+            var seen=d.readAt.toDate();
+            if(seen && (Date.now()-seen.getTime()) > 2*24*60*60*1000){
+              ref.delete().catch(function(){});
+            }
+          }
+        });
       }, function(){
         var b=$('#notes'); if(b) b.innerHTML='<p class="m-note">Couldn\u2019t load notifications right now.</p>';
       });
       unsubs.push(unsub);
+      box.addEventListener('click', function(ev){
+        var btn = ev.target && ev.target.closest ? ev.target.closest('.notif-del') : null;
+        if(!btn) return;
+        var id = btn.getAttribute('data-id');
+        if(!id) return;
+        btn.disabled=true;
+        GOAT.db.collection('notifications').doc(id).delete().catch(function(e){
+          if(window.console) console.warn('[members] delete notification failed:', e && e.message);
+          btn.disabled=false;
+        });
+      });
     }catch(e){ box.innerHTML='<p class="m-note">Couldn\u2019t load notifications right now.</p>'; }
   }
 
@@ -2711,6 +2752,125 @@ textarea.f-field{
     }).catch(function(e){
       if(window.console) console.warn('[members] decide failed:', e && e.message);
       if(btn) btn.disabled=false;
+    });
+  }
+
+  /* ---------- MANAGE PEOPLE (admin only, two-code gate) ---------- */
+  var manageUnlocked=false;
+  var manageOverrides={};
+  function startManagePeople(){
+    var box=$('#manage-people'); if(!box) return;
+    if(dbDown()){ box.innerHTML='<p class="m-note">Manage people needs the database.</p>'; return; }
+    if(manageUnlocked){ renderPeopleList(); return; }
+    box.innerHTML =
+      '<p class="m-note">Removing or changing someone is permanent on the wall. Enter the first code to continue.</p>' +
+      '<label class="f-label" for="mg-code1">First code</label>' +
+      '<input class="f-field" id="mg-code1" type="text" inputmode="numeric" pattern="[0-9]*" maxlength="4" autocomplete="off" placeholder="4 digits">' +
+      '<button class="big" id="mg-next">Continue</button>' +
+      '<p class="m-note f-msg" id="mg-msg"></p>';
+    var next=$('#mg-next');
+    if(next) next.onclick=function(){
+      var v=(document.getElementById('mg-code1')||{}).value||'';
+      v=String(v).trim();
+      var msg=$('#mg-msg');
+      if(v!=='5570'){ if(msg) msg.textContent='Wrong code.'; return; }
+      var b=$('#manage-people'); if(!b) return;
+      b.innerHTML =
+        '<p class="m-note">First code correct. Enter the second code.</p>' +
+        '<label class="f-label" for="mg-code2">Second code</label>' +
+        '<input class="f-field" id="mg-code2" type="text" inputmode="numeric" pattern="[0-9]*" maxlength="4" autocomplete="off" placeholder="4 digits">' +
+        '<button class="big" id="mg-unlock">Unlock</button>' +
+        '<p class="m-note f-msg" id="mg-msg2"></p>';
+      var un=$('#mg-unlock');
+      if(un) un.onclick=function(){
+        var v2=(document.getElementById('mg-code2')||{}).value||'';
+        v2=String(v2).trim();
+        var msg2=$('#mg-msg2');
+        if(v2!=='0909'){ if(msg2) msg2.textContent='Wrong code.'; return; }
+        manageUnlocked=true;
+        renderPeopleList();
+      };
+    };
+  }
+
+  function renderPeopleList(){
+    var box=$('#manage-people'); if(!box) return;
+    if(dbDown()){ box.innerHTML='<p class="m-note">Manage people needs the database.</p>'; return; }
+    box.innerHTML='<p class="m-note">Loading people\u2026</p>';
+    try{
+      var unsub = GOAT.db.collection('people').onSnapshot(function(snap){
+        manageOverrides={};
+        snap.forEach(function(doc){ manageOverrides[doc.id]=doc.data()||{}; });
+        drawPeopleList();
+      }, function(){
+        var b=$('#manage-people'); if(b) b.innerHTML='<p class="m-note">Couldn\u2019t load people right now.</p>';
+      });
+      unsubs.push(unsub);
+    }catch(e){ box.innerHTML='<p class="m-note">Couldn\u2019t load people right now.</p>'; }
+  }
+
+  function drawPeopleList(){
+    var box=$('#manage-people'); if(!box) return;
+    var profiles=(window.GOAT && GOAT.PROFILES) || {};
+    var codes=Object.keys(profiles);
+    if(!codes.length){ box.innerHTML='<p class="m-note">No people found.</p>'; return; }
+    box.innerHTML = codes.map(function(c){
+      var p=profiles[c]||{};
+      var ov=manageOverrides[c]||{};
+      var removed=!!ov.removed;
+      var name=(typeof ov.name==='string' && ov.name) ? ov.name : (p.name||c);
+      var title=(typeof ov.title==='string' && ov.title) ? ov.title : (p.title||'');
+      var photo=(typeof ov.photo==='string' && ov.photo) ? ov.photo : (p.photo||'');
+      return '<div class="m-req" data-pcode="'+esc(c)+'">' +
+        '<div class="cnt">'+esc(name)+' \u00b7 '+esc(title)+' \u00b7 code '+esc(c)+(removed?' \u00b7 REMOVED':'')+'</div>' +
+        '<label class="f-label">Name</label>' +
+        '<input class="f-field" data-f="name" value="'+esc(name)+'">' +
+        '<label class="f-label">Title</label>' +
+        '<input class="f-field" data-f="title" value="'+esc(title)+'">' +
+        '<label class="f-label">Photo</label>' +
+        '<input class="f-field" data-f="photo" value="'+esc(photo)+'" placeholder="/photo.jpg">' +
+        '<div class="actions">' +
+          '<button class="btn-ghost" data-act="save">Save changes</button>' +
+          (removed
+            ? '<button class="btn-ghost" data-act="restore">Restore to the wall</button>'
+            : '<button class="btn-danger" data-act="remove">Remove from the wall</button>') +
+        '</div>' +
+        '<p class="m-note f-msg" data-msg></p>' +
+      '</div>';
+    }).join('');
+    [].slice.call(box.querySelectorAll('[data-act]')).forEach(function(btn){
+      btn.onclick=function(){
+        var wrap=btn.closest ? btn.closest('[data-pcode]') : null;
+        if(!wrap) return;
+        var c=wrap.getAttribute('data-pcode');
+        var act=btn.getAttribute('data-act');
+        var msgEl=wrap.querySelector('[data-msg]');
+        function say(t){ if(msgEl) msgEl.textContent=t; }
+        if(dbDown()){ say('The database isn\u2019t reachable right now.'); return; }
+        btn.disabled=true;
+        GOAT.ensureAuth().then(function(){
+          var ref=GOAT.db.collection('people').doc(c);
+          if(act==='remove'){
+            return ref.set({removed:true}, {merge:true}).then(function(){ say('Removed from the wall.'); });
+          }
+          if(act==='restore'){
+            return ref.set({removed:false}, {merge:true}).then(function(){ say('Restored to the wall.'); });
+          }
+          if(act==='save'){
+            var name=(wrap.querySelector('[data-f="name"]')||{}).value||'';
+            var title=(wrap.querySelector('[data-f="title"]')||{}).value||'';
+            var photo=(wrap.querySelector('[data-f="photo"]')||{}).value||'';
+            var data={};
+            if(String(name).trim()) data.name=String(name).trim();
+            if(String(title).trim()) data.title=String(title).trim();
+            if(String(photo).trim()) data.photo=String(photo).trim();
+            return ref.set(data, {merge:true}).then(function(){ say('Saved. The wall updates live.'); });
+          }
+        }).catch(function(e){
+          say('Couldn\u2019t save that right now. Try again.');
+          if(window.console) console.warn('[members] manage people failed:', e && e.message);
+        }).then(function(){ btn.disabled=false; });
+      };
     });
   }
 

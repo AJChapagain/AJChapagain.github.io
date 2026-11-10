@@ -1486,12 +1486,12 @@ function afterCode(){
         </h2>
 
         <p class="tag" style="margin:18px 0 4px">
-          YOUR CODE
+          YOUR SCORE
         </p>
 
         <div class="mono"
           style="font-size:clamp(48px,16vw,56px);line-height:1.1;overflow-wrap:anywhere">
-          ${esc(tk.code)}
+          ${esc(tk.score)}
         </div>
 
         <p class="cnt" style="margin-top:10px">
@@ -1499,11 +1499,24 @@ function afterCode(){
         </p>
 
         <p class="it" style="font-size:22px;margin-top:18px">
-          Your score is hidden. Send your code to ajchapa.
+          Hello, this is your score. It will be listed on your card.
         </p>
+
+        <p class="it" style="font-size:22px;margin-top:18px">
+          Please send a request if you do not want it to be listed on there. Thank you.
+        </p>
+
+        <button class="big" id="home">
+          Return to home page
+        </button>
 
       </div>
     `);
+
+    setTimeout(()=>{
+      var hb=document.getElementById('home');
+      if(hb) hb.onclick=function(){ location.href='/'; };
+    },220);
 
     return;
   }
@@ -1554,7 +1567,7 @@ function afterCode(){
 
         <p class="it"
           style="font-size:24px;line-height:1.4;margin:0">
-          Please take this carefully — it will reflect on your card. You can only take this QUIZ ONCE. Please send me a screenshot of what the end says.
+          Please take this carefully — it will reflect on your card. You can only take this QUIZ ONCE, and it takes less than 5 minutes.
         </p>
 
         <button class="big" id="go">
@@ -1695,8 +1708,8 @@ function finish(){
 
   }catch(e){}
 
-  // Save to Firestore (members app). Fire-and-forget — the letter-code
-  // screen below stays as the fallback if the save fails or is blocked.
+  // Save to Firestore (members app). Fire-and-forget — the score is
+  // shown on the results screen below either way.
   if (typeof window.saveTestResults === 'function') {
     window.saveTestResults({
       speed: Math.round(dm.SPEED),
@@ -1704,7 +1717,7 @@ function finish(){
       reasoning: Math.round(dm.REASONING),
       overall: overall
     }).catch(function (e) {
-      if (window.console) console.warn('[test] save failed, letter code is the fallback:', e && e.message);
+      if (window.console) console.warn('[test] save failed:', e && e.message);
     });
   }
 
@@ -1720,25 +1733,29 @@ function finish(){
       <div class="rule"></div>
 
       <p class="it" style="font-size:24px;margin:0">
-        Your score is hidden
+        Hello, this is your score. It will be listed on your card.
       </p>
 
       <div class="plaque">
 
         <p class="tag" style="margin:0 0 14px">
-          YOUR CODE
+          YOUR SCORE
         </p>
 
-        <div class="plaque-code">${code}</div>
+        <div class="plaque-code">${overall}</div>
+
+        <p class="it" style="font-size:20px;margin:14px 0 0">
+          Speed ${Math.round(dm.SPEED)} &middot; Memory ${Math.round(dm.MEMORY)} &middot; Reasoning ${Math.round(dm.REASONING)}
+        </p>
 
       </div>
 
       <p class="it" style="font-size:24px;margin:22px 0 0">
-        Screenshot this and send it to ajchapa.
+        Please send a request if you do not want it to be listed on there. Thank you.
       </p>
 
-      <button class="big" id="cp">
-        Copy code
+      <button class="big" id="home">
+        Return to home page
       </button>
 
     </div>
@@ -1746,28 +1763,8 @@ function finish(){
 
   setTimeout(()=>{
 
-    $('#cp').onclick=()=>{
-
-      const btn=$('#cp');
-
-      try{
-
-        if(navigator.clipboard&&navigator.clipboard.writeText){
-
-          navigator.clipboard.writeText(code).then(()=>{
-            btn.textContent='Copied';
-          }).catch(()=>{
-            btn.textContent=code;
-          });
-
-        }else{
-          btn.textContent=code;
-        }
-
-      }catch(e){
-        btn.textContent=code;
-      }
-
+    $('#home').onclick=()=>{
+      location.href='/';
     };
 
   },220);
