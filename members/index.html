@@ -2706,7 +2706,7 @@ textarea.f-field{
     GOAT.ensureAuth().then(function(){
       return GOAT.db.collection('requests').doc(id).update({ status: status });
     }).then(function(){
-      var msg = status==='approved' ? 'ajchapa approved your request.' : 'ajchapa denied your request.';
+      var msg = status==='approved' ? 'The request was approved.' : 'The request was denied.';
       return GOAT.notify(msg, status==='approved' ? 'request_approved' : 'request_denied', requesterCode || '');
     }).catch(function(e){
       if(window.console) console.warn('[members] decide failed:', e && e.message);
@@ -2731,7 +2731,7 @@ textarea.f-field{
       });
     }).then(function(){
       detEl.value='';
-      msgEl.textContent='Sent. ajchapa will review it.';
+      msgEl.textContent='Request sent for review.';
       var who=(window.GOAT && GOAT.PEOPLE[code]) || code;
       return GOAT.notify(who+' sent a request.', 'request_created', ADMIN);
     }).catch(function(e){
