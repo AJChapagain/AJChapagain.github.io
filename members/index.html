@@ -2512,6 +2512,8 @@ textarea.f-field{
         GOAT.setCode(v);
         GOAT.ensureAuth();
         code=v; profile=GOAT.PROFILES[v];
+        // Admin login needs the two extra codes before the dashboard.
+        if(v===ADMIN && !gatePassed()){ renderAdminGate(); return; }
         renderDashboard();
       }else{
         submitting=true;
@@ -2550,6 +2552,64 @@ textarea.f-field{
   }
 
   /* ---------- DASHBOARD ---------- */
+
+  /* ---------- ADMIN GATE (two codes, at login) ---------- */
+  function gatePassed(){
+    try { return sessionStorage.getItem('goatAdminGate') === '1'; } catch(e){ return false; }
+  }
+  function setGatePassed(){
+    try { sessionStorage.setItem('goatAdminGate', '1'); } catch(e){}
+  }
+  function clearGate(){
+    try { sessionStorage.removeItem('goatAdminGate'); } catch(e){}
+  }
+  function renderAdminGate(){
+    stopListeners();
+    show(
+    '<div class="panel login-panel">' +
+      '<h1 class="login-title">ADMIN</h1>' +
+      '<div class="login-rule"></div>' +
+      '<p class="login-sub">Enter the first code</p>' +
+      '<input class="f-field" id="ag-code1" type="text" inputmode="numeric" pattern="[0-9]*" maxlength="4" autocomplete="off" placeholder="4 digits">' +
+      '<button class="big" id="ag-next">Continue</button>' +
+      '<p class="m-note f-msg" id="ag-msg"></p>' +
+      '<p style="text-align:center;margin-top:14px"><button class="linklike" id="ag-back">Back to login</button></p>' +
+    '</div>');
+    setTimeout(function(){
+      var back=$('#ag-back');
+      if(back) back.onclick=function(){ if(window.GOAT) GOAT.clearCode(); code=''; profile=null; clearGate(); renderLogin(''); };
+      var next=$('#ag-next');
+      if(next) next.onclick=function(){
+        var v=(document.getElementById('ag-code1')||{}).value||'';
+        v=String(v).trim();
+        var msg=$('#ag-msg');
+        if(v!=='5570'){ if(msg) msg.textContent='Wrong code.'; return; }
+        show(
+        '<div class="panel login-panel">' +
+          '<h1 class="login-title">ADMIN</h1>' +
+          '<div class="login-rule"></div>' +
+          '<p class="login-sub">First code correct. Enter the second code.</p>' +
+          '<input class="f-field" id="ag-code2" type="text" inputmode="numeric" pattern="[0-9]*" maxlength="4" autocomplete="off" placeholder="4 digits">' +
+          '<button class="big" id="ag-unlock">Unlock</button>' +
+          '<p class="m-note f-msg" id="ag-msg2"></p>' +
+          '<p style="text-align:center;margin-top:14px"><button class="linklike" id="ag-back2">Back to login</button></p>' +
+        '</div>');
+        setTimeout(function(){
+          var back2=$('#ag-back2');
+          if(back2) back2.onclick=function(){ if(window.GOAT) GOAT.clearCode(); code=''; profile=null; clearGate(); renderLogin(''); };
+          var un=$('#ag-unlock');
+          if(un) un.onclick=function(){
+            var v2=(document.getElementById('ag-code2')||{}).value||'';
+            v2=String(v2).trim();
+            var msg2=$('#ag-msg2');
+            if(v2!=='0909'){ if(msg2) msg2.textContent='Wrong code.'; return; }
+            setGatePassed();
+            renderDashboard();
+          };
+        }, 220);
+      };
+    }, 220);
+  }
 
   function renderDashboard(){
     stopListeners();
@@ -2593,7 +2653,7 @@ textarea.f-field{
         try { stage.appendChild(buildCard(g)); } catch(e){ if(window.console) console.warn('[members] card build failed:', e && e.message); }
       }
       var lo=$('#logout');
-      if(lo) lo.onclick=function(){ stopListeners(); if(window.GOAT) GOAT.clearCode(); renderLogin(''); };
+      if(lo) lo.onclick=function(){ stopListeners(); if(window.GOAT) GOAT.clearCode(); clearGate(); renderLogin(''); };
       var send=$('#req-send');
       if(send) send.onclick=sendRequest;
       startCardLive();
@@ -2755,42 +2815,11 @@ textarea.f-field{
     });
   }
 
-  /* ---------- MANAGE PEOPLE (admin only, two-code gate) ---------- */
-  var manageUnlocked=false;
+  /* ---------- MANAGE PEOPLE (admin only; the two-code gate is at login) ---------- */
   var manageOverrides={};
   function startManagePeople(){
-    var box=$('#manage-people'); if(!box) return;
-    if(dbDown()){ box.innerHTML='<p class="m-note">Manage people needs the database.</p>'; return; }
-    if(manageUnlocked){ renderPeopleList(); return; }
-    box.innerHTML =
-      '<p class="m-note">Removing or changing someone is permanent on the wall. Enter the first code to continue.</p>' +
-      '<label class="f-label" for="mg-code1">First code</label>' +
-      '<input class="f-field" id="mg-code1" type="text" inputmode="numeric" pattern="[0-9]*" maxlength="4" autocomplete="off" placeholder="4 digits">' +
-      '<button class="big" id="mg-next">Continue</button>' +
-      '<p class="m-note f-msg" id="mg-msg"></p>';
-    var next=$('#mg-next');
-    if(next) next.onclick=function(){
-      var v=(document.getElementById('mg-code1')||{}).value||'';
-      v=String(v).trim();
-      var msg=$('#mg-msg');
-      if(v!=='5570'){ if(msg) msg.textContent='Wrong code.'; return; }
-      var b=$('#manage-people'); if(!b) return;
-      b.innerHTML =
-        '<p class="m-note">First code correct. Enter the second code.</p>' +
-        '<label class="f-label" for="mg-code2">Second code</label>' +
-        '<input class="f-field" id="mg-code2" type="text" inputmode="numeric" pattern="[0-9]*" maxlength="4" autocomplete="off" placeholder="4 digits">' +
-        '<button class="big" id="mg-unlock">Unlock</button>' +
-        '<p class="m-note f-msg" id="mg-msg2"></p>';
-      var un=$('#mg-unlock');
-      if(un) un.onclick=function(){
-        var v2=(document.getElementById('mg-code2')||{}).value||'';
-        v2=String(v2).trim();
-        var msg2=$('#mg-msg2');
-        if(v2!=='0909'){ if(msg2) msg2.textContent='Wrong code.'; return; }
-        manageUnlocked=true;
-        renderPeopleList();
-      };
-    };
+    // No gate here — the admin already passed the two codes at login.
+    renderPeopleList();
   }
 
   function renderPeopleList(){
@@ -2908,6 +2937,8 @@ textarea.f-field{
       if(c && window.GOAT && GOAT.PEOPLE[c]){
         code=c; profile=GOAT.PROFILES[c];
         GOAT.ensureAuth();
+        // Admin auto-login still needs the two codes if not yet passed.
+        if(c===ADMIN && !gatePassed()){ renderAdminGate(); return; }
         renderDashboard();
       }else{
         renderLogin('');
