@@ -1469,8 +1469,11 @@ function afterCode(){
 
   let tk=null;
 
+  // Admin (1175) can retake freely for testing — skip the one-take gate.
+  var isAdmin = (pwd === '1175');
+
   try{
-    tk=JSON.parse(localStorage.getItem('goatTaken_'+pwd));
+    tk = isAdmin ? null : JSON.parse(localStorage.getItem('goatTaken_'+pwd));
   }catch(e){}
 
   if(tk){
@@ -1697,7 +1700,8 @@ function finish(){
 
   try{
 
-    localStorage.setItem(
+    // Admin (1175) never gets the one-take flag, so he can retake for testing.
+    if (pwd !== '1175') localStorage.setItem(
       'goatTaken_'+pwd,
       JSON.stringify({
         score:overall,
