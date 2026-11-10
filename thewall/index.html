@@ -1238,7 +1238,7 @@
     .card:hover .martini .liq{animation-duration:.9s}
 
     /* Auggie: peeks over the top edge, white paws gripping the card */
-    .cat{position:absolute;z-index:8;left:auto;right:4px;top:-32px;width:96px;height:72px;transform:rotate(5deg);transform-origin:50% 100%;pointer-events:none;filter:drop-shadow(0 7px 7px rgba(8,40,38,.35));animation:catfloat 4.2s ease-in-out infinite;transition:opacity .3s ease}
+    .cat{position:absolute;z-index:8;left:auto;right:-8px;top:-32px;width:96px;height:72px;transform:rotate(5deg);transform-origin:50% 100%;pointer-events:none;filter:drop-shadow(0 7px 7px rgba(8,40,38,.35));animation:catfloat 4.2s ease-in-out infinite;transition:opacity .3s ease}
     .cat svg{width:100%;height:100%;display:block;overflow:visible}
     @keyframes catfloat{50%{margin-top:-4px}}
     .card.flipped .cat{opacity:0}
@@ -1309,7 +1309,7 @@
       .martini{width:46px;height:53px;margin-left:-23px;top:-28px}
       .c-host .plate .name{font-size:19px;line-height:25px}
       .c-host .b-name{font-size:18px}
-      .cat{width:80px;height:60px;right:2px;top:-26px}
+      .cat{width:80px;height:60px;right:-6px;top:-26px}
       .bust{width:38px;height:38px}
       .moves li.love{gap:8px}
       .moves.has-love li{padding:3px 0 4px}
@@ -1484,18 +1484,18 @@
 
       /* kelketra — goat-style fire-gold card: flying flaming golf balls, tee ornament */
       { name:"Kelketra", title:"Goat of Golf With Friends",
-        photo:"/kelketra.png", pos:"50% 25%", zoom:1,
+        photo:"/kelketra.jpg", pos:"50% 25%", zoom:1,
         color:"golf", fx:"golf",
         hp:60,
         moves:[["Rocket League",70],["Academic Weapon",30],["Resilience",80]] },
 
       /* banananana — goat of hosting: teal card, paw-print fx, auggie the cat */
       { name:"Banananana", title:"Goat of Hosting",
-        photo:"/BANANNA.jpeg", pos:"50% 42%", zoom:1,
+        photo:"/BANANNA (1).jpeg", pos:"50% 42%", zoom:1,
         color:"host", fx:"host",
         locked:true, // under construction — no flip for now
         hp:"—",
-        moves:[["Love for Auggie", 100, "love"], ["—","—"], ["—","—"]] },
+        moves:[["Love for Auggie", 100, "love"], ["Partner", 32], ["—","—"]] },
     ];
 
     const wall = document.getElementById("wall");
