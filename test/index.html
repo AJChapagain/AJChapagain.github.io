@@ -1269,35 +1269,30 @@ let ti=0;
 let name='';
 
 /* ---------- CODE SYSTEM ---------- */
+/* No codes live in this page. A code is verified by hashing it (SHA-256)
+   and fetching the matching document from the Firestore "accessCodes"
+   collection (see firebase-init.js GOAT.verifyCode). The codes themselves
+   are never in client-side code. */
 
 const encode=n=>
   String(n).split('').map(d=>'JABCDEFGHI'[+d]).join('');
 
-const CODES={
-  '1175':'ajchapa',
-  '1606':'Alex',
-  '1809':'Kush',
-  '2986':'Mae',
-  '5693':'GaryBoy',
-  '5831':'Mijo',
-  '6936':'Helen',
-  '8321':'Noel',
-  '8453':'Kelketra',
-  '2468':'Banananana'
-};
-
 let pwd='';
+let isAdmin=false;
 
 /* ---------- PASSWORD GATE ---------- */
 
 function start(){
 
   // Already logged in on the members page? Skip the PIN and go straight in.
+  // The identity was verified at login (see firebase-init.js); it lives in
+  // sessionStorage, never in page source.
   try {
-    var saved = (window.GOAT && GOAT.getCode && GOAT.getCode()) || '';
-    if (saved && CODES[saved]) {
-      pwd = saved;
-      name = CODES[saved];
+    var savedId = (window.GOAT && GOAT.getIdentity && GOAT.getIdentity()) || null;
+    if (savedId && savedId.name) {
+      pwd = savedId.code || '';
+      name = savedId.name;
+      isAdmin = savedId.admin === true;
       afterCode();
       return;
     }
@@ -1359,35 +1354,45 @@ function start(){
 
       if(v.length!==4)return;
 
-      if(CODES[v]){
-        submitting=true;
-        pwd=v;
-        name=CODES[v];
-        if (window.GOAT && GOAT.setCode) { try { GOAT.setCode(pwd); } catch (e) {} }
-        afterCode();
-      }else{
+      submitting=true;
 
-        submitting=true;
-
-        pins.forEach(p=>p.classList.add('wrong'));
-
-        er.textContent='Wrong code — try again.';
-
+      // Verify the code against Firestore (hashed lookup — the code list
+      // is never in this page). GOAT.verifyCode resolves the identity or
+      // null for a wrong code, and rejects when the database is down.
+      var verified = (window.GOAT && GOAT.verifyCode)
+        ? GOAT.verifyCode(v)
+        : Promise.resolve(null);
+      verified.then(function(id){
+        if(id){
+          pwd=v;
+          name=id.name;
+          isAdmin=id.admin===true;
+          afterCode();
+        }else{
+          pins.forEach(p=>p.classList.add('wrong'));
+          er.textContent='Wrong code — try again.';
+          setTimeout(()=>{
+            pins.forEach(p=>{
+              p.value='';
+              p.classList.remove('wrong');
+            });
+            er.textContent='';
+            submitting=false;
+            pins[0].focus();
+          },750);
+        }
+      }).catch(function(){
+        er.textContent='Couldn\u2019t verify right now — check your connection and try again.';
         setTimeout(()=>{
-
           pins.forEach(p=>{
             p.value='';
             p.classList.remove('wrong');
           });
-
           er.textContent='';
-
           submitting=false;
-
           pins[0].focus();
-
-        },750);
-      }
+        },1500);
+      });
     };
 
     pins.forEach((p,i)=>{
@@ -1469,11 +1474,10 @@ function afterCode(){
 
   let tk=null;
 
-  // Admin (1175) can retake freely for testing — skip the one-take gate.
-  var isAdmin = (pwd === '1175');
-
+  // The admin can retake freely for testing — skip the one-take gate.
+  // isAdmin comes from the verified identity (set at login), not a code.
   try{
-    tk = isAdmin ? null : JSON.parse(localStorage.getItem('goatTaken_'+pwd));
+    tk = isAdmin ? null : JSON.parse(localStorage.getItem('goatTaken_'+name));
   }catch(e){}
 
   function showTaken(tk){
@@ -1530,7 +1534,7 @@ function afterCode(){
       if (window.GOAT && GOAT.setCode) { try { GOAT.setCode(pwd); } catch (e) {} }
       window.checkCanTakeTest().then(function (r) {
         if (r.allowed) {
-          try { localStorage.removeItem('goatTaken_'+pwd); } catch (e) {}
+          try { localStorage.removeItem('goatTaken_'+name); } catch (e) {}
           showHello();
         } else {
           showTaken(tk);
@@ -1717,9 +1721,9 @@ function finish(){
 
   try{
 
-    // Admin (1175) never gets the one-take flag, so he can retake for testing.
-    if (pwd !== '1175') localStorage.setItem(
-      'goatTaken_'+pwd,
+    // The admin never gets the one-take flag, so he can retake for testing.
+    if (!isAdmin) localStorage.setItem(
+      'goatTaken_'+name,
       JSON.stringify({
         score:overall,
         name,

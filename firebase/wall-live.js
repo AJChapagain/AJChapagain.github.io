@@ -1,12 +1,12 @@
 // wall-live.js — Live HP + live people overrides on the GOAT wall.
 // Listens to the Firestore "scores" collection. When a score document
 // changes, it updates ONLY the HP number on that person's card
-// (the element with data-hp inside the card with matching data-code).
+// (the element with data-hp inside the card with matching data-name).
 // It NEVER touches move names or move numbers — those stay exactly as
 // the wall hardcodes them.
 //
 // It also listens to the Firestore "people" collection (admin overrides).
-// A people document (ID = the person's 4-digit code) can:
+// A people document (ID = the person's NAME) can:
 //   removed: true  -> hide that person's card from the wall
 //   name: "New"    -> rename the card (front + back)
 //   title: "New"   -> retitle the card (front + back)
@@ -14,8 +14,9 @@
 // Absent/empty fields restore the wall's hardcoded values. If Firestore
 // is unavailable, it does nothing and the wall keeps its hardcoded data.
 //
+// Scores and people are keyed by NAME (public), never by access code.
 // Requires firebase-init.js (GOAT) loaded first. Depends on the wall
-// builder setting data-code="<4-digit code>" on each card <article> and
+// builder setting data-name="<display name>" on each card <article> and
 // data-hp on the <b> that shows the HP number.
 
 (function () {
@@ -23,20 +24,24 @@
     if (window.console) console.warn.apply(console, ["[GOAT wall-live]"].concat([].slice.call(arguments)));
   }
 
-  // The wall's hardcoded name/title/photo per code, captured on load so
-  // an override can be undone by clearing the field.
+  // The wall's hardcoded name/title/photo per person, captured on load so
+  // an override can be undone by clearing the field. Keyed by name.
   var originals = {};
 
+  function cardName(card) {
+    return card.getAttribute("data-name") || "";
+  }
+
   function captureOriginals() {
-    var cards = document.querySelectorAll("[data-code]");
+    var cards = document.querySelectorAll("[data-name]");
     for (var i = 0; i < cards.length; i++) {
       var card = cards[i];
-      var code = card.getAttribute("data-code");
-      if (!code || originals[code]) continue;
+      var name = cardName(card);
+      if (!name || originals[name]) continue;
       var nameEl = card.querySelector(".plate .name");
       var titleEl = card.querySelector(".plate .title span");
       var img = card.querySelector(".photo-wrap img");
-      originals[code] = {
+      originals[name] = {
         name: nameEl ? nameEl.textContent : "",
         title: titleEl ? titleEl.textContent : "",
         photo: img ? img.getAttribute("src") : ""
@@ -48,14 +53,14 @@
     if (el && el.textContent !== v) el.textContent = v;
   }
 
-  function updateOne(code, overall) {
+  function updateOne(name, overall) {
     // ajchapa's HP stays "???" by design — never overwrite it, even if
-    // a score document somehow exists for his code.
-    if (code === "1175") return;
+    // a score document somehow exists for his name.
+    if (name === "ajchapa") return;
     if (overall === null || overall === undefined || overall === "") return;
     var n = Math.round(Number(overall));
     if (!isFinite(n)) return;
-    var card = document.querySelector('[data-code="' + code + '"]');
+    var card = document.querySelector('[data-name="' + name + '"]');
     if (!card) return;
     var hp = card.querySelector("[data-hp]");
     if (!hp) return;
@@ -64,25 +69,25 @@
     if (hp.textContent !== String(n)) hp.textContent = String(n);
   }
 
-  function applyPerson(code, d) {
-    var card = document.querySelector('[data-code="' + code + '"]');
+  function applyPerson(name, d) {
+    var card = document.querySelector('[data-name="' + name + '"]');
     if (!card) return;
-    var o = originals[code] || { name: "", title: "", photo: "" };
+    var o = originals[name] || { name: "", title: "", photo: "" };
     d = d || {};
     // Remove / restore.
     card.style.display = d.removed ? "none" : "";
     // Name (front + back), title (front + back), photo.
-    var name = (typeof d.name === "string" && d.name) ? d.name : o.name;
+    var newName = (typeof d.name === "string" && d.name) ? d.name : o.name;
     var title = (typeof d.title === "string" && d.title) ? d.title : o.title;
     var photo = (typeof d.photo === "string" && d.photo) ? d.photo : o.photo;
-    setText(card.querySelector(".plate .name"), name);
-    setText(card.querySelector(".b-top .b-name"), name);
+    setText(card.querySelector(".plate .name"), newName);
+    setText(card.querySelector(".b-top .b-name"), newName);
     setText(card.querySelector(".plate .title span"), title);
     setText(card.querySelector(".back-title"), title);
     var img = card.querySelector(".photo-wrap img");
     if (img && photo && img.getAttribute("src") !== photo) {
       img.setAttribute("src", photo);
-      img.setAttribute("alt", name);
+      img.setAttribute("alt", newName);
     }
   }
 
@@ -105,9 +110,9 @@
             // A deleted score doc means the test was reset: HP goes back to "-".
             snap.docChanges().forEach(function (ch) {
               if (ch.type === "removed") {
-                var code = ch.doc.id;
-                if (code === "1175") return;
-                var card = document.querySelector('[data-code="' + code + '"]');
+                var name = ch.doc.id;
+                if (name === "ajchapa") return;
+                var card = document.querySelector('[data-name="' + name + '"]');
                 if (!card) return;
                 var hp = card.querySelector("[data-hp]");
                 if (hp && hp.textContent !== "-") hp.textContent = "-";

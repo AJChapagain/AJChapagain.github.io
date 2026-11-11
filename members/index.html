@@ -1801,9 +1801,14 @@ textarea.f-field{
   var $=function(s){return document.querySelector(s);};
   var app=$('#app');
   var esc=function(s){return String(s).replace(/[&<>"']/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];});};
-  var ADMIN='1175';
+  // No access codes live in this page. A code is verified by hashing it
+  // (SHA-256) and fetching the matching document from the Firestore
+  // "accessCodes" collection (see firebase-init.js GOAT.verifyCode).
+  // The logged-in person's identity (name/title/photo/admin) comes from
+  // that verified document and lives in sessionStorage, never in source.
   var code='';
   var profile=null;
+  var identity=null;
   var unsubs=[];
   var reduceMotion = matchMedia("(prefers-reduced-motion: reduce)").matches;
   var clamp = function(v,a,b){ return Math.min(b, Math.max(a, v)); };
@@ -1832,48 +1837,48 @@ textarea.f-field{
   var CARDS = [
     { name:"ajchapa", title:"Thee Goat?",
       photo:"/ajchapa.JPG", pos:"50% 25%", zoom:1,
-      color:"gold", fx:"aura", code:"1175", hp:"???",
+      color:"gold", fx:"aura", hp:"???",
       moves:[["Self Glaze", 120], ["Chill", 80], ["Cancer", 0]] },
     { name:"Alex", title:"Goat of Fortnite",
       photo:"/Alex.jpg", pos:"50% 25%", zoom:1,
-      color:"blue", fx:"aim", code:"1606", hp:"-",
+      color:"blue", fx:"aim", hp:"-",
       moves:[["Likability", 90], ["Nice Guy", 100], ["1v1 vs ajchapa", 0]] },
     { name:"Kush", title:"Goat of Excel",
       photo:"/5E063B38-E541-412F-B0DE-A586461C325A.jpeg", pos:"50% 25%", zoom:1,
-      color:"green", fx:"sheet", code:"1809", hp:"-",
+      color:"green", fx:"sheet", hp:"-",
       moves:[["Handsome", 85], ["Work Life Balance", 30], ["Shopaholic", 80]] },
     { name:"Mae", title:"Goat of Crafts",
       photo:"/Mae.JPG", pos:"0% 28%", zoom:1,
-      color:"pink", fx:"craft", code:"2986", hp:"-",
+      color:"pink", fx:"craft", hp:"-",
       moves:[["Heart", 101], ["Analytical Reasoning", 90], ["Athleticism", 30]] },
     { name:"GaryBoy", title:"Walking Lunch Money",
       photo:"/Gary.png", pos:"50% 25%", zoom:1,
-      color:"dlc", fx:"pot", code:"5693", hp:"-",
+      color:"dlc", fx:"pot", hp:"-",
       moves:[["Liver & Lungs", 50], ["Personable", 80], ["Chef", 80]] },
     { name:"Mijo", title:"Goat of Money",
       photo:"/miho.JPG", pos:"50% 25%", zoom:1,
-      color:"money", fx:"money", code:"5831", hp:"-",
+      color:"money", fx:"money", hp:"-",
       moves:[["Generosity", 80], ["Drive", 80], ["Emotional Availability", 30]] },
     { name:"Helen", title:"Keller",
       photo:"/helen.JPG", pos:"50% 25%", zoom:1,
-      color:"ember", fx:"ember", code:"6936", hp:"-",
+      color:"ember", fx:"ember", hp:"-",
       moves:[["Drunk Politics", 100], ["Art", 80], ["Gluten", 0]] },
     { name:"Noel", title:"Goat of Style",
       photo:"/Noel.png", pos:"50% 25%", zoom:1,
-      color:"style", fx:"drink", code:"8321", hp:"-",
+      color:"style", fx:"drink", hp:"-",
       moves:[["Alcohol", 105], ["Exotic Dancer", 80], ["Communication", 50]] },
     { name:"Kelketra", title:"Goat of Golf With Friends",
       photo:"/kelketra.jpg", pos:"50% 25%", zoom:1,
-      color:"golf", fx:"golf", code:"8453", hp:"-",
+      color:"golf", fx:"golf", hp:"-",
       moves:[["Rocket League",70],["Academic Weapon",30],["Resilience",80]] },
     { name:"Banananana", title:"Goat of Hosting",
       photo:"/BANANNA (1).jpeg", pos:"50% 42%", zoom:1,
-      color:"host", fx:"host", code:"2468", hp:"-",
+      color:"host", fx:"host", hp:"-",
       moves:[["Love for Auggie", 100, "love"], ["Partner", 31], ["Generosity", 80]] }
   ];
 
-  function cardFor(c){
-    for (var i=0;i<CARDS.length;i++) if (CARDS[i].code===c) return CARDS[i];
+  function cardFor(nm){
+    for (var i=0;i<CARDS.length;i++) if (CARDS[i].name===nm) return CARDS[i];
     return null;
   }
 
@@ -2125,7 +2130,7 @@ textarea.f-field{
     var card = document.createElement("article");
     card.className = "card c-" + (g.color || "gold") + (g.color === "ember" ? " c-dlc" : "") + (g.locked ? " locked" : "");
     card.dataset.fx = g.fx || "";
-    if (g.code) card.dataset.code = g.code;
+    card.dataset.name = g.name;
     card.style.setProperty("--pos", g.pos || "50% 25%");
     card.style.setProperty("--zoom", g.zoom || 1);
     if (!g.locked) {
@@ -2522,23 +2527,33 @@ textarea.f-field{
       }
       var v=value();
       if(v.length!==4) return;
-      if(GOAT.PEOPLE[v]){
-        submitting=true;
-        GOAT.setCode(v);
-        GOAT.ensureAuth();
-        code=v; profile=GOAT.PROFILES[v];
-        // Admin login needs the two extra codes before the dashboard.
-        if(v===ADMIN && !gatePassed()){ renderAdminGate(); return; }
-        renderDashboard();
-      }else{
-        submitting=true;
-        pins.forEach(function(p){p.classList.add('wrong');});
-        er.textContent='Wrong code \u2014 try again.';
+      submitting=true;
+      // Verify the code against Firestore (hashed lookup — the code list
+      // is never in this page). Resolves the identity or null for a wrong
+      // code; rejects when the database is down.
+      var verified = (GOAT.verifyCode) ? GOAT.verifyCode(v) : Promise.resolve(null);
+      verified.then(function(id){
+        if(id){
+          GOAT.ensureAuth();
+          code=v; profile={name:id.name, title:id.title, photo:id.photo}; identity=id;
+          // Admin login needs the two extra codes before the dashboard.
+          if(id.admin && !gatePassed()){ renderAdminGate(); return; }
+          renderDashboard();
+        }else{
+          pins.forEach(function(p){p.classList.add('wrong');});
+          er.textContent='Wrong code \u2014 try again.';
+          setTimeout(function(){
+            pins.forEach(function(p){p.value='';p.classList.remove('wrong');});
+            er.textContent=''; submitting=false; syncFilled(); pins[0].focus();
+          },750);
+        }
+      }).catch(function(){
+        er.textContent='Couldn\u2019t verify right now \u2014 check your connection and try again.';
         setTimeout(function(){
           pins.forEach(function(p){p.value='';p.classList.remove('wrong');});
           er.textContent=''; submitting=false; syncFilled(); pins[0].focus();
-        },750);
-      }
+        },1500);
+      });
     };
     pins.forEach(function(p,i){
       p.oninput=function(){
@@ -2592,36 +2607,48 @@ textarea.f-field{
     '</div>');
     setTimeout(function(){
       var back=$('#ag-back');
-      if(back) back.onclick=function(){ if(window.GOAT) GOAT.clearCode(); code=''; profile=null; clearGate(); renderLogin(''); };
+      if(back) back.onclick=function(){ if(window.GOAT){ GOAT.clearCode(); if(GOAT.clearIdentity) GOAT.clearIdentity(); } code=''; profile=null; identity=null; clearGate(); renderLogin(''); };
       var next=$('#ag-next');
       if(next) next.onclick=function(){
         var v=(document.getElementById('ag-code1')||{}).value||'';
         v=String(v).trim();
         var msg=$('#ag-msg');
-        if(v!=='5570'){ if(msg) msg.textContent='Wrong code.'; return; }
-        show(
-        '<div class="panel login-panel">' +
-          '<h1 class="login-title">ADMIN</h1>' +
-          '<div class="login-rule"></div>' +
-          '<p class="login-sub">First code correct. Enter the second code.</p>' +
-          '<input class="f-field" id="ag-code2" type="text" inputmode="numeric" pattern="[0-9]*" maxlength="4" autocomplete="off" placeholder="4 digits">' +
-          '<button class="big" id="ag-unlock">Unlock</button>' +
-          '<p class="m-note f-msg" id="ag-msg2"></p>' +
-          '<p style="text-align:center;margin-top:14px"><button class="linklike" id="ag-back2">Back to login</button></p>' +
-        '</div>');
-        setTimeout(function(){
-          var back2=$('#ag-back2');
-          if(back2) back2.onclick=function(){ if(window.GOAT) GOAT.clearCode(); code=''; profile=null; clearGate(); renderLogin(''); };
-          var un=$('#ag-unlock');
-          if(un) un.onclick=function(){
-            var v2=(document.getElementById('ag-code2')||{}).value||'';
-            v2=String(v2).trim();
-            var msg2=$('#ag-msg2');
-            if(v2!=='0909'){ if(msg2) msg2.textContent='Wrong code.'; return; }
-            setGatePassed();
-            renderDashboard();
-          };
-        }, 220);
+        // Verify against Firestore (hashed lookup — the admin codes are
+        // never in this page).
+        var checked = (window.GOAT && GOAT.verifyAdminCode) ? GOAT.verifyAdminCode(v, 1) : Promise.resolve(false);
+        checked.then(function(ok){
+          if(!ok){ if(msg) msg.textContent='Wrong code.'; return; }
+          show(
+          '<div class="panel login-panel">' +
+            '<h1 class="login-title">ADMIN</h1>' +
+            '<div class="login-rule"></div>' +
+            '<p class="login-sub">First code correct. Enter the second code.</p>' +
+            '<input class="f-field" id="ag-code2" type="text" inputmode="numeric" pattern="[0-9]*" maxlength="4" autocomplete="off" placeholder="4 digits">' +
+            '<button class="big" id="ag-unlock">Unlock</button>' +
+            '<p class="m-note f-msg" id="ag-msg2"></p>' +
+            '<p style="text-align:center;margin-top:14px"><button class="linklike" id="ag-back2">Back to login</button></p>' +
+          '</div>');
+          setTimeout(function(){
+            var back2=$('#ag-back2');
+            if(back2) back2.onclick=function(){ if(window.GOAT) GOAT.clearCode(); code=''; profile=null; identity=null; clearGate(); renderLogin(''); };
+            var un=$('#ag-unlock');
+            if(un) un.onclick=function(){
+              var v2=(document.getElementById('ag-code2')||{}).value||'';
+              v2=String(v2).trim();
+              var msg2=$('#ag-msg2');
+              var checked2 = (window.GOAT && GOAT.verifyAdminCode) ? GOAT.verifyAdminCode(v2, 2) : Promise.resolve(false);
+              checked2.then(function(ok2){
+                if(!ok2){ if(msg2) msg2.textContent='Wrong code.'; return; }
+                setGatePassed();
+                renderDashboard();
+              }).catch(function(){
+                if(msg2) msg2.textContent='Couldn\u2019t verify right now \u2014 try again.';
+              });
+            };
+          }, 220);
+        }).catch(function(){
+          if(msg) msg.textContent='Couldn\u2019t verify right now \u2014 try again.';
+        });
       };
     }, 220);
   }
@@ -2629,7 +2656,7 @@ textarea.f-field{
   function renderDashboard(){
     stopListeners();
     if(!profile) return renderLogin('');
-    var isAdmin = code===ADMIN;
+    var isAdmin = !!(identity && identity.admin);
     show(
     '<div class="panel">' +
       '<div class="m-top"><h1 style="font-size:40px">Hello, '+esc(profile.name)+'</h1>' +
@@ -2654,12 +2681,12 @@ textarea.f-field{
     '</div>');
     setTimeout(function(){
       var stage=$('#goat-stage');
-      var g = cardFor(code);
+      var g = cardFor(profile.name);
       if (stage && g) {
         try { stage.appendChild(buildCard(g)); } catch(e){ if(window.console) console.warn('[members] card build failed:', e && e.message); }
       }
       var lo=$('#logout');
-      if(lo) lo.onclick=function(){ stopListeners(); if(window.GOAT) GOAT.clearCode(); clearGate(); renderLogin(''); };
+      if(lo) lo.onclick=function(){ stopListeners(); if(window.GOAT){ GOAT.clearCode(); if(GOAT.clearIdentity) GOAT.clearIdentity(); } code=''; profile=null; identity=null; clearGate(); renderLogin(''); };
       var send=$('#req-send');
       if(send) send.onclick=sendRequest;
       startCardLive();
@@ -2678,10 +2705,10 @@ textarea.f-field{
         snap.forEach(function(doc){
           var d = doc.data() || {};
           if (!d.taken) return;
-          if (doc.id !== code) return;
+          if (doc.id !== profile.name) return;
           var n = Math.round(Number(d.overall));
           if (!isFinite(n)) return;
-          var card = document.querySelector('[data-code="'+code+'"]');
+          var card = document.querySelector('[data-name="'+profile.name+'"]');
           if (!card) return;
           var hp = card.querySelector('[data-hp]');
           if (hp && hp.textContent !== String(n)) hp.textContent = String(n);
@@ -2694,13 +2721,13 @@ textarea.f-field{
   function startScores(){
     var box=$('#scores'); if(!box) return;
     // ajchapa's HP stays "???" by design — he doesn't take the test.
-    if(code===ADMIN){
+    if(identity && identity.admin){
       box.innerHTML='<p class="m-note">Your HP stays &ldquo;???&rdquo; &mdash; you don&rsquo;t take the test.</p>';
       return;
     }
     if(dbDown()){ box.innerHTML='<p class="m-note">Couldn\u2019t reach the database yet. Your scores will show once it\u2019s up.</p>'; return; }
     try{
-      var unsub = GOAT.db.collection('scores').doc(code).onSnapshot(function(doc){
+      var unsub = GOAT.db.collection('scores').doc(profile.name).onSnapshot(function(doc){
         var b=$('#scores'); if(!b) return;
         var d = doc.exists ? (doc.data()||{}) : null;
         if(!d || !d.taken){
@@ -2736,7 +2763,7 @@ textarea.f-field{
         var items=[];
         snap.forEach(function(doc){
           var d=doc.data()||{};
-          if(code===ADMIN || d.code===code) items.push({id:doc.id, d:d});
+          if((identity && identity.admin) || d.name===profile.name) items.push({id:doc.id, d:d});
         });
         if(!items.length){ b.innerHTML='<p class="m-note">No notifications yet.</p>'; return; }
         b.innerHTML = items.map(function(it){
@@ -2788,16 +2815,16 @@ textarea.f-field{
         });
         if(!items.length){ b.innerHTML='<p class="m-note">No pending requests.</p>'; return; }
         b.innerHTML = items.map(function(it){
-          var who = (window.GOAT && GOAT.PEOPLE[it.d.code]) || it.d.code || 'Someone';
+          var who = it.d.name || 'Someone';
           return '<div class="m-req"><div class="cnt">'+esc(who)+' \u00b7 '+esc(fmtTime(it.d.createdAt))+'</div>' +
             '<p>'+esc(it.d.details||'')+'</p>' +
             '<div class="actions">' +
-              '<button class="btn-ghost" data-decide="approved" data-id="'+esc(it.id)+'" data-code="'+esc(it.d.code||'')+'">Approve</button>' +
-              '<button class="btn-danger" data-decide="denied" data-id="'+esc(it.id)+'" data-code="'+esc(it.d.code||'')+'">Deny</button>' +
+              '<button class="btn-ghost" data-decide="approved" data-id="'+esc(it.id)+'" data-name="'+esc(it.d.name||'')+'">Approve</button>' +
+              '<button class="btn-danger" data-decide="denied" data-id="'+esc(it.id)+'" data-name="'+esc(it.d.name||'')+'">Deny</button>' +
             '</div></div>';
         }).join('');
         [].slice.call(b.querySelectorAll('[data-decide]')).forEach(function(btn){
-          btn.onclick=function(){ decideRequest(btn.getAttribute('data-id'), btn.getAttribute('data-code'), btn.getAttribute('data-decide'), btn); };
+          btn.onclick=function(){ decideRequest(btn.getAttribute('data-id'), btn.getAttribute('data-name'), btn.getAttribute('data-decide'), btn); };
         });
       }, function(){
         var b=$('#admin-reqs'); if(b) b.innerHTML='<p class="m-note">Couldn\u2019t load requests right now.</p>';
@@ -2806,14 +2833,14 @@ textarea.f-field{
     }catch(e){ box.innerHTML='<p class="m-note">Couldn\u2019t load requests right now.</p>'; }
   }
 
-  function decideRequest(id, requesterCode, status, btn){
+  function decideRequest(id, requesterName, status, btn){
     if(dbDown()) return;
     if(btn) btn.disabled=true;
     GOAT.ensureAuth().then(function(){
       return GOAT.db.collection('requests').doc(id).update({ status: status });
     }).then(function(){
       var msg = status==='approved' ? 'The request was approved.' : 'The request was denied.';
-      return GOAT.notify(msg, status==='approved' ? 'request_approved' : 'request_denied', requesterCode || '');
+      return GOAT.notify(msg, status==='approved' ? 'request_approved' : 'request_denied', requesterName || '');
     }).catch(function(e){
       if(window.console) console.warn('[members] decide failed:', e && e.message);
       if(btn) btn.disabled=false;
@@ -2857,19 +2884,20 @@ textarea.f-field{
 
   function drawPeopleList(){
     var box=$('#manage-people'); if(!box) return;
-    var profiles=(window.GOAT && GOAT.PROFILES) || {};
-    var codes=Object.keys(profiles);
-    if(!codes.length){ box.innerHTML='<p class="m-note">No people found.</p>'; return; }
-    box.innerHTML = codes.map(function(c){
-      var p=profiles[c]||{};
+    // Roster from the CARDS data (names/titles/photos are public).
+    // People and scores are keyed by NAME, never by access code.
+    var roster=CARDS.map(function(g){ return {name:g.name, title:g.title, photo:g.photo}; });
+    if(!roster.length){ box.innerHTML='<p class="m-note">No people found.</p>'; return; }
+    box.innerHTML = roster.map(function(p){
+      var c=p.name;
       var ov=manageOverrides[c]||{};
       var removed=!!ov.removed;
       var name=(typeof ov.name==='string' && ov.name) ? ov.name : (p.name||c);
       var title=(typeof ov.title==='string' && ov.title) ? ov.title : (p.title||'');
       var photo=(typeof ov.photo==='string' && ov.photo) ? ov.photo : (p.photo||'');
-      var hp = (c===ADMIN) ? '???' : (typeof manageScores[c]==='number' ? manageScores[c] : '-');
+      var hp = (c==='ajchapa') ? '???' : (typeof manageScores[c]==='number' ? manageScores[c] : '-');
       var open = !!manageOpen[c];
-      return '<div class="m-req" data-pcode="'+esc(c)+'">' +
+      return '<div class="m-req" data-pname="'+esc(c)+'">' +
         '<div class="m-req-head"><span class="chev">'+(open?'▾':'▸')+'</span><div class="cnt">'+esc(name)+' · '+esc(title)+' · HP '+esc(String(hp))+(removed?' · REMOVED':'')+'</div></div>' +
         '<div class="m-req-body" style="display:'+(open?'block':'none')+'">' +
         '<label class="f-label">Name</label>' +
@@ -2891,9 +2919,9 @@ textarea.f-field{
     }).join('');
     [].slice.call(box.querySelectorAll('.m-req-head')).forEach(function(head){
       head.onclick=function(){
-        var wrap=head.closest ? head.closest('[data-pcode]') : null;
+        var wrap=head.closest ? head.closest('[data-pname]') : null;
         if(!wrap) return;
-        var c=wrap.getAttribute('data-pcode');
+        var c=wrap.getAttribute('data-pname');
         var body=wrap.querySelector('.m-req-body');
         var chev=head.querySelector('.chev');
         if(!body) return;
@@ -2905,9 +2933,9 @@ textarea.f-field{
     });
     [].slice.call(box.querySelectorAll('[data-act]')).forEach(function(btn){
       btn.onclick=function(){
-        var wrap=btn.closest ? btn.closest('[data-pcode]') : null;
+        var wrap=btn.closest ? btn.closest('[data-pname]') : null;
         if(!wrap) return;
-        var c=wrap.getAttribute('data-pcode');
+        var c=wrap.getAttribute('data-pname');
         var act=btn.getAttribute('data-act');
         var msgEl=wrap.querySelector('[data-msg]');
         function say(t){ if(msgEl) msgEl.textContent=t; }
@@ -2951,7 +2979,7 @@ textarea.f-field{
     btn.disabled=true;
     GOAT.ensureAuth().then(function(){
       return GOAT.db.collection('requests').add({
-        code: code,
+        name: profile.name,
         type: 'other',
         details: details,
         status: 'pending',
@@ -2960,8 +2988,8 @@ textarea.f-field{
     }).then(function(){
       detEl.value='';
       msgEl.textContent='Request sent for review.';
-      var who=(window.GOAT && GOAT.PEOPLE[code]) || code;
-      return GOAT.notify(who+' sent a request.', 'request_created', ADMIN);
+      var who=profile.name;
+      return GOAT.notify(who+' sent a request.', 'request_created', 'ajchapa');
     }).catch(function(e){
       msgEl.textContent='Couldn\u2019t send that right now. Try again.';
       if(window.console) console.warn('[members] sendRequest failed:', e && e.message);
@@ -2972,12 +3000,12 @@ textarea.f-field{
 
   (function boot(){
     try{
-      var c = (window.GOAT && GOAT.getCode()) || '';
-      if(c && window.GOAT && GOAT.PEOPLE[c]){
-        code=c; profile=GOAT.PROFILES[c];
+      var id = (window.GOAT && GOAT.getIdentity && GOAT.getIdentity()) || null;
+      if(id && id.name){
+        code=id.code||''; profile={name:id.name, title:id.title, photo:id.photo}; identity=id;
         GOAT.ensureAuth();
         // Admin auto-login still needs the two codes if not yet passed.
-        if(c===ADMIN && !gatePassed()){ renderAdminGate(); return; }
+        if(id.admin && !gatePassed()){ renderAdminGate(); return; }
         renderDashboard();
       }else{
         renderLogin('');
