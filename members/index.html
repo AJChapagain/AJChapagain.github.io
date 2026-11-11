@@ -1461,6 +1461,24 @@ h1,h2{
 }
 a.linklike{text-decoration:none}
 
+/* top nav row, mirrors the wall's own back-link bar */
+.m-nav{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  padding:0 4px;
+  margin-bottom:14px;
+}
+.m-nav a{
+  font-size:13px;
+  color:var(--m-mute);
+  letter-spacing:.02em;
+  text-decoration:none;
+  transition:color .2s ease;
+}
+.m-nav a:hover{color:var(--m-gold-deep)}
+.m-nav .m-nav-dot{color:var(--gold);font-size:11px}
+
 /* ---------- the white panel (the members container; the GOAT card keeps .card) ---------- */
 .panel{
   width:100%;
@@ -2495,6 +2513,7 @@ textarea.f-field{
     var down = dbDown();
     var noGoat = !window.GOAT;
     show(
+    '<div class="m-nav"><a href="/thewall/">&larr; The Wall</a><span class="m-nav-dot">&#9670;</span></div>' +
     '<div class="panel login-panel">' +
       '<h1 class="login-title">MEMBERS</h1>' +
       '<div class="login-rule"></div>' +
@@ -2508,7 +2527,6 @@ textarea.f-field{
       (noGoat ? '<p class="m-note" style="text-align:center">Members scripts didn\u2019t load. Refresh and try again.</p>' :
         down ? '<p class="m-note" style="text-align:center">The members database is not reachable right now. You can still log in and see your card, but scores, requests, and notifications need the database.</p>' : '') +
       '<p class="login-diamond">&#9670;&nbsp;&nbsp;&#9670;&nbsp;&nbsp;&#9670;</p>' +
-      '<p style="text-align:center;margin-top:18px"><a class="linklike" href="/thewall/">&larr; Back to the wall</a></p>' +
     '</div>');
     setTimeout(bindPin, 220);
   }
@@ -2660,9 +2678,9 @@ textarea.f-field{
     if(!profile) return renderLogin('');
     var isAdmin = !!(identity && identity.admin);
     show(
+    '<div class="m-nav"><a href="/thewall/">&larr; The Wall</a><button class="linklike" id="logout">Log out</button></div>' +
     '<div class="panel">' +
-      '<div class="m-top"><h1 style="font-size:40px">Hello, '+esc(profile.name)+'</h1>' +
-      '<span><a class="linklike" href="/thewall/">Back to the wall</a> &nbsp;&middot;&nbsp; <button class="linklike" id="logout">Log out</button></span></div>' +
+      '<h1 style="font-size:40px">Hello, '+esc(profile.name)+'</h1>' +
       '<div class="rule"></div>' +
       '<div class="goat-stage" id="goat-stage"></div>' +
       '<p class="flip-caption">Tap the card to flip it &nbsp;<b>\u21bb</b></p>' +
