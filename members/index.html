@@ -1459,6 +1459,7 @@ h1,h2{
   padding:0;
   cursor:pointer;
 }
+a.linklike{text-decoration:none}
 
 /* ---------- the white panel (the members container; the GOAT card keeps .card) ---------- */
 .panel{
@@ -2507,6 +2508,7 @@ textarea.f-field{
       (noGoat ? '<p class="m-note" style="text-align:center">Members scripts didn\u2019t load. Refresh and try again.</p>' :
         down ? '<p class="m-note" style="text-align:center">The members database is not reachable right now. You can still log in and see your card, but scores, requests, and notifications need the database.</p>' : '') +
       '<p class="login-diamond">&#9670;&nbsp;&nbsp;&#9670;&nbsp;&nbsp;&#9670;</p>' +
+      '<p style="text-align:center;margin-top:18px"><a class="linklike" href="/thewall/">&larr; Back to the wall</a></p>' +
     '</div>');
     setTimeout(bindPin, 220);
   }
@@ -2660,7 +2662,7 @@ textarea.f-field{
     show(
     '<div class="panel">' +
       '<div class="m-top"><h1 style="font-size:40px">Hello, '+esc(profile.name)+'</h1>' +
-      '<button class="linklike" id="logout">Log out</button></div>' +
+      '<span><a class="linklike" href="/thewall/">Back to the wall</a> &nbsp;&middot;&nbsp; <button class="linklike" id="logout">Log out</button></span></div>' +
       '<div class="rule"></div>' +
       '<div class="goat-stage" id="goat-stage"></div>' +
       '<p class="flip-caption">Tap the card to flip it &nbsp;<b>\u21bb</b></p>' +
