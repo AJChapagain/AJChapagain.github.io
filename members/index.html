@@ -2678,9 +2678,10 @@ textarea.f-field{
     if(!profile) return renderLogin('');
     var isAdmin = !!(identity && identity.admin);
     show(
-    '<div class="m-nav"><a href="/thewall/">&larr; The Wall</a><button class="linklike" id="logout">Log out</button></div>' +
+    '<div class="m-nav"><a href="/thewall/">&larr; The Wall</a><span class="m-nav-dot">&#9670;</span></div>' +
     '<div class="panel">' +
-      '<h1 style="font-size:40px">Hello, '+esc(profile.name)+'</h1>' +
+      '<div class="m-top"><h1 style="font-size:40px">Hello, '+esc(profile.name)+'</h1>' +
+      '<button class="linklike" id="logout">Log out</button></div>' +
       '<div class="rule"></div>' +
       '<div class="goat-stage" id="goat-stage"></div>' +
       '<p class="flip-caption">Tap the card to flip it &nbsp;<b>\u21bb</b></p>' +
