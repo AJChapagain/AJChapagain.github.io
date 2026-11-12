@@ -11,7 +11,7 @@
   <meta property="og:description" content="Hand-picked by ajchapa." />
   <meta property="og:image" content="https://ajchapa.com/og.png" />
   <meta name="twitter:card" content="summary_large_image" />
-  <link rel="icon" type="image/png" href="/favicon.png" />
+  <link rel="icon" type="image/png" href="/The%20same%20favicon,%20shrunk%20to%20112%20KB.png" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Mulish:wght@300;400;500;600;700;800&family=Space+Mono:wght@400;700&family=Anton&display=swap" rel="stylesheet" />
@@ -138,6 +138,17 @@
     .card:focus{outline:none}
     .card:focus-visible .face{outline:2px solid var(--text-main);outline-offset:4px}
     @keyframes rise{from{opacity:0;transform:translateY(18px)}to{opacity:1;transform:translateY(0)}}
+
+    /* perf: cards scrolled out of view stop animating (JS toggles .offscreen).
+       Descendants only — the card's own one-shot rise-in is left alone, so a card
+       scrolling into view is already fully visible instead of fading in late */
+    .card.offscreen *{animation-play-state:paused !important}
+    @media (max-width:640px){
+      /* perf: offset drop-shadows are the priciest filter on phone GPUs — ornaments keep
+         their shape and animation, they just lose the shadow on small screens */
+      .crown,.orang,.pistol,.tee,.martini,.cat,.fx-host .pp{filter:none !important}
+    }
+
     .card.locked{cursor:default}
     .card.locked .flip-hint{display:none}
 
@@ -1794,7 +1805,7 @@
       const tape = g.locked ? `<div class="ctape ctape2" aria-hidden="true"></div><div class="ctape" aria-hidden="true"><span>\u26a0 UNDER CONSTRUCTION \u26a0 UNDER CONSTRUCTION \u26a0</span></div>` : "";
       const tapeEdge = g.locked ? `<div class="ctape-edge" aria-hidden="true"></div>` : "";
       const photo = g.photo
-        ? `<div class="photo-wrap"><img src="${g.photo}" alt="${g.name}" decoding="async" draggable="false">
+        ? `<div class="photo-wrap"><img src="${g.photo}" alt="${g.name}" loading="lazy" decoding="async" draggable="false">
              <div class="sheen"></div>${fx}${chip}${tape}</div>`
         : `<div class="photo-wrap empty"><div class="initial">${g.name[0]}</div>${fx}${chip}${tape}</div>`;
 
@@ -1961,6 +1972,15 @@
       wall.appendChild(card);
       if (g.testLocked) applyLock(); else bindAll();
     });
+
+    // ── perf: pause always-on fx on cards scrolled out of view (CSS above does the pausing)
+    if ("IntersectionObserver" in window && !reduceMotion) {
+      const fxWatch = new IntersectionObserver((entries) => {
+        entries.forEach((en) => en.target.classList.toggle("offscreen", !en.isIntersecting));
+      }, { rootMargin: "120px" });
+      document.querySelectorAll(".card").forEach((c) => fxWatch.observe(c));
+    }
+
 
     // ── mijo's money effect: click = coin burst
     function bindMoney(card, kind) {
