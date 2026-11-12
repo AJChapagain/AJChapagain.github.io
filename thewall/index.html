@@ -1983,6 +1983,22 @@
       if (window.GOATCaptureOriginals) window.GOATCaptureOriginals();
     };
 
+    // Standing order rule (ajchapa, 2026-11-12): people who have taken the
+    // test rise to the top; people who haven't sink to the bottom. ajchapa's
+    // own card stays pinned first. Order inside each group stays as-is.
+    window.GOATReorder = function (taken) {
+      const has = (n) => (taken && typeof taken.has === "function") ? taken.has(n) : !!(taken && taken[n]);
+      const rank = (el) => {
+        const n = el.dataset.name;
+        if (n === "ajchapa") return 0;
+        return has(n) ? 1 : 2;
+      };
+      [...wall.children]
+        .map((el, i) => [rank(el), i, el])
+        .sort((a, b) => a[0] - b[0] || a[1] - b[1])
+        .forEach(([, , el]) => wall.appendChild(el));
+    };
+
     // ── mijo's money effect: click = coin burst
     function bindMoney(card, kind) {
       const wrap = card.querySelector(".photo-wrap");

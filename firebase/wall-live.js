@@ -111,6 +111,7 @@
             var taken = {};
             snap.forEach(function (doc) { var dd = doc.data() || {}; if (dd.taken) taken[doc.id] = true; });
             if (window.GOATLockSync) { try { window.GOATLockSync(taken); } catch (e) {} }
+            if (window.GOATReorder) { try { window.GOATReorder(taken); } catch (e) {} }
             snap.forEach(function (doc) {
               var d = doc.data() || {};
               if (d.taken) updateOne(doc.id, d.overall);
