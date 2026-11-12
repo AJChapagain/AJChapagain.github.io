@@ -14,10 +14,6 @@
 // Absent/empty fields restore the wall's hardcoded values. If Firestore
 // is unavailable, it does nothing and the wall keeps its hardcoded data.
 //
-// It also drives the test-lock: a member's card stays blurred under a
-// "User Has Not Taken Test" veil until their score document exists
-// (the wall builder exposes card.testLock / card.testUnlock for this).
-//
 // Scores and people are keyed by NAME (public), never by access code.
 // Requires firebase-init.js (GOAT) loaded first. Depends on the wall
 // builder setting data-name="<display name>" on each card <article> and
@@ -107,27 +103,10 @@
       GOAT.ensureAuth().then(function () {
         try {
           GOAT.db.collection("scores").onSnapshot(function (snap) {
-            var takenNames = {};
             snap.forEach(function (doc) {
               var d = doc.data() || {};
-              if (d.taken) {
-                takenNames[doc.id] = true;
-                updateOne(doc.id, d.overall);
-              }
+              if (d.taken) updateOne(doc.id, d.overall);
             });
-            // Test-lock: a member's card is open only while their score
-            // document exists. Everyone else stays blurred under the
-            // "User Has Not Taken Test" veil. ajchapa never locks.
-            var allCards = document.querySelectorAll("[data-name]");
-            for (var ci = 0; ci < allCards.length; ci++) {
-              var nm = cardName(allCards[ci]);
-              if (!nm || nm === "ajchapa") continue;
-              if (takenNames[nm]) {
-                if (allCards[ci].testUnlock) allCards[ci].testUnlock();
-              } else if (allCards[ci].testLock) {
-                allCards[ci].testLock();
-              }
-            }
             // A deleted score doc means the test was reset: HP goes back to "-".
             snap.docChanges().forEach(function (ch) {
               if (ch.type === "removed") {

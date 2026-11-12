@@ -138,48 +138,8 @@
     .card:focus{outline:none}
     .card:focus-visible .face{outline:2px solid var(--text-main);outline-offset:4px}
     @keyframes rise{from{opacity:0;transform:translateY(18px)}to{opacity:1;transform:translateY(0)}}
-
-    /* perf: cards scrolled out of view stop animating (JS toggles .offscreen).
-       Descendants only — the card's own one-shot rise-in is left alone, so a card
-       scrolling into view is already fully visible instead of fading in late */
-    .card{content-visibility:auto; contain-intrinsic-size:auto 300px}
-    .card.offscreen *{animation-play-state:paused !important}
-    @media (max-width:640px){
-      /* perf: offset drop-shadows are the priciest filter on phone GPUs — ornaments keep
-         their shape and animation, they just lose the shadow on small screens */
-      .crown,.orang,.pistol,.tee,.martini,.cat,.fx-host .pp{filter:none !important}
-    }
-
     .card.locked{cursor:default}
     .card.locked .flip-hint{display:none}
-
-    /* ---------- test-locked card: hidden until the test is taken ----------
-       A dark veil covers the whole card (photo, name, title, moves, back).
-       The card keeps its accent colour as the glow/edge so each locked
-       tile still reads as its own card. Flip + fx are disabled. */
-    .card.test-locked{cursor:default}
-    .card.test-locked .flip-hint{display:none}
-    /* the card stays visible underneath, blurred like a locked character
-       in a game — only the name on the veil reads sharp */
-    .card.test-locked > :not(.lock-veil){filter:blur(9px) saturate(.8) brightness(.94)}
-    /* perf: a locked card's fx are invisible under the blur — freeze them so the
-       browser paints the blur once instead of re-blurring moving content every frame */
-    .card.test-locked *{animation-play-state:paused !important}
-    .lock-veil{
-      position:absolute;inset:0;z-index:8;
-      display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;
-      border-radius:18px;overflow:hidden;text-align:center;padding:20px;
-      background:
-        radial-gradient(120% 90% at 50% 0%,rgba(var(--ac-rgb),.22),transparent 62%),
-        linear-gradient(180deg,rgba(24,18,10,.40) 0%,rgba(16,12,7,.55) 100%);
-      border:1px solid rgba(var(--ac-rgb),.55);
-      box-shadow:0 20px 40px -22px rgba(0,0,0,.5);
-      color:var(--ac-pale);
-    }
-    .lock-veil{text-decoration:none}
-    .lock-veil svg{width:40px;height:40px;color:var(--ac);filter:drop-shadow(0 2px 8px rgba(0,0,0,.5))}
-    .lock-veil .lv-name{font-family:var(--serif);font-size:28px;line-height:1.05;color:var(--ac-pale);text-shadow:0 1px 3px rgba(0,0,0,.65),0 0 14px rgba(0,0,0,.45)}
-    .lock-veil .lv-title{font-family:var(--serif);font-size:17px;line-height:1.3;letter-spacing:.01em;color:#fff;text-shadow:0 1px 3px rgba(0,0,0,.7),0 0 12px rgba(0,0,0,.5);max-width:180px}
 
     .flipper{position:relative;width:100%;height:100%;transform-style:preserve-3d;transition:transform .8s cubic-bezier(.2,.7,.25,1)}
     .card.flipped .flipper{transform:rotateY(180deg)}
@@ -1411,42 +1371,36 @@
         photo:"/Alex.jpg", pos:"50% 25%", zoom:1,
         color:"blue", fx:"aim",
         hp:"-",
-        testLocked:true,
         moves:[["Likability", 90], ["Nice Guy", 100], ["1v1 vs ajchapa", 0]] },
 
       { name:"Kush", title:"Goat of Excel",
         photo:"/5E063B38-E541-412F-B0DE-A586461C325A.jpeg", pos:"50% 25%", zoom:1,
         color:"green", fx:"sheet",
         hp:"-",
-        testLocked:true,
         moves:[["Handsome", 85], ["Work Life Balance", 30], ["Shopaholic", 80]] },
 
       { name:"Mae", title:"Goat of Crafts",
         photo:"/Mae.JPG", pos:"0% 28%", zoom:1,
         color:"pink", fx:"craft",
         hp:"-",
-        testLocked:true,
         moves:[["Heart", 101], ["Analytical Reasoning", 90], ["Athleticism", 30]] },
 
       { name:"GaryBoy", title:"Walking Lunch Money",
         photo:"/Gary.png", pos:"50% 25%", zoom:1,
         color:"dlc", fx:"pot",
         hp:"-",
-        testLocked:true,
         moves:[["Liver & Lungs", 50], ["Personable", 80], ["Chef", 80]] },
 
       { name:"Mijo", title:"Goat of Money",
         photo:"/miho.JPG", pos:"50% 25%", zoom:1,
         color:"money", fx:"money",
         hp:"-",
-        testLocked:true,
         moves:[["Generosity", 80], ["Drive", 80], ["Emotional Availability", 30]] },
 
       { name:"Helen", title:"Keller",
         photo:"/helen.JPG", pos:"50% 25%", zoom:1,
         color:"ember", fx:"ember",
         hp:"-",
-        testLocked:true,
         moves:[["Drunk Politics", 100], ["Art", 80], ["Gluten", 0]] },
 
       /* noel — goat of style: burgundy wine card, drink fx; all three moves set */
@@ -1454,7 +1408,6 @@
         photo:"/Noel.png", pos:"50% 25%", zoom:1,
         color:"style", fx:"drink",
         hp:"-",
-        testLocked:true,
         moves:[["Alcohol", 105], ["Exotic Dancer", 80], ["Communication", 50]] },
 
       /* kelketra — goat-style fire-gold card: flying flaming golf balls, tee ornament */
@@ -1462,7 +1415,6 @@
         photo:"/kelketra.jpg", pos:"50% 25%", zoom:1,
         color:"golf", fx:"golf",
         hp:"-",
-        testLocked:true,
         moves:[["Rocket League",70],["Academic Weapon",30],["Resilience",80]] },
 
       /* banananana — goat of hosting: teal card, paw-print fx, auggie the cat */
@@ -1470,7 +1422,6 @@
         photo:"/BANANNA (1).jpeg", pos:"50% 42%", zoom:1,
         color:"host", fx:"host",
         hp:"-",
-        testLocked:true,
         moves:[["Love for Auggie", 100, "love"], ["Partner", 31], ["Generosity", 80]] },
     ];
 
@@ -1782,21 +1733,18 @@
     // round portrait of Auggie for the back of the card
     const BUST = `<div class="bust" aria-hidden="true"><img src="/IMG_7945.jpg" alt=""></div>`;
     const HEART = `<svg class="heart" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 21.3l-1.5-1.3C5.4 15.4 2 12.3 2 8.5 2 5.4 4.4 3 7.5 3c1.7 0 3.4.8 4.5 2.1C13.1 3.8 14.8 3 16.5 3 19.6 3 22 5.4 22 8.5c0 3.8-3.4 6.9-8.5 11.5z"/></svg>`;
-    const LOCK_SVG = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="4.5" y="10.5" width="15" height="10" rx="2.5"/><path d="M8 10.5V7.8a4 4 0 0 1 8 0v2.7"/></svg>`;
 
     // ── build the cards
     GOATS.forEach((g, i) => {
       const dlc = g.color === "dlc" || g.color === "ember";
       const card = document.createElement("article");
-      card.className = "card c-" + (g.color || "gold") + (g.color === "ember" ? " c-dlc" : "") + (g.locked ? " locked" : "") + (g.testLocked ? " test-locked" : "");
+      card.className = "card c-" + (g.color || "gold") + (g.color === "ember" ? " c-dlc" : "") + (g.locked ? " locked" : "");
       card.dataset.fx = g.fx || "";
       card.dataset.name = g.name;
       card.style.animationDelay = (i * 110) + "ms";
       card.style.setProperty("--pos", g.pos || "50% 25%");
       card.style.setProperty("--zoom", g.zoom || 1);
-      if (g.testLocked) {
-        card.setAttribute("aria-label", g.name + ". User has not taken test.");
-      } else if (!g.locked) {
+      if (!g.locked) {
         card.tabIndex = 0;
         card.setAttribute("role", "button");
         card.setAttribute("aria-label", g.name + ", " + g.title + ". Activate to flip.");
@@ -1809,7 +1757,7 @@
       const tape = g.locked ? `<div class="ctape ctape2" aria-hidden="true"></div><div class="ctape" aria-hidden="true"><span>\u26a0 UNDER CONSTRUCTION \u26a0 UNDER CONSTRUCTION \u26a0</span></div>` : "";
       const tapeEdge = g.locked ? `<div class="ctape-edge" aria-hidden="true"></div>` : "";
       const photo = g.photo
-        ? `<div class="photo-wrap"><img src="${g.photo}" alt="${g.name}" loading="lazy" decoding="async" draggable="false">
+        ? `<div class="photo-wrap"><img src="${g.photo}" alt="${g.name}" decoding="async" draggable="false">
              <div class="sheen"></div>${fx}${chip}${tape}</div>`
         : `<div class="photo-wrap empty"><div class="initial">${g.name[0]}</div>${fx}${chip}${tape}</div>`;
 
@@ -1926,65 +1874,18 @@
         });
       }
 
-      const flip = () => { if (!TUNE && !g.locked && !g.testLocked) card.classList.toggle("flipped"); };
+      const flip = () => { if (!TUNE && !g.locked) card.classList.toggle("flipped"); };
       card.addEventListener("click", flip);
       card.addEventListener("keydown", (e) => {
         if (e.key === "Enter" || e.key === " ") { e.preventDefault(); flip(); }
       });
-      // test-lock controls: wall-live.js calls these when a test score
-      // appears (unlock) or is reset (re-lock). The fx binders run once,
-      // the first time the card is unlocked.
-      let fxBound = false;
-      const bindAll = () => {
-        if (fxBound) return;
-        fxBound = true;
-        if (!TUNE) bindFx(card, g.fx);
-        bindMoney(card, g.fx);
-        bindGolf(card, g.fx);
-        bindDrink(card, g.fx);
-        bindHost(card, g.fx);
-      };
-      const applyLock = () => {
-        g.testLocked = true;
-        card.classList.add("test-locked");
-        card.tabIndex = -1;
-        card.removeAttribute("role");
-        card.setAttribute("aria-label", g.name + ". User has not taken test.");
-        if (!card.querySelector(".lock-veil")) {
-          const v = document.createElement("a");
-          v.className = "lock-veil";
-          v.href = "/members/";
-          v.innerHTML = LOCK_SVG + '<div class="lv-name">' + g.name + '</div><div class="lv-title">User Has Not Taken Test</div>';
-          card.appendChild(v);
-        }
-      };
-      const applyUnlock = () => {
-        g.testLocked = false;
-        card.classList.remove("test-locked");
-        const v = card.querySelector(".lock-veil");
-        if (v) v.remove();
-        if (!g.locked) {
-          card.tabIndex = 0;
-          card.setAttribute("role", "button");
-          card.setAttribute("aria-label", g.name + ", " + g.title + ". Activate to flip.");
-        }
-        bindAll();
-      };
-      card.testLock = applyLock;
-      card.testUnlock = applyUnlock;
-
       wall.appendChild(card);
-      if (g.testLocked) applyLock(); else bindAll();
+      if (!TUNE) bindFx(card, g.fx);
+      bindMoney(card, g.fx);
+      bindGolf(card, g.fx);
+      bindDrink(card, g.fx);
+      bindHost(card, g.fx);
     });
-
-    // ── perf: pause always-on fx on cards scrolled out of view (CSS above does the pausing)
-    if ("IntersectionObserver" in window && !reduceMotion) {
-      const fxWatch = new IntersectionObserver((entries) => {
-        entries.forEach((en) => en.target.classList.toggle("offscreen", !en.isIntersecting));
-      }, { rootMargin: "120px" });
-      document.querySelectorAll(".card").forEach((c) => fxWatch.observe(c));
-    }
-
 
     // ── mijo's money effect: click = coin burst
     function bindMoney(card, kind) {
@@ -2365,6 +2266,6 @@
   <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
   <script src="/firebase/firebase-init.js"></script>
-  <script src="/firebase/wall-live.js?v=20261112-lock"></script>
+  <script src="/firebase/wall-live.js"></script>
 </body>
 </html>
