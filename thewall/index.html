@@ -1332,6 +1332,23 @@
          ajchapa's foil sweep. Frozen on phones — the gradients stay, the sweep stops */
       .c-gold .plate .name,.c-gold .b-name,.c-style .plate .name,.c-style .b-name,.fx-aura .foil{animation-play-state:paused !important}
     }
+
+    /* lock v2: a locked member is a STATIC TILE — the real card is not built at all
+       (no photo, no fx, no animations, no filters) until their test score exists.
+       That is why it cannot lag: there is nothing running underneath to repaint. */
+    .card.lock-tile{opacity:1;animation:none;cursor:pointer;text-decoration:none;
+      display:flex;align-items:center;justify-content:center;border-radius:18px;
+      background:linear-gradient(165deg,var(--ac-wash),#fff 72%);
+      border:1px solid var(--ac-line);
+      box-shadow:0 1px 2px rgba(0,0,0,.05),0 20px 40px -22px rgba(0,0,0,.24)}
+    .card.lock-tile .lt{display:flex;flex-direction:column;align-items:center;gap:7px;text-align:center;padding:18px}
+    .card.lock-tile .lt svg{width:34px;height:34px;stroke:var(--ac);fill:none;stroke-width:1.7;stroke-linecap:round}
+    .card.lock-tile .lt-name{font-family:var(--serif);font-size:27px;line-height:1.05;color:var(--ac-deep)}
+    .card.lock-tile .lt-title{font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:#8a8378}
+    .card.lock-tile .lt-text{margin-top:5px;font-size:12.5px;color:#6f6a5e}
+    .card.lock-tile.c-dlc{background:linear-gradient(165deg,#241b31,#120e18)}
+    .card.lock-tile.c-dlc .lt-title{color:#9a8fa8}
+    .card.lock-tile.c-dlc .lt-text{color:#b7aec4}
 </style>
 </head>
 <body>
@@ -1379,58 +1396,58 @@
         hp:"???",
         moves:[["Self Glaze", 120], ["Chill", 80], ["Cancer", 0]] },
 
-      { name:"Alex", title:"Goat of Fortnite",
+      { name:"Alex", lockable:true, title:"Goat of Fortnite",
         photo:"/Alex.jpg", pos:"50% 25%", zoom:1,
         color:"blue", fx:"aim",
         hp:"-",
         moves:[["Likability", 90], ["Nice Guy", 100], ["1v1 vs ajchapa", 0]] },
 
-      { name:"Kush", title:"Goat of Excel",
+      { name:"Kush", lockable:true, title:"Goat of Excel",
         photo:"/5E063B38-E541-412F-B0DE-A586461C325A.jpeg", pos:"50% 25%", zoom:1,
         color:"green", fx:"sheet",
         hp:"-",
         moves:[["Handsome", 85], ["Work Life Balance", 30], ["Shopaholic", 80]] },
 
-      { name:"Mae", title:"Goat of Crafts",
+      { name:"Mae", lockable:true, title:"Goat of Crafts",
         photo:"/Mae.JPG", pos:"0% 28%", zoom:1,
         color:"pink", fx:"craft",
         hp:"-",
         moves:[["Heart", 101], ["Analytical Reasoning", 90], ["Athleticism", 30]] },
 
-      { name:"GaryBoy", title:"Walking Lunch Money",
+      { name:"GaryBoy", lockable:true, title:"Walking Lunch Money",
         photo:"/Gary.png", pos:"50% 25%", zoom:1,
         color:"dlc", fx:"pot",
         hp:"-",
         moves:[["Liver & Lungs", 50], ["Personable", 80], ["Chef", 80]] },
 
-      { name:"Mijo", title:"Goat of Money",
+      { name:"Mijo", lockable:true, title:"Goat of Money",
         photo:"/miho.JPG", pos:"50% 25%", zoom:1,
         color:"money", fx:"money",
         hp:"-",
         moves:[["Generosity", 80], ["Drive", 80], ["Emotional Availability", 30]] },
 
-      { name:"Helen", title:"Keller",
+      { name:"Helen", lockable:true, title:"Keller",
         photo:"/helen.JPG", pos:"50% 25%", zoom:1,
         color:"ember", fx:"ember",
         hp:"-",
         moves:[["Drunk Politics", 100], ["Art", 80], ["Gluten", 0]] },
 
       /* noel — goat of style: burgundy wine card, drink fx; all three moves set */
-      { name:"Noel", title:"Goat of Style",
+      { name:"Noel", lockable:true, title:"Goat of Style",
         photo:"/Noel.png", pos:"50% 25%", zoom:1,
         color:"style", fx:"drink",
         hp:"-",
         moves:[["Alcohol", 105], ["Exotic Dancer", 80], ["Communication", 50]] },
 
       /* kelketra — goat-style fire-gold card: flying flaming golf balls, tee ornament */
-      { name:"Kelketra", title:"Goat of Golf With Friends",
+      { name:"Kelketra", lockable:true, title:"Goat of Golf With Friends",
         photo:"/kelketra.jpg", pos:"50% 25%", zoom:1,
         color:"golf", fx:"golf",
         hp:"-",
         moves:[["Rocket League",70],["Academic Weapon",30],["Resilience",80]] },
 
       /* banananana — goat of hosting: teal card, paw-print fx, auggie the cat */
-      { name:"Banananana", title:"Goat of Hosting",
+      { name:"Banananana", lockable:true, title:"Goat of Hosting",
         photo:"/BANANNA (1).jpeg", pos:"50% 42%", zoom:1,
         color:"host", fx:"host",
         hp:"-",
@@ -1747,7 +1764,7 @@
     const HEART = `<svg class="heart" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 21.3l-1.5-1.3C5.4 15.4 2 12.3 2 8.5 2 5.4 4.4 3 7.5 3c1.7 0 3.4.8 4.5 2.1C13.1 3.8 14.8 3 16.5 3 19.6 3 22 5.4 22 8.5c0 3.8-3.4 6.9-8.5 11.5z"/></svg>`;
 
     // ── build the cards
-    GOATS.forEach((g, i) => {
+    function buildCard(g, i) {
       const dlc = g.color === "dlc" || g.color === "ember";
       const card = document.createElement("article");
       card.className = "card c-" + (g.color || "gold") + (g.color === "ember" ? " c-dlc" : "") + (g.locked ? " locked" : "");
@@ -1891,13 +1908,39 @@
       card.addEventListener("keydown", (e) => {
         if (e.key === "Enter" || e.key === " ") { e.preventDefault(); flip(); }
       });
-      wall.appendChild(card);
       if (!TUNE) bindFx(card, g.fx);
       bindMoney(card, g.fx);
       bindGolf(card, g.fx);
       bindDrink(card, g.fx);
       bindHost(card, g.fx);
-    });
+      return card;
+    }
+
+    // ── lock v2: static tile until the test is taken ──────────────────────
+    const LOCK_SVG = `<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 10.5V7a5 5 0 0 1 10 0v3.5"/><rect x="4.8" y="10.5" width="14.4" height="9.2" rx="2"/><circle cx="12" cy="15" r="1.5" fill="var(--ac)" stroke="none"/></svg>`;
+    function buildTile(g) {
+      const a = document.createElement("a");
+      a.className = "card lock-tile c-" + (g.color || "gold") + (g.color === "ember" ? " c-dlc" : "");
+      a.dataset.name = g.name;
+      a.href = "/members/";
+      a.setAttribute("aria-label", g.name + ", " + g.title + ". User has not taken test.");
+      a.innerHTML = `<div class="lt">${LOCK_SVG}<div class="lt-name">${g.name}</div><div class="lt-title">${g.title}</div><div class="lt-text">User Has Not Taken Test</div></div>`;
+      return a;
+    }
+    GOATS.forEach((g, i) => { wall.appendChild(g.lockable ? buildTile(g) : buildCard(g, i)); });
+    // Called by wall-live.js on every scores snapshot: build the real card the
+    // moment a score exists; swap back to the tile if the score is reset.
+    window.GOATLockSync = function (taken) {
+      GOATS.forEach((g, i) => {
+        if (!g.lockable) return;
+        const el = wall.querySelector('[data-name="' + g.name + '"]');
+        if (!el) return;
+        const isTile = el.classList.contains("lock-tile");
+        if (taken[g.name] && isTile) el.replaceWith(buildCard(g, i));
+        else if (!taken[g.name] && !isTile) el.replaceWith(buildTile(g));
+      });
+      if (window.GOATCaptureOriginals) window.GOATCaptureOriginals();
+    };
 
     // ── mijo's money effect: click = coin burst
     function bindMoney(card, kind) {

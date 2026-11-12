@@ -32,22 +32,25 @@
     return card.getAttribute("data-name") || "";
   }
 
+  function captureOne(card) {
+    var name = cardName(card);
+    if (!name || originals[name]) return;
+    if (card.classList.contains("lock-tile")) return; // tiles hold no card data
+    var nameEl = card.querySelector(".plate .name");
+    var titleEl = card.querySelector(".plate .title span");
+    var img = card.querySelector(".photo-wrap img");
+    originals[name] = {
+      name: nameEl ? nameEl.textContent : "",
+      title: titleEl ? titleEl.textContent : "",
+      photo: img ? img.getAttribute("src") : ""
+    };
+  }
+
   function captureOriginals() {
     var cards = document.querySelectorAll("[data-name]");
-    for (var i = 0; i < cards.length; i++) {
-      var card = cards[i];
-      var name = cardName(card);
-      if (!name || originals[name]) continue;
-      var nameEl = card.querySelector(".plate .name");
-      var titleEl = card.querySelector(".plate .title span");
-      var img = card.querySelector(".photo-wrap img");
-      originals[name] = {
-        name: nameEl ? nameEl.textContent : "",
-        title: titleEl ? titleEl.textContent : "",
-        photo: img ? img.getAttribute("src") : ""
-      };
-    }
+    for (var i = 0; i < cards.length; i++) captureOne(cards[i]);
   }
+  window.GOATCaptureOriginals = captureOriginals;
 
   function setText(el, v) {
     if (el && el.textContent !== v) el.textContent = v;
@@ -72,6 +75,7 @@
   function applyPerson(name, d) {
     var card = document.querySelector('[data-name="' + name + '"]');
     if (!card) return;
+    if (!originals[name]) captureOne(card);
     var o = originals[name] || { name: "", title: "", photo: "" };
     d = d || {};
     // Remove / restore.
@@ -103,6 +107,10 @@
       GOAT.ensureAuth().then(function () {
         try {
           GOAT.db.collection("scores").onSnapshot(function (snap) {
+            // Lock v2: swap tiles <-> real cards to match who has a score.
+            var taken = {};
+            snap.forEach(function (doc) { var dd = doc.data() || {}; if (dd.taken) taken[doc.id] = true; });
+            if (window.GOATLockSync) { try { window.GOATLockSync(taken); } catch (e) {} }
             snap.forEach(function (doc) {
               var d = doc.data() || {};
               if (d.taken) updateOne(doc.id, d.overall);
