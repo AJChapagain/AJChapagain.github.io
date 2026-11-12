@@ -107,11 +107,20 @@
       GOAT.ensureAuth().then(function () {
         try {
           GOAT.db.collection("scores").onSnapshot(function (snap) {
+            // Ignore Firestore's first local-cache snapshot when it is empty:
+            // acting on it would wipe the taken cache, swap real cards back
+            // to tiles, and reveal the wall in the wrong state — the exact
+            // post-load shift the pre-load alignment exists to prevent.
+            // A genuinely empty collection still arrives from the server
+            // (fromCache false) and is processed normally.
+            if (snap.metadata && snap.metadata.fromCache && snap.empty) return;
             // Lock v2: swap tiles <-> real cards to match who has a score.
             var taken = {};
             snap.forEach(function (doc) { var dd = doc.data() || {}; if (dd.taken) taken[doc.id] = true; });
             if (window.GOATLockSync) { try { window.GOATLockSync(taken); } catch (e) {} }
+            try { localStorage.setItem("goatTakenSet", JSON.stringify(Object.keys(taken))); } catch (e) {}
             if (window.GOATReorder) { try { window.GOATReorder(taken); } catch (e) {} }
+            if (window.GOATReveal) { try { window.GOATReveal(); } catch (e) {} }
             snap.forEach(function (doc) {
               var d = doc.data() || {};
               if (d.taken) updateOne(doc.id, d.overall);

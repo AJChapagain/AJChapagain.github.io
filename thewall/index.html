@@ -1360,6 +1360,10 @@
     /* lock v2: a locked member is a STATIC TILE — the real card is not built at all
        (no photo, no fx, no animations, no filters) until their test score exists.
        That is why it cannot lag: there is nothing running underneath to repaint. */
+    /* pre-load alignment: grid held invisible on a first-ever visit until
+       the first scores snapshot lands (wall-live calls GOATReveal) */
+    #wall{transition:opacity .35s ease}
+    #wall.boot{opacity:0}
     .card.lock-tile{opacity:1;animation:none;cursor:pointer;text-decoration:none;
       display:flex;align-items:center;justify-content:center;border-radius:18px;
       background:linear-gradient(165deg,var(--ac-wash),#fff 72%);
@@ -1968,7 +1972,30 @@
       a.innerHTML = `<div class="lt">${LOCK_SVG}<div class="lt-name">${g.name}</div><div class="lt-title">${g.title}</div><div class="lt-text">User Has Not Taken Test</div></div>`;
       return a;
     }
-    GOATS.forEach((g, i) => { wall.appendChild(g.lockable ? buildTile(g) : buildCard(g, i)); });
+    // Pre-load alignment (ajchapa, 2026-11-12): the wall must OPEN already
+    // sorted — no shifting after load. wall-live caches the taken-set in
+    // localStorage on every snapshot; this initial build reads that cache
+    // synchronously and builds cards/tiles in final order. On a first-ever
+    // visit (no cache yet) the grid stays hidden until the first snapshot
+    // (or a 1.5s safety timeout), so it never paints in the wrong order.
+    const CACHED_TAKEN = (() => {
+      try {
+        const raw = localStorage.getItem("goatTakenSet");
+        return raw ? new Set(JSON.parse(raw)) : null;
+      } catch (e) { return null; }
+    })();
+    const bootRank = (g) => g.name === "ajchapa" ? 0 : (CACHED_TAKEN && CACHED_TAKEN.has(g.name)) ? 1 : 2;
+    GOATS.map((g, i) => [bootRank(g), i, g])
+      .sort((a, b) => a[0] - b[0] || a[1] - b[1])
+      .forEach(([, i, g]) => {
+        const unlocked = g.lockable && CACHED_TAKEN && CACHED_TAKEN.has(g.name);
+        wall.appendChild(g.lockable && !unlocked ? buildTile(g) : buildCard(g, i));
+      });
+    if (!CACHED_TAKEN) {
+      wall.classList.add("boot");
+      setTimeout(() => wall.classList.remove("boot"), 1500);
+    }
+    window.GOATReveal = function () { wall.classList.remove("boot"); };
     // Called by wall-live.js on every scores snapshot: build the real card the
     // moment a score exists; swap back to the tile if the score is reset.
     window.GOATLockSync = function (taken) {
