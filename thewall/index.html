@@ -1320,7 +1320,19 @@
 
     /* the front effects also sit below the back's content, so taps and hovers never hit them */
     .card.flipped .fx{pointer-events:none}
-  </style>
+  
+    /* perf: cards off-screen freeze their animations (JS toggles .offscreen) —
+       160+ always-on animations are the wall's main scroll cost; visible cards keep animating */
+    .card.offscreen *{animation-play-state:paused !important}
+    @media (max-width:640px){
+      /* perf: drop-shadow filters are the priciest paint on phone GPUs; ornaments keep
+         their shape and motion on small screens, they just lose the shadow */
+      .crown,.orang,.pistol,.tee,.martini,.cat,.fx-host .pp{filter:none !important}
+      /* the only paint-per-frame animations on the wall: the two name shines and
+         ajchapa's foil sweep. Frozen on phones — the gradients stay, the sweep stops */
+      .c-gold .plate .name,.c-gold .b-name,.c-style .plate .name,.c-style .b-name,.fx-aura .foil{animation-play-state:paused !important}
+    }
+</style>
 </head>
 <body>
   <div id="page">
@@ -2266,6 +2278,16 @@
   <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
   <script src="/firebase/firebase-init.js"></script>
+  
+  <script>
+    // perf: freeze fx on cards scrolled out of view (the CSS above does the pausing)
+    if ("IntersectionObserver" in window) {
+      const fxWatch = new IntersectionObserver((entries) => {
+        entries.forEach((en) => en.target.classList.toggle("offscreen", !en.isIntersecting));
+      }, { rootMargin: "120px" });
+      document.querySelectorAll(".card").forEach((c) => fxWatch.observe(c));
+    }
+  </script>
   <script src="/firebase/wall-live.js"></script>
 </body>
 </html>
