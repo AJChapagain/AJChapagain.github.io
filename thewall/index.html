@@ -142,6 +142,7 @@
     /* perf: cards scrolled out of view stop animating (JS toggles .offscreen).
        Descendants only — the card's own one-shot rise-in is left alone, so a card
        scrolling into view is already fully visible instead of fading in late */
+    .card{content-visibility:auto; contain-intrinsic-size:auto 300px}
     .card.offscreen *{animation-play-state:paused !important}
     @media (max-width:640px){
       /* perf: offset drop-shadows are the priciest filter on phone GPUs — ornaments keep
@@ -161,6 +162,9 @@
     /* the card stays visible underneath, blurred like a locked character
        in a game — only the name on the veil reads sharp */
     .card.test-locked > :not(.lock-veil){filter:blur(9px) saturate(.8) brightness(.94)}
+    /* perf: a locked card's fx are invisible under the blur — freeze them so the
+       browser paints the blur once instead of re-blurring moving content every frame */
+    .card.test-locked *{animation-play-state:paused !important}
     .lock-veil{
       position:absolute;inset:0;z-index:8;
       display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;
