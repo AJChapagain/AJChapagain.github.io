@@ -1009,6 +1009,15 @@
     .c-ember{--ac:#ff7a45;--ac-deep:#ffb08a;--ac-pale:#ffe0d0;--ac-rgb:255,122,69;--ac-wash:#2a140c;--ac-line:#5c2e1c;
       --ink:#1a0d08;--ink2:#2a140c;--paper:#fff1e8;
       --mono:'Space Mono',Menlo,Monaco,Consolas,monospace;--font:var(--mono);--serif:var(--mono)}
+
+    /* ================================================================
+       JESSIE: steel palette on the dlc skeleton — silver, like the
+       dumbbells. same deal as ember: c-steel (colors) + c-dlc (frame).
+       ================================================================ */
+    .c-steel{--ac:#c3cad6;--ac-deep:#eef1f6;--ac-pale:#dfe4ec;--ac-rgb:195,202,214;--ac-wash:#14161c;--ac-line:#49536a;
+      --ink:#0a0c10;--ink2:#14161c;--paper:#f2f4f8;
+      --mono:'Space Mono',Menlo,Monaco,Consolas,monospace;--font:var(--mono);--serif:var(--mono)}
+
     /* keep garyboy's back exactly as it was — the shared long-name rule must not shrink his moves */
     .c-dlc .moves li.long .m-name{font-size:14px;white-space:nowrap;line-height:1.15;letter-spacing:.04em}
     /* long move names step down a size so they always fit (ember only — garyboy untouched) */
@@ -1327,11 +1336,26 @@
     @media (max-width:640px){
       /* perf: drop-shadow filters are the priciest paint on phone GPUs; ornaments keep
          their shape and motion on small screens, they just lose the shadow */
-      .crown,.orang,.pistol,.tee,.martini,.cat,.fx-host .pp{filter:none !important}
+      .crown,.orang,.pistol,.tee,.martini,.cat,.fx-host .pp,.fx-gym .dbell{filter:none !important}
       /* the only paint-per-frame animations on the wall: the two name shines and
          ajchapa's foil sweep. Frozen on phones — the gradients stay, the sweep stops */
       .c-gold .plate .name,.c-gold .b-name,.c-style .plate .name,.c-style .b-name,.fx-aura .foil{animation-play-state:paused !important}
     }
+
+
+    /* jessie: gym fx — dumbbell emblem over the photo + mini dumbbells repping */
+    .fx-gym .dbell{position:absolute;top:10px;right:10px;width:58px;z-index:5;pointer-events:none;
+      filter:drop-shadow(0 5px 6px rgba(10,5,20,.45));animation:dbob 3.6s ease-in-out infinite}
+    .fx-gym .dbell svg{width:100%;display:block;overflow:visible}
+    @keyframes dbob{0%,100%{transform:rotate(-14deg) translateY(0)}50%{transform:rotate(-14deg) translateY(-6px)}}
+    .fx-gym .dbmini{position:absolute;bottom:-8px;left:var(--x);width:var(--s);opacity:0;pointer-events:none;
+      animation:dbrise var(--t) linear infinite;animation-delay:var(--dl)}
+    .fx-gym .dbmini svg{width:100%;display:block}
+    @keyframes dbrise{0%{transform:translateY(8px) rotate(-10deg);opacity:0}12%{opacity:.85}82%{opacity:.65}100%{transform:translateY(-118px) rotate(9deg);opacity:0}}
+    .fx-gym .dbpop{position:absolute;width:var(--s);pointer-events:none;z-index:7;
+      animation:dbpop .85s ease-out forwards}
+    .fx-gym .dbpop svg{width:100%;display:block}
+    @keyframes dbpop{0%{transform:translate(-50%,-50%) rotate(0deg) scale(.4);opacity:1}100%{transform:translate(calc(-50% + var(--dx)),calc(-50% + var(--dy))) rotate(var(--r)) scale(1);opacity:0}}
 
     /* lock v2: a locked member is a STATIC TILE — the real card is not built at all
        (no photo, no fx, no animations, no filters) until their test score exists.
@@ -1347,6 +1371,7 @@
     .card.lock-tile .lt-title{font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:#8a8378}
     .card.lock-tile .lt-text{margin-top:5px;font-size:12.5px;color:#6f6a5e}
     .card.lock-tile.c-dlc{background:linear-gradient(165deg,#241b31,#120e18)}
+    .card.lock-tile.c-steel{background:linear-gradient(165deg,#262a33,#101216)}
     .card.lock-tile.c-dlc .lt-title{color:#9a8fa8}
     .card.lock-tile.c-dlc .lt-text{color:#b7aec4}
 </style>
@@ -1452,6 +1477,11 @@
         color:"host", fx:"host",
         hp:"-",
         moves:[["Love for Auggie", 100, "love"], ["Partner", 31], ["Generosity", 80]] },
+      { name:"Jessie", lockable:true, title:"Burger",
+        photo:"", pos:"50% 25%", zoom:1,
+        color:"steel", fx:"gym",
+        hp:"-",
+        moves:[["1", "—"], ["2", "—"], ["3", "—"]] },
     ];
 
     const wall = document.getElementById("wall");
@@ -1571,6 +1601,12 @@
         const trail = [[34,90,-14],[58,76,10],[32,62,-18],[60,48,8],[36,34,-12],[58,20,12]]
           .map(([x,y,r], i) => `<i class="pp" style="--x:${x}%;--y:${y}%;--r:${r}deg;--dl:${(i * 0.7).toFixed(1)}s">${PAW("#f2c230")}</i>`).join("");
         return `<div class="fx fx-host">${trail}</div>`;
+      }
+      // ── jessie's gym effect: her dumbbell riding the photo, mini dumbbells doing reps
+      if (kind === "gym") {
+        const minis = [[10,24,5.5,0],[30,17,7,-2.4],[52,26,6,-4.5],[72,19,7.5,-1.2],[88,23,5.8,-3.6]]
+          .map(([x,s,t,dl]) => `<i class="dbmini" style="--x:${x}%;--s:${s}px;--t:${t}s;--dl:${dl}s">${DBELL_SVG}</i>`).join("");
+        return `<div class="fx fx-gym"><div class="dbell">${DBELL_SVG}</div>${minis}</div>`;
       }
       return "";
     }
@@ -1702,6 +1738,10 @@
       <circle cx="61" cy="14" r="2.1" fill="#0b0c10"/>
     </svg></div>`;
 
+
+    // jessie's dumbbell: her emblem, drawn once and reused by the fx + bursts
+    const DBELL_SVG = `<svg viewBox="0 0 72 36" aria-hidden="true"><defs><linearGradient id="dbm" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#9aa3b2"/><stop offset=".5" stop-color="#565e6e"/><stop offset="1" stop-color="#23262e"/></linearGradient></defs><rect x="29" y="15" width="14" height="6" rx="2" fill="#3a3f4a"/><rect x="22" y="6" width="7" height="24" rx="2.5" fill="url(#dbm)" stroke="#14161c" stroke-width="1"/><rect x="14" y="10" width="6" height="16" rx="2" fill="url(#dbm)" stroke="#14161c" stroke-width="1"/><rect x="43" y="6" width="7" height="24" rx="2.5" fill="url(#dbm)" stroke="#14161c" stroke-width="1"/><rect x="52" y="10" width="6" height="16" rx="2" fill="url(#dbm)" stroke="#14161c" stroke-width="1"/></svg>`;
+
     // paw print: 4 normal toes plus the extra gold one on the side
     const PAW = (extra) => `<svg viewBox="0 0 24 24"><g fill="currentColor"><ellipse cx="13" cy="16.5" rx="6" ry="4.8"/><circle cx="7" cy="10.5" r="2.2"/><circle cx="11" cy="6.6" r="2.3"/><circle cx="15.5" cy="6.6" r="2.3"/><circle cx="19.2" cy="10.5" r="2.2"/></g><circle cx="3.4" cy="16" r="2.1" fill="${extra}"/></svg>`;
     const CONF = ["#ffffff", "#7fd6cf", "#f2c230"];
@@ -1765,9 +1805,9 @@
 
     // ── build the cards
     function buildCard(g, i) {
-      const dlc = g.color === "dlc" || g.color === "ember";
+      const dlc = g.color === "dlc" || g.color === "ember" || g.color === "steel";
       const card = document.createElement("article");
-      card.className = "card c-" + (g.color || "gold") + (g.color === "ember" ? " c-dlc" : "") + (g.locked ? " locked" : "");
+      card.className = "card c-" + (g.color || "gold") + ((g.color === "ember" || g.color === "steel") ? " c-dlc" : "") + (g.locked ? " locked" : "");
       card.dataset.fx = g.fx || "";
       card.dataset.name = g.name;
       card.style.animationDelay = (i * 110) + "ms";
@@ -1913,6 +1953,7 @@
       bindGolf(card, g.fx);
       bindDrink(card, g.fx);
       bindHost(card, g.fx);
+      bindGym(card, g.fx);
       return card;
     }
 
@@ -1920,7 +1961,7 @@
     const LOCK_SVG = `<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 10.5V7a5 5 0 0 1 10 0v3.5"/><rect x="4.8" y="10.5" width="14.4" height="9.2" rx="2"/><circle cx="12" cy="15" r="1.5" fill="var(--ac)" stroke="none"/></svg>`;
     function buildTile(g) {
       const a = document.createElement("a");
-      a.className = "card lock-tile c-" + (g.color || "gold") + (g.color === "ember" ? " c-dlc" : "");
+      a.className = "card lock-tile c-" + (g.color || "gold") + ((g.color === "ember" || g.color === "steel") ? " c-dlc" : "");
       a.dataset.name = g.name;
       a.href = "/members/";
       a.setAttribute("aria-label", g.name + ", " + g.title + ". User has not taken test.");
@@ -1979,6 +2020,30 @@
           el.style.setProperty("--s", rnd(6, 14) + "px");
           el.style.setProperty("--dx", rnd(-70, 70) + "px");
           el.style.setProperty("--dy", rnd(-80, 40) + "px");
+          fx.appendChild(el);
+          el.addEventListener("animationend", () => el.remove());
+        }
+      });
+    }
+
+
+    // ── jessie's gym effect: click = dumbbell burst
+    function bindGym(card, kind) {
+      const wrap = card.querySelector(".photo-wrap");
+      const fx = card.querySelector(".fx");
+      if (kind !== "gym" || !fx || reduceMotion) return;
+      wrap.addEventListener("click", (e) => {
+        const r = wrap.getBoundingClientRect();
+        const x = e.clientX - r.left, y = e.clientY - r.top;
+        for (let i = 0; i < 9; i++) {
+          const el = document.createElement("i");
+          el.className = "dbpop";
+          el.innerHTML = DBELL_SVG;
+          el.style.left = x + "px"; el.style.top = y + "px";
+          el.style.setProperty("--s", rnd(20, 38) + "px");
+          el.style.setProperty("--dx", rnd(-80, 80) + "px");
+          el.style.setProperty("--dy", rnd(-90, 30) + "px");
+          el.style.setProperty("--r", rnd(-160, 160) + "deg");
           fx.appendChild(el);
           el.addEventListener("animationend", () => el.remove());
         }
