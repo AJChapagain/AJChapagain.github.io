@@ -1779,6 +1779,27 @@ textarea.f-field{
 .notif-item:last-child{border-bottom:0}
 .notif-item .cnt{margin-top:4px}
 
+/* ---------- exam results (admin) ---------- */
+.ex-sum{font-size:15px;line-height:1.6;margin-top:10px}
+.ex-miss{border:1px solid var(--m-line);border-radius:14px;padding:12px 14px;margin-top:12px;background:#fff}
+.ex-miss-row{display:flex;justify-content:space-between;gap:12px;padding:7px 0;border-bottom:1px solid var(--m-line);font-size:14px;line-height:1.45}
+.ex-miss-row:last-child{border-bottom:0}
+.ex-miss-row b{white-space:nowrap;color:#b3261e}
+.ex-task{margin-top:14px}
+.ex-task-head{display:flex;justify-content:space-between;align-items:baseline;gap:10px;font-weight:800;font-size:15px}
+.ex-task-head .cnt{white-space:nowrap}
+.ex-item{display:flex;gap:9px;padding:8px 0;border-bottom:1px solid var(--m-line);font-size:14px;line-height:1.5}
+.ex-item:last-child{border-bottom:0}
+.ex-badge{flex:0 0 auto;width:22px;height:22px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:800;margin-top:1px}
+.ex-badge.ok{background:rgba(22,163,74,.14);color:#15803d}
+.ex-badge.no{background:rgba(179,38,30,.12);color:#b3261e}
+.ex-item .ex-q{font-weight:700}
+.ex-item .ex-a{color:var(--m-mute)}
+.ex-domains{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}
+.ex-dom{flex:1;min-width:86px;border:1px solid var(--m-line);border-radius:12px;padding:9px 10px;text-align:center;background:#fff}
+.ex-dom .cnt{display:block}
+.ex-dom b{font-size:20px}
+
 /* ---------- admin requests ---------- */
 .m-req{
   border:1px solid var(--m-line);
@@ -2699,6 +2720,7 @@ textarea.f-field{
 
       (isAdmin ? '<div class="m-sec"><h2>Requests for you</h2><div id="admin-reqs"><p class="m-note">Loading\u2026</p></div></div>' : '') +
       (isAdmin ? '<div class="m-sec"><h2>Manage people</h2><div id="manage-people"><p class="m-note">Loading\u2026</p></div></div>' : '') +
+      (isAdmin ? '<div class="m-sec"><h2>Test results</h2><div id="exam-results"><p class="m-note">Loading\u2026</p></div></div>' : '') +
     '</div>');
     setTimeout(function(){
       var stage=$('#goat-stage');
@@ -2715,6 +2737,7 @@ textarea.f-field{
       startNotes();
       if(isAdmin) startAdmin();
       if(isAdmin) startManagePeople();
+      if(isAdmin) startExamResults();
     }, 220);
   }
 
@@ -2865,6 +2888,135 @@ textarea.f-field{
     }).catch(function(e){
       if(window.console) console.warn('[members] decide failed:', e && e.message);
       if(btn) btn.disabled=false;
+    });
+  }
+
+  /* ---------- TEST RESULTS (admin only) ---------- */
+  var examScores={};
+  var examOpen={};
+  function startExamResults(){
+    var box=$('#exam-results'); if(!box) return;
+    if(dbDown()){ box.innerHTML='<p class="m-note">Test results need the database.</p>'; return; }
+    try{
+      var unsub = GOAT.db.collection('scores').onSnapshot(function(snap){
+        examScores={};
+        snap.forEach(function(doc){ examScores[doc.id]=doc.data()||{}; });
+        drawExamResults();
+      }, function(){
+        var b=$('#exam-results'); if(b) b.innerHTML='<p class="m-note">Couldn\u2019t load test results right now.</p>';
+      });
+      unsubs.push(unsub);
+    }catch(e){ box.innerHTML='<p class="m-note">Couldn\u2019t load test results right now.</p>'; }
+  }
+
+  function examItems(d){
+    // Flatten a saved breakdown into per-question rows + a most-missed tally.
+    var tasks = (d && d.details && Array.isArray(d.details.tasks)) ? d.details.tasks : [];
+    return tasks;
+  }
+
+  function drawExamResults(){
+    var box=$('#exam-results'); if(!box) return;
+    var roster=CARDS.map(function(g){ return g.name; });
+    var takenNames=roster.filter(function(n){ var d=examScores[n]; return d && d.taken; });
+    var avg=function(key){
+      if(!takenNames.length) return null;
+      var sum=0; takenNames.forEach(function(n){ sum+=Number(examScores[n][key])||0; });
+      return Math.round(sum/takenNames.length);
+    };
+    // Most-missed tally across everyone who has a detailed breakdown.
+    var tally={};
+    takenNames.forEach(function(n){
+      examItems(examScores[n]).forEach(function(t){
+        (t.items||[]).forEach(function(it){
+          if(!it || !it.q) return;
+          var key=t.task+' \u00b7 '+it.q;
+          if(!tally[key]) tally[key]={attempts:0,misses:0};
+          tally[key].attempts++;
+          if(!it.correct) tally[key].misses++;
+        });
+      });
+    });
+    var missed=Object.keys(tally).filter(function(k){ return tally[k].misses>0; }).sort(function(a,b){
+      return (tally[b].misses-tally[a].misses) || (tally[b].misses/tally[b].attempts - tally[a].misses/tally[a].attempts);
+    }).slice(0,8);
+    var anyDetail=takenNames.some(function(n){ return examItems(examScores[n]).length; });
+
+    var html='';
+    html+='<p class="ex-sum"><b>'+takenNames.length+' of '+roster.length+'</b> have taken the test.</p>';
+    if(takenNames.length){
+      html+='<div class="ex-domains">'
+        +'<div class="ex-dom"><span class="cnt">Overall avg</span><b>'+avg('overall')+'</b></div>'
+        +'<div class="ex-dom"><span class="cnt">Speed avg</span><b>'+avg('speed')+'</b></div>'
+        +'<div class="ex-dom"><span class="cnt">Memory avg</span><b>'+avg('memory')+'</b></div>'
+        +'<div class="ex-dom"><span class="cnt">Reasoning avg</span><b>'+avg('reasoning')+'</b></div>'
+        +'</div>';
+    }
+    if(missed.length){
+      html+='<div class="ex-miss"><div class="cnt" style="margin-bottom:4px">Most missed</div>'
+        + missed.map(function(k){
+            var t=tally[k];
+            return '<div class="ex-miss-row"><span>'+esc(k)+'</span><b>missed '+t.misses+' of '+t.attempts+'</b></div>';
+          }).join('')
+        +'</div>';
+    } else if(takenNames.length && !anyDetail){
+      html+='<p class="m-note" style="margin-top:12px">The takes so far were recorded before detailed tracking, so there is no per-question breakdown for them yet. Anyone who takes the test from now on gets a full breakdown below.</p>';
+    }
+
+    html+=roster.map(function(n){
+      var d=examScores[n];
+      var has=!!(d && d.taken);
+      var open=!!examOpen[n];
+      var head = has
+        ? esc(n)+' \u00b7 Overall '+Math.round(Number(d.overall)||0)+' \u00b7 S '+Math.round(Number(d.speed)||0)+' / M '+Math.round(Number(d.memory)||0)+' / R '+Math.round(Number(d.reasoning)||0)
+        : esc(n)+' \u00b7 Not taken yet';
+      var body='';
+      if(has){
+        var when=fmtTime(d.updatedAt);
+        if(when) body+='<div class="cnt">Taken '+esc(when)+'</div>';
+        var tasks=examItems(d);
+        if(!tasks.length){
+          body+='<p class="m-note" style="margin-top:10px">Taken before detailed tracking \u2014 only the domain scores above were recorded. Reset their test in Manage people and have them retake it to get the full question-by-question breakdown.</p>';
+        } else {
+          body+=tasks.map(function(t){
+            var items=t.items||[];
+            var right=items.filter(function(it){ return it && it.correct; }).length;
+            var rows=items.map(function(it){
+              if(!it) return '';
+              var line='<div class="ex-q">'+esc(it.q||'')+'</div>'
+                +'<div>They picked: <b>'+esc(it.given||'\u2014')+'</b></div>'
+                +(it.correct ? '' : '<div class="ex-a">Right answer: '+esc(it.answer||'\u2014')+'</div>')
+                +(it.extra ? '<div class="ex-a">'+esc(it.extra)+'</div>' : '');
+              return '<div class="ex-item"><span class="ex-badge '+(it.correct?'ok':'no')+'">'+(it.correct?'\u2713':'\u2717')+'</span><div>'+line+'</div></div>';
+            }).join('');
+            return '<div class="ex-task"><div class="ex-task-head"><span>'+esc(t.task||'')+'</span><span class="cnt">'+esc(t.domain||'')+' \u00b7 score '+Math.round(Number(t.score)||0)+(items.length?' \u00b7 '+right+'/'+items.length+' right':'')+'</span></div>'
+              +(t.raw?'<div class="ex-a" style="font-size:14px;margin-top:2px">'+esc(t.raw)+'</div>':'')
+              + rows + '</div>';
+          }).join('');
+        }
+      } else {
+        body+='<p class="m-note">No test taken yet \u2014 nothing recorded.</p>';
+      }
+      return '<div class="m-req" data-exname="'+esc(n)+'">'
+        +'<div class="m-req-head"><span class="chev">'+(open?'\u25be':'\u25b8')+'</span><div class="cnt">'+head+'</div></div>'
+        +'<div class="m-req-body" style="display:'+(open?'block':'none')+'">'+body+'</div>'
+        +'</div>';
+    }).join('');
+
+    box.innerHTML=html;
+    [].slice.call(box.querySelectorAll('.m-req-head')).forEach(function(head){
+      head.onclick=function(){
+        var wrap=head.closest ? head.closest('[data-exname]') : null;
+        if(!wrap) return;
+        var n=wrap.getAttribute('data-exname');
+        var bodyEl=wrap.querySelector('.m-req-body');
+        var chev=head.querySelector('.chev');
+        if(!bodyEl) return;
+        var open = bodyEl.style.display==='block';
+        bodyEl.style.display = open ? 'none' : 'block';
+        if(chev) chev.textContent = open ? '\u25b8' : '\u25be';
+        examOpen[n]=!open;
+      };
     });
   }
 

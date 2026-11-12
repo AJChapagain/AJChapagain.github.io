@@ -56,17 +56,28 @@
     if (!window.GOAT || !GOAT.db) return; // no Firestore — nothing to save to
     await GOAT.ensureAuth();
     var ref = GOAT.db.collection("scores").doc(name);
+    // Optional per-question breakdown (what they got right/wrong, their
+    // answers, timing) for the admin Test results view. Kept only if it
+    // serialises to a sane size; the four scores save either way.
+    var details = null;
+    if (r.details && typeof r.details === 'object') {
+      try {
+        if (JSON.stringify(r.details).length <= 90000) details = r.details;
+      } catch (e) { details = null; }
+    }
+    var doc = {
+      speed: clamp(r.speed),
+      memory: clamp(r.memory),
+      reasoning: clamp(r.reasoning),
+      overall: clamp(r.overall),
+      taken: true,
+      updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+    };
+    if (details) doc.details = details;
     await GOAT.db.runTransaction(async function (tx) {
       var snap = await tx.get(ref);
       if (snap.exists && snap.data() && snap.data().taken) throw new Error("Already taken.");
-      tx.set(ref, {
-        speed: clamp(r.speed),
-        memory: clamp(r.memory),
-        reasoning: clamp(r.reasoning),
-        overall: clamp(r.overall),
-        taken: true,
-        updatedAt: firebase.firestore.FieldValue.serverTimestamp()
-      });
+      tx.set(ref, doc);
     });
     // Fire-and-forget notification; a failure here must not fail the save.
     try {

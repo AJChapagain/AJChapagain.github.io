@@ -629,11 +629,12 @@ function showScreen(html){
 function choice(box,items,secs,cb){
   let k=0,tot=0,ok=0;
   const res=[];
+  const details=[];
 
   (function next(){
 
     if(k>=items.length){
-      return cb(tot/items.length,ok,res);
+      return cb(tot/items.length,ok,res,details);
     }
 
     const it=items[k];
@@ -675,6 +676,21 @@ function choice(box,items,secs,cb){
       const hit=j!==null&&opts[j].ok;
 
       res.push(hit);
+
+      const plain=o=>{
+        if(!o) return '';
+        if(o.plain) return o.plain;
+        const t=String(o.h).replace(/<[^>]*>/g,'').trim();
+        return t||'Shape';
+      };
+      const correctOpt=opts.find(o=>o.ok);
+      details.push({
+        q:it.q||'',
+        given:j===null?'No answer (time ran out)':plain(opts[j])+' · option '+(j+1)+' of '+opts.length+' as shown',
+        answer:plain(correctOpt)+' · option '+(opts.indexOf(correctOpt)+1)+' of '+opts.length+' as shown',
+        correct:hit,
+        extra:j===null?'Timed out':(Math.round(left()*10)/10)+'s left'
+      });
 
       if(hit){
         tot+=sp(left(),secs);
@@ -735,7 +751,7 @@ function reaction(box,done){
 
   const r=$('#r');
 
-  let n=0,st='idle',tm,t0,real=null;
+  let n=0,st='idle',tm,t0,real=null,practice=null,practiceEarly=false,realEarly=false;
 
   const label=()=>n===0
     ?'PRACTICE — does not count'
@@ -782,7 +798,11 @@ function reaction(box,done){
       }else{
         done(
           real===null?0:clamp((600-real)/450*100,0,100),
-          real===null?'Tapped too early (0)':real+' ms'
+          real===null?'Tapped too early (0)':real+' ms',
+          [
+            {q:'Practice attempt',given:practiceEarly?'Tapped too early':(practice===null?'—':practice+' ms'),answer:'Tap only when it turns green',correct:!practiceEarly,extra:'Does not count'},
+            {q:'Real attempt',given:realEarly?'Tapped too early':(real===null?'—':real+' ms'),answer:'Tap only when it turns green',correct:real!==null,extra:'This one counts'}
+          ]
         );
       }
     },1300);
@@ -797,6 +817,7 @@ function reaction(box,done){
     else if(st==='wait'){
       clearTimeout(tm);
       st='res';
+      if(n===0)practiceEarly=true; else realEarly=true;
 
       set('idle',`
         <h2>Too early</h2>
@@ -813,7 +834,7 @@ function reaction(box,done){
 
       st='res';
 
-      if(n===1)real=ms;
+      if(n===1)real=ms; else practice=ms;
 
       set('idle',`
         <h2 class="mono">${ms} ms</h2>
@@ -899,10 +920,13 @@ function pattern(box,done){
   const pads=[...box.querySelectorAll('.pad')];
 
   let acc=false,L=0;
+  const attempts=[];
+  const PADNAMES=['Blue','Orange','Wine','Green'];
 
   const fin=()=>done(
     L?(L-2)/6*100:0,
-    `Longest pattern: ${L} pads. Typical adult span is 5–6.`
+    `Longest pattern: ${L} pads. Typical adult span is 5–6.`,
+    attempts
   );
 
   async function flash(k){
@@ -959,6 +983,13 @@ function pattern(box,done){
 
       if(k!==seq[pos]){
         acc=false;
+        attempts.push({
+          q:`Pattern ${idx+1} · ${len} pads`,
+          given:`Wrong pad at step ${pos+1} — tapped ${PADNAMES[k]}, expected ${PADNAMES[seq[pos]]}`,
+          answer:'Sequence: '+seq.map(x=>PADNAMES[x]).join(' → '),
+          correct:false,
+          extra:`Got ${pos} of ${len} pads right`
+        });
         pm.textContent='Wrong pad — task over';
         return setTimeout(fin,1100);
       }
@@ -966,6 +997,13 @@ function pattern(box,done){
       if(++pos===len){
         acc=false;
         L=len;
+        attempts.push({
+          q:`Pattern ${idx+1} · ${len} pads`,
+          given:`Repeated all ${len} pads correctly`,
+          answer:'Sequence: '+seq.map(x=>PADNAMES[x]).join(' → '),
+          correct:true,
+          extra:''
+        });
 
         pm.textContent='Correct!';
 
@@ -1009,6 +1047,7 @@ function stroop(box,done){
 
     let ok=0;
     const rts=[];
+    const trials=[];
 
     for(const [w,ink] of shuffle(tr)){
 
@@ -1039,6 +1078,15 @@ function stroop(box,done){
 
       });
 
+      const rt=Math.round(performance.now()-t0);
+      trials.push({
+        q:`Word says ${C[w][0]}, ink is ${C[ink][0]}`,
+        given:j===-1?'No answer (3s ran out)':C[j][0],
+        answer:C[ink][0],
+        correct:j===ink,
+        extra:j===-1?'Timed out':rt+' ms'
+      });
+
       if(j===ink){
         ok++;
         rts.push(performance.now()-t0);
@@ -1057,7 +1105,8 @@ function stroop(box,done){
 
     done(
       ok/12*100*f,
-      `${ok}/12 correct, avg ${Math.round(avg)} ms.`
+      `${ok}/12 correct, avg ${Math.round(avg)} ms.`,
+      trials
     );
 
   })();
@@ -1082,6 +1131,7 @@ function math(box,done){
     ]).filter(x=>x>0).slice(0,3);
 
     return{
+      q:t,
       stem:`
         <h2 class="mono"
           style="text-align:center;font-size:48px;margin:26px 0">
@@ -1096,8 +1146,8 @@ function math(box,done){
     };
   });
 
-  choice(box,items,10,(avg,ok)=>{
-    done(avg,`${ok}/3 correct`);
+  choice(box,items,10,(avg,ok,res,details)=>{
+    done(avg,`${ok}/3 correct`,details);
   });
 }
 
@@ -1191,6 +1241,7 @@ const ODD=[
 function oddone(box,done){
 
   const items=ODD.map(q=>({
+    q:q.n,
     stem:'',
     cls:'two shapes',
     opts:q.s.map((x,k)=>({
@@ -1199,14 +1250,16 @@ function oddone(box,done){
     }))
   }));
 
-  choice(box,items,30,(avg,ok,res)=>{
+  choice(box,items,30,(avg,ok,res,details)=>{
+
+    (details||[]).forEach((d,k)=>{
+      if(ODD[k]) d.extra=(d.extra?d.extra+' · ':'')+ODD[k].rule;
+    });
 
     done(
       avg,
       `${ok}/5 correct.`,
-      ODD.map((q,k)=>
-        `${k+1}. ${q.rule} — ${res[k]?'Right':'Missed'}`
-      )
+      details
     );
 
   });
@@ -1664,7 +1717,8 @@ function runTask(){
           t,
           score:Math.round(score),
           raw,
-          detail
+          detail,
+          items:Array.isArray(detail)?detail:[]
         });
 
         ti++;
@@ -1741,7 +1795,28 @@ function finish(){
       speed: Math.round(dm.SPEED),
       memory: Math.round(dm.MEMORY),
       reasoning: Math.round(dm.REASONING),
-      overall: overall
+      overall: overall,
+      details: {
+        v: 1,
+        finishedAt: new Date().toISOString(),
+        tasks: results.map(function (r) {
+          return {
+            task: r.t.n,
+            domain: r.t.d,
+            score: r.score,
+            raw: String(r.raw || ''),
+            items: (r.items || []).map(function (it) {
+              return {
+                q: String(it.q || ''),
+                given: String(it.given || ''),
+                answer: String(it.answer || ''),
+                correct: !!it.correct,
+                extra: String(it.extra || '')
+              };
+            })
+          };
+        })
+      }
     }).catch(function (e) {
       if (window.console) console.warn('[test] save failed:', e && e.message);
     });
