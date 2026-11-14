@@ -1386,6 +1386,35 @@
       animation:dbpop .85s ease-out forwards}
     .fx-gym .dbpop svg{width:100%;display:block}
     @keyframes dbpop{0%{transform:translate(-50%,-50%) rotate(0deg) scale(.4);opacity:1}100%{transform:translate(calc(-50% + var(--dx)),calc(-50% + var(--dy))) rotate(var(--r)) scale(1);opacity:0}}
+    /* anjali: academics — blueprint grid, rising equations, ECG trace, gears, mortarboard */
+    .c-acad{--ac:#2748c9;--ac-deep:#18307f;--ac-pale:#cfd9ff;--ac-rgb:39,72,201;--ac-wash:#eef1ff;--ac-line:#a9b7ee}
+    .c-acad .plate .name,.c-acad .b-name{
+      background:linear-gradient(100deg,#0f1d5c 0%,#18307f 38%,#2748c9 45%,#9fe7ff 50%,#2748c9 55%,#18307f 62%,#0f1d5c 100%);
+      background-size:240% 100%;-webkit-background-clip:text;background-clip:text;color:transparent;animation:acadflow 6s linear infinite}
+    @keyframes acadflow{to{background-position:-240% 0}}
+    .fx-acad::before{content:"";position:absolute;inset:0;background:radial-gradient(120% 80% at 50% 100%,rgba(var(--ac-rgb),.3),transparent 62%);box-shadow:inset 0 0 34px rgba(var(--ac-rgb),.3)}
+    .fx-acad .bp{position:absolute;inset:-30px;background-image:linear-gradient(rgba(190,215,255,.4) 1px,transparent 1px),linear-gradient(90deg,rgba(190,215,255,.4) 1px,transparent 1px);background-size:22px 22px;animation:bpan 9s linear infinite}
+    @keyframes bpan{to{transform:translate(22px,22px)}}
+    .fx-acad .eq{position:absolute;left:var(--x);bottom:-8%;font:700 11px var(--mono);color:#fff;white-space:nowrap;opacity:0;text-shadow:0 0 6px rgba(39,72,201,.9);animation:eqrise var(--t) linear infinite;animation-delay:var(--dl)}
+    @keyframes eqrise{0%{opacity:0;transform:translateY(0)}15%{opacity:.95}85%{opacity:.9}100%{opacity:0;transform:translateY(-260px)}}
+    .card:hover .fx-acad .eq{animation-duration:calc(var(--t) * .55)}
+    .fx-acad .ecg{position:absolute;left:0;right:0;top:46%;height:44px;filter:drop-shadow(0 0 4px rgba(255,70,90,.9))}
+    .fx-acad .ecg path{fill:none;stroke:#ff4b5c;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;stroke-dasharray:60 240;animation:acadbeat 2.6s linear infinite}
+    @keyframes acadbeat{from{stroke-dashoffset:300}to{stroke-dashoffset:0}}
+    .fx-acad .gear{position:absolute;right:12px;bottom:14px;width:44px;height:44px;animation:turn 9s linear infinite;filter:drop-shadow(0 0 6px rgba(var(--ac-rgb),.7))}
+    .fx-acad .gear.g2{right:44px;bottom:36px;width:26px;height:26px;animation-direction:reverse;animation-duration:5.6s}
+    @keyframes turn{to{transform:rotate(360deg)}}
+    .fx-acad .sym{position:absolute;width:auto;margin:-8px 0 0 -8px;font:700 var(--s) var(--mono);color:#fff;text-shadow:0 0 6px #2748c9,0 0 2px #2748c9;animation:sympop .9s ease-out forwards}
+    @keyframes sympop{0%{transform:translate(0,0) scale(.3) rotate(0);opacity:1}100%{transform:translate(var(--dx),var(--dy)) scale(1) rotate(var(--r));opacity:0}}
+    /* ornament: mortarboard with a swinging tassel */
+    .cap{position:absolute;z-index:8;left:50%;top:-30px;width:70px;height:54px;margin-left:-35px;pointer-events:none;filter:drop-shadow(0 6px 7px rgba(15,29,92,.35));transition:transform .6s cubic-bezier(.2,.7,.25,1),opacity .3s;animation:capfloat 4s ease-in-out infinite}
+    @keyframes capfloat{50%{margin-top:-5px}}
+    .cap svg{width:100%;height:100%;display:block;overflow:visible}
+    .card:hover .cap{transform:translateY(-9px) rotate(-5deg) scale(1.1)}
+    .card.flipped .cap{opacity:0}
+    .cap .tas{transform-origin:58px 24px;animation:tas 2.2s ease-in-out infinite}
+    @keyframes tas{0%,100%{transform:rotate(-9deg)}50%{transform:rotate(9deg)}}
+    @media (prefers-reduced-motion:reduce){.c-acad .plate .name,.c-acad .b-name,.fx-acad *,.cap,.cap .tas{animation:none!important}.fx-acad .eq{display:none}}
 </style>
 
 <style>
@@ -1937,10 +1966,10 @@ textarea.f-field{
       photo:"/Jessie.jpg", pos:"50% 32%", zoom:1,
       color:"steel", fx:"gym", hp:"-",
       moves:[["Duuuu", 100], ["gym", 80], ["Compensation", 30]] },
-    { name:"Anjali", title:"",
-      photo:"/DSC00870-web.jpg", pos:"50% 30%", zoom:1,
-      color:"blue", fx:"", hp:"-",
-      moves:[["—", 0], ["—", 0], ["—", 0]] }
+    { name:"Anjali", title:"Goat of Academics",
+      photo:"/DSC00870-web.jpg", pos:"50% 25%", zoom:1,
+      color:"acad", fx:"acad", hp:"-",
+      moves:[["Studying", 100], ["Biomedical Engineering", 96], ["Sleep Schedule", 15]] }
   ];
 
   function cardFor(nm){
@@ -1960,6 +1989,16 @@ textarea.f-field{
   var BRK = '<div class="brk" aria-hidden="true"><i></i><i></i><i></i><i></i></div>';
 
   const DBELL_SVG = `<svg viewBox="0 0 72 36" aria-hidden="true"><defs><linearGradient id="dbm" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#9aa3b2"/><stop offset=".5" stop-color="#565e6e"/><stop offset="1" stop-color="#23262e"/></linearGradient></defs><rect x="29" y="15" width="14" height="6" rx="2" fill="#3a3f4a"/><rect x="22" y="6" width="7" height="24" rx="2.5" fill="url(#dbm)" stroke="#14161c" stroke-width="1"/><rect x="14" y="10" width="6" height="16" rx="2" fill="url(#dbm)" stroke="#14161c" stroke-width="1"/><rect x="43" y="6" width="7" height="24" rx="2.5" fill="url(#dbm)" stroke="#14161c" stroke-width="1"/><rect x="52" y="10" width="6" height="16" rx="2" fill="url(#dbm)" stroke="#14161c" stroke-width="1"/></svg>`;
+  const GEAR = (c) => `<svg viewBox="0 0 24 24" fill="none" stroke="${c}" stroke-width="1.6" stroke-linejoin="round"><circle cx="12" cy="12" r="3.2"/><path d="M10.4 2.5h3.2l.5 2.6 1.9.8 2.2-1.5 2.3 2.3-1.5 2.2.8 1.9 2.6.5v3.2l-2.6.5-.8 1.9 1.5 2.2-2.3 2.3-2.2-1.5-1.9.8-.5 2.6h-3.2l-.5-2.6-1.9-.8-2.2 1.5-2.3-2.3 1.5-2.2-.8-1.9-2.6-.5v-3.2l2.6-.5.8-1.9-1.5-2.2 2.3-2.3 2.2 1.5 1.9-.8z"/></svg>`;
+  const CAP = `<div class="cap" aria-hidden="true"><svg viewBox="0 0 70 54">
+      <defs><linearGradient id="capg" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#3b5fe0"/><stop offset="1" stop-color="#0f1d5c"/></linearGradient></defs>
+      <path d="M18 26 V38 Q35 48 52 38 V26 L35 33 Z" fill="#18307f" stroke="#0a1340" stroke-width="1.2" stroke-linejoin="round"/>
+      <path d="M35 6 L68 20 L35 34 L2 20 Z" fill="url(#capg)" stroke="#0a1340" stroke-width="1.3" stroke-linejoin="round"/>
+      <path d="M35 8.5 L60 20 L35 31.5" fill="none" stroke="#9fb4ff" stroke-opacity=".55" stroke-width="1"/>
+      <circle cx="35" cy="20" r="2.6" fill="#ffd34d" stroke="#a8842f" stroke-width=".8"/>
+      <path d="M35 20 L58 24" stroke="#ffd34d" stroke-width="1.5" stroke-linecap="round"/>
+      <g class="tas"><path d="M58 24 V40" stroke="#ffd34d" stroke-width="1.6" stroke-linecap="round"/><path d="M55.5 40 H60.5 L61.5 48 H54.5 Z" fill="#ffd34d" stroke="#a8842f" stroke-width=".8"/></g>
+    </svg></div>`;
   function fxMarkup(kind) {
     if (kind === "golf") {
       var balls = [[30,13,38,6.5,0],[70,11,28,5.5,-2.2],[110,15,46,7.5,-4.5],[150,12,30,6,-1.2],[190,14,40,7,-5.8],[55,10,22,5,-3.4]]
@@ -2006,6 +2045,14 @@ textarea.f-field{
         + '<svg class="stitch" aria-hidden="true"><rect x="7" y="7" rx="12"/></svg>'
         + '<span class="tape t1"></span><span class="tape t2"></span>'
         + twinkles+dust+'</div>';
+    }
+    if (kind === "acad") {
+      var eqs = ["∫f(x)dx","σ = F/A","pH 7.4","ΔV = IR","Σ n²","BPM 72","dy/dx","E = ½kx²","O₂ 98%","π r²"].map(function(t, i){
+        return '<i class="eq" style="--x:'+(6 + (i * 37) % 78)+'%;--t:'+(7 + (i * 1.3) % 4).toFixed(1)+'s;--dl:'+(-i * 1.1).toFixed(1)+'s">'+t+'</i>';
+      }).join("");
+      return '<div class="fx fx-acad"><div class="bp"></div>'+eqs
+        + '<svg class="ecg" viewBox="0 0 300 44" preserveAspectRatio="none"><path d="M0 22 H70 L80 22 L88 6 L98 38 L108 14 L114 22 H190 L198 22 L206 8 L216 36 L226 16 L232 22 H300"/></svg>'
+        + '<span class="gear">'+GEAR("#fff")+'</span><span class="gear g2">'+GEAR("#cfe0ff")+'</span></div>';
     }
     if (kind === "money") {
       var bills = [[8,12,-30,0,160],[30,15,35,-5,-140],[54,11,-25,-9,190],[76,14,30,-3,-170],[20,17,-20,-12,130],[66,13,25,-7,-150]]
@@ -2286,6 +2333,7 @@ textarea.f-field{
       + (g.fx === "golf" && !reduceMotion ? TEE : "")
       + (g.fx === "drink" && !reduceMotion ? MARTINI : "")
       + (g.fx === "host" && !reduceMotion ? CAT : "")
+      + (g.fx === "acad" && !reduceMotion ? CAP : "")
       + '<div class="flipper"><div class="tilter">'
       + '<div class="face front">'
       + '<div class="keyline"></div>'+photo
@@ -2325,6 +2373,7 @@ textarea.f-field{
     bindDrink(card, g.fx);
     bindHost(card, g.fx);
     bindGym(card, g.fx);
+    bindAcad(card, g.fx);
     addTilt(card);
     return card;
   }
@@ -2537,6 +2586,29 @@ textarea.f-field{
   }
 
   // ── jessie's gym effect: click = dumbbell burst
+  function bindAcad(card, kind) {
+    var wrap = card.querySelector(".photo-wrap");
+    var fx = card.querySelector(".fx");
+    if (kind !== "acad" || !fx || reduceMotion) return;
+    var S = ["∑","∫","π","Δ","√","+","±","⚙","♥","∞","θ"];
+    wrap.addEventListener("click", function(e){
+      var r = wrap.getBoundingClientRect();
+      var x = e.clientX - r.left, y = e.clientY - r.top;
+      for (var i = 0; i < 14; i++) {
+        var el = document.createElement("i");
+        el.className = "sym";
+        el.textContent = S[i % S.length];
+        el.style.left = x + "px"; el.style.top = y + "px";
+        el.style.setProperty("--s", rnd(11, 20) + "px");
+        el.style.setProperty("--dx", rnd(-75, 75) + "px");
+        el.style.setProperty("--dy", rnd(-85, 45) + "px");
+        el.style.setProperty("--r", rnd(-180, 180) + "deg");
+        fx.appendChild(el);
+        el.addEventListener("animationend", function(){ el.remove(); });
+      }
+    });
+  }
+
   function bindGym(card, kind) {
     const wrap = card.querySelector(".photo-wrap");
     const fx = card.querySelector(".fx");
