@@ -1788,6 +1788,12 @@ textarea.f-field{
   resize:vertical;
   line-height:1.5;
 }
+.score-grid{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:0 10px;
+}
+.score-grid .f-label{margin-top:10px}
 .f-msg{margin-top:12px;min-height:20px}
 
 /* ---------- notifications ---------- */
@@ -3151,6 +3157,8 @@ textarea.f-field{
   /* ---------- MANAGE PEOPLE (admin only; the two-code gate is at login) ---------- */
   var manageOverrides={};
   var manageScores={};
+  var manageScoreDocs={};
+  var manageSaving=false;
   var manageOpen={};
   function startManagePeople(){
     // No gate here — the admin already passed the two codes at login.
@@ -3173,8 +3181,10 @@ textarea.f-field{
       // Scores, so each row shows their HP (or "-" if they haven't taken the test).
       var unsub2 = GOAT.db.collection('scores').onSnapshot(function(snap){
         manageScores={};
+        manageScoreDocs={};
         snap.forEach(function(doc){
           var d=doc.data()||{};
+          manageScoreDocs[doc.id]=d;
           if(d.taken && typeof d.overall==='number') manageScores[doc.id]=d.overall;
         });
         drawPeopleList();
@@ -3185,6 +3195,7 @@ textarea.f-field{
 
   function drawPeopleList(){
     var box=$('#manage-people'); if(!box) return;
+    if(manageSaving) return;
     // Roster from the CARDS data (names/titles/photos are public).
     // People and scores are keyed by NAME, never by access code.
     var roster=CARDS.map(function(g){ return {name:g.name, title:g.title, photo:g.photo}; });
@@ -3197,6 +3208,8 @@ textarea.f-field{
       var title=(typeof ov.title==='string' && ov.title) ? ov.title : (p.title||'');
       var photo=(typeof ov.photo==='string' && ov.photo) ? ov.photo : (p.photo||'');
       var hp = (c==='ajchapa') ? '???' : (typeof manageScores[c]==='number' ? manageScores[c] : '-');
+      var sd = manageScoreDocs[c]||{};
+      function sv(k){ return (typeof sd[k]==='number') ? sd[k] : ''; }
       var open = !!manageOpen[c];
       return '<div class="m-req" data-pname="'+esc(c)+'">' +
         '<div class="m-req-head"><span class="chev">'+(open?'▾':'▸')+'</span><div class="cnt">'+esc(name)+' · '+esc(title)+' · HP '+esc(String(hp))+(removed?' · REMOVED':'')+'</div></div>' +
@@ -3214,6 +3227,15 @@ textarea.f-field{
             : '<button class="btn-danger" data-act="remove">Remove from the wall</button>') +
         '</div>' +
         '<div class="actions"><button class="btn-ghost" data-act="reset">Reset test</button></div>' +
+        '<label class="f-label">Test score \u2014 set it manually</label>' +
+        '<div class="score-grid">' +
+          '<div><label class="f-label">Overall</label><input class="f-field" data-s="overall" type="number" min="0" max="100" inputmode="numeric" value="' + sv('overall') + '"></div>' +
+          '<div><label class="f-label">Speed</label><input class="f-field" data-s="speed" type="number" min="0" max="100" inputmode="numeric" value="' + sv('speed') + '"></div>' +
+          '<div><label class="f-label">Memory</label><input class="f-field" data-s="memory" type="number" min="0" max="100" inputmode="numeric" value="' + sv('memory') + '"></div>' +
+          '<div><label class="f-label">Reasoning</label><input class="f-field" data-s="reasoning" type="number" min="0" max="100" inputmode="numeric" value="' + sv('reasoning') + '"></div>' +
+        '</div>' +
+        '<div class="actions"><button class="btn-ghost" data-act="score">Save score</button></div>' +
+        '<p class="m-note">Saving replaces their score and updates their card on the wall right away.' + (c==='ajchapa' ? ' Your own card always shows ??? on the wall.' : '') + '</p>' +
         '<p class="m-note f-msg" data-msg></p>' +
         '</div>' +
       '</div>';
@@ -3239,6 +3261,7 @@ textarea.f-field{
         var c=wrap.getAttribute('data-pname');
         var act=btn.getAttribute('data-act');
         var msgEl=wrap.querySelector('[data-msg]');
+        var scoreSaved=false;
         function say(t){ if(msgEl) msgEl.textContent=t; }
         if(dbDown()){ say('The database isn’t reachable right now.'); return; }
         btn.disabled=true;
@@ -3246,6 +3269,19 @@ textarea.f-field{
           if(act==='reset'){
             try { localStorage.removeItem('goatTaken_'+c); } catch (e) {}
             return GOAT.db.collection('scores').doc(c).delete().then(function(){ say('Test reset. They can take it again.'); });
+          }
+          if(act==='score'){
+            var skeys=['overall','speed','memory','reasoning'];
+            var sdata={taken:true, manual:true, updatedAt: firebase.firestore.FieldValue.serverTimestamp()};
+            for(var i=0;i<skeys.length;i++){
+              var raw=(wrap.querySelector('[data-s="'+skeys[i]+'"]')||{}).value;
+              var num=Number(raw);
+              if(raw==='' || raw==null || isNaN(num) || num<0 || num>100){ say('Fill in all four scores, each 0\u2013100.'); return; }
+              sdata[skeys[i]]=Math.round(num);
+            }
+            manageSaving=true;
+            var sref=GOAT.db.collection('scores').doc(c);
+            return sref.delete().then(function(){ return sref.set(sdata); }).then(function(){ scoreSaved=true; });
           }
           var ref=GOAT.db.collection('people').doc(c);
           if(act==='remove'){
@@ -3267,7 +3303,17 @@ textarea.f-field{
         }).catch(function(e){
           say('Couldn’t save that right now. Try again.');
           if(window.console) console.warn('[members] manage people failed:', e && e.message);
-        }).then(function(){ btn.disabled=false; });
+        }).then(function(){
+          btn.disabled=false;
+          if(manageSaving){
+            manageSaving=false;
+            drawPeopleList();
+            if(scoreSaved){
+              var live=document.querySelector('#manage-people .m-req[data-pname="' + c + '"] [data-msg]');
+              if(live) live.textContent='Score saved. The wall updates live.';
+            }
+          }
+        });
       };
     });
   }
