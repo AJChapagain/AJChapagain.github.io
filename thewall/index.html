@@ -113,12 +113,8 @@
     .c-golf .plate .title{font-size:13px}
     /* style: noel's burgundy wine palette */
     .c-style{--ac:#a3223f;--ac-deep:#6e0f26;--ac-pale:#f5c9d3;--ac-rgb:163,34,63;--ac-wash:#fdf1f3;--ac-line:#e3a5b3}
-    /* noel's name: wine red with a champagne shine sweeping across */
-    .c-style .plate .name,.c-style .b-name{
-      background:linear-gradient(100deg,#4a0a1a 0%,#6e0f26 30%,#a3223f 44%,#f3dfa2 50%,#a3223f 56%,#6e0f26 70%,#4a0a1a 100%);
-      background-size:240% 100%;-webkit-background-clip:text;background-clip:text;color:transparent;
-      animation:wineflow 6s linear infinite;
-    }
+    /* noel's name: solid deep wine — the shine sweep is ajchapa's alone */
+    .c-style .plate .name,.c-style .b-name{color:#6e0f26}
     @keyframes wineflow{to{background-position:-240% 0}}
     /* host: banananana's teal palette */
     .c-host{--ac:#0f9d94;--ac-deep:#0b6b66;--ac-pale:#c6efeb;--ac-rgb:15,157,148;--ac-wash:#eefaf9;--ac-line:#9fd8d3}
@@ -1358,9 +1354,7 @@
     @keyframes dbpop{0%{transform:translate(-50%,-50%) rotate(0deg) scale(.4);opacity:1}100%{transform:translate(calc(-50% + var(--dx)),calc(-50% + var(--dy))) rotate(var(--r)) scale(1);opacity:0}}
     /* anjali: academics — blueprint grid, rising equations, ECG trace, gears, mortarboard */
     .c-acad{--ac:#2748c9;--ac-deep:#18307f;--ac-pale:#cfd9ff;--ac-rgb:39,72,201;--ac-wash:#eef1ff;--ac-line:#a9b7ee}
-    .c-acad .plate .name,.c-acad .b-name{padding-bottom:.3em;margin-bottom:-.3em;
-      background:linear-gradient(100deg,#0f1d5c 0%,#18307f 38%,#2748c9 45%,#9fe7ff 50%,#2748c9 55%,#18307f 62%,#0f1d5c 100%);
-      background-size:240% 100%;-webkit-background-clip:text;background-clip:text;color:transparent;animation:acadflow 6s linear infinite}
+    .c-acad .plate .name,.c-acad .b-name{padding-bottom:.3em;margin-bottom:-.3em;color:#18307f}
     @keyframes acadflow{to{background-position:-240% 0}}
     .fx-acad::before{content:"";position:absolute;inset:0;background:radial-gradient(120% 80% at 50% 100%,rgba(var(--ac-rgb),.3),transparent 62%);box-shadow:inset 0 0 34px rgba(var(--ac-rgb),.3)}
     .fx-acad .bp{position:absolute;inset:-30px;background-image:linear-gradient(rgba(190,215,255,.4) 1px,transparent 1px),linear-gradient(90deg,rgba(190,215,255,.4) 1px,transparent 1px);background-size:22px 22px;animation:bpan 9s linear infinite}
