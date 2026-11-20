@@ -36,6 +36,7 @@
     var name = cardName(card);
     if (!name || originals[name]) return;
     if (card.classList.contains("lock-tile")) return; // tiles hold no card data
+    if (card.classList.contains("nom-tile")) return; // nominated tiles neither
     var nameEl = card.querySelector(".plate .name");
     var titleEl = card.querySelector(".plate .title span");
     var img = card.querySelector(".photo-wrap img");

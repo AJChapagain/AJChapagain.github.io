@@ -1402,6 +1402,30 @@
     .card.lock-tile.c-steel{background:linear-gradient(165deg,#262a33,#101216)}
     .card.lock-tile.c-dlc .lt-title{color:#9a8fa8}
     .card.lock-tile.c-dlc .lt-text{color:#b7aec4}
+
+    /* nominated: a person announced before their card exists — a sealed,
+       dashed-border "coming soon" tile (the card is still in build phase).
+       It ranks ABOVE the not-taken tiles and below the test-takers
+       (see bootRank / GOATReorder). One slow ring animation only. */
+    .c-nom {--ac:#7c5cd6;--ac-deep:#55389e;--ac-pale:#e4dcff;--ac-rgb:124,92,214;--ac-wash:#f4f1ff;--ac-line:#c6b6f0}
+    .card.nom-tile{opacity:1;animation:none;cursor:default;overflow:hidden;
+      display:flex;align-items:center;justify-content:center;border-radius:18px;
+      background:linear-gradient(165deg,var(--ac-wash),#fff 74%);
+      border:1.5px dashed var(--ac-line);
+      box-shadow:0 1px 2px rgba(0,0,0,.05),0 20px 40px -22px rgba(0,0,0,.22)}
+    .card.nom-tile .nt-q{position:absolute;right:-12px;bottom:-60px;font-family:var(--serif);
+      font-size:210px;line-height:1;color:rgba(var(--ac-rgb),.10);pointer-events:none}
+    .card.nom-tile .nt{display:flex;flex-direction:column;align-items:center;gap:7px;text-align:center;padding:18px;position:relative}
+    .card.nom-tile .nt-seal{position:relative;width:52px;height:52px;margin-bottom:2px}
+    .card.nom-tile .nt-seal svg.ring{position:absolute;inset:0;width:52px;height:52px;animation:ntspin 14s linear infinite}
+    .card.nom-tile .nt-seal svg.star{position:absolute;inset:0;margin:auto;width:24px;height:24px;fill:var(--ac)}
+    @keyframes ntspin{to{transform:rotate(360deg)}}
+    .card.nom-tile .nt-badge{font-size:10px;letter-spacing:.22em;text-transform:uppercase;color:var(--ac-deep);
+      border:1px solid var(--ac-line);border-radius:999px;padding:3px 10px 3px 12px;background:rgba(255,255,255,.65)}
+    .card.nom-tile .lt-name{font-family:var(--serif);font-size:27px;line-height:1.05;color:var(--ac-deep)}
+    .card.nom-tile .lt-title{font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:#8a8378}
+    .card.nom-tile .lt-text{margin-top:5px;font-size:12.5px;color:#6f6a5e}
+    @media (prefers-reduced-motion:reduce){.card.nom-tile .nt-seal svg.ring{animation:none}}
 </style>
 </head>
 <body>
@@ -1516,6 +1540,14 @@
         color:"acad", fx:"acad",
         hp:"-",
         moves:[["Bhanu", 100], ["Stem", 80], ["Dad", 0]] },
+
+      /* adayln — NOMINATED, card not built yet: she gets the sealed
+         coming-soon tile (buildNomTile), NOT a card and NOT a lock tile.
+         No photo/title/moves until ajchapa builds her real card; then this
+         entry is replaced by a normal one. Ranks above the not-taken. */
+      { name:"Adayln", nominated:true, title:"Coming Soon",
+        color:"nom", hp:"-",
+        moves:[] },
     ];
 
     const wall = document.getElementById("wall");
@@ -2019,6 +2051,17 @@
       a.innerHTML = `<div class="lt">${LOCK_SVG}<div class="lt-name">${g.name}</div><div class="lt-title">${g.title}</div><div class="lt-text">User Has Not Taken Test</div></div>`;
       return a;
     }
+    // ── nominated: sealed coming-soon tile while the card is in build phase ──
+    const STAR_SVG = `<svg class="star" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3.6l2.5 5.4 5.9.7-4.4 4 1.2 5.8L12 16.6l-5.2 2.9L8 13.7l-4.4-4 5.9-.7z"/></svg>`;
+    function buildNomTile(g) {
+      const d = document.createElement("div");
+      d.className = "card nom-tile c-" + (g.color || "nom");
+      d.dataset.name = g.name;
+      d.setAttribute("role", "img");
+      d.setAttribute("aria-label", g.name + ". Nominated. Coming soon — card in build phase.");
+      d.innerHTML = `<span class="nt-q" aria-hidden="true">?</span><div class="nt"><span class="nt-seal"><svg class="ring" viewBox="0 0 52 52" aria-hidden="true"><circle cx="26" cy="26" r="23" style="fill:none;stroke:var(--ac);stroke-width:1.6;stroke-dasharray:4 5;stroke-linecap:round"/></svg>${STAR_SVG}</span><div class="nt-badge">Nominated</div><div class="lt-name">${g.name}</div><div class="lt-title">${g.title}</div><div class="lt-text">Card in build phase — reveal to come</div></div>`;
+      return d;
+    }
     // Pre-load alignment (ajchapa, 2026-11-12): the wall must OPEN already
     // sorted — no shifting after load. wall-live caches the taken-set in
     // localStorage on every snapshot; this initial build reads that cache
@@ -2031,12 +2074,12 @@
         return raw ? new Set(JSON.parse(raw)) : null;
       } catch (e) { return null; }
     })();
-    const bootRank = (g) => g.name === "ajchapa" ? 0 : (CACHED_TAKEN && CACHED_TAKEN.has(g.name)) ? 1 : 2;
+    const bootRank = (g) => g.name === "ajchapa" ? 0 : (CACHED_TAKEN && CACHED_TAKEN.has(g.name)) ? 1 : g.nominated ? 2 : 3;
     GOATS.map((g, i) => [bootRank(g), i, g])
       .sort((a, b) => a[0] - b[0] || a[1] - b[1])
       .forEach(([, i, g]) => {
         const unlocked = g.lockable && CACHED_TAKEN && CACHED_TAKEN.has(g.name);
-        wall.appendChild(g.lockable && !unlocked ? buildTile(g) : buildCard(g, i));
+        wall.appendChild(g.nominated ? buildNomTile(g) : (g.lockable && !unlocked ? buildTile(g) : buildCard(g, i)));
       });
     if (!CACHED_TAKEN) {
       wall.classList.add("boot");
@@ -2060,12 +2103,16 @@
     // Standing order rule (ajchapa, 2026-11-12): people who have taken the
     // test rise to the top; people who haven't sink to the bottom. ajchapa's
     // own card stays pinned first. Order inside each group stays as-is.
+    // Nominated tiles (2026-11-20) sit between the two: above the not-taken,
+    // below the test-takers, while their cards are in build phase.
     window.GOATReorder = function (taken) {
       const has = (n) => (taken && typeof taken.has === "function") ? taken.has(n) : !!(taken && taken[n]);
       const rank = (el) => {
         const n = el.dataset.name;
         if (n === "ajchapa") return 0;
-        return has(n) ? 1 : 2;
+        if (has(n)) return 1;
+        const g = GOATS.find((x) => x.name === n);
+        return (g && g.nominated) ? 2 : 3;
       };
       [...wall.children]
         .map((el, i) => [rank(el), i, el])
@@ -2355,7 +2402,8 @@
 
       GOATS.forEach((g, i) => {
         const card = cardEls[i];
-        const wrap = card.querySelector(".photo-wrap");
+        const wrap = card && card.querySelector(".photo-wrap");
+        if (!wrap) return; // tiles (locked / nominated) have no photo to tune
         let [px, py] = (g.pos || "50% 25%").split(" ").map((v) => parseFloat(v));
         let z = g.zoom || 1;
         const row = document.createElement("div");
