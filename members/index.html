@@ -1488,10 +1488,12 @@ h1,h2{
   margin-top:30px;
   border:1px solid var(--m-gold-deep);
   border-radius:14px;
-  padding:18px 20px;
+  padding:26px 24px;
   background:rgba(197,154,69,.08);
+  text-align:center;
 }
-.removed-note h2{font-size:28px;margin:0 0 8px}
+.removed-note h2{font-size:28px;margin:0 0 10px;line-height:1.35}
+.removed-note .m-note{margin:0}
 
 .m-top{
   display:flex;
@@ -2844,7 +2846,8 @@ textarea.f-field{
       '<div class="goat-stage" id="goat-stage"></div>' +
       '<p class="flip-caption" id="flip-cap">Tap the card to flip it &nbsp;<b>\u21bb</b></p>' +
 
-      '<div class="removed-note" id="removed-note" style="display:none"><h2>Your card has been removed by the Board for not meeting the requirements.</h2></div>' +
+      '<div class="removed-note" id="removed-note" style="display:none"><h2>Your card has been removed by the Board for not meeting the requirements.</h2>' +
+      '<p class="m-note">If you want it reinstated, please send a request to the Board.</p></div>' +
 
       '<div class="m-sec" id="scores-sec"><h2>Your test scores</h2><div id="scores"><p class="m-note">Loading\u2026</p></div>' +
       '<a class="big" href="/test/">Take the test</a></div>' +
