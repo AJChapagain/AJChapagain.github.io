@@ -1484,6 +1484,15 @@ h1,h2{
 .m-sec{margin-top:30px}
 .m-sec h2{font-size:28px}
 
+.removed-note{
+  margin-top:30px;
+  border:1px solid var(--m-gold-deep);
+  border-radius:14px;
+  padding:18px 20px;
+  background:rgba(197,154,69,.08);
+}
+.removed-note h2{font-size:28px;margin:0 0 8px}
+
 .m-top{
   display:flex;
   justify-content:space-between;
@@ -2833,9 +2842,11 @@ textarea.f-field{
       '<button class="linklike" id="logout">Log out</button></div>' +
       '<div class="rule"></div>' +
       '<div class="goat-stage" id="goat-stage"></div>' +
-      '<p class="flip-caption">Tap the card to flip it &nbsp;<b>\u21bb</b></p>' +
+      '<p class="flip-caption" id="flip-cap">Tap the card to flip it &nbsp;<b>\u21bb</b></p>' +
 
-      '<div class="m-sec"><h2>Your test scores</h2><div id="scores"><p class="m-note">Loading\u2026</p></div>' +
+      '<div class="removed-note" id="removed-note" style="display:none"><h2>Your card has been removed by the Board for not meeting the requirements.</h2></div>' +
+
+      '<div class="m-sec" id="scores-sec"><h2>Your test scores</h2><div id="scores"><p class="m-note">Loading\u2026</p></div>' +
       '<a class="big" href="/test/">Take the test</a></div>' +
 
       '<div class="m-sec"><h2>Request a change</h2>' +
@@ -2863,6 +2874,7 @@ textarea.f-field{
       startCardLive();
       startScores();
       startNotes();
+      startRemovedWatch();
       if(isAdmin) startAdmin();
       if(isAdmin) startManagePeople();
       if(isAdmin) startExamResults();
@@ -2924,6 +2936,28 @@ textarea.f-field{
       });
       unsubs.push(unsub);
     }catch(e){ box.innerHTML='<p class="m-note">Couldn\u2019t load scores right now.</p>'; }
+  }
+
+  /* ---------- REMOVED-BY-THE-BOARD NOTICE ---------- */
+  // If the Board removed this member's card (people/{name}.removed),
+  // their login still works, but the dashboard swaps their card and
+  // scores for the removal notice. The request form stays available so
+  // they can ask the Board to reinstate the card. Restoring the card in
+  // Manage people flips this back live.
+  function startRemovedWatch(){
+    if(identity && identity.admin) return;
+    if(dbDown()) return;
+    try{
+      var unsub = GOAT.db.collection('people').doc(profile.name).onSnapshot(function(doc){
+        var d = doc.exists ? (doc.data()||{}) : {};
+        var removed = !!d.removed;
+        var note=$('#removed-note'); if(note) note.style.display = removed ? '' : 'none';
+        var stage=$('#goat-stage'); if(stage) stage.style.display = removed ? 'none' : '';
+        var cap=$('#flip-cap'); if(cap) cap.style.display = removed ? 'none' : '';
+        var sec=$('#scores-sec'); if(sec) sec.style.display = removed ? 'none' : '';
+      }, function(){});
+      unsubs.push(unsub);
+    }catch(e){}
   }
 
   function startNotes(){
