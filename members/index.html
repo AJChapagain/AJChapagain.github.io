@@ -1873,6 +1873,36 @@ textarea.f-field{
 .m-req-head .chev{color:var(--gold);font-size:14px;flex:0 0 auto}
 .m-req-body{display:none;margin-top:10px}
 
+/* ---------- admin card preview + ready-to-push (2026-11-27) ---------- */
+.m-card-preview{max-width:340px;margin:16px auto 6px}
+.m-card-preview .card{animation:none;opacity:1}
+.m-card-preview .card.nom-tile{cursor:default}
+.m-ready{border:1px dashed var(--gold);border-radius:14px;padding:14px;margin-bottom:6px;background:#fff}
+.m-ready h3{font-size:17px;margin:0 0 4px}
+.m-ready ul{margin:8px 0 0;padding-left:18px;line-height:1.6}
+.m-ready li{margin:3px 0}
+
+/* ---------- nominated tile (same tile as the wall) ---------- */
+.c-nom {--ac:#7c5cd6;--ac-deep:#55389e;--ac-pale:#e4dcff;--ac-rgb:124,92,214;--ac-wash:#f4f1ff;--ac-line:#c6b6f0}
+.card.nom-tile{opacity:1;animation:none;cursor:default;overflow:hidden;
+  display:flex;align-items:center;justify-content:center;border-radius:18px;
+  background:linear-gradient(165deg,var(--ac-wash),#fff 74%);
+  border:1.5px dashed var(--ac-line);
+  box-shadow:0 1px 2px rgba(0,0,0,.05),0 20px 40px -22px rgba(0,0,0,.22)}
+.card.nom-tile .nt-q{position:absolute;right:-12px;bottom:-60px;font-family:var(--serif);
+  font-size:210px;line-height:1;color:rgba(var(--ac-rgb),.10);pointer-events:none}
+.card.nom-tile .nt{display:flex;flex-direction:column;align-items:center;gap:7px;text-align:center;padding:18px;position:relative}
+.card.nom-tile .nt-seal{position:relative;width:52px;height:52px;margin-bottom:2px}
+.card.nom-tile .nt-seal svg.ring{position:absolute;inset:0;width:52px;height:52px;animation:ntspin 14s linear infinite}
+.card.nom-tile .nt-seal svg.star{position:absolute;inset:0;margin:auto;width:24px;height:24px;fill:var(--ac)}
+@keyframes ntspin{to{transform:rotate(360deg)}}
+.card.nom-tile .nt-badge{font-size:10px;letter-spacing:.22em;text-transform:uppercase;color:var(--ac-deep);
+  border:1px solid var(--ac-line);border-radius:999px;padding:3px 10px 3px 12px;background:rgba(255,255,255,.65)}
+.card.nom-tile .lt-name{font-family:var(--serif);font-size:27px;line-height:1.05;color:var(--ac-deep)}
+.card.nom-tile .lt-title{font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:#8a8378}
+.card.nom-tile .lt-text{margin-top:5px;font-size:12.5px;color:#6f6a5e}
+@media (prefers-reduced-motion:reduce){.card.nom-tile .nt-seal svg.ring{animation:none}}
+
 @media(max-width:400px){
   body{padding-left:12px;padding-right:12px}
   .panel{padding:18px}
@@ -3192,6 +3222,7 @@ textarea.f-field{
   var manageScoreDocs={};
   var manageSaving=false;
   var manageOpen={};
+  var manageCardShown={};
   function startManagePeople(){
     // No gate here — the admin already passed the two codes at login.
     renderPeopleList();
@@ -3225,6 +3256,33 @@ textarea.f-field{
     }catch(e){ box.innerHTML='<p class="m-note">Couldn\u2019t load people right now.</p>'; }
   }
 
+  // Nominated tile, same markup as the wall's buildNomTile (the members
+  // page never had one — admin rows show the tile for nominated people
+  // who have no card yet).
+  var STAR_SVG = '<svg class="star" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3.6l2.5 5.4 5.9.7-4.4 4 1.2 5.8L12 16.6l-5.2 2.9L8 13.7l-4.4-4 5.9-.7z"/></svg>';
+  function nomTileMarkup(name, title){
+    return '<div class="card nom-tile c-nom" role="img" aria-label="'+esc(name)+'. Nominated. Coming soon.">'
+      + '<span class="nt-q" aria-hidden="true">?</span><div class="nt"><span class="nt-seal"><svg class="ring" viewBox="0 0 52 52" aria-hidden="true"><circle cx="26" cy="26" r="23" style="fill:none;stroke:var(--ac);stroke-width:1.6;stroke-dasharray:4 5;stroke-linecap:round"/></svg>'+STAR_SVG+'</span><div class="nt-badge">Nominated</div><div class="lt-name">'+esc(name)+'</div><div class="lt-title">'+esc(title)+'</div></div></div>';
+  }
+  // Render a person's live card (or their nominated tile) into a row's
+  // preview slot. The card is the same builder the dashboard uses, so
+  // what the admin sees is exactly what is live — tap it to flip.
+  function renderRowCard(wrap, c){
+    var slot=wrap.querySelector('[data-card-slot]'); if(!slot) return;
+    slot.innerHTML='';
+    var g=cardFor(c);
+    var ov=manageOverrides[c]||{};
+    if(g){
+      try { slot.appendChild(buildCard(g)); }
+      catch(e){ slot.innerHTML='<p class="m-note">Couldn\u2019t build this card.</p>'; }
+    } else if(ov.nominated){
+      var title=(typeof ov.title==='string' && ov.title) ? ov.title : 'Coming Soon';
+      slot.innerHTML=nomTileMarkup(c, title);
+    } else {
+      slot.innerHTML='<p class="m-note">No card yet.</p>';
+    }
+  }
+
   function drawPeopleList(){
     var box=$('#manage-people'); if(!box) return;
     if(manageSaving) return;
@@ -3246,7 +3304,18 @@ textarea.f-field{
       '<p class="m-note f-msg" data-nom-msg></p>' +
       '</div></div>';
     if(!roster.length){ box.innerHTML='<p class="m-note">No people found.</p>'; return; }
-    box.innerHTML = formHtml + roster.map(function(p){
+    // Staged and ready to push — kept here (not in the database) so the
+    // admin sees exactly what is waiting. Update this list whenever a
+    // card is staged or pushed. The page cannot push to GitHub itself;
+    // say "push it" in chat to ship these.
+    var readyHtml='<div class="m-req m-ready"><h3>Ready to push</h3>' +
+      '<p class="m-note">Staged, not live yet. Say \u201cpush it\u201d in chat to ship them.</p>' +
+      '<ul>' +
+      '<li><b>Adalyn</b> \u2014 \u201cThe GOAT of Piano\u201d card, photo wired \u2014 <a href="/preview/#Adalyn">preview</a></li>' +
+      '<li><b>Lilly</b> \u2014 \u201cPhotography\u201d card \u2014 <a href="/preview/#Lilly">preview</a></li>' +
+      '<li>Members + wall removal flash fixes (no visible change, stops removed cards flashing on login)</li>' +
+      '</ul></div>';
+    box.innerHTML = formHtml + readyHtml + roster.map(function(p){
       var c=p.name;
       var ov=manageOverrides[c]||{};
       var removed=!!ov.removed;
@@ -3266,6 +3335,8 @@ textarea.f-field{
         '<input class="f-field" data-f="title" value="'+esc(title)+'">' +
         '<label class="f-label">Photo</label>' +
         '<input class="f-field" data-f="photo" value="'+esc(photo)+'" placeholder="/photo.jpg">' +
+        '<div class="actions"><button class="btn-ghost" data-act="card" data-label="'+(p.nominatedOnly ? 'View tile' : 'View card')+'">'+(p.nominatedOnly ? 'View tile' : 'View card')+'</button></div>' +
+        '<div class="m-card-preview" data-card-slot style="display:none"></div>' +
         '<div class="actions">' +
           '<button class="btn-ghost" data-act="save">Save changes</button>' +
           (removed
@@ -3334,6 +3405,20 @@ textarea.f-field{
         var msgEl=wrap.querySelector('[data-msg]');
         var scoreSaved=false;
         function say(t){ if(msgEl) msgEl.textContent=t; }
+        if(act==='card'){
+          var slot=wrap.querySelector('[data-card-slot]');
+          var shown=!!manageCardShown[c];
+          var viewLabel=btn.getAttribute('data-label')||'View card';
+          var hideLabel=(viewLabel==='View tile') ? 'Hide tile' : 'Hide card';
+          manageCardShown[c]=!shown;
+          btn.textContent = shown ? viewLabel : hideLabel;
+          if(slot){
+            slot.style.display = shown ? 'none' : '';
+            if(!shown) renderRowCard(wrap, c);
+            else slot.innerHTML='';
+          }
+          return;
+        }
         if(dbDown()){ say('The database isn’t reachable right now.'); return; }
         btn.disabled=true;
         GOAT.ensureAuth().then(function(){
@@ -3389,6 +3474,16 @@ textarea.f-field{
           }
         });
       };
+    });
+    // Restore any open card previews after a re-render (snapshots redraw
+    // the whole list; the card itself is rebuilt from the live data).
+    [].slice.call(box.querySelectorAll('.m-req')).forEach(function(wrap){
+      var c=wrap.getAttribute('data-pname');
+      if(!manageCardShown[c]) return;
+      var btn=wrap.querySelector('[data-act="card"]');
+      var slot=wrap.querySelector('[data-card-slot]');
+      if(btn){ var vl=btn.getAttribute('data-label')||'View card'; btn.textContent=(vl==='View tile') ? 'Hide tile' : 'Hide card'; }
+      if(slot){ slot.style.display=''; renderRowCard(wrap, c); }
     });
   }
   function sendRequest(){
