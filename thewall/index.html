@@ -2126,12 +2126,47 @@
         if (n === "ajchapa") return 0;
         if (has(n)) return 1;
         const g = GOATS.find((x) => x.name === n);
-        return (g && g.nominated) ? 2 : 3;
+        return ((g && g.nominated) || el.classList.contains("nom-tile")) ? 2 : 3;
       };
       [...wall.children]
         .map((el, i) => [rank(el), i, el])
         .sort((a, b) => a[0] - b[0] || a[1] - b[1])
         .forEach(([, , el]) => wall.appendChild(el));
+    };
+
+    // ── admin nominations (set from the members admin page) ─────────────
+    // A people/{name} doc with nominated:true puts the sealed NOMINATED
+    // tile on the wall for anyone who has NO entry in GOATS yet — while
+    // their card is being built. Turning the flag off (or deleting the
+    // doc) takes the tile down. A real card in the code always wins:
+    // once the card is integrated, the nomination is ignored.
+    const dynNoms = {};
+    window.GOATNomSync = function (people) {
+      const want = {};
+      Object.keys(people || {}).forEach((name) => {
+        const d = people[name] || {};
+        if (d.nominated !== true) return;
+        if (GOATS.some((g) => g.name === name)) return;
+        want[name] = (typeof d.title === "string" && d.title) ? d.title : "Coming Soon";
+      });
+      Object.keys(dynNoms).forEach((name) => {
+        if (!want[name]) { dynNoms[name].remove(); delete dynNoms[name]; }
+      });
+      Object.keys(want).forEach((name) => {
+        if (dynNoms[name]) {
+          const t = dynNoms[name].querySelector(".lt-title");
+          if (t && t.textContent !== want[name]) t.textContent = want[name];
+          return;
+        }
+        const tile = buildNomTile({ name, title: want[name], color: "nom" });
+        dynNoms[name] = tile;
+        wall.appendChild(tile);
+      });
+      if (window.GOATReorder) {
+        let taken = {};
+        try { (JSON.parse(localStorage.getItem("goatTakenSet") || "[]")).forEach((n) => { taken[n] = true; }); } catch (e) {}
+        try { window.GOATReorder(taken); } catch (e) {}
+      }
     };
 
     // ── mijo's money effect: click = coin burst

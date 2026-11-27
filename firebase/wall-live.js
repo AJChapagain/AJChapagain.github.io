@@ -145,9 +145,14 @@
         }
         try {
           GOAT.db.collection("people").onSnapshot(function (snap) {
+            var map = {};
             snap.forEach(function (doc) {
-              applyPerson(doc.id, doc.data() || {});
+              map[doc.id] = doc.data() || {};
+              applyPerson(doc.id, map[doc.id]);
             });
+            // Admin nominations: people docs with nominated:true get a
+            // sealed tile on the wall (for names with no card in code).
+            if (window.GOATNomSync) { try { window.GOATNomSync(map); } catch (e) {} }
             // A deleted people doc means "back to hardcoded": re-apply
             // defaults for any card whose doc is gone.
             snap.docChanges().forEach(function (ch) {

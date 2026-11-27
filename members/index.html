@@ -3186,6 +3186,7 @@ textarea.f-field{
   }
 
   /* ---------- MANAGE PEOPLE (admin only; the two-code gate is at login) ---------- */
+  var nomDraft='';
   var manageOverrides={};
   var manageScores={};
   var manageScoreDocs={};
@@ -3230,8 +3231,22 @@ textarea.f-field{
     // Roster from the CARDS data (names/titles/photos are public).
     // People and scores are keyed by NAME, never by access code.
     var roster=CARDS.map(function(g){ return {name:g.name, title:g.title, photo:g.photo}; });
+    // Plus anyone the admin has nominated who has no card in the code yet:
+    // their people doc carries nominated:true and the wall shows their tile.
+    Object.keys(manageOverrides).forEach(function(nm){
+      var ov=manageOverrides[nm]||{};
+      if(ov.nominated && !CARDS.some(function(g){ return g.name===nm; })){
+        roster.push({name:nm, title:(typeof ov.title==='string' && ov.title) ? ov.title : 'Coming Soon', photo:'', nominatedOnly:true});
+      }
+    });
+    var formHtml='<div class="m-req"><div class="m-req-body" style="display:block">' +
+      '<label class="f-label">Nominate someone \\u2014 their tile goes on the wall while their card is being built</label>' +
+      '<input class="f-field" id="nom-name" placeholder="Their name" value="'+esc(nomDraft)+'">' +
+      '<div class="actions"><button class="btn-ghost" data-nom-btn="1">Nominate</button></div>' +
+      '<p class="m-note f-msg" data-nom-msg></p>' +
+      '</div></div>';
     if(!roster.length){ box.innerHTML='<p class="m-note">No people found.</p>'; return; }
-    box.innerHTML = roster.map(function(p){
+    box.innerHTML = formHtml + roster.map(function(p){
       var c=p.name;
       var ov=manageOverrides[c]||{};
       var removed=!!ov.removed;
@@ -3243,7 +3258,7 @@ textarea.f-field{
       function sv(k){ return (typeof sd[k]==='number') ? sd[k] : ''; }
       var open = !!manageOpen[c];
       return '<div class="m-req" data-pname="'+esc(c)+'">' +
-        '<div class="m-req-head"><span class="chev">'+(open?'▾':'▸')+'</span><div class="cnt">'+esc(name)+' · '+esc(title)+' · HP '+esc(String(hp))+(removed?' · REMOVED':'')+'</div></div>' +
+        '<div class="m-req-head"><span class="chev">'+(open?'▾':'▸')+'</span><div class="cnt">'+esc(name)+' · '+esc(title)+' · HP '+esc(String(hp))+(removed?' · REMOVED':'')+(p.nominatedOnly?' · NOMINATED':'')+'</div></div>' +
         '<div class="m-req-body" style="display:'+(open?'block':'none')+'">' +
         '<label class="f-label">Name</label>' +
         '<input class="f-field" data-f="name" value="'+esc(name)+'">' +
@@ -3257,6 +3272,7 @@ textarea.f-field{
             ? '<button class="btn-ghost" data-act="restore">Restore to the wall</button>'
             : '<button class="btn-danger" data-act="remove">Remove from the wall</button>') +
         '</div>' +
+        (ov.nominated ? '<div class="actions"><button class="btn-ghost" data-act="unnominate">Remove nomination</button></div>' : '') +
         '<div class="actions"><button class="btn-ghost" data-act="reset">Reset test</button></div>' +
         '<label class="f-label">Test score \u2014 set it manually</label>' +
         '<div class="score-grid">' +
@@ -3271,6 +3287,30 @@ textarea.f-field{
         '</div>' +
       '</div>';
     }).join('');
+    var nomInput=box.querySelector('#nom-name');
+    var nomBtn=box.querySelector('[data-nom-btn]');
+    var nomMsg=box.querySelector('[data-nom-msg]');
+    if(nomInput){ nomInput.addEventListener('input', function(){ nomDraft=nomInput.value; }); }
+    if(nomBtn){
+      nomBtn.onclick=function(){
+        var nm=(nomInput ? nomInput.value : '').trim();
+        if(!nm){ if(nomMsg) nomMsg.textContent='Type a name first.'; return; }
+        if(dbDown()){ if(nomMsg) nomMsg.textContent='The database isn\\u2019t reachable right now.'; return; }
+        nomBtn.disabled=true;
+        GOAT.ensureAuth().then(function(){
+          return GOAT.db.collection('people').doc(nm).set({nominated:true}, {merge:true});
+        }).then(function(){
+          nomDraft='';
+          drawPeopleList();
+          var live=$('#manage-people [data-nom-msg]');
+          if(live) live.textContent='Nominated. Their tile is on the wall.';
+        }).catch(function(e){
+          if(nomMsg) nomMsg.textContent='Couldn\\u2019t nominate right now. Try again.';
+          if(window.console) console.warn('[members] nominate failed:', e && e.message);
+          nomBtn.disabled=false;
+        });
+      };
+    }
     [].slice.call(box.querySelectorAll('.m-req-head')).forEach(function(head){
       head.onclick=function(){
         var wrap=head.closest ? head.closest('[data-pname]') : null;
@@ -3320,6 +3360,9 @@ textarea.f-field{
           }
           if(act==='restore'){
             return ref.set({removed:false}, {merge:true}).then(function(){ say('Restored to the wall.'); });
+          }
+          if(act==='unnominate'){
+            return ref.set({nominated:false}, {merge:true}).then(function(){ say('Nomination removed. The tile comes off the wall.'); });
           }
           if(act==='save'){
             var name=(wrap.querySelector('[data-f="name"]')||{}).value||'';
